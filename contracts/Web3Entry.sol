@@ -111,21 +111,18 @@ contract Web3Entry is IWeb3Entry, ERC721Enumerable, Web3EntryStorage {
         _validateCallerIsProfileOwner(fromProfileId);
         require(_exists(toProfileId), "Web3Entry: toProfileId not exist");
 
-        if (!ILinklistNFT(linkList).existsLinkList(fromProfileId, linkType)) {
+        uint256 tokenId = ILinklistNFT(linkList).getTokenId(
+            fromProfileId,
+            linkType
+        );
+        uint256 profileId = ILinklistNFT(linkList).getCurrentTakeOver(tokenId);
+        if (profileId == 0) {
             // mint linkList nft
-            ILinklistNFT(linkList).mint(fromProfileId, linkType, msg.sender);
+            ILinklistNFT(linkList).mint(msg.sender, tokenId);
         }
 
-        // create and save link item
-        linkCounts[fromProfileId][linkType].increment();
-        uint256 linkId = linkCounts[fromProfileId][linkType].current();
-        profile2ProfileCount.increment();
-
-        profile2ProfileLinks[linkType][linkId].fromProfileId = fromProfileId;
-        profile2ProfileLinks[linkType][linkId].toProfileId = toProfileId;
-        profile2ProfileLinks[linkType][linkId].linkId = linkId;
-        // add linkList
-        ILinklistNFT(linkList).addLinkList(fromProfileId, linkType, linkId);
+        // add to link list
+        ILinklistNFT(linkList).addLinkList(tokenId, linkType, toProfileId);
 
         emit Events.LinkProfile(
             msg.sender,
@@ -137,20 +134,31 @@ contract Web3Entry is IWeb3Entry, ERC721Enumerable, Web3EntryStorage {
 
     function unlinkProfile(
         uint256 fromProfileId,
-        bytes32 linkType,
-        uint256 linkId
+        uint256 toProfileId,
+        bytes32 linkType
     ) external {
         _validateCallerIsProfileOwner(fromProfileId);
-        // TODO: check linkId
+        require(_exists(toProfileId), "Web3Entry: toProfileId not exist");
 
-        linkCounts[fromProfileId][linkType].decrement();
-        profile2ProfileCount.decrement();
+        uint256 tokenId = ILinklistNFT(linkList).getTokenId(
+            fromProfileId,
+            linkType
+        );
+        uint256 profileId = ILinklistNFT(linkList).getCurrentTakeOver(tokenId);
+        require(
+            profileId == fromProfileId,
+            "Web3Entry: unauthorised profileId"
+        );
 
-        delete profile2ProfileLinks[linkType][linkId];
-        // remove linkList
-        ILinklistNFT(linkList).removeLinkList(fromProfileId, linkType, linkId);
+        // remove from link list
+        ILinklistNFT(linkList).removeLinkList(tokenId, linkType, toProfileId);
 
-        emit Events.UnlinkProfile(msg.sender, fromProfileId, linkType, linkId);
+        emit Events.UnlinkProfile(
+            msg.sender,
+            fromProfileId,
+            toProfileId,
+            linkType
+        );
     }
 
     //    function linkNote(
@@ -318,29 +326,15 @@ contract Web3Entry is IWeb3Entry, ERC721Enumerable, Web3EntryStorage {
         return ILinklistNFT(linkList).URI(tokenId);
     }
 
-    function getProfile2ProfileLinkItem(bytes32 linkType, uint256 linkId)
-        external
-        view
-        returns (DataTypes.Profile2ProfileLink memory)
-    {
-        return profile2ProfileLinks[linkType][linkId];
-    }
-
     function getProfile2ProfileLinkItems(
         uint256 fromProfileId,
         bytes32 linkType
-    ) external view returns (DataTypes.Profile2ProfileLink[] memory results) {
-        uint256 total = linkCounts[fromProfileId][linkType].current();
-        results = new DataTypes.Profile2ProfileLink[](total);
-        uint256 j = 0;
-        for (uint256 i = 0; i < profile2ProfileCount.current(); i++) {
-            if (
-                profile2ProfileLinks[linkType][i].fromProfileId == fromProfileId
-            ) {
-                results[j] = profile2ProfileLinks[linkType][i];
-            }
-            j++;
-        }
+    ) external view returns (uint256[] memory) {
+        uint256 tokenId = ILinklistNFT(linkList).getTokenId(
+            fromProfileId,
+            linkType
+        );
+        return ILinklistNFT(linkList).getLinkList(tokenId, linkType);
     }
 
     function _validateCallerIsProfileOwner(uint256 profileId) internal view {

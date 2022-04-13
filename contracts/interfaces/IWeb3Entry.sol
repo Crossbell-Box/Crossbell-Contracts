@@ -43,8 +43,8 @@ interface IWeb3Entry {
 
     function unlinkProfile(
         uint256 fromProfileId,
-        bytes32 linkType,
-        uint256 linkId
+        uint256 toProfileId,
+        bytes32 linkType
     ) external;
 
     //    function linkNote(
@@ -168,14 +168,8 @@ interface IWeb3Entry {
         view
         returns (string memory);
 
-    function getProfile2ProfileLinkItem(bytes32 linkType, uint256 linkId)
-        external
-        view
-        returns (DataTypes.Profile2ProfileLink memory);
-
     function getProfile2ProfileLinkItems(
         uint256 fromProfileId,
         bytes32 linkType
-    ) external view returns (DataTypes.Profile2ProfileLink[] memory results);
-    // TODO: Events
+    ) external view returns (uint256[] memory);
 }

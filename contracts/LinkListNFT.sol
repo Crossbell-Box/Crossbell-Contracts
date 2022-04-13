@@ -12,13 +12,22 @@ contract LinkListNFT is ILinklistNFT, ERC721Enumerable {
     using EnumerableSet for EnumerableSet.UintSet;
     using SafeMath for uint256;
 
+    // tokenId => linkType  => profileIds
+    mapping(uint256 => mapping(bytes32 => EnumerableSet.UintSet))
+        internal profile2ProfileLinks;
+    // profileId => linkType  => external addresses
+    mapping(uint256 => mapping(bytes32 => EnumerableSet.AddressSet))
+        internal profile2AddressLinks;
+    // tokenId => profileId
+    mapping(uint256 => uint256) internal currentTakeOver;
+
     bool private _initialized;
     address public web3Entry;
 
     mapping(uint256 => string) internal _URIs; // tokenId => tokenURI
 
     // link NFT contract vars
-    // TODO: add category ? profileId => category => linkType => []linkId
+    //  profileId => category => linkType => []linkId
     mapping(uint256 => mapping(bytes32 => EnumerableSet.UintSet))
         internal linkList;
 
@@ -43,6 +52,14 @@ contract LinkListNFT is ILinklistNFT, ERC721Enumerable {
         return _getTokenId(profileId, linkType);
     }
 
+    function getCurrentTakeOver(uint256 tokenId)
+        external
+        view
+        returns (uint256)
+    {
+        return currentTakeOver[tokenId];
+    }
+
     // TODO: maybe there is a more elegant way setting web3Entry address
     function initialize(address _web3Entry) external {
         if (_initialized) revert Errors.Initialized();
@@ -51,14 +68,10 @@ contract LinkListNFT is ILinklistNFT, ERC721Enumerable {
         web3Entry = _web3Entry;
     }
 
-    function mint(
-        uint256 profileId,
-        bytes32 linkType,
-        address to
-    ) external override {
+    function mint(address to, uint256 tokenId) external override {
         if (msg.sender != web3Entry) revert Errors.NotWeb3Entry();
 
-        _mint(to, _getTokenId(profileId, linkType));
+        _mint(to, tokenId);
     }
 
     function setURI(uint256 tokenId, string memory _URI) external {
@@ -72,47 +85,39 @@ contract LinkListNFT is ILinklistNFT, ERC721Enumerable {
     }
 
     function addLinkList(
-        uint256 profileId,
+        uint256 tokenId,
         bytes32 linkType,
-        uint256 linkId
+        uint256 toProfileId
     ) external {
         if (msg.sender != web3Entry) revert Errors.NotWeb3Entry();
 
-        linkList[profileId][linkType].add(linkId);
+        profile2ProfileLinks[tokenId][linkType].add(toProfileId);
     }
 
     function removeLinkList(
-        uint256 profileId,
+        uint256 tokenId,
         bytes32 linkType,
-        uint256 linkId
+        uint256 toProfileId
     ) external {
         if (msg.sender != web3Entry) revert Errors.NotWeb3Entry();
 
-        linkList[profileId][linkType].add(linkId);
+        profile2ProfileLinks[tokenId][linkType].remove(toProfileId);
     }
 
-    function getLinkList(uint256 profileId, bytes32 linkType)
+    function getLinkList(uint256 tokenId, bytes32 linkType)
         external
         view
         returns (uint256[] memory)
     {
-        return linkList[profileId][linkType].values();
+        return profile2ProfileLinks[tokenId][linkType].values();
     }
 
-    function getLinkListLength(uint256 profileId, bytes32 linkType)
+    function getLinkListLength(uint256 tokenId, bytes32 linkType)
         external
         view
         returns (uint256)
     {
-        return linkList[profileId][linkType].length();
-    }
-
-    function existsLinkList(uint256 profileId, bytes32 linkType)
-        external
-        view
-        returns (bool)
-    {
-        return _exists(_getTokenId(profileId, linkType));
+        return profile2ProfileLinks[tokenId][linkType].length();
     }
 
     function URI(uint256 tokenId) external view returns (string memory) {

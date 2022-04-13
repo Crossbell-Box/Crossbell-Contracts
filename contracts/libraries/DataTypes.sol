@@ -7,10 +7,4 @@ library DataTypes {
         string handle;
         string metadataURI;
     }
-    // profile => profile
-    struct Profile2ProfileLink {
-        uint256 fromProfileId;
-        uint256 toProfileId;
-        uint256 linkId;
-    }
 }

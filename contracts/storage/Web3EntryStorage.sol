@@ -15,14 +15,4 @@ contract Web3EntryStorage {
     mapping(address => uint256) internal _primaryProfileByAddress; // address => profile id
 
     uint256 internal _profileCounter;
-
-    // linkType => linkId => linkItem
-    mapping(bytes32 => mapping(uint256 => DataTypes.Profile2ProfileLink))
-        internal profile2ProfileLinks;
-
-    Counters.Counter profile2ProfileCount;
-
-    // profileId => linkType => linkId
-    mapping(uint256 => mapping(bytes32 => Counters.Counter))
-        internal linkCounts;
 }

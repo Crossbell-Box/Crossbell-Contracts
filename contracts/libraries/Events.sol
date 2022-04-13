@@ -31,7 +31,7 @@ library Events {
     event UnlinkProfile(
         address indexed account,
         uint256 indexed fromProfileId,
-        bytes32 indexed linkType,
-        uint256 linkId
+        uint256 indexed toProfileId,
+        bytes32 linkType
     );
 }
