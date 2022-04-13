@@ -14,7 +14,7 @@ contract LinkListNFT is ILinklistNFT, ERC721Enumerable {
 
     // tokenId => linkType  => profileIds
     mapping(uint256 => mapping(bytes32 => EnumerableSet.UintSet))
-        internal profile2ProfileLinks;
+        internal linkedProfileIds;
     // profileId => linkType  => external addresses
     mapping(uint256 => mapping(bytes32 => EnumerableSet.AddressSet))
         internal profile2AddressLinks;
@@ -35,31 +35,6 @@ contract LinkListNFT is ILinklistNFT, ERC721Enumerable {
         ERC721(name, symbol)
     {}
 
-    function _getTokenId(uint256 profileId, bytes32 linkType)
-        internal
-        pure
-        returns (uint256)
-    {
-        bytes32 label = keccak256(abi.encodePacked(profileId, linkType));
-        return uint256(label);
-    }
-
-    function getTokenId(uint256 profileId, bytes32 linkType)
-        external
-        pure
-        returns (uint256)
-    {
-        return _getTokenId(profileId, linkType);
-    }
-
-    function getCurrentTakeOver(uint256 tokenId)
-        external
-        view
-        returns (uint256)
-    {
-        return currentTakeOver[tokenId];
-    }
-
     // TODO: maybe there is a more elegant way setting web3Entry address
     function initialize(address _web3Entry) external {
         if (_initialized) revert Errors.Initialized();
@@ -74,6 +49,17 @@ contract LinkListNFT is ILinklistNFT, ERC721Enumerable {
         _mint(to, tokenId);
     }
 
+    function takeOver(
+        uint256 tokenId,
+        address to,
+        uint256 profileId
+    ) external {
+        if (msg.sender != web3Entry) revert Errors.NotWeb3Entry();
+        require(to == ownerOf(tokenId), "LinkList: not token owner");
+
+        currentTakeOver[tokenId] = profileId;
+    }
+
     function setURI(uint256 tokenId, string memory _URI) external {
         if (msg.sender != web3Entry) revert Errors.NotWeb3Entry();
         require(
@@ -84,40 +70,48 @@ contract LinkListNFT is ILinklistNFT, ERC721Enumerable {
         _URIs[tokenId] = _URI;
     }
 
-    function addLinkList(
+    function addLinkedProfileId(
         uint256 tokenId,
         bytes32 linkType,
         uint256 toProfileId
     ) external {
         if (msg.sender != web3Entry) revert Errors.NotWeb3Entry();
 
-        profile2ProfileLinks[tokenId][linkType].add(toProfileId);
+        linkedProfileIds[tokenId][linkType].add(toProfileId);
     }
 
-    function removeLinkList(
+    function removeLinkedProfileId(
         uint256 tokenId,
         bytes32 linkType,
         uint256 toProfileId
     ) external {
         if (msg.sender != web3Entry) revert Errors.NotWeb3Entry();
 
-        profile2ProfileLinks[tokenId][linkType].remove(toProfileId);
+        linkedProfileIds[tokenId][linkType].remove(toProfileId);
     }
 
-    function getLinkList(uint256 tokenId, bytes32 linkType)
+    function getLinkedProfileIds(uint256 tokenId, bytes32 linkType)
         external
         view
         returns (uint256[] memory)
     {
-        return profile2ProfileLinks[tokenId][linkType].values();
+        return linkedProfileIds[tokenId][linkType].values();
     }
 
-    function getLinkListLength(uint256 tokenId, bytes32 linkType)
+    function getLinkedProfileIdsLength(uint256 tokenId, bytes32 linkType)
         external
         view
         returns (uint256)
     {
-        return profile2ProfileLinks[tokenId][linkType].length();
+        return linkedProfileIds[tokenId][linkType].length();
+    }
+
+    function getCurrentTakeOver(uint256 tokenId)
+        external
+        view
+        returns (uint256)
+    {
+        return currentTakeOver[tokenId];
     }
 
     function URI(uint256 tokenId) external view returns (string memory) {

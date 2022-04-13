@@ -3,33 +3,34 @@ pragma solidity 0.8.10;
 interface ILinklistNFT {
     function mint(address to, uint256 tokenId) external;
 
+    function takeOver(
+        uint256 tokenId,
+        address to,
+        uint256 profileId
+    ) external;
+
     function setURI(uint256 tokenId, string memory URI) external;
 
-    function addLinkList(
+    function addLinkedProfileId(
         uint256 tokenId,
         bytes32 linkType,
         uint256 toProfileId
     ) external;
 
-    function removeLinkList(
+    function removeLinkedProfileId(
         uint256 tokenId,
         bytes32 linkType,
         uint256 toProfileId
     ) external;
 
-    function getLinkList(uint256 tokenId, bytes32 linkType)
+    function getLinkedProfileIds(uint256 tokenId, bytes32 linkType)
         external
         view
         returns (uint256[] memory);
 
-    function getLinkListLength(uint256 tokenId, bytes32 linkType)
+    function getLinkedProfileIdsLength(uint256 tokenId, bytes32 linkType)
         external
         view
-        returns (uint256);
-
-    function getTokenId(uint256 profileId, bytes32 linkType)
-        external
-        pure
         returns (uint256);
 
     function getCurrentTakeOver(uint256 tokenId)
