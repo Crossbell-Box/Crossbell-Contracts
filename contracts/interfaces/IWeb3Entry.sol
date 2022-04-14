@@ -125,7 +125,7 @@ interface IWeb3Entry {
     function mintLink(DataTypes.LinkData calldata linkData, address to)
         external;
 
-    function setMintModuleForNote(
+    function setMintModule4Note(
         uint256 profileId,
         uint256 toNoteId,
         address mintModule,
@@ -133,7 +133,7 @@ interface IWeb3Entry {
     ) external;
 
     // set mint module for his single link item
-    function setMintModuleForLink(
+    function setMintModule4Link(
         DataTypes.LinkData calldata linkData,
         address mintModule,
         bytes calldata mintModuleInitData
@@ -197,12 +197,12 @@ interface IWeb3Entry {
         view
         returns (address);
 
-    function getMintModuleForNote(uint256 profileId, uint256 toNoteId)
+    function getMintModule4Note(uint256 profileId, uint256 toNoteId)
         external
         view
         returns (address);
 
-    function getMintModuleForLink(DataTypes.LinkData calldata linkData)
+    function getMintModule4Link(DataTypes.LinkData calldata linkData)
         external
         view
         returns (address);

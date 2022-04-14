@@ -304,14 +304,14 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         external
     {}
 
-    function setMintModuleForNote(
+    function setMintModule4Note(
         uint256 profileId,
         uint256 toNoteId,
         address mintModule,
         bytes calldata mintModuleInitData
     ) external {} // set mint module for himself
 
-    function setMintModuleForLink(
+    function setMintModule4Link(
         DataTypes.LinkData calldata linkData,
         address mintModule,
         bytes calldata mintModuleInitData
@@ -416,13 +416,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         returns (address)
     {}
 
-    function getMintModuleForNote(uint256 profileId, uint256 toNoteId)
+    function getMintModule4Note(uint256 profileId, uint256 toNoteId)
         external
         view
         returns (address)
     {}
 
-    function getMintModuleForLink(DataTypes.LinkData calldata linkData)
+    function getMintModule4Link(DataTypes.LinkData calldata linkData)
         external
         view
         returns (address)
