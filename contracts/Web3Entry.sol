@@ -2,24 +2,30 @@
 
 pragma solidity 0.8.10;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "./base/NFTBase.sol";
 import "./interfaces/IWeb3Entry.sol";
 import "./interfaces/ILinklistNFT.sol";
 import "./storage/Web3EntryStorage.sol";
-import "./libraries/Errors.sol";
 import "./libraries/DataTypes.sol";
 import "./libraries/Events.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract Web3Entry is IWeb3Entry, ERC721Enumerable, Web3EntryStorage {
+contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
     using Counters for Counters.Counter;
 
-    constructor(
-        string memory _name,
-        string memory _symbol,
+    bool private _initialized;
+
+    function initialize(
+        string calldata _name,
+        string calldata _symbol,
         address _linkListContract
-    ) ERC721(_name, _symbol) {
+    ) external {
+        require(!_initialized, "Web3Entry: Initialized");
+
+        super._initialize(_name, _symbol);
         linkList = _linkListContract;
+
+        emit Events.Web3EntryInitialized(block.timestamp);
     }
 
     function createProfile(
@@ -31,8 +37,10 @@ contract Web3Entry is IWeb3Entry, ERC721Enumerable, Web3EntryStorage {
         _mint(to, profileId);
 
         bytes32 handleHash = keccak256(bytes(handle));
-        if (_profileIdByHandleHash[handleHash] != 0)
-            revert Errors.HandleExists();
+        require(
+            _profileIdByHandleHash[handleHash] == 0,
+            "Web3Entry: HandleExists"
+        );
         _profileIdByHandleHash[handleHash] = profileId;
 
         _profileById[profileId].handle = handle;
@@ -57,8 +65,11 @@ contract Web3Entry is IWeb3Entry, ERC721Enumerable, Web3EntryStorage {
 
         // set new handle
         bytes32 handleHash = keccak256(bytes(newHandle));
-        if (_profileIdByHandleHash[handleHash] != 0)
-            revert Errors.HandleExists();
+        require(
+            _profileIdByHandleHash[handleHash] == 0,
+            "Web3Entry: HandleExists"
+        );
+
         _profileIdByHandleHash[handleHash] = profileId;
 
         _profileById[profileId].handle = newHandle;
@@ -329,7 +340,7 @@ contract Web3Entry is IWeb3Entry, ERC721Enumerable, Web3EntryStorage {
     }
 
     function _validateCallerIsProfileOwner(uint256 profileId) internal view {
-        require(msg.sender == ownerOf(profileId), "NotProfileOwner");
+        require(msg.sender == ownerOf(profileId), "Web3Entry: NotProfileOwner");
     }
 
     function _validateCallerIsLinklistOwner(uint256 profileId, bytes32 linkType)

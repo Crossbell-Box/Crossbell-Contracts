@@ -5,6 +5,10 @@ pragma solidity 0.8.10;
 library Events {
     event BaseInitialized(string name, string symbol, uint256 timestamp);
 
+    event Web3EntryInitialized(uint256 timestamp);
+
+    event LinkListNFTInitialized(uint256 timestamp);
+
     event ProfileCreated(
         uint256 indexed profileId,
         address indexed creator,

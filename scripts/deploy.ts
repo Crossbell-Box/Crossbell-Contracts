@@ -15,17 +15,16 @@ async function main() {
 
   // We get the contract to deploy
   const LinkList = await ethers.getContractFactory("LinkListNFT");
-  const linkList = await LinkList.deploy("Link List Token", "LLT");
+  const linkList = await LinkList.deploy();
 
   const Web3Entry = await ethers.getContractFactory("Web3Entry");
-  const web3Entry = await Web3Entry.deploy(
-    "Web3 Entry Profile",
-    "WEP",
-    linkList.address
-  );
+  const web3Entry = await Web3Entry.deploy();
 
+  await linkList.deployed();
   await web3Entry.deployed();
-  await linkList.initialize(web3Entry.address);
+
+  await linkList.initialize("Link List Token", "LLT", web3Entry.address);
+  await web3Entry.initialize("Web3 Entry Profile", "WEP", linkList.address);
 
   console.log("Web3 Entry deployed to:", web3Entry.address);
 }
