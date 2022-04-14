@@ -64,7 +64,7 @@ contract LinkListNFT is ILinklistNFT, NFTBase {
     }
 
     function setUri(uint256 tokenId, string memory _Uri) external {
-        _validateCallerIsWeb3Entry();
+        _validateCallerIsWeb3EntryOrOwner(tokenId);
 
         require(
             _exists(tokenId),
@@ -152,7 +152,13 @@ contract LinkListNFT is ILinklistNFT, NFTBase {
     }
 
     function _validateCallerIsWeb3Entry() internal view {
-        //TODO: Or token owner?
         require(msg.sender == web3Entry, "LinkList: NotWeb3Entry");
+    }
+
+    function _validateCallerIsWeb3EntryOrOwner(uint256 tokenId) internal view {
+        require(
+            msg.sender == web3Entry || msg.sender == ownerOf(tokenId),
+            "LinkList: NotWeb3EntryOrNotOwner"
+        );
     }
 }

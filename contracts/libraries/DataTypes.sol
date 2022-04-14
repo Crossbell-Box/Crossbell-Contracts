@@ -14,11 +14,28 @@ library DataTypes {
     uint256 constant NoteTypeNote = 1;
     uint256 constant NoteTypeLink = 2;
 
+    struct LinkData {
+        uint256 linkListId;
+        bytes32 linkType;
+        uint256 linkTargetType;
+        bytes content;
+    }
+
+    struct PostNoteData {
+        uint256 profileId;
+        string contentURI;
+        address linkModule;
+        bytes linkModuleInitData;
+        address mintModule;
+        bytes mintModuleInitData;
+    }
+
     // profile struct
     struct Profile {
         string handle;
         string metadataUri;
         uint256 noteCount;
+        address socialTokenAddress;
     }
 
     // note struct

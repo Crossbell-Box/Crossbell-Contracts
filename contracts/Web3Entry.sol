@@ -81,6 +81,19 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         emit Events.SetHandle(msg.sender, profileId, newHandle);
     }
 
+    function setSocialToken(uint256 profileId, address tokenAddress) external {
+        _validateCallerIsProfileOwner(profileId);
+
+        require(
+            _profileById[profileId].socialTokenAddress == address(0),
+            "Web3Entry: SocialTokenExists"
+        );
+
+        _profileById[profileId].socialTokenAddress = tokenAddress;
+
+        emit Events.SetSocialToken(msg.sender, profileId, tokenAddress);
+    }
+
     function setProfileMetadataUri(
         uint256 profileId,
         string calldata newMetadataUri
@@ -98,20 +111,17 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         emit Events.SetPrimaryProfileId(msg.sender, profileId);
     }
 
-    function setPrimaryLinkList(uint256 linkListTokenId, uint256 profileId)
-        public
-    {
-        _takeOverLinkList(linkListTokenId, profileId);
-        _primaryLinkListByProfileId[profileId] = linkListTokenId;
+    function setPrimaryLinkList(uint256 linkListId, uint256 profileId) public {
+        _takeOverLinkList(linkListId, profileId);
+        _primaryLinkListByProfileId[profileId] = linkListId;
     }
 
-    function setLinklistUri(
-        uint256 linkListTokenId,
-        string calldata linklistUri
-    ) external {
-        _validateCallerIsLinklistOwner(linkListTokenId);
+    function setLinklistUri(uint256 linkListId, string calldata linklistUri)
+        external
+    {
+        _validateCallerIsLinklistOwner(linkListId);
 
-        ILinklistNFT(linkList).setUri(linkListTokenId, linklistUri);
+        ILinklistNFT(linkList).setUri(linkListId, linklistUri);
     }
 
     //
@@ -128,18 +138,18 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         _validateCallerIsProfileOwner(fromProfileId);
         require(_exists(toProfileId), "Web3Entry: toProfileId not exist");
 
-        uint256 linkListTokenId = _primaryLinkListByProfileId[fromProfileId];
-        if (linkListTokenId == 0) {
-            linkListTokenId = IERC721Enumerable(linkList).totalSupply().add(1);
+        uint256 linkListId = _primaryLinkListByProfileId[fromProfileId];
+        if (linkListId == 0) {
+            linkListId = IERC721Enumerable(linkList).totalSupply().add(1);
             // mint linkList nft
-            ILinklistNFT(linkList).mint(msg.sender, linkListTokenId);
+            ILinklistNFT(linkList).mint(msg.sender, linkListId);
             // set primary linkList
-            setPrimaryLinkList(linkListTokenId, fromProfileId);
+            setPrimaryLinkList(linkListId, fromProfileId);
         }
 
         // add to link list
         ILinklistNFT(linkList).addLinking2ProfileId(
-            linkListTokenId,
+            linkListId,
             linkType,
             toProfileId
         );
@@ -160,15 +170,15 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         _validateCallerIsProfileOwner(fromProfileId);
         require(_exists(toProfileId), "Web3Entry: toProfileId not exist");
 
-        uint256 linkListTokenId = _primaryLinkListByProfileId[fromProfileId];
+        uint256 linkListId = _primaryLinkListByProfileId[fromProfileId];
         uint256 profileId = ILinklistNFT(linkList).getCurrentTakeOver(
-            linkListTokenId
+            linkListId
         );
         require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
 
         // remove from link list
         ILinklistNFT(linkList).removeLinking2ProfileId(
-            linkListTokenId,
+            linkListId,
             linkType,
             toProfileId
         );
@@ -187,15 +197,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         ILinklistNFT(linkList).setTakeOver(tokenId, msg.sender, profileId);
     }
 
-    //    function linkNote(
-    //        uint256 fromProfileId,
-    //        uint256 toProfileId,
-    //        uint256 toNoteId,
-    //        bytes32 linkType
-    //    ) external {}
-
-    // next launch
-    // When implement, should check if ERC721 is linklist contract
     function linkERC721(
         uint256 fromProfileId,
         address tokenAddress,
@@ -216,86 +217,95 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         bytes32 linkType
     ) external {}
 
-    function linkSingleLinkItem(
+    function linkLink(
         uint256 fromProfileId,
-        uint256 linkListNFTId,
-        uint256 linkId,
-        bytes32 linkType
+        DataTypes.LinkData calldata linkData
     ) external {}
 
     function linkLinklist(
         uint256 fromProfileId,
-        uint256 linkListNFTId,
+        uint256 linkListId,
         bytes32 linkType
     ) external {}
 
-    function setLinkModule4Profile(uint256 profileId, address moduleAddress)
+    function setProfileLinkModule(uint256 profileId, address moduleAddress)
         external
     {} // set link module for his profile
 
-    function setLinkModule4Note(
+    function setNoteLinkModule(
         uint256 profileId,
-        uint256 toNoteId,
+        uint256 noteId,
         address moduleAddress
     ) external {} // set link module for his profile
 
-    // ERC721? // add to discussion
-    // address?
-    // single link item?
-    // link list?
+    function setLinkListLinkModule(uint256 tokenId, address moduleAddress)
+        external
+    {}
 
-    // function mintNote( uint256 toProfileId, uint256 toNoteId, address receiver) external {}// next launch
-    function mintSingleLinkItem(
-        uint256 linkListNFTId,
-        uint256 linkId,
-        address receiver
+    function setERC721LinkModule(
+        address tokenAddress,
+        uint256 tokenId,
+        address moduleAddress
     ) external {}
 
-    function setMintModule4Note(
+    function setAddressLinkModule(address account, address moduleAddress)
+        external
+    {}
+
+    function setLinkLinkModule(
+        DataTypes.LinkData calldata linkData,
+        address moduleAddress
+    ) external {}
+
+    function mintNote(
+        uint256 profileId,
+        uint256 noteId,
+        address to
+    ) external {}
+
+    function mintLink(DataTypes.LinkData calldata linkData, address receiver)
+        external
+    {}
+
+    function setMintModuleForNote(
         uint256 profileId,
         uint256 toNoteId,
         address moduleAddress
     ) external {} // set mint module for himself
 
-    function setMintModule4SingleLinkItem(
-        uint256 linkListNFTId,
-        uint256 linkId,
+    function setMintModuleForLink(
+        DataTypes.LinkData calldata linkData,
         address moduleAddress
     ) external {} // set mint module for his single link item
 
-    //     function setMintModule4Note() // next launch
-
-    function postNote(
-        uint256 profileId,
-        string calldata contentURI,
-        address linkModule,
-        bytes calldata linkModuleInitData,
-        address mintModule,
-        bytes calldata mintModuleInitData
-    ) external returns (uint256) {
-        _validateCallerIsProfileOwner(profileId);
+    function postNote(DataTypes.PostNoteData calldata vars)
+        external
+        returns (uint256)
+    {
+        _validateCallerIsProfileOwner(vars.profileId);
 
         return
             _postNote(
-                profileId,
-                contentURI,
-                linkModule,
-                linkModuleInitData,
-                mintModule,
-                mintModuleInitData
+                vars.profileId,
+                vars.contentURI,
+                vars.linkModule,
+                vars.linkModuleInitData,
+                vars.mintModule,
+                vars.mintModuleInitData
             );
     }
 
-    //    function postNoteWithLink(uint256 profileId, string calldata contentURI)
-    //        external;
+    function postNoteWithLink(
+        DataTypes.PostNoteData calldata vars,
+        DataTypes.LinkData calldata linkData
+    ) external {}
 
     function setLinkListUri(
         uint256 profileId,
         bytes32 linkType,
-        string memory Uri
+        string memory uri
     ) external {}
 
-    // TODO: View functions
     function getPrimaryProfile(address account)
         external
         view
@@ -366,12 +376,9 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         view
         returns (uint256[] memory)
     {
-        uint256 linkListTokenId = _primaryLinkListByProfileId[fromProfileId];
+        uint256 linkListId = _primaryLinkListByProfileId[fromProfileId];
         return
-            ILinklistNFT(linkList).getLinking2ProfileIds(
-                linkListTokenId,
-                linkType
-            );
+            ILinklistNFT(linkList).getLinking2ProfileIds(linkListId, linkType);
     }
 
     function getNoteURI(uint256 profileId, uint256 noteId)
@@ -386,9 +393,9 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         uint256 profileId,
         string calldata contentURI,
         address linkModule,
-        bytes calldata linkModuleInitData,
+        bytes memory linkModuleInitData,
         address mintModule,
-        bytes calldata mintModuleInitData
+        bytes memory mintModuleInitData
     ) internal returns (uint256) {
         uint256 noteId = ++_profileById[profileId].noteCount;
 

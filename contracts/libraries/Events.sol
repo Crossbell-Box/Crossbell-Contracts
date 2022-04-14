@@ -34,6 +34,12 @@ library Events {
         string newHandle
     );
 
+    event SetSocialToken(
+        address indexed account,
+        uint256 indexed profileId,
+        address indexed tokenAddress
+    );
+
     event LinkProfile(
         address indexed account,
         uint256 indexed fromProfileId,

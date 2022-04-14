@@ -16,6 +16,8 @@ interface IWeb3Entry {
 
     function setHandle(uint256 profileId, string calldata newHandle) external;
 
+    function setSocialToken(uint256 profileId, address tokenAddress) external;
+
     function setProfileMetadataUri(
         uint256 profileId,
         string calldata newMetadataUri
@@ -23,13 +25,10 @@ interface IWeb3Entry {
 
     function setPrimaryProfileId(uint256 profileId) external;
 
-    function setPrimaryLinkList(uint256 linkListTokenId, uint256 profileId)
-        external;
+    function setPrimaryLinkList(uint256 linkListId, uint256 profileId) external;
 
-    function setLinklistUri(
-        uint256 linkListTokenId,
-        string calldata linklistUri
-    ) external;
+    function setLinklistUri(uint256 linkListId, string calldata linklistUri)
+        external;
 
     //
     // function setSocialTokenAddress(uint256 profileId, address tokenAddress) external; // next launch
@@ -78,65 +77,73 @@ interface IWeb3Entry {
         bytes32 linkType
     ) external;
 
-    function linkSingleLinkItem(
+    function linkLink(
         uint256 fromProfileId,
-        uint256 linkListNFTId,
-        uint256 linkId,
-        bytes32 linkType
+        DataTypes.LinkData calldata linkData
     ) external;
 
     function linkLinklist(
         uint256 fromProfileId,
-        uint256 linkListNFTId,
+        uint256 linkListId,
         bytes32 linkType
     ) external;
 
-    function setLinkModule4Profile(uint256 profileId, address moduleAddress)
+    function setProfileLinkModule(uint256 profileId, address moduleAddress)
         external; // set link module for his profile
 
-    function setLinkModule4Note(
+    function setNoteLinkModule(
         uint256 profileId,
-        uint256 toNoteId,
+        uint256 noteId,
         address moduleAddress
-    ) external; // set link module for his profile
-
-    // ERC721? // add to discussion
-    // address?
-    // single link item?
-    // link list?
-
-    // function mintNote( uint256 toProfileId, uint256 toNoteId, address receiver) external;// next launch
-    function mintSingleLinkItem(
-        uint256 linkListNFTId,
-        uint256 linkId,
-        address receiver
     ) external;
 
-    function setMintModule4Note(
+    function setLinkListLinkModule(uint256 tokenId, address moduleAddress)
+        external;
+
+    function setERC721LinkModule(
+        address tokenAddress,
+        uint256 tokenId,
+        address moduleAddress
+    ) external;
+
+    function setAddressLinkModule(address account, address moduleAddress)
+        external;
+
+    // set link module for single link item
+    function setLinkLinkModule(
+        DataTypes.LinkData calldata linkData,
+        address moduleAddress
+    ) external;
+
+    function mintNote(
+        uint256 profileId,
+        uint256 noteId,
+        address to
+    ) external;
+
+    function mintLink(DataTypes.LinkData calldata linkData, address receiver)
+        external;
+
+    function setMintModuleForNote(
         uint256 profileId,
         uint256 toNoteId,
         address moduleAddress
-    ) external; // set mint module for himself
+    ) external;
 
-    function setMintModule4SingleLinkItem(
-        uint256 linkListNFTId,
-        uint256 linkId,
+    // set mint module for his single link item
+    function setMintModuleForLink(
+        DataTypes.LinkData calldata linkData,
         address moduleAddress
-    ) external; // set mint module for his single link item
+    ) external;
 
-    //     function setMintModule4Note() // next launch
+    function postNote(DataTypes.PostNoteData calldata vars)
+        external
+        returns (uint256);
 
-    function postNote(
-        uint256 profileId,
-        string calldata contentURI,
-        address linkModule,
-        bytes calldata linkModuleInitData,
-        address mintModule,
-        bytes calldata mintModuleInitData
-    ) external returns (uint256);
-
-    //    function postNoteWithLink(uint256 profileId, string calldata contentURI)
-    //        external;
+    function postNoteWithLink(
+        DataTypes.PostNoteData calldata vars,
+        DataTypes.LinkData calldata linkData
+    ) external;
 
     function setLinkListUri(
         uint256 profileId,
@@ -144,7 +151,6 @@ interface IWeb3Entry {
         string memory Uri
     ) external;
 
-    // TODO: View functions
     function getPrimaryProfile(address account) external view returns (uint256);
 
     function getProfile(uint256 profileId)
