@@ -40,6 +40,7 @@ library DataTypes {
 
     // profile struct
     struct Profile {
+        uint256 profileId;
         string handle;
         string metadataUri;
         uint256 noteCount;

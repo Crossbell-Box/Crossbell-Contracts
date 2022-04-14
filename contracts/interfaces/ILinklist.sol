@@ -15,18 +15,17 @@ interface ILinklist {
 
     function setUri(uint256 tokenId, string memory uri) external;
 
-    function addLinking2ProfileId(uint256 tokenId, uint256 toProfileId)
+    function addLinkingProfileId(uint256 tokenId, uint256 toProfileId) external;
+
+    function removeLinkingProfileId(uint256 tokenId, uint256 toProfileId)
         external;
 
-    function removeLinking2ProfileId(uint256 tokenId, uint256 toProfileId)
-        external;
-
-    function getLinking2ProfileIds(uint256 tokenId)
+    function getLinkingProfileIds(uint256 tokenId)
         external
         view
         returns (uint256[] memory);
 
-    function getLinking2ProfileListLength(uint256 tokenId)
+    function getLinkingProfileListLength(uint256 tokenId)
         external
         view
         returns (uint256);

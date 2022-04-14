@@ -25,13 +25,13 @@ async function main() {
 
   await linkList.deployed();
   await web3Entry.deployed();
-  await uiDataProvider.deployed();
+  // await uiDataProvider.deployed();
 
   await linkList.initialize("Link List Token", "LLT", web3Entry.address);
   await web3Entry.initialize("Web3 Entry Profile", "WEP", linkList.address);
 
   console.log("Web3 Entry deployed to:", web3Entry.address);
-  console.log("UIDataProvider deployed to:", uiDataProvider.address);
+  // console.log("UIDataProvider deployed to:", uiDataProvider.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

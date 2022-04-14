@@ -17,7 +17,7 @@ contract UIDataProvider {
         view
         returns (DataTypes.Profile[] memory results)
     {
-        uint256[] memory listIds = IWeb3Entry(entry).getLinking2ProfileIds(
+        uint256[] memory listIds = IWeb3Entry(entry).getLinkingProfileIds(
             fromProfileId,
             linkType
         );

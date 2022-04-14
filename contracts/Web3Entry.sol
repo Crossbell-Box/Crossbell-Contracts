@@ -42,6 +42,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         );
         _profileIdByHandleHash[handleHash] = profileId;
 
+        _profileById[profileId].profileId = profileId;
         _profileById[profileId].handle = vars.handle;
         _profileById[profileId].metadataUri = vars.metadataUri;
 
@@ -162,7 +163,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         }
 
         // add to link list
-        ILinklist(linkList).addLinking2ProfileId(linkListId, toProfileId);
+        ILinklist(linkList).addLinkingProfileId(linkListId, toProfileId);
 
         emit Events.LinkProfile(
             msg.sender,
@@ -187,7 +188,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
 
         // remove from link list
-        ILinklist(linkList).removeLinking2ProfileId(linkListId, toProfileId);
+        ILinklist(linkList).removeLinkingProfileId(linkListId, toProfileId);
 
         emit Events.UnlinkProfile(
             msg.sender,
@@ -417,7 +418,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         return ILinklist(linkList).Uri(tokenId);
     }
 
-    function getLinking2ProfileIds(uint256 fromProfileId, bytes32 linkType)
+    function getLinkingProfileIds(uint256 fromProfileId, bytes32 linkType)
         external
         view
         returns (uint256[] memory)
@@ -425,7 +426,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         uint256 linkListId = _primaryLinkListsByProfileId[fromProfileId][
             linkType
         ];
-        return ILinklist(linkList).getLinking2ProfileIds(linkListId);
+        return ILinklist(linkList).getLinkingProfileIds(linkListId);
     }
 
     function getNoteURI(uint256 profileId, uint256 noteId)

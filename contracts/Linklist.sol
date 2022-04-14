@@ -14,9 +14,9 @@ contract Linklist is ILinklist, NFTBase {
     mapping(uint256 => bytes32) internal linkTypes;
 
     // tokenId =>  profileIds
-    mapping(uint256 => EnumerableSet.UintSet) internal link2ProfileList;
+    mapping(uint256 => EnumerableSet.UintSet) internal linkingProfileList;
     // profileId => external addresses
-    mapping(uint256 => EnumerableSet.AddressSet) internal link2AddressList;
+    mapping(uint256 => EnumerableSet.AddressSet) internal linkingAddressList;
 
     // tokenId => profileId
     mapping(uint256 => uint256) internal currentTakeOver;
@@ -71,34 +71,34 @@ contract Linklist is ILinklist, NFTBase {
         _uris[tokenId] = _uri;
     }
 
-    function addLinking2ProfileId(uint256 tokenId, uint256 toProfileId)
+    function addLinkingProfileId(uint256 tokenId, uint256 toProfileId)
         external
     {
         _validateCallerIsWeb3Entry();
-        link2ProfileList[tokenId].add(toProfileId);
+        linkingProfileList[tokenId].add(toProfileId);
     }
 
-    function removeLinking2ProfileId(uint256 tokenId, uint256 toProfileId)
+    function removeLinkingProfileId(uint256 tokenId, uint256 toProfileId)
         external
     {
         _validateCallerIsWeb3Entry();
-        link2ProfileList[tokenId].remove(toProfileId);
+        linkingProfileList[tokenId].remove(toProfileId);
     }
 
-    function getLinking2ProfileIds(uint256 tokenId)
+    function getLinkingProfileIds(uint256 tokenId)
         external
         view
         returns (uint256[] memory)
     {
-        return link2ProfileList[tokenId].values();
+        return linkingProfileList[tokenId].values();
     }
 
-    function getLinking2ProfileListLength(uint256 tokenId)
+    function getLinkingProfileListLength(uint256 tokenId)
         external
         view
         returns (uint256)
     {
-        return link2ProfileList[tokenId].length();
+        return linkingProfileList[tokenId].length();
     }
 
     function getCurrentTakeOver(uint256 tokenId)
