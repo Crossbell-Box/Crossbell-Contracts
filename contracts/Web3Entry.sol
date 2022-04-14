@@ -9,9 +9,11 @@ import "./storage/Web3EntryStorage.sol";
 import "./libraries/DataTypes.sol";
 import "./libraries/Events.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
     using Counters for Counters.Counter;
+    using SafeMath for uint256;
 
     bool private _initialized;
 
@@ -94,15 +96,20 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         emit Events.SetPrimaryProfile(msg.sender, profileId);
     }
 
+    function setPrimaryLinkList(uint256 linkListTokenId, uint256 profileId)
+        public
+    {
+        _takeOverLinkList(linkListTokenId, profileId);
+        _primaryLinkListByProfileId[profileId] = linkListTokenId;
+    }
+
     function setLinklistURI(
-        uint256 profileId,
-        bytes32 linkType,
+        uint256 linkListTokenId,
         string calldata linklistURI
     ) external {
-        _validateCallerIsLinklistOwner(profileId, linkType);
+        _validateCallerIsLinklistOwner(linkListTokenId);
 
-        uint256 tokenId = _getLinkListTokenId(profileId, linkType);
-        ILinklistNFT(linkList).setURI(tokenId, linklistURI);
+        ILinklistNFT(linkList).setURI(linkListTokenId, linklistURI);
     }
 
     //
@@ -119,16 +126,18 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         _validateCallerIsProfileOwner(fromProfileId);
         require(_exists(toProfileId), "Web3Entry: toProfileId not exist");
 
-        uint256 tokenId = _getLinkListTokenId(fromProfileId, linkType);
-        uint256 profileId = ILinklistNFT(linkList).getCurrentTakeOver(tokenId);
-        if (profileId == 0) {
+        uint256 linkListTokenId = _primaryLinkListByProfileId[fromProfileId];
+        if (linkListTokenId == 0) {
+            linkListTokenId = IERC721Enumerable(linkList).totalSupply().add(1);
             // mint linkList nft
-            ILinklistNFT(linkList).mint(msg.sender, tokenId);
+            ILinklistNFT(linkList).mint(msg.sender, linkListTokenId);
+            // set primary linkList
+            setPrimaryLinkList(linkListTokenId, fromProfileId);
         }
 
         // add to link list
         ILinklistNFT(linkList).addLinkedProfileId(
-            tokenId,
+            linkListTokenId,
             linkType,
             toProfileId
         );
@@ -149,16 +158,15 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         _validateCallerIsProfileOwner(fromProfileId);
         require(_exists(toProfileId), "Web3Entry: toProfileId not exist");
 
-        uint256 tokenId = _getLinkListTokenId(fromProfileId, linkType);
-        uint256 profileId = ILinklistNFT(linkList).getCurrentTakeOver(tokenId);
-        require(
-            profileId == fromProfileId,
-            "Web3Entry: unauthorised profileId"
+        uint256 linkListTokenId = _primaryLinkListByProfileId[fromProfileId];
+        uint256 profileId = ILinklistNFT(linkList).getCurrentTakeOver(
+            linkListTokenId
         );
+        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
 
         // remove from link list
         ILinklistNFT(linkList).removeLinkedProfileId(
-            tokenId,
+            linkListTokenId,
             linkType,
             toProfileId
         );
@@ -171,7 +179,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         );
     }
 
-    function takeOverLinkList(uint256 tokenId, uint256 profileId) external {
+    function _takeOverLinkList(uint256 tokenId, uint256 profileId) internal {
         _validateCallerIsProfileOwner(profileId);
 
         ILinklistNFT(linkList).takeOver(tokenId, msg.sender, profileId);
@@ -321,12 +329,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         return _profileById[profileId].metadataURI;
     }
 
-    function getLinkListURI(uint256 profileId, bytes32 linkType)
+    function getLinkListURI(uint256 profileId)
         external
         view
         returns (string memory)
     {
-        uint256 tokenId = _getLinkListTokenId(profileId, linkType);
+        uint256 tokenId = _primaryLinkListByProfileId[profileId];
         return ILinklistNFT(linkList).URI(tokenId);
     }
 
@@ -335,20 +343,19 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         view
         returns (uint256[] memory)
     {
-        uint256 tokenId = _getLinkListTokenId(fromProfileId, linkType);
-        return ILinklistNFT(linkList).getLinkedProfileIds(tokenId, linkType);
+        uint256 linkListTokenId = _primaryLinkListByProfileId[fromProfileId];
+        return
+            ILinklistNFT(linkList).getLinkedProfileIds(
+                linkListTokenId,
+                linkType
+            );
     }
 
     function _validateCallerIsProfileOwner(uint256 profileId) internal view {
         require(msg.sender == ownerOf(profileId), "Web3Entry: NotProfileOwner");
     }
 
-    function _validateCallerIsLinklistOwner(uint256 profileId, bytes32 linkType)
-        internal
-        view
-    {
-        uint256 tokenId = _getLinkListTokenId(profileId, linkType);
-
+    function _validateCallerIsLinklistOwner(uint256 tokenId) internal view {
         require(
             msg.sender == ERC721(linkList).ownerOf(tokenId),
             "NotLinkListOwner"

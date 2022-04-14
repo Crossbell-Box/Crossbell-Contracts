@@ -131,6 +131,16 @@ contract LinkListNFT is ILinklistNFT, NFTBase {
         return _getTokenURI(tokenId);
     }
 
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override {
+        currentTakeOver[tokenId] = 0;
+
+        super._beforeTokenTransfer(from, to, tokenId);
+    }
+
     function _getTokenURI(uint256 tokenId)
         internal
         view

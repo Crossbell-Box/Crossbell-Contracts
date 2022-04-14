@@ -23,9 +23,11 @@ interface IWeb3Entry {
 
     function setPrimaryProfile(uint256 profileId) external;
 
+    function setPrimaryLinkList(uint256 linkListTokenId, uint256 profileId)
+        external;
+
     function setLinklistURI(
-        uint256 profileId,
-        bytes32 linkType,
+        uint256 linkListTokenId,
         string calldata linklistURI
     ) external;
 
@@ -46,8 +48,6 @@ interface IWeb3Entry {
         uint256 toProfileId,
         bytes32 linkType
     ) external;
-
-    function takeOverLinkList(uint256 tokenId, uint256 profileId) external;
 
     //    function linkNote(
     //        uint256 fromProfileId,
@@ -159,7 +159,7 @@ interface IWeb3Entry {
         external
         returns (address);
 
-    function getLinkListURI(uint256 profileId, bytes32 linkType)
+    function getLinkListURI(uint256 profileId)
         external
         view
         returns (string memory);

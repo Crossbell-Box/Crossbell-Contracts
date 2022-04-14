@@ -6,13 +6,16 @@ import "../libraries/DataTypes.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Web3EntryStorage {
-    address public linkList; // TODO: maybe there is a more elegant way ?
-
+    // profileId => Profile
     mapping(uint256 => DataTypes.Profile) internal _profileById;
-
+    // handleHash => profileId
     mapping(bytes32 => uint256) internal _profileIdByHandleHash;
-
-    mapping(address => uint256) internal _primaryProfileByAddress; // address => profile id
-
+    // address => profileId
+    mapping(address => uint256) internal _primaryProfileByAddress;
     uint256 internal _profileCounter;
+
+    // LinkList NFT token contract
+    address public linkList;
+    // profileId => LinkListTokenId
+    mapping(uint256 => uint256) internal _primaryLinkListByProfileId;
 }
