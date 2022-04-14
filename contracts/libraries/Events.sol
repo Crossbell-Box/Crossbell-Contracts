@@ -7,7 +7,7 @@ library Events {
 
     event Web3EntryInitialized(uint256 timestamp);
 
-    event LinkListNFTInitialized(uint256 timestamp);
+    event LinklistNFTInitialized(uint256 timestamp);
 
     event MintNFTInitialized(
         uint256 profileId,

@@ -235,7 +235,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         address moduleAddress
     ) external {} // set link module for his profile
 
-    function setLinkModule4LinkList(uint256 tokenId, address moduleAddress)
+    function setLinkModule4Linklist(uint256 tokenId, address moduleAddress)
         external
     {}
 

@@ -8,7 +8,7 @@ import "./libraries/Events.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract LinkListNFT is ILinklistNFT, NFTBase {
+contract LinklistNFT is ILinklistNFT, NFTBase {
     using EnumerableSet for EnumerableSet.UintSet;
     using SafeMath for uint256;
 
@@ -30,20 +30,20 @@ contract LinkListNFT is ILinklistNFT, NFTBase {
     // link NFT contract vars
     //  profileId => category => linkType => []linkId
     mapping(uint256 => mapping(bytes32 => EnumerableSet.UintSet))
-        internal linkList;
+        internal Linklist;
 
     function initialize(
         string calldata _name,
         string calldata _symbol,
         address _web3Entry
     ) external {
-        require(!_initialized, "LinkListNFT: Initialized");
+        require(!_initialized, "LinklistNFT: Initialized");
         _initialized = true;
 
         web3Entry = _web3Entry;
 
         super._initialize(_name, _symbol);
-        emit Events.LinkListNFTInitialized(block.timestamp);
+        emit Events.LinklistNFTInitialized(block.timestamp);
     }
 
     function mint(
@@ -63,29 +63,25 @@ contract LinkListNFT is ILinklistNFT, NFTBase {
     ) external {
         _validateCallerIsWeb3Entry();
 
-        require(to == ownerOf(tokenId), "LinkList: not token owner");
+        require(to == ownerOf(tokenId), "Linklist: not token owner");
 
         currentTakeOver[tokenId] = profileId;
     }
 
     function setUri(uint256 tokenId, string memory _uri) external {
         _validateCallerIsWeb3EntryOrOwner(tokenId);
-
         require(
             _exists(tokenId),
-            "LinkList: setTokenURI for nonexistent token"
+            "Linklist: setTokenURI for nonexistent token"
         );
 
         _uris[tokenId] = _uri;
     }
 
-    function addLinking2ProfileId(
-        uint256 tokenId,
-        bytes32 linkType, // e.g. "follow"
-        uint256 toProfileId
-    ) external {
+    function addLinking2ProfileId(uint256 tokenId, uint256 toProfileId)
+        external
+    {
         _validateCallerIsWeb3Entry();
-
         link2ProfileList[tokenId].add(toProfileId);
     }
 
@@ -152,19 +148,19 @@ contract LinkListNFT is ILinklistNFT, NFTBase {
         view
         returns (string memory)
     {
-        require(_exists(tokenId), "LinkList: URI query for nonexistent token");
+        require(_exists(tokenId), "Linklist: URI query for nonexistent token");
 
         return _uris[tokenId];
     }
 
     function _validateCallerIsWeb3Entry() internal view {
-        require(msg.sender == web3Entry, "LinkList: NotWeb3Entry");
+        require(msg.sender == web3Entry, "Linklist: NotWeb3Entry");
     }
 
     function _validateCallerIsWeb3EntryOrOwner(uint256 tokenId) internal view {
         require(
             msg.sender == web3Entry || msg.sender == ownerOf(tokenId),
-            "LinkList: NotWeb3EntryOrNotOwner"
+            "Linklist: NotWeb3EntryOrNotOwner"
         );
     }
 }
