@@ -5,6 +5,6 @@ pragma solidity 0.8.10;
 library DataTypes {
     struct Profile {
         string handle;
-        string metadataURI;
+        string metadataUri;
     }
 }

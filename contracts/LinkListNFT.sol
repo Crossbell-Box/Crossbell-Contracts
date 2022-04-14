@@ -14,17 +14,17 @@ contract LinkListNFT is ILinklistNFT, NFTBase {
 
     // tokenId => linkType  => profileIds
     mapping(uint256 => mapping(bytes32 => EnumerableSet.UintSet))
-        internal linkedProfileIds;
+        internal link2ProfileList;
     // profileId => linkType  => external addresses
     mapping(uint256 => mapping(bytes32 => EnumerableSet.AddressSet))
-        internal profile2AddressLinks;
+        internal link2AddressList;
     // tokenId => profileId
+
     mapping(uint256 => uint256) internal currentTakeOver;
+    mapping(uint256 => string) internal _Uris; // tokenId => tokenURI
 
     bool private _initialized;
     address public web3Entry;
-
-    mapping(uint256 => string) internal _URIs; // tokenId => tokenURI
 
     // link NFT contract vars
     //  profileId => category => linkType => []linkId
@@ -51,7 +51,7 @@ contract LinkListNFT is ILinklistNFT, NFTBase {
         _mint(to, tokenId);
     }
 
-    function takeOver(
+    function setTakeOver(
         uint256 tokenId,
         address to,
         uint256 profileId
@@ -63,7 +63,7 @@ contract LinkListNFT is ILinklistNFT, NFTBase {
         currentTakeOver[tokenId] = profileId;
     }
 
-    function setURI(uint256 tokenId, string memory _URI) external {
+    function setUri(uint256 tokenId, string memory _Uri) external {
         _validateCallerIsWeb3Entry();
 
         require(
@@ -71,55 +71,55 @@ contract LinkListNFT is ILinklistNFT, NFTBase {
             "LinkList: setTokenURI for nonexistent token"
         );
 
-        _URIs[tokenId] = _URI;
+        _Uris[tokenId] = _Uri;
     }
 
-    function addLinkedProfileId(
+    function addLinking2ProfileId(
         uint256 tokenId,
         bytes32 linkType,
         uint256 toProfileId
     ) external {
         _validateCallerIsWeb3Entry();
 
-        linkedProfileIds[tokenId][linkType].add(toProfileId);
+        link2ProfileList[tokenId][linkType].add(toProfileId);
     }
 
-    function removeLinkedProfileId(
+    function removeLinking2ProfileId(
         uint256 tokenId,
         bytes32 linkType,
         uint256 toProfileId
     ) external {
         _validateCallerIsWeb3Entry();
 
-        linkedProfileIds[tokenId][linkType].remove(toProfileId);
+        link2ProfileList[tokenId][linkType].remove(toProfileId);
     }
 
-    function getLinkedProfileIds(uint256 tokenId, bytes32 linkType)
+    function getLinking2ProfileIds(uint256 tokenId, bytes32 linkType)
         external
         view
         returns (uint256[] memory)
     {
-        return linkedProfileIds[tokenId][linkType].values();
+        return link2ProfileList[tokenId][linkType].values();
     }
 
-    function getLinkedProfileIdsLength(uint256 tokenId, bytes32 linkType)
+    function getLinking2ProfileListLength(uint256 tokenId, bytes32 linkType)
         external
         view
         returns (uint256)
     {
-        return linkedProfileIds[tokenId][linkType].length();
+        return link2ProfileList[tokenId][linkType].length();
     }
 
     function getCurrentTakeOver(uint256 tokenId)
         external
         view
-        returns (uint256)
+        returns (uint256 profileId)
     {
-        return currentTakeOver[tokenId];
+        profileId = currentTakeOver[tokenId];
     }
 
-    function URI(uint256 tokenId) external view returns (string memory) {
-        return _getTokenURI(tokenId);
+    function Uri(uint256 tokenId) external view returns (string memory) {
+        return _getTokenUri(tokenId);
     }
 
     function tokenURI(uint256 tokenId)
@@ -128,7 +128,7 @@ contract LinkListNFT is ILinklistNFT, NFTBase {
         override
         returns (string memory)
     {
-        return _getTokenURI(tokenId);
+        return _getTokenUri(tokenId);
     }
 
     function _beforeTokenTransfer(
@@ -141,17 +141,18 @@ contract LinkListNFT is ILinklistNFT, NFTBase {
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
-    function _getTokenURI(uint256 tokenId)
+    function _getTokenUri(uint256 tokenId)
         internal
         view
         returns (string memory)
     {
         require(_exists(tokenId), "LinkList: URI query for nonexistent token");
 
-        return _URIs[tokenId];
+        return _Uris[tokenId];
     }
 
     function _validateCallerIsWeb3Entry() internal view {
+        //TODO: Or token owner?
         require(msg.sender == web3Entry, "LinkList: NotWeb3Entry");
     }
 }

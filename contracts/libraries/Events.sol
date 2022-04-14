@@ -17,7 +17,10 @@ library Events {
         uint256 timestamp
     );
 
-    event SetPrimaryProfile(address indexed account, uint256 indexed profileId);
+    event SetPrimaryProfileId(
+        address indexed account,
+        uint256 indexed profileId
+    );
 
     event SetHandle(
         address indexed account,

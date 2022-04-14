@@ -33,7 +33,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
     function createProfile(
         address to,
         string calldata handle,
-        string calldata metadataURI
+        string calldata metadataUri
     ) external {
         uint256 profileId = ++_profileCounter;
         _mint(to, profileId);
@@ -46,7 +46,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         _profileIdByHandleHash[handleHash] = profileId;
 
         _profileById[profileId].handle = handle;
-        _profileById[profileId].metadataURI = metadataURI;
+        _profileById[profileId].metadataUri = metadataUri;
 
         // set primary profile
         if (_primaryProfileByAddress[to] == 0) {
@@ -83,21 +83,21 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         emit Events.SetHandle(msg.sender, profileId, newHandle);
     }
 
-    function setProfileMetadataURI(
+    function setProfileMetadataUri(
         uint256 profileId,
-        string calldata newMetadataURI
+        string calldata newMetadataUri
     ) external {
         _validateCallerIsProfileOwner(profileId);
 
-        _profileById[profileId].metadataURI = newMetadataURI;
+        _profileById[profileId].metadataUri = newMetadataUri;
     }
 
-    function setPrimaryProfile(uint256 profileId) external {
+    function setPrimaryProfileId(uint256 profileId) external {
         _validateCallerIsProfileOwner(profileId);
 
         _primaryProfileByAddress[msg.sender] = profileId;
 
-        emit Events.SetPrimaryProfile(msg.sender, profileId);
+        emit Events.SetPrimaryProfileId(msg.sender, profileId);
     }
 
     function setPrimaryLinkList(uint256 linkListTokenId, uint256 profileId)
@@ -107,13 +107,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         _primaryLinkListByProfileId[profileId] = linkListTokenId;
     }
 
-    function setLinklistURI(
+    function setLinklistUri(
         uint256 linkListTokenId,
-        string calldata linklistURI
+        string calldata linklistUri
     ) external {
         _validateCallerIsLinklistOwner(linkListTokenId);
 
-        ILinklistNFT(linkList).setURI(linkListTokenId, linklistURI);
+        ILinklistNFT(linkList).setUri(linkListTokenId, linklistUri);
     }
 
     //
@@ -140,7 +140,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         }
 
         // add to link list
-        ILinklistNFT(linkList).addLinkedProfileId(
+        ILinklistNFT(linkList).addLinking2ProfileId(
             linkListTokenId,
             linkType,
             toProfileId
@@ -169,7 +169,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
 
         // remove from link list
-        ILinklistNFT(linkList).removeLinkedProfileId(
+        ILinklistNFT(linkList).removeLinking2ProfileId(
             linkListTokenId,
             linkType,
             toProfileId
@@ -186,7 +186,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
     function _takeOverLinkList(uint256 tokenId, uint256 profileId) internal {
         _validateCallerIsProfileOwner(profileId);
 
-        ILinklistNFT(linkList).takeOver(tokenId, msg.sender, profileId);
+        ILinklistNFT(linkList).setTakeOver(tokenId, msg.sender, profileId);
     }
 
     //    function linkNote(
@@ -214,7 +214,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
 
     function linkAny(
         uint256 fromProfileId,
-        string calldata toURI,
+        string calldata toUri,
         bytes32 linkType
     ) external {}
 
@@ -270,10 +270,10 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
     // function postNote() // next launch
     // function postNoteWithLink() // next launch
 
-    function setLinkListURI(
+    function setLinkListUri(
         uint256 profileId,
         bytes32 linkType,
-        string memory URI
+        string memory Uri
     ) external {}
 
     // TODO: View functions
@@ -293,7 +293,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         return _profileById[profileId];
     }
 
-    function getProfileIdByHandle(string calldata handle)
+    function getProfileId(string calldata handle)
         external
         view
         returns (uint256)
@@ -310,7 +310,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         return _profileById[profileId].handle;
     }
 
-    function getProfileMetadataURI(uint256 profileId)
+    function getProfileMetadataUri(uint256 profileId)
         external
         view
         returns (string memory)
@@ -318,7 +318,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         return tokenURI(profileId);
     }
 
-    function getLinkModuleByProfile(uint256 profileId)
+    function getProfileLinkModule(uint256 profileId)
         external
         view
         returns (address)
@@ -330,16 +330,16 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         override
         returns (string memory)
     {
-        return _profileById[profileId].metadataURI;
+        return _profileById[profileId].metadataUri;
     }
 
-    function getLinkListURI(uint256 profileId)
+    function getLinkListUri(uint256 profileId)
         external
         view
         returns (string memory)
     {
         uint256 tokenId = _primaryLinkListByProfileId[profileId];
-        return ILinklistNFT(linkList).URI(tokenId);
+        return ILinklistNFT(linkList).Uri(tokenId);
     }
 
     function getLinkedProfileIds(uint256 fromProfileId, bytes32 linkType)
@@ -349,7 +349,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
     {
         uint256 linkListTokenId = _primaryLinkListByProfileId[fromProfileId];
         return
-            ILinklistNFT(linkList).getLinkedProfileIds(
+            ILinklistNFT(linkList).getLinking2ProfileIds(
                 linkListTokenId,
                 linkType
             );

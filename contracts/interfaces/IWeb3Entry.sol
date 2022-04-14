@@ -11,24 +11,24 @@ interface IWeb3Entry {
     function createProfile(
         address to,
         string calldata handle,
-        string calldata metadataURI
+        string calldata metadataUri
     ) external;
 
     function setHandle(uint256 profileId, string calldata newHandle) external;
 
-    function setProfileMetadataURI(
+    function setProfileMetadataUri(
         uint256 profileId,
-        string calldata newMetadataURI
+        string calldata newMetadataUri
     ) external;
 
-    function setPrimaryProfile(uint256 profileId) external;
+    function setPrimaryProfileId(uint256 profileId) external;
 
     function setPrimaryLinkList(uint256 linkListTokenId, uint256 profileId)
         external;
 
-    function setLinklistURI(
+    function setLinklistUri(
         uint256 linkListTokenId,
-        string calldata linklistURI
+        string calldata linklistUri
     ) external;
 
     //
@@ -74,7 +74,7 @@ interface IWeb3Entry {
 
     function linkAny(
         uint256 fromProfileId,
-        string calldata toURI,
+        string calldata toUri,
         bytes32 linkType
     ) external;
 
@@ -129,10 +129,10 @@ interface IWeb3Entry {
     // function postNote() // next launch
     // function postNoteWithLink() // next launch
 
-    function setLinkListURI(
+    function setLinkListUri(
         uint256 profileId,
         bytes32 linkType,
-        string memory URI
+        string memory Uri
     ) external;
 
     // TODO: View functions
@@ -143,23 +143,21 @@ interface IWeb3Entry {
         view
         returns (DataTypes.Profile memory);
 
-    function getProfileIdByHandle(string calldata handle)
+    function getProfileId(string calldata handle)
         external
         view
         returns (uint256);
 
     function getHandle(uint256 profileId) external view returns (string memory);
 
-    function getProfileMetadataURI(uint256 profileId)
+    function getProfileMetadataUri(uint256 profileId)
         external
         view
         returns (string memory);
 
-    function getLinkModuleByProfile(uint256 profileId)
-        external
-        returns (address);
+    function getProfileLinkModule(uint256 profileId) external returns (address);
 
-    function getLinkListURI(uint256 profileId)
+    function getLinkListUri(uint256 profileId)
         external
         view
         returns (string memory);
