@@ -338,17 +338,21 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         return ILinklistNFT(linkList).URI(tokenId);
     }
 
-    function getLinkedProfileIds(uint256 fromProfileId, bytes32 linkType)
+    function getLinkedProfiles(uint256 fromProfileId, bytes32 linkType)
         external
         view
-        returns (uint256[] memory)
+        returns (DataTypes.Profile[] memory results)
     {
         uint256 linkListTokenId = _primaryLinkListByProfileId[fromProfileId];
-        return
-            ILinklistNFT(linkList).getLinkedProfileIds(
-                linkListTokenId,
-                linkType
-            );
+        uint256[] memory listIds = ILinklistNFT(linkList).getLinkedProfileIds(
+            linkListTokenId,
+            linkType
+        );
+
+        results = new DataTypes.Profile[](listIds.length);
+        for (uint256 i = 0; i < listIds.length; i++) {
+            results[i] = _profileById[profileId];
+        }
     }
 
     function _validateCallerIsProfileOwner(uint256 profileId) internal view {
@@ -358,16 +362,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
     function _validateCallerIsLinklistOwner(uint256 tokenId) internal view {
         require(
             msg.sender == ERC721(linkList).ownerOf(tokenId),
-            "NotLinkListOwner"
+            "Web3Entry: NotLinkListOwner"
         );
-    }
-
-    function _getLinkListTokenId(uint256 profileId, bytes32 linkType)
-        internal
-        pure
-        returns (uint256)
-    {
-        bytes32 label = keccak256(abi.encodePacked(profileId, linkType));
-        return uint256(label);
     }
 }
