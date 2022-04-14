@@ -164,8 +164,8 @@ interface IWeb3Entry {
         view
         returns (string memory);
 
-    function getLinkedProfiles(uint256 fromProfileId, bytes32 linkType)
+    function getLinkedProfileIds(uint256 fromProfileId, bytes32 linkType)
         external
         view
-        returns (DataTypes.Profile[] memory results);
+        returns (uint256[] memory);
 }

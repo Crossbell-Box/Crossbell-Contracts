@@ -338,22 +338,17 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         return ILinklistNFT(linkList).URI(tokenId);
     }
 
-    function getLinkedProfiles(uint256 fromProfileId, bytes32 linkType)
+    function getLinkedProfileIds(uint256 fromProfileId, bytes32 linkType)
         external
         view
-        returns (DataTypes.Profile[] memory results)
+        returns (uint256[] memory)
     {
         uint256 linkListTokenId = _primaryLinkListByProfileId[fromProfileId];
-        uint256[] memory listIds = ILinklistNFT(linkList).getLinkedProfileIds(
-            linkListTokenId,
-            linkType
-        );
-
-        results = new DataTypes.Profile[](listIds.length);
-        for (uint256 i = 0; i < listIds.length; i++) {
-            uint256 profileId = listIds[i];
-            results[i] = _profileById[profileId];
-        }
+        return
+            ILinklistNFT(linkList).getLinkedProfileIds(
+                linkListTokenId,
+                linkType
+            );
     }
 
     function _validateCallerIsProfileOwner(uint256 profileId) internal view {

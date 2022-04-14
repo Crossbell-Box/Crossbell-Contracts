@@ -51,7 +51,9 @@ const config: HardhatUserConfig = {
     currency: "USD",
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      ropsten: process.env.ROPSTEN_API_KEY,
+    },
   },
 };
 
