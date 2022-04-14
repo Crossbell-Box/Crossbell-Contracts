@@ -48,12 +48,12 @@ interface IWeb3Entry {
         bytes32 linkType
     ) external;
 
-    //    function linkNote(
-    //        uint256 fromProfileId,
-    //        uint256 toProfileId,
-    //        uint256 toNoteId,
-    //        bytes32 linkType
-    //    ) external;
+    function linkNote(
+        uint256 fromProfileId,
+        uint256 toProfileId,
+        uint256 toNoteId,
+        bytes32 linkType
+    ) external;
 
     // next launch
     // When implement, should check if ERC721 is linklist contract
@@ -88,30 +88,42 @@ interface IWeb3Entry {
         bytes32 linkType
     ) external;
 
-    function setLinkModule4Profile(uint256 profileId, address moduleAddress)
-        external; // set link module for his profile
+    function setLinkModule4Profile(
+        uint256 profileId,
+        address linkModule,
+        bytes calldata linkModuleInitData
+    ) external; // set link module for his profile
 
     function setLinkModule4Note(
         uint256 profileId,
         uint256 noteId,
-        address moduleAddress
+        address linkModule,
+        bytes calldata linkModuleInitData
     ) external;
 
-    function setLinkModule4Linklist(uint256 tokenId, address moduleAddress)
-        external;
+    function setLinkModule4Linklist(
+        uint256 tokenId,
+        address linkModule,
+        bytes calldata linkModuleInitData
+    ) external;
 
     function setLinkModule4ERC721(
         address tokenAddress,
         uint256 tokenId,
-        address moduleAddress
+        address linkModule,
+        bytes calldata linkModuleInitData
     ) external;
 
-    function setLinkModule4Address(address account, address moduleAddress)
-        external;
+    function setLinkModule4Address(
+        address account,
+        address linkModule,
+        bytes calldata linkModuleInitData
+    ) external;
 
     function setLinkModule4Link(
         DataTypes.LinkData calldata linkData,
-        address moduleAddress
+        address linkModule,
+        bytes calldata linkModuleInitData
     ) external;
 
     function mintNote(
@@ -126,13 +138,15 @@ interface IWeb3Entry {
     function setMintModuleForNote(
         uint256 profileId,
         uint256 toNoteId,
-        address moduleAddress
+        address mintModule,
+        bytes calldata mintModuleInitData
     ) external;
 
     // set mint module for his single link item
     function setMintModuleForLink(
         DataTypes.LinkData calldata linkData,
-        address moduleAddress
+        address mintModule,
+        bytes calldata mintModuleInitData
     ) external;
 
     function postNote(DataTypes.PostNoteData calldata noteData)

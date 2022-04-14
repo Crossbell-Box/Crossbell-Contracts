@@ -53,4 +53,27 @@ library Events {
         uint256 indexed toProfileId,
         bytes32 linkType
     );
+
+    event SetLinkModule4Profile(
+        uint256 indexed profileId,
+        address indexed linkModule,
+        bytes returnData,
+        uint256 timestamp
+    );
+
+    event SetLinkModule4Note(
+        uint256 indexed profileId,
+        uint256 indexed noteId,
+        address indexed linkModule,
+        bytes returnData,
+        uint256 timestamp
+    );
+
+    event SetMintModule4Note(
+        uint256 indexed profileId,
+        uint256 indexed noteId,
+        address indexed mintModule,
+        bytes returnData,
+        uint256 timestamp
+    );
 }

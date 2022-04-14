@@ -5,6 +5,9 @@ pragma solidity 0.8.10;
 import "./base/NFTBase.sol";
 import "./interfaces/IWeb3Entry.sol";
 import "./interfaces/ILinklistNFT.sol";
+import "./interfaces/ILinkModule4Profile.sol";
+import "./interfaces/ILinkModule4Note.sol";
+import "./interfaces/IMintModule4Note.sol";
 import "./storage/Web3EntryStorage.sol";
 import "./libraries/DataTypes.sol";
 import "./libraries/Events.sol";
@@ -183,11 +186,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         );
     }
 
-    function _takeOverLinkList(uint256 tokenId, uint256 profileId) internal {
-        _validateCallerIsProfileOwner(profileId);
-
-        ILinklistNFT(linkList).setTakeOver(tokenId, msg.sender, profileId);
-    }
+    function linkNote(
+        uint256 fromProfileId,
+        uint256 toProfileId,
+        uint256 toNoteId,
+        bytes32 linkType
+    ) external {}
 
     function linkERC721(
         uint256 fromProfileId,
@@ -220,33 +224,64 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         bytes32 linkType
     ) external {}
 
-    function setLinkModule4Profile(uint256 profileId, address moduleAddress)
-        external
-    {} // set link module for his profile
+    // set link module for his profile
+    function setLinkModule4Profile(
+        uint256 profileId,
+        address linkModule,
+        bytes calldata linkModuleInitData
+    ) external {
+        _validateCallerIsProfileOwner(profileId);
+
+        if (linkModule != _profileById[profileId].linkModule) {
+            _profileById[profileId].linkModule = linkModule;
+        }
+
+        bytes memory returnData;
+        if (linkModule != address(0)) {
+            returnData = ILinkModule4Profile(linkModule).initializeLinkModule(
+                profileId,
+                linkModuleInitData
+            );
+        }
+
+        emit Events.SetLinkModule4Profile(
+            profileId,
+            linkModule,
+            returnData,
+            block.timestamp
+        );
+    }
 
     function setLinkModule4Note(
         uint256 profileId,
         uint256 noteId,
-        address moduleAddress
+        address linkModule,
+        bytes calldata linkModuleInitData
     ) external {} // set link module for his profile
 
-    function setLinkModule4Linklist(uint256 tokenId, address moduleAddress)
-        external
-    {}
+    function setLinkModule4Linklist(
+        uint256 tokenId,
+        address linkModule,
+        bytes calldata linkModuleInitData
+    ) external {}
 
     function setLinkModule4ERC721(
         address tokenAddress,
         uint256 tokenId,
-        address moduleAddress
+        address linkModule,
+        bytes calldata linkModuleInitData
     ) external {}
 
-    function setLinkModule4Address(address account, address moduleAddress)
-        external
-    {}
+    function setLinkModule4Address(
+        address account,
+        address linkModule,
+        bytes calldata linkModuleInitData
+    ) external {}
 
     function setLinkModule4Link(
         DataTypes.LinkData calldata linkData,
-        address moduleAddress
+        address linkModule,
+        bytes calldata linkModuleInitData
     ) external {}
 
     function mintNote(
@@ -262,12 +297,14 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
     function setMintModuleForNote(
         uint256 profileId,
         uint256 toNoteId,
-        address moduleAddress
+        address mintModule,
+        bytes calldata mintModuleInitData
     ) external {} // set mint module for himself
 
     function setMintModuleForLink(
         DataTypes.LinkData calldata linkData,
-        address moduleAddress
+        address mintModule,
+        bytes calldata mintModuleInitData
     ) external {} // set mint module for his single link item
 
     function postNote(DataTypes.PostNoteData calldata noteData)
@@ -403,10 +440,42 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         _noteByIdByProfile[profileId][noteId].contentURI = contentURI;
         _noteByIdByProfile[profileId][noteId].linkModule = linkModule;
         _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
-        // TODO: init mint module
+
         // init link module
+        bytes memory linkModuleReturnData;
+        if (linkModule != address(0)) {
+            linkModuleReturnData = ILinkModule4Note(linkModule)
+                .initializeLinkModule(profileId, noteId, linkModuleInitData);
+        }
+        // init mint module
+        bytes memory mintModuleReturnData;
+        if (mintModule != address(0)) {
+            mintModuleReturnData = IMintModule4Note(mintModule)
+                .initializeMintModule(profileId, noteId, mintModuleInitData);
+        }
+
+        emit Events.SetLinkModule4Note(
+            profileId,
+            noteId,
+            linkModule,
+            linkModuleReturnData,
+            block.timestamp
+        );
+        emit Events.SetMintModule4Note(
+            profileId,
+            noteId,
+            mintModule,
+            mintModuleReturnData,
+            block.timestamp
+        );
 
         return noteId;
+    }
+
+    function _takeOverLinkList(uint256 tokenId, uint256 profileId) internal {
+        _validateCallerIsProfileOwner(profileId);
+
+        ILinklistNFT(linkList).setTakeOver(tokenId, msg.sender, profileId);
     }
 
     function _beforeTokenTransfer(
