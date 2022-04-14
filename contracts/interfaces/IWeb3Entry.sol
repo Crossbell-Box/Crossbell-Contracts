@@ -126,8 +126,17 @@ interface IWeb3Entry {
 
     //     function setMintModule4Note() // next launch
 
-    // function postNote() // next launch
-    // function postNoteWithLink() // next launch
+    function postNote(
+        uint256 profileId,
+        string calldata contentURI,
+        address linkModule,
+        bytes calldata linkModuleInitData,
+        address mintModule,
+        bytes calldata mintModuleInitData
+    ) external returns (uint256);
+
+    //    function postNoteWithLink(uint256 profileId, string calldata contentURI)
+    //        external;
 
     function setLinkListUri(
         uint256 profileId,
@@ -166,4 +175,9 @@ interface IWeb3Entry {
         external
         view
         returns (uint256[] memory);
+
+    function getNoteURI(uint256 profileId, uint256 noteId)
+        external
+        view
+        returns (string memory);
 }

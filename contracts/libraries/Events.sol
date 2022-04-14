@@ -9,6 +9,12 @@ library Events {
 
     event LinkListNFTInitialized(uint256 timestamp);
 
+    event MintNFTInitialized(
+        uint256 profileId,
+        uint256 noteId,
+        uint256 timestamp
+    );
+
     event ProfileCreated(
         uint256 indexed profileId,
         address indexed creator,

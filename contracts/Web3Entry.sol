@@ -8,11 +8,9 @@ import "./interfaces/ILinklistNFT.sol";
 import "./storage/Web3EntryStorage.sol";
 import "./libraries/DataTypes.sol";
 import "./libraries/Events.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
-    using Counters for Counters.Counter;
     using SafeMath for uint256;
 
     bool private _initialized;
@@ -267,8 +265,29 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
 
     //     function setMintModule4Note() // next launch
 
-    // function postNote() // next launch
-    // function postNoteWithLink() // next launch
+    function postNote(
+        uint256 profileId,
+        string calldata contentURI,
+        address linkModule,
+        bytes calldata linkModuleInitData,
+        address mintModule,
+        bytes calldata mintModuleInitData
+    ) external returns (uint256) {
+        _validateCallerIsProfileOwner(profileId);
+
+        return
+            _postNote(
+                profileId,
+                contentURI,
+                linkModule,
+                linkModuleInitData,
+                mintModule,
+                mintModuleInitData
+            );
+    }
+
+    //    function postNoteWithLink(uint256 profileId, string calldata contentURI)
+    //        external;
 
     function setLinkListUri(
         uint256 profileId,
@@ -353,6 +372,35 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
                 linkListTokenId,
                 linkType
             );
+    }
+
+    function getNoteURI(uint256 profileId, uint256 noteId)
+        external
+        view
+        returns (string memory)
+    {
+        return _noteByIdByProfile[profileId][noteId].contentURI;
+    }
+
+    function _postNote(
+        uint256 profileId,
+        string calldata contentURI,
+        address linkModule,
+        bytes calldata linkModuleInitData,
+        address mintModule,
+        bytes calldata mintModuleInitData
+    ) internal returns (uint256) {
+        uint256 noteId = ++_profileById[profileId].noteCount;
+
+        // save note
+        _noteByIdByProfile[profileId][noteId].noteType = DataTypes.NoteTypeNote;
+        _noteByIdByProfile[profileId][noteId].contentURI = contentURI;
+        _noteByIdByProfile[profileId][noteId].linkModule = linkModule;
+        _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
+        // TODO: init mint module
+        // init link module
+
+        return noteId;
     }
 
     function _beforeTokenTransfer(

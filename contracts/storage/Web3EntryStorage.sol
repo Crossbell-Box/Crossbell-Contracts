@@ -3,7 +3,6 @@
 pragma solidity 0.8.10;
 
 import "../libraries/DataTypes.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Web3EntryStorage {
     // profileId => Profile
@@ -18,4 +17,8 @@ contract Web3EntryStorage {
     address public linkList;
     // profileId => LinkListTokenId
     mapping(uint256 => uint256) internal _primaryLinkListByProfileId;
+
+    // profileId => noteId => Note
+    mapping(uint256 => mapping(uint256 => DataTypes.Note))
+        internal _noteByIdByProfile;
 }
