@@ -48,6 +48,10 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         _profileById[profileId].handle = handle;
         _profileById[profileId].metadataURI = metadataURI;
 
+        // set primary profile
+        if (_primaryProfileByAddress[to] == 0) {
+            _primaryProfileByAddress[to] = profileId;
+        }
         emit Events.ProfileCreated(
             profileId,
             msg.sender,
@@ -349,6 +353,18 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
                 linkListTokenId,
                 linkType
             );
+    }
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override {
+        if (_primaryProfileByAddress[from] != 0) {
+            _primaryProfileByAddress[from] = 0;
+        }
+
+        super._beforeTokenTransfer(from, to, tokenId);
     }
 
     function _validateCallerIsProfileOwner(uint256 profileId) internal view {
