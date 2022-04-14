@@ -14,8 +14,8 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const LinkList = await ethers.getContractFactory("LinkListNFT");
-  const linkList = await LinkList.deploy();
+  const Linklist = await ethers.getContractFactory("Linklist");
+  const linkList = await Linklist.deploy();
 
   const Web3Entry = await ethers.getContractFactory("Web3Entry");
   const web3Entry = await Web3Entry.deploy();

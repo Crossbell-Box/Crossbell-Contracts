@@ -14,6 +14,14 @@ library DataTypes {
     uint256 constant NoteTypeNote = 1;
     uint256 constant NoteTypeLink = 2;
 
+    struct CreateProfileData {
+        address to;
+        string handle;
+        string metadataUri;
+        address linkModule;
+        bytes linkModuleInitData;
+    }
+
     struct LinkData {
         uint256 linkListId;
         bytes32 linkType;

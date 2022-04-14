@@ -8,11 +8,7 @@ interface IWeb3Entry {
     // TODO: add sig for all write functions
 
     // createProfile creates a profile, and mint a profile NFT
-    function createProfile(
-        address to,
-        string calldata handle,
-        string calldata metadataUri
-    ) external;
+    function createProfile(DataTypes.CreateProfileData calldata vars) external;
 
     function setHandle(uint256 profileId, string calldata newHandle) external;
 

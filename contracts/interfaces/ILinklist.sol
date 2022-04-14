@@ -1,6 +1,6 @@
 pragma solidity 0.8.10;
 
-interface ILinklistNFT {
+interface ILinklist {
     function mint(
         address to,
         bytes32 linkType,

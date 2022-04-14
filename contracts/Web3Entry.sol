@@ -4,7 +4,7 @@ pragma solidity 0.8.10;
 
 import "./base/NFTBase.sol";
 import "./interfaces/IWeb3Entry.sol";
-import "./interfaces/ILinklistNFT.sol";
+import "./interfaces/ILinklist.sol";
 import "./interfaces/ILinkModule4Profile.sol";
 import "./interfaces/ILinkModule4Note.sol";
 import "./interfaces/IMintModule4Note.sol";
@@ -31,33 +31,46 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         emit Events.Web3EntryInitialized(block.timestamp);
     }
 
-    function createProfile(
-        address to,
-        string calldata handle,
-        string calldata metadataUri
-    ) external {
+    function createProfile(DataTypes.CreateProfileData calldata vars) external {
         uint256 profileId = ++_profileCounter;
-        _mint(to, profileId);
+        _mint(vars.to, profileId);
 
-        bytes32 handleHash = keccak256(bytes(handle));
+        bytes32 handleHash = keccak256(bytes(vars.handle));
         require(
             _profileIdByHandleHash[handleHash] == 0,
             "Web3Entry: HandleExists"
         );
         _profileIdByHandleHash[handleHash] = profileId;
 
-        _profileById[profileId].handle = handle;
-        _profileById[profileId].metadataUri = metadataUri;
+        _profileById[profileId].handle = vars.handle;
+        _profileById[profileId].metadataUri = vars.metadataUri;
 
         // set primary profile
-        if (_primaryProfileByAddress[to] == 0) {
-            _primaryProfileByAddress[to] = profileId;
+        if (_primaryProfileByAddress[vars.to] == 0) {
+            _primaryProfileByAddress[vars.to] = profileId;
         }
+
+        // init link module
+        if (vars.linkModule != _profileById[profileId].linkModule) {
+            _profileById[profileId].linkModule = vars.linkModule;
+        }
+        bytes memory returnData;
+        if (vars.linkModule != address(0)) {
+            returnData = ILinkModule4Profile(vars.linkModule)
+                .initializeLinkModule(profileId, vars.linkModuleInitData);
+        }
+
+        emit Events.SetLinkModule4Profile(
+            profileId,
+            vars.linkModule,
+            returnData,
+            block.timestamp
+        );
         emit Events.ProfileCreated(
             profileId,
             msg.sender,
-            to,
-            handle,
+            vars.to,
+            vars.handle,
             block.timestamp
         );
     }
@@ -116,7 +129,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
 
     function setPrimaryLinkList(uint256 linkListId, uint256 profileId) public {
         _takeOverLinkList(linkListId, profileId);
-        bytes32 linkType = ILinklistNFT(linkList).getLinkType(linkListId);
+        bytes32 linkType = ILinklist(linkList).getLinkType(linkListId);
         _primaryLinkListsByProfileId[profileId][linkType] = linkListId;
     }
 
@@ -125,7 +138,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
     {
         _validateCallerIsLinklistOwner(linkListId);
 
-        ILinklistNFT(linkList).setUri(linkListId, linklistUri);
+        ILinklist(linkList).setUri(linkListId, linklistUri);
     }
 
     // emit a link from a profile
@@ -143,13 +156,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         if (linkListId == 0) {
             linkListId = IERC721Enumerable(linkList).totalSupply().add(1);
             // mint linkList nft
-            ILinklistNFT(linkList).mint(msg.sender, linkType, linkListId);
+            ILinklist(linkList).mint(msg.sender, linkType, linkListId);
             // set primary linkList
             setPrimaryLinkList(linkListId, fromProfileId);
         }
 
         // add to link list
-        ILinklistNFT(linkList).addLinking2ProfileId(linkListId, toProfileId);
+        ILinklist(linkList).addLinking2ProfileId(linkListId, toProfileId);
 
         emit Events.LinkProfile(
             msg.sender,
@@ -170,13 +183,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         uint256 linkListId = _primaryLinkListsByProfileId[fromProfileId][
             linkType
         ];
-        uint256 profileId = ILinklistNFT(linkList).getCurrentTakeOver(
-            linkListId
-        );
+        uint256 profileId = ILinklist(linkList).getCurrentTakeOver(linkListId);
         require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
 
         // remove from link list
-        ILinklistNFT(linkList).removeLinking2ProfileId(linkListId, toProfileId);
+        ILinklist(linkList).removeLinking2ProfileId(linkListId, toProfileId);
 
         emit Events.UnlinkProfile(
             msg.sender,
@@ -403,7 +414,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         returns (string memory)
     {
         uint256 tokenId = _primaryLinkListsByProfileId[profileId][linkType];
-        return ILinklistNFT(linkList).Uri(tokenId);
+        return ILinklist(linkList).Uri(tokenId);
     }
 
     function getLinking2ProfileIds(uint256 fromProfileId, bytes32 linkType)
@@ -414,7 +425,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         uint256 linkListId = _primaryLinkListsByProfileId[fromProfileId][
             linkType
         ];
-        return ILinklistNFT(linkList).getLinking2ProfileIds(linkListId);
+        return ILinklist(linkList).getLinking2ProfileIds(linkListId);
     }
 
     function getNoteURI(uint256 profileId, uint256 noteId)
@@ -475,7 +486,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
     function _takeOverLinkList(uint256 tokenId, uint256 profileId) internal {
         _validateCallerIsProfileOwner(profileId);
 
-        ILinklistNFT(linkList).setTakeOver(tokenId, msg.sender, profileId);
+        ILinklist(linkList).setTakeOver(tokenId, msg.sender, profileId);
     }
 
     function _beforeTokenTransfer(

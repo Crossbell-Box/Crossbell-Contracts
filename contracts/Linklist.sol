@@ -2,15 +2,13 @@
 
 pragma solidity 0.8.10;
 
-import "./interfaces/ILinklistNFT.sol";
+import "./interfaces/ILinklist.sol";
 import "./base/NFTBase.sol";
 import "./libraries/Events.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract LinklistNFT is ILinklistNFT, NFTBase {
+contract Linklist is ILinklist, NFTBase {
     using EnumerableSet for EnumerableSet.UintSet;
-    using SafeMath for uint256;
 
     // tokenId => linkType
     mapping(uint256 => bytes32) internal linkTypes;
@@ -26,11 +24,6 @@ contract LinklistNFT is ILinklistNFT, NFTBase {
 
     bool private _initialized;
     address public web3Entry;
-
-    // link NFT contract vars
-    //  profileId => category => linkType => []linkId
-    mapping(uint256 => mapping(bytes32 => EnumerableSet.UintSet))
-        internal Linklist;
 
     function initialize(
         string calldata _name,
