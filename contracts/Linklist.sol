@@ -45,6 +45,7 @@ contract Linklist is ILinklist, NFTBase {
         uint256 tokenId
     ) external override {
         _validateCallerIsWeb3Entry();
+
         linkTypes[tokenId] = linkType;
         _mint(to, tokenId);
     }
@@ -55,18 +56,14 @@ contract Linklist is ILinklist, NFTBase {
         uint256 profileId
     ) external {
         _validateCallerIsWeb3Entry();
-
         require(to == ownerOf(tokenId), "Linklist: not token owner");
 
         currentTakeOver[tokenId] = profileId;
     }
 
     function setUri(uint256 tokenId, string memory _uri) external {
+        require(_exists(tokenId), "Linklist: setUri for nonexistent token");
         _validateCallerIsWeb3EntryOrOwner(tokenId);
-        require(
-            _exists(tokenId),
-            "Linklist: setTokenURI for nonexistent token"
-        );
 
         _uris[tokenId] = _uri;
     }

@@ -21,15 +21,9 @@ interface IWeb3Entry {
 
     function setPrimaryProfileId(uint256 profileId) external;
 
-    function setPrimaryLinkList(uint256 linkListId, uint256 profileId) external;
+    function setPrimaryLinklist(uint256 linkListId, uint256 profileId) external;
 
-    function setLinklistUri(uint256 linkListId, string calldata linklistUri)
-        external;
-
-    //
-    // function setSocialTokenAddress(uint256 profileId, address tokenAddress) external; // next launch
-
-    // TODO: add a arbitrary data param passed to link/mint. Is there any cons?
+    function setLinklistUri(uint256 linkListId, string calldata uri) external;
 
     // emit a link from a profile
     function linkProfile(
@@ -88,7 +82,7 @@ interface IWeb3Entry {
         uint256 profileId,
         address linkModule,
         bytes calldata linkModuleInitData
-    ) external; // set link module for his profile
+    ) external;
 
     function setLinkModule4Note(
         uint256 profileId,
@@ -128,7 +122,7 @@ interface IWeb3Entry {
         address to
     ) external;
 
-    function mintLink(DataTypes.LinkData calldata linkData, address receiver)
+    function mintLink(DataTypes.LinkData calldata linkData, address to)
         external;
 
     function setMintModuleForNote(
@@ -154,12 +148,6 @@ interface IWeb3Entry {
         DataTypes.LinkData calldata linkData
     ) external;
 
-    function setLinkListUri(
-        uint256 profileId,
-        bytes32 linkType,
-        string memory uri
-    ) external;
-
     function getPrimaryProfileId(address account)
         external
         view
@@ -172,6 +160,11 @@ interface IWeb3Entry {
         view
         returns (DataTypes.Profile memory);
 
+    function getProfileByHandle(string calldata handle)
+        external
+        view
+        returns (DataTypes.Profile memory);
+
     function getHandle(uint256 profileId) external view returns (string memory);
 
     function getProfileMetadataUri(uint256 profileId)
@@ -179,13 +172,39 @@ interface IWeb3Entry {
         view
         returns (string memory);
 
-    function getProfileByHandle(string calldata handle)
-        external
-        view
-        returns (DataTypes.Profile memory);
-
     function getLinkModule4Profile(uint256 profileId)
         external
+        view
+        returns (address);
+
+    function getLinkModule4Address(address account)
+        external
+        view
+        returns (address);
+
+    function getLinkModule4Linklist(uint256 tokenId)
+        external
+        view
+        returns (address);
+
+    function getLinkModule4ERC721(address tokenAddress, uint256 tokenId)
+        external
+        view
+        returns (address);
+
+    function getLinkModule4Link(DataTypes.LinkData calldata linkData)
+        external
+        view
+        returns (address);
+
+    function getMintModuleForNote(uint256 profileId, uint256 toNoteId)
+        external
+        view
+        returns (address);
+
+    function getMintModuleForLink(DataTypes.LinkData calldata linkData)
+        external
+        view
         returns (address);
 
     function getLinkListUri(uint256 profileId, bytes32 linkType)
@@ -198,8 +217,10 @@ interface IWeb3Entry {
         view
         returns (uint256[] memory);
 
-    function getNoteURI(uint256 profileId, uint256 noteId)
+    function getNoteUri(uint256 profileId, uint256 noteId)
         external
         view
         returns (string memory);
+
+    function getLinklistContract() external view returns (address);
 }

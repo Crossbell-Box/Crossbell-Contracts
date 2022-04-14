@@ -128,18 +128,16 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         emit Events.SetPrimaryProfileId(msg.sender, profileId);
     }
 
-    function setPrimaryLinkList(uint256 linkListId, uint256 profileId) public {
+    function setPrimaryLinklist(uint256 linkListId, uint256 profileId) public {
         _takeOverLinkList(linkListId, profileId);
         bytes32 linkType = ILinklist(linkList).getLinkType(linkListId);
         _primaryLinkListsByProfileId[profileId][linkType] = linkListId;
     }
 
-    function setLinklistUri(uint256 linkListId, string calldata linklistUri)
-        external
-    {
+    function setLinklistUri(uint256 linkListId, string calldata uri) external {
         _validateCallerIsLinklistOwner(linkListId);
 
-        ILinklist(linkList).setUri(linkListId, linklistUri);
+        ILinklist(linkList).setUri(linkListId, uri);
     }
 
     // emit a link from a profile
@@ -159,7 +157,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
             // mint linkList nft
             ILinklist(linkList).mint(msg.sender, linkType, linkListId);
             // set primary linkList
-            setPrimaryLinkList(linkListId, fromProfileId);
+            setPrimaryLinklist(linkListId, fromProfileId);
         }
 
         // add to link list
@@ -302,7 +300,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         address to
     ) external {}
 
-    function mintLink(DataTypes.LinkData calldata linkData, address receiver)
+    function mintLink(DataTypes.LinkData calldata linkData, address to)
         external
     {}
 
@@ -328,7 +326,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         return
             _postNote(
                 noteData.profileId,
-                noteData.contentURI,
+                noteData.contentUri,
                 noteData.linkModule,
                 noteData.linkModuleInitData,
                 noteData.mintModule,
@@ -339,12 +337,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
     function postNoteWithLink(
         DataTypes.PostNoteData calldata noteData,
         DataTypes.LinkData calldata linkData
-    ) external {}
-
-    function setLinkListUri(
-        uint256 profileId,
-        bytes32 linkType,
-        string memory uri
     ) external {}
 
     function getPrimaryProfileId(address account)
@@ -400,6 +392,42 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         returns (address)
     {}
 
+    function getLinkModule4Address(address account)
+        external
+        view
+        returns (address)
+    {}
+
+    function getLinkModule4Linklist(uint256 tokenId)
+        external
+        view
+        returns (address)
+    {}
+
+    function getLinkModule4ERC721(address tokenAddress, uint256 tokenId)
+        external
+        view
+        returns (address)
+    {}
+
+    function getLinkModule4Link(DataTypes.LinkData calldata linkData)
+        external
+        view
+        returns (address)
+    {}
+
+    function getMintModuleForNote(uint256 profileId, uint256 toNoteId)
+        external
+        view
+        returns (address)
+    {}
+
+    function getMintModuleForLink(DataTypes.LinkData calldata linkData)
+        external
+        view
+        returns (address)
+    {}
+
     function tokenURI(uint256 profileId)
         public
         view
@@ -429,12 +457,16 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         return ILinklist(linkList).getLinkingProfileIds(linkListId);
     }
 
-    function getNoteURI(uint256 profileId, uint256 noteId)
+    function getNoteUri(uint256 profileId, uint256 noteId)
         external
         view
         returns (string memory)
     {
-        return _noteByIdByProfile[profileId][noteId].contentURI;
+        return _noteByIdByProfile[profileId][noteId].contentUri;
+    }
+
+    function getLinklistContract() external view returns (address) {
+        return linkList;
     }
 
     function _postNote(
@@ -449,7 +481,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
 
         // save note
         _noteByIdByProfile[profileId][noteId].noteType = DataTypes.NoteTypeNote;
-        _noteByIdByProfile[profileId][noteId].contentURI = contentURI;
+        _noteByIdByProfile[profileId][noteId].contentUri = contentURI;
         _noteByIdByProfile[profileId][noteId].linkModule = linkModule;
         _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
 

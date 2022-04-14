@@ -31,7 +31,7 @@ library DataTypes {
 
     struct PostNoteData {
         uint256 profileId;
-        string contentURI;
+        string contentUri;
         address linkModule;
         bytes linkModuleInitData;
         address mintModule;
@@ -53,7 +53,7 @@ library DataTypes {
         uint256 noteType;
         uint256 linkType;
         bytes32 IdPointed;
-        string contentURI;
+        string contentUri;
         address linkModule;
         address mintModule;
     }
