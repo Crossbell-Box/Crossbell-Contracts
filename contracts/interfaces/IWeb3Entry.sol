@@ -88,29 +88,28 @@ interface IWeb3Entry {
         bytes32 linkType
     ) external;
 
-    function setProfileLinkModule(uint256 profileId, address moduleAddress)
+    function setLinkModule4Profile(uint256 profileId, address moduleAddress)
         external; // set link module for his profile
 
-    function setNoteLinkModule(
+    function setLinkModule4Note(
         uint256 profileId,
         uint256 noteId,
         address moduleAddress
     ) external;
 
-    function setLinkListLinkModule(uint256 tokenId, address moduleAddress)
+    function setLinkModule4Linklist(uint256 tokenId, address moduleAddress)
         external;
 
-    function setERC721LinkModule(
+    function setLinkModule4ERC721(
         address tokenAddress,
         uint256 tokenId,
         address moduleAddress
     ) external;
 
-    function setAddressLinkModule(address account, address moduleAddress)
+    function setLinkModule4Address(address account, address moduleAddress)
         external;
 
-    // set link module for single link item
-    function setLinkLinkModule(
+    function setLinkModule4Link(
         DataTypes.LinkData calldata linkData,
         address moduleAddress
     ) external;
@@ -136,32 +135,32 @@ interface IWeb3Entry {
         address moduleAddress
     ) external;
 
-    function postNote(DataTypes.PostNoteData calldata vars)
+    function postNote(DataTypes.PostNoteData calldata noteData)
         external
         returns (uint256);
 
     function postNoteWithLink(
-        DataTypes.PostNoteData calldata vars,
+        DataTypes.PostNoteData calldata noteData,
         DataTypes.LinkData calldata linkData
     ) external;
 
     function setLinkListUri(
         uint256 profileId,
         bytes32 linkType,
-        string memory Uri
+        string memory uri
     ) external;
 
-    function getPrimaryProfile(address account) external view returns (uint256);
+    function getPrimaryProfileId(address account)
+        external
+        view
+        returns (uint256);
+
+    function isPrimaryProfile(uint256 profileId) external view returns (bool);
 
     function getProfile(uint256 profileId)
         external
         view
         returns (DataTypes.Profile memory);
-
-    function getProfileId(string calldata handle)
-        external
-        view
-        returns (uint256);
 
     function getHandle(uint256 profileId) external view returns (string memory);
 
@@ -170,14 +169,21 @@ interface IWeb3Entry {
         view
         returns (string memory);
 
-    function getProfileLinkModule(uint256 profileId) external returns (address);
+    function getProfileByHandle(string calldata handle)
+        external
+        view
+        returns (DataTypes.Profile memory);
 
-    function getLinkListUri(uint256 profileId)
+    function getLinkModule4Profile(uint256 profileId)
+        external
+        returns (address);
+
+    function getLinkListUri(uint256 profileId, bytes32 linkType)
         external
         view
         returns (string memory);
 
-    function getLinkedProfileIds(uint256 fromProfileId, bytes32 linkType)
+    function getLinking2ProfileIds(uint256 fromProfileId, bytes32 linkType)
         external
         view
         returns (uint256[] memory);

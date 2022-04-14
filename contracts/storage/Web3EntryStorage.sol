@@ -11,12 +11,14 @@ contract Web3EntryStorage {
     mapping(bytes32 => uint256) internal _profileIdByHandleHash;
     // address => profileId
     mapping(address => uint256) internal _primaryProfileByAddress;
+
     uint256 internal _profileCounter;
 
     // LinkList NFT token contract
     address public linkList;
-    // profileId => LinkListId
-    mapping(uint256 => uint256) internal _primaryLinkListByProfileId;
+    // profileId =>  (linkType => linklistId)
+    mapping(uint256 => mapping(bytes32 => uint256))
+        internal _primaryLinkListsByProfileId;
 
     // profileId => noteId => Note
     mapping(uint256 => mapping(uint256 => DataTypes.Note))
