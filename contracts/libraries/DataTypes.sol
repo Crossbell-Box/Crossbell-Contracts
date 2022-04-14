@@ -35,7 +35,7 @@ library DataTypes {
         string handle;
         string metadataUri;
         uint256 noteCount;
-        address socialTokenAddress;
+        address socialToken;
     }
 
     // note struct

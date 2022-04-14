@@ -85,11 +85,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         _validateCallerIsProfileOwner(profileId);
 
         require(
-            _profileById[profileId].socialTokenAddress == address(0),
+            _profileById[profileId].socialToken == address(0),
             "Web3Entry: SocialTokenExists"
         );
 
-        _profileById[profileId].socialTokenAddress = tokenAddress;
+        _profileById[profileId].socialToken = tokenAddress;
 
         emit Events.SetSocialToken(msg.sender, profileId, tokenAddress);
     }
@@ -124,11 +124,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
 
         ILinklistNFT(linkList).setUri(linkListId, linklistUri);
     }
-
-    //
-    // function setSocialTokenAddress(uint256 profileId, address tokenAddress) external {} // next launch
-
-    // TODO: add a arbitrary data param passed to link/mint. Is there any cons?
 
     // emit a link from a profile
     function linkProfile(
