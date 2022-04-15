@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.10;
-
+import "hardhat/console.sol";
 import "./base/NFTBase.sol";
 import "./interfaces/IWeb3Entry.sol";
 import "./interfaces/ILinklist.sol";
@@ -39,6 +39,8 @@ contract Web3Entry is
         DataTypes.CreateProfileData calldata profileData
     ) external {
         uint256 profileId = ++_profileCounter;
+        console.log("%d is creating.", profileId);
+
         _mint(profileData.to, profileId);
 
         bytes32 handleHash = keccak256(
@@ -224,6 +226,7 @@ contract Web3Entry is
             toProfileId
         );
 
+        //return linklist id
         emit Events.LinkProfile(
             msg.sender,
             fromProfileId,
@@ -512,7 +515,7 @@ contract Web3Entry is
         return _profileById[profileId].uri;
     }
 
-    function getLinkListUri(
+    function getLinklistUri(
         uint256 profileId,
         bytes32 linkType
     ) external view returns (string memory) {

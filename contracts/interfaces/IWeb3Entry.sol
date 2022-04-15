@@ -228,7 +228,7 @@ interface IWeb3Entry {
         DataTypes.LinkData calldata linkData
     ) external view returns (address);
 
-    function getLinkListUri(
+    function getLinklistUri(
         uint256 profileId,
         bytes32 linkType
     ) external view returns (string memory);
