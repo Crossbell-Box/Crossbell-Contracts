@@ -6,6 +6,11 @@ import "../libraries/DataTypes.sol";
 
 interface IWeb3Entry {
     // TODO: add sig for all write functions
+    function initialize(
+        string calldata _name,
+        string calldata _symbol,
+        address _linkListContract
+    ) external;
 
     // createProfile creates a profile, and mint a profile NFT
     function createProfile(DataTypes.CreateProfileData calldata vars) external;
@@ -63,8 +68,6 @@ interface IWeb3Entry {
         string calldata toUri,
         bytes32 linkType
     ) external;
-
-    function linkLink(uint256 fromProfileId, DataTypes.LinkData calldata linkData) external;
 
     function linkLinklist(
         uint256 fromProfileId,

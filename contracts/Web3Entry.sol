@@ -181,7 +181,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
     ) external {
         _validateCallerIsProfileOwner(fromProfileId);
         _validateProfileExists(toProfileId);
-        _validateNoteExists(toProfileId, noteId);
+        _validateNoteExists(toProfileId, toNoteId);
     }
 
     function linkERC721(
@@ -204,7 +204,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         bytes32 linkType
     ) external {}
 
-    function linkLink(uint256 fromProfileId, DataTypes.LinkData calldata linkData) external {}
+    // TODO:
+    function linkProfileLink(uint256 fromProfileId) external {}
+
+    function linkAddressLink(uint256 fromProfileId) external {}
+
+    function linkNoteLink(uint256 fromProfileId) external {}
 
     function linkLinklist(
         uint256 fromProfileId,

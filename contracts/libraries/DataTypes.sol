@@ -23,7 +23,7 @@ library DataTypes {
     }
 
     struct LinkData {
-        uint256 linkListId;
+        uint256 linklistId;
         bytes32 linkType;
         uint256 linkTargetType;
         bytes content;
