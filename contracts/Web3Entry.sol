@@ -7,17 +7,14 @@ import "./interfaces/IWeb3Entry.sol";
 import "./interfaces/ILinklist.sol";
 import "./interfaces/ILinkModule4Profile.sol";
 import "./interfaces/ILinkModule4Note.sol";
+import "./interfaces/ILinkModule4Address.sol";
 import "./interfaces/IMintModule4Note.sol";
 import "./storage/Web3EntryStorage.sol";
 import "./libraries/DataTypes.sol";
 import "./libraries/Events.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract Web3Entry is
-    IWeb3Entry,
-    NFTBase,
-    Web3EntryStorage
-{
+contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
     using SafeMath for uint256;
 
     bool private _initialized;
@@ -35,21 +32,14 @@ contract Web3Entry is
         emit Events.Web3EntryInitialized(block.timestamp);
     }
 
-    function createProfile(
-        DataTypes.CreateProfileData calldata profileData
-    ) external {
+    function createProfile(DataTypes.CreateProfileData calldata profileData) external {
         uint256 profileId = ++_profileCounter;
         console.log("%d is creating.", profileId);
 
         _mint(profileData.to, profileId);
 
-        bytes32 handleHash = keccak256(
-            bytes(profileData.handle)
-        );
-        require(
-            _profileIdByHandleHash[handleHash] == 0,
-            "Web3Entry: HandleExists"
-        );
+        bytes32 handleHash = keccak256(bytes(profileData.handle));
+        require(_profileIdByHandleHash[handleHash] == 0, "Web3Entry: HandleExists");
         _profileIdByHandleHash[handleHash] = profileId;
 
         _profileById[profileId].profileId = profileId;
@@ -58,27 +48,19 @@ contract Web3Entry is
 
         // set primary profile
         if (_primaryProfileByAddress[profileData.to] == 0) {
-            _primaryProfileByAddress[
-                profileData.to
-            ] = profileId;
+            _primaryProfileByAddress[profileData.to] = profileId;
         }
 
         // init link module
-        if (
-            profileData.linkModule !=
-            _profileById[profileId].linkModule
-        ) {
-            _profileById[profileId].linkModule = profileData
-                .linkModule;
+        if (profileData.linkModule != _profileById[profileId].linkModule) {
+            _profileById[profileId].linkModule = profileData.linkModule;
         }
         bytes memory returnData;
         if (profileData.linkModule != address(0)) {
-            returnData = ILinkModule4Profile(
-                profileData.linkModule
-            ).initializeLinkModule(
-                    profileId,
-                    profileData.linkModuleInitData
-                );
+            returnData = ILinkModule4Profile(profileData.linkModule).initializeLinkModule(
+                profileId,
+                profileData.linkModuleInitData
+            );
             emit Events.SetLinkModule4Profile(
                 profileId,
                 profileData.linkModule,
@@ -96,96 +78,56 @@ contract Web3Entry is
         );
     }
 
-    function setHandle(
-        uint256 profileId,
-        string calldata newHandle
-    ) external {
+    function setHandle(uint256 profileId, string calldata newHandle) external {
         _validateCallerIsProfileOwner(profileId);
 
         // remove old handle
-        string memory oldHandle = _profileById[profileId]
-            .handle;
+        string memory oldHandle = _profileById[profileId].handle;
         bytes32 oldHandleHash = keccak256(bytes(oldHandle));
         delete _profileIdByHandleHash[oldHandleHash];
 
         // set new handle
         bytes32 handleHash = keccak256(bytes(newHandle));
-        require(
-            _profileIdByHandleHash[handleHash] == 0,
-            "Web3Entry: HandleExists"
-        );
+        require(_profileIdByHandleHash[handleHash] == 0, "Web3Entry: HandleExists");
 
         _profileIdByHandleHash[handleHash] = profileId;
 
         _profileById[profileId].handle = newHandle;
 
-        emit Events.SetHandle(
-            msg.sender,
-            profileId,
-            newHandle
-        );
+        emit Events.SetHandle(msg.sender, profileId, newHandle);
     }
 
-    function setSocialToken(
-        uint256 profileId,
-        address tokenAddress
-    ) external {
+    function setSocialToken(uint256 profileId, address tokenAddress) external {
         _validateCallerIsProfileOwner(profileId);
 
-        require(
-            _profileById[profileId].socialToken ==
-                address(0),
-            "Web3Entry: SocialTokenExists"
-        );
+        require(_profileById[profileId].socialToken == address(0), "Web3Entry: SocialTokenExists");
 
         _profileById[profileId].socialToken = tokenAddress;
 
-        emit Events.SetSocialToken(
-            msg.sender,
-            profileId,
-            tokenAddress
-        );
+        emit Events.SetSocialToken(msg.sender, profileId, tokenAddress);
     }
 
-    function setProfileUri(
-        uint256 profileId,
-        string calldata newUri
-    ) external {
+    function setProfileUri(uint256 profileId, string calldata newUri) external {
         _validateCallerIsProfileOwner(profileId);
 
         _profileById[profileId].uri = newUri;
     }
 
-    function setPrimaryProfileId(uint256 profileId)
-        external
-    {
+    function setPrimaryProfileId(uint256 profileId) external {
         _validateCallerIsProfileOwner(profileId);
 
         _primaryProfileByAddress[msg.sender] = profileId;
 
-        emit Events.SetPrimaryProfileId(
-            msg.sender,
-            profileId
-        );
+        emit Events.SetPrimaryProfileId(msg.sender, profileId);
     }
 
-    function setPrimaryLinklist(
-        uint256 linkListId,
-        uint256 profileId
-    ) public {
+    function setPrimaryLinklist(uint256 linkListId, uint256 profileId) public {
         _takeOverLinkList(linkListId, profileId);
-        bytes32 linkType = ILinklist(linkList).getLinkType(
-            linkListId
-        );
-        _primaryLinkListsByProfileId[profileId][
-            linkType
-        ] = linkListId;
+        bytes32 linkType = ILinklist(linkList).getLinkType(linkListId);
+        _primaryLinkListsByProfileId[profileId][linkType] = linkListId;
     }
 
-    function setLinklistUri(
-        uint256 linkListId,
-        string calldata uri
-    ) external {
+    function setLinklistUri(uint256 linkListId, string calldata uri) external {
         _validateCallerIsLinklistOwner(linkListId);
 
         ILinklist(linkList).setUri(linkListId, uri);
@@ -198,33 +140,19 @@ contract Web3Entry is
         bytes32 linkType
     ) external {
         _validateCallerIsProfileOwner(fromProfileId);
-        require(
-            _exists(toProfileId),
-            "Web3Entry: toProfileId not exist"
-        );
+        _validateProfileExists(toProfileId);
 
-        uint256 linkListId = _primaryLinkListsByProfileId[
-            fromProfileId
-        ][linkType];
+        uint256 linkListId = _primaryLinkListsByProfileId[fromProfileId][linkType];
         if (linkListId == 0) {
-            linkListId = IERC721Enumerable(linkList)
-                .totalSupply()
-                .add(1);
+            linkListId = IERC721Enumerable(linkList).totalSupply().add(1);
             // mint linkList nft
-            ILinklist(linkList).mint(
-                msg.sender,
-                linkType,
-                linkListId
-            );
+            ILinklist(linkList).mint(msg.sender, linkType, linkListId);
             // set primary linkList
             setPrimaryLinklist(linkListId, fromProfileId);
         }
 
         // add to link list
-        ILinklist(linkList).addLinkingProfileId(
-            linkListId,
-            toProfileId
-        );
+        ILinklist(linkList).addLinkingProfileId(linkListId, toProfileId);
 
         //return linklist id
         emit Events.LinkProfile(
@@ -241,33 +169,16 @@ contract Web3Entry is
         bytes32 linkType
     ) external {
         _validateCallerIsProfileOwner(fromProfileId);
-        require(
-            _exists(toProfileId),
-            "Web3Entry: toProfileId not exist"
-        );
+        _validateProfileExists(toProfileId);
 
-        uint256 linkListId = _primaryLinkListsByProfileId[
-            fromProfileId
-        ][linkType];
-        uint256 profileId = ILinklist(linkList)
-            .getCurrentTakeOver(linkListId);
-        require(
-            profileId == fromProfileId,
-            "Web3Entry: unauthorised linkList"
-        );
+        uint256 linkListId = _primaryLinkListsByProfileId[fromProfileId][linkType];
+        uint256 profileId = ILinklist(linkList).getCurrentTakeOver(linkListId);
+        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
 
         // remove from link list
-        ILinklist(linkList).removeLinkingProfileId(
-            linkListId,
-            toProfileId
-        );
+        ILinklist(linkList).removeLinkingProfileId(linkListId, toProfileId);
 
-        emit Events.UnlinkProfile(
-            msg.sender,
-            fromProfileId,
-            toProfileId,
-            linkType
-        );
+        emit Events.UnlinkProfile(msg.sender, fromProfileId, toProfileId, linkType);
     }
 
     function linkNote(
@@ -275,7 +186,11 @@ contract Web3Entry is
         uint256 toProfileId,
         uint256 toNoteId,
         bytes32 linkType
-    ) external {}
+    ) external {
+        _validateCallerIsProfileOwner(fromProfileId);
+        _validateProfileExists(toProfileId);
+        _validateNoteExists(toProfileId, toNoteId);
+    }
 
     function linkERC721(
         uint256 fromProfileId,
@@ -297,10 +212,12 @@ contract Web3Entry is
         bytes32 linkType
     ) external {}
 
-    function linkLink(
-        uint256 fromProfileId,
-        DataTypes.LinkData calldata linkData
-    ) external {}
+    // TODO:
+    function linkProfileLink(uint256 fromProfileId) external {}
+
+    function linkAddressLink(uint256 fromProfileId) external {}
+
+    function linkNoteLink(uint256 fromProfileId) external {}
 
     function linkLinklist(
         uint256 fromProfileId,
@@ -316,27 +233,19 @@ contract Web3Entry is
     ) external {
         _validateCallerIsProfileOwner(profileId);
 
-        if (
-            linkModule != _profileById[profileId].linkModule
-        ) {
+        if (linkModule != _profileById[profileId].linkModule) {
             _profileById[profileId].linkModule = linkModule;
         }
 
         bytes memory returnData;
         if (linkModule != address(0)) {
-            returnData = ILinkModule4Profile(linkModule)
-                .initializeLinkModule(
-                    profileId,
-                    linkModuleInitData
-                );
+            returnData = ILinkModule4Profile(linkModule).initializeLinkModule(
+                profileId,
+                linkModuleInitData
+            );
         }
 
-        emit Events.SetLinkModule4Profile(
-            profileId,
-            linkModule,
-            returnData,
-            block.timestamp
-        );
+        emit Events.SetLinkModule4Profile(profileId, linkModule, returnData, block.timestamp);
     }
 
     function setLinkModule4Note(
@@ -344,7 +253,22 @@ contract Web3Entry is
         uint256 noteId,
         address linkModule,
         bytes calldata linkModuleInitData
-    ) external {} // set link module for his profile
+    ) external {
+        _validateCallerIsProfileOwner(profileId);
+        _validateNoteExists(profileId, noteId);
+
+        if (linkModule != address(0)) {
+            _noteByIdByProfile[profileId][noteId].linkModule = linkModule;
+        }
+
+        bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
+            profileId,
+            noteId,
+            linkModuleInitData
+        );
+
+        emit Events.SetLinkModule4Note(profileId, noteId, linkModule, returnData, block.timestamp);
+    }
 
     function setLinkModule4Linklist(
         uint256 tokenId,
@@ -363,7 +287,22 @@ contract Web3Entry is
         address account,
         address linkModule,
         bytes calldata linkModuleInitData
-    ) external {}
+    ) external {
+        require(msg.sender == account, "Web3Entry: NotAddressOwner");
+
+        _linkModules4Address[account] = linkModule;
+        bytes memory linkModuleReturnData = ILinkModule4Address(linkModule).initializeLinkModule(
+            account,
+            linkModuleInitData
+        );
+
+        emit Events.SetLinkModule4Address(
+            account,
+            linkModule,
+            linkModuleReturnData,
+            block.timestamp
+        );
+    }
 
     function setLinkModule4Link(
         DataTypes.LinkData calldata linkData,
@@ -377,10 +316,7 @@ contract Web3Entry is
         address to
     ) external {}
 
-    function mintLink(
-        DataTypes.LinkData calldata linkData,
-        address to
-    ) external {}
+    function mintLink(DataTypes.LinkData calldata linkData, address to) external {}
 
     function setMintModule4Note(
         uint256 profileId,
@@ -395,9 +331,7 @@ contract Web3Entry is
         bytes calldata mintModuleInitData
     ) external {} // set mint module for his single link item
 
-    function postNote(
-        DataTypes.PostNoteData calldata noteData
-    ) external returns (uint256) {
+    function postNote(DataTypes.PostNoteData calldata noteData) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
         return
@@ -416,29 +350,16 @@ contract Web3Entry is
         DataTypes.LinkData calldata linkData
     ) external {}
 
-    function getPrimaryProfileId(address account)
-        external
-        view
-        returns (uint256)
-    {
+    function getPrimaryProfileId(address account) external view returns (uint256) {
         return _primaryProfileByAddress[account];
     }
 
-    function isPrimaryProfile(uint256 profileId)
-        external
-        view
-        returns (bool)
-    {
+    function isPrimaryProfile(uint256 profileId) external view returns (bool) {
         address account = ownerOf(profileId);
-        return
-            profileId == _primaryProfileByAddress[account];
+        return profileId == _primaryProfileByAddress[account];
     }
 
-    function getProfile(uint256 profileId)
-        external
-        view
-        returns (DataTypes.Profile memory)
-    {
+    function getProfile(uint256 profileId) external view returns (DataTypes.Profile memory) {
         return _profileById[profileId];
     }
 
@@ -448,111 +369,81 @@ contract Web3Entry is
         returns (DataTypes.Profile memory)
     {
         bytes32 handleHash = keccak256(bytes(handle));
-        uint256 profileId = _profileIdByHandleHash[
-            handleHash
-        ];
+        uint256 profileId = _profileIdByHandleHash[handleHash];
         return _profileById[profileId];
     }
 
-    function getHandle(uint256 profileId)
-        external
-        view
-        returns (string memory)
-    {
+    function getHandle(uint256 profileId) external view returns (string memory) {
         return _profileById[profileId].handle;
     }
 
-    function getProfileUri(uint256 profileId)
-        external
-        view
-        returns (string memory)
-    {
+    function getProfileUri(uint256 profileId) external view returns (string memory) {
         return tokenURI(profileId);
     }
 
-    function getLinkModule4Profile(uint256 profileId)
+    function getLinkModule4Profile(uint256 profileId) external view returns (address) {
+        return _profileById[profileId].linkModule;
+    }
+
+    function getLinkModule4Address(address account) external view returns (address) {
+        return _linkModules4Address[account];
+    }
+
+    function getLinkModule4Linklist(uint256 tokenId) external view returns (address) {
+        return _linkModules4Linklist[tokenId];
+    }
+
+    function getLinkModule4ERC721(address tokenAddress, uint256 tokenId)
         external
         view
         returns (address)
-    {}
-
-    function getLinkModule4Address(address account)
-        external
-        view
-        returns (address)
-    {}
-
-    function getLinkModule4Linklist(uint256 tokenId)
-        external
-        view
-        returns (address)
-    {}
-
-    function getLinkModule4ERC721(
-        address tokenAddress,
-        uint256 tokenId
-    ) external view returns (address) {}
-
-    function getLinkModule4Link(
-        DataTypes.LinkData calldata linkData
-    ) external view returns (address) {}
-
-    function getMintModule4Note(
-        uint256 profileId,
-        uint256 toNoteId
-    ) external view returns (address) {}
-
-    function getMintModule4Link(
-        DataTypes.LinkData calldata linkData
-    ) external view returns (address) {}
-
-    function tokenURI(uint256 profileId)
-        public
-        view
-        override
-        returns (string memory)
     {
+        return _linkModules4ERC721[tokenAddress][tokenId];
+    }
+
+    function getLinkModule4Link(DataTypes.LinkData calldata linkData)
+        external
+        view
+        returns (address)
+    {}
+
+    function getMintModule4Note(uint256 profileId, uint256 noteId) external view returns (address) {
+        return _noteByIdByProfile[profileId][noteId].mintModule;
+    }
+
+    function getMintModule4Link(DataTypes.LinkData calldata linkData)
+        external
+        view
+        returns (address)
+    {}
+
+    function tokenURI(uint256 profileId) public view override returns (string memory) {
         return _profileById[profileId].uri;
     }
 
-    function getLinklistUri(
-        uint256 profileId,
-        bytes32 linkType
-    ) external view returns (string memory) {
-        uint256 tokenId = _primaryLinkListsByProfileId[
-            profileId
-        ][linkType];
-        return ILinklist(linkList).Uri(tokenId);
-    }
-
-    function getLinkingProfileIds(
-        uint256 fromProfileId,
-        bytes32 linkType
-    ) external view returns (uint256[] memory) {
-        uint256 linkListId = _primaryLinkListsByProfileId[
-            fromProfileId
-        ][linkType];
-        return
-            ILinklist(linkList).getLinkingProfileIds(
-                linkListId
-            );
-    }
-
-    function getNoteUri(uint256 profileId, uint256 noteId)
+    function getLinklistUri(uint256 profileId, bytes32 linkType)
         external
         view
         returns (string memory)
     {
-        return
-            _noteByIdByProfile[profileId][noteId]
-                .contentUri;
+        uint256 tokenId = _primaryLinkListsByProfileId[profileId][linkType];
+        return ILinklist(linkList).Uri(tokenId);
     }
 
-    function getLinklistContract()
+    function getLinkingProfileIds(uint256 fromProfileId, bytes32 linkType)
         external
         view
-        returns (address)
+        returns (uint256[] memory)
     {
+        uint256 linkListId = _primaryLinkListsByProfileId[fromProfileId][linkType];
+        return ILinklist(linkList).getLinkingProfileIds(linkListId);
+    }
+
+    function getNoteUri(uint256 profileId, uint256 noteId) external view returns (string memory) {
+        return _noteByIdByProfile[profileId][noteId].contentUri;
+    }
+
+    function getLinklistContract() external view returns (address) {
         return linkList;
     }
 
@@ -564,40 +455,31 @@ contract Web3Entry is
         address mintModule,
         bytes memory mintModuleInitData
     ) internal returns (uint256) {
-        uint256 noteId = ++_profileById[profileId]
-            .noteCount;
+        uint256 noteId = ++_profileById[profileId].noteCount;
 
         // save note
-        _noteByIdByProfile[profileId][noteId]
-            .noteType = DataTypes.NoteTypeNote;
-        _noteByIdByProfile[profileId][noteId]
-            .contentUri = contentURI;
-        _noteByIdByProfile[profileId][noteId]
-            .linkModule = linkModule;
-        _noteByIdByProfile[profileId][noteId]
-            .mintModule = mintModule;
+        _noteByIdByProfile[profileId][noteId].noteType = DataTypes.NoteTypeNote;
+        _noteByIdByProfile[profileId][noteId].contentUri = contentURI;
+        _noteByIdByProfile[profileId][noteId].linkModule = linkModule;
+        _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
 
         // init link module
         bytes memory linkModuleReturnData;
         if (linkModule != address(0)) {
-            linkModuleReturnData = ILinkModule4Note(
-                linkModule
-            ).initializeLinkModule(
-                    profileId,
-                    noteId,
-                    linkModuleInitData
-                );
+            linkModuleReturnData = ILinkModule4Note(linkModule).initializeLinkModule(
+                profileId,
+                noteId,
+                linkModuleInitData
+            );
         }
         // init mint module
         bytes memory mintModuleReturnData;
         if (mintModule != address(0)) {
-            mintModuleReturnData = IMintModule4Note(
-                mintModule
-            ).initializeMintModule(
-                    profileId,
-                    noteId,
-                    mintModuleInitData
-                );
+            mintModuleReturnData = IMintModule4Note(mintModule).initializeMintModule(
+                profileId,
+                noteId,
+                mintModuleInitData
+            );
         }
 
         emit Events.SetLinkModule4Note(
@@ -618,17 +500,10 @@ contract Web3Entry is
         return noteId;
     }
 
-    function _takeOverLinkList(
-        uint256 tokenId,
-        uint256 profileId
-    ) internal {
+    function _takeOverLinkList(uint256 tokenId, uint256 profileId) internal {
         _validateCallerIsProfileOwner(profileId);
 
-        ILinklist(linkList).setTakeOver(
-            tokenId,
-            msg.sender,
-            profileId
-        );
+        ILinklist(linkList).setTakeOver(tokenId, msg.sender, profileId);
     }
 
     function _beforeTokenTransfer(
@@ -643,22 +518,19 @@ contract Web3Entry is
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
-    function _validateCallerIsProfileOwner(
-        uint256 profileId
-    ) internal view {
-        require(
-            msg.sender == ownerOf(profileId),
-            "Web3Entry: NotProfileOwner"
-        );
+    function _validateCallerIsProfileOwner(uint256 profileId) internal view {
+        require(msg.sender == ownerOf(profileId), "Web3Entry: NotProfileOwner");
     }
 
-    function _validateCallerIsLinklistOwner(uint256 tokenId)
-        internal
-        view
-    {
-        require(
-            msg.sender == ERC721(linkList).ownerOf(tokenId),
-            "Web3Entry: NotLinkListOwner"
-        );
+    function _validateCallerIsLinklistOwner(uint256 tokenId) internal view {
+        require(msg.sender == ERC721(linkList).ownerOf(tokenId), "Web3Entry: NotLinkListOwner");
+    }
+
+    function _validateProfileExists(uint256 profileId) internal view {
+        require(_exists(profileId), "Web3Entry: ProfileNotExists");
+    }
+
+    function _validateNoteExists(uint256 profileId, uint256 noteId) internal view {
+        require(noteId <= _profileById[profileId].noteCount, "Web3Entry: NoteNotExists");
     }
 }

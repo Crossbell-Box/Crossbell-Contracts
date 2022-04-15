@@ -6,39 +6,26 @@ import "../libraries/DataTypes.sol";
 
 interface IWeb3Entry {
     // TODO: add sig for all write functions
+    function initialize(
+        string calldata _name,
+        string calldata _symbol,
+        address _linkListContract
+    ) external;
 
     // createProfile creates a profile, and mint a profile NFT
-    function createProfile(
-        DataTypes.CreateProfileData calldata vars
-    ) external;
+    function createProfile(DataTypes.CreateProfileData calldata vars) external;
 
-    function setHandle(
-        uint256 profileId,
-        string calldata newHandle
-    ) external;
+    function setHandle(uint256 profileId, string calldata newHandle) external;
 
-    function setSocialToken(
-        uint256 profileId,
-        address tokenAddress
-    ) external;
+    function setSocialToken(uint256 profileId, address tokenAddress) external;
 
-    function setProfileUri(
-        uint256 profileId,
-        string calldata newUri
-    ) external;
+    function setProfileUri(uint256 profileId, string calldata newUri) external;
 
-    function setPrimaryProfileId(uint256 profileId)
-        external;
+    function setPrimaryProfileId(uint256 profileId) external;
 
-    function setPrimaryLinklist(
-        uint256 linkListId,
-        uint256 profileId
-    ) external;
+    function setPrimaryLinklist(uint256 linkListId, uint256 profileId) external;
 
-    function setLinklistUri(
-        uint256 linkListId,
-        string calldata uri
-    ) external;
+    function setLinklistUri(uint256 linkListId, string calldata uri) external;
 
     // emit a link from a profile
     function linkProfile(
@@ -80,11 +67,6 @@ interface IWeb3Entry {
         uint256 fromProfileId,
         string calldata toUri,
         bytes32 linkType
-    ) external;
-
-    function linkLink(
-        uint256 fromProfileId,
-        DataTypes.LinkData calldata linkData
     ) external;
 
     function linkLinklist(
@@ -137,10 +119,7 @@ interface IWeb3Entry {
         address to
     ) external;
 
-    function mintLink(
-        DataTypes.LinkData calldata linkData,
-        address to
-    ) external;
+    function mintLink(DataTypes.LinkData calldata linkData, address to) external;
 
     function setMintModule4Note(
         uint256 profileId,
@@ -156,95 +135,62 @@ interface IWeb3Entry {
         bytes calldata mintModuleInitData
     ) external;
 
-    function postNote(
-        DataTypes.PostNoteData calldata noteData
-    ) external returns (uint256);
+    function postNote(DataTypes.PostNoteData calldata noteData) external returns (uint256);
 
     function postNoteWithLink(
         DataTypes.PostNoteData calldata noteData,
         DataTypes.LinkData calldata linkData
     ) external;
 
-    function getPrimaryProfileId(address account)
-        external
-        view
-        returns (uint256);
+    function getPrimaryProfileId(address account) external view returns (uint256);
 
-    function isPrimaryProfile(uint256 profileId)
-        external
-        view
-        returns (bool);
+    function isPrimaryProfile(uint256 profileId) external view returns (bool);
 
-    function getProfile(uint256 profileId)
-        external
-        view
-        returns (DataTypes.Profile memory);
+    function getProfile(uint256 profileId) external view returns (DataTypes.Profile memory);
 
     function getProfileByHandle(string calldata handle)
         external
         view
         returns (DataTypes.Profile memory);
 
-    function getHandle(uint256 profileId)
+    function getHandle(uint256 profileId) external view returns (string memory);
+
+    function getProfileUri(uint256 profileId) external view returns (string memory);
+
+    function getLinkModule4Profile(uint256 profileId) external view returns (address);
+
+    function getLinkModule4Address(address account) external view returns (address);
+
+    function getLinkModule4Linklist(uint256 tokenId) external view returns (address);
+
+    function getLinkModule4ERC721(address tokenAddress, uint256 tokenId)
+        external
+        view
+        returns (address);
+
+    function getLinkModule4Link(DataTypes.LinkData calldata linkData)
+        external
+        view
+        returns (address);
+
+    function getMintModule4Note(uint256 profileId, uint256 noteId) external view returns (address);
+
+    function getMintModule4Link(DataTypes.LinkData calldata linkData)
+        external
+        view
+        returns (address);
+
+    function getLinklistUri(uint256 profileId, bytes32 linkType)
         external
         view
         returns (string memory);
 
-    function getProfileUri(uint256 profileId)
+    function getLinkingProfileIds(uint256 fromProfileId, bytes32 linkType)
         external
         view
-        returns (string memory);
+        returns (uint256[] memory);
 
-    function getLinkModule4Profile(uint256 profileId)
-        external
-        view
-        returns (address);
+    function getNoteUri(uint256 profileId, uint256 noteId) external view returns (string memory);
 
-    function getLinkModule4Address(address account)
-        external
-        view
-        returns (address);
-
-    function getLinkModule4Linklist(uint256 tokenId)
-        external
-        view
-        returns (address);
-
-    function getLinkModule4ERC721(
-        address tokenAddress,
-        uint256 tokenId
-    ) external view returns (address);
-
-    function getLinkModule4Link(
-        DataTypes.LinkData calldata linkData
-    ) external view returns (address);
-
-    function getMintModule4Note(
-        uint256 profileId,
-        uint256 toNoteId
-    ) external view returns (address);
-
-    function getMintModule4Link(
-        DataTypes.LinkData calldata linkData
-    ) external view returns (address);
-
-    function getLinklistUri(
-        uint256 profileId,
-        bytes32 linkType
-    ) external view returns (string memory);
-
-    function getLinkingProfileIds(
-        uint256 fromProfileId,
-        bytes32 linkType
-    ) external view returns (uint256[] memory);
-
-    function getNoteUri(uint256 profileId, uint256 noteId)
-        external
-        view
-        returns (string memory);
-
-    function getLinklistContract()
-        external
-        view
-        returns (address);
+    function getLinklistContract() external view returns (address);
 }
