@@ -17,10 +17,8 @@ contract Web3EntryStorage {
     // LinkList NFT token contract
     address internal linkList;
     // profileId =>  (linkType => linklistId)
-    mapping(uint256 => mapping(bytes32 => uint256))
-        internal _primaryLinkListsByProfileId;
+    mapping(uint256 => mapping(bytes32 => uint256)) internal _primaryLinkListsByProfileId;
 
     // profileId => noteId => Note
-    mapping(uint256 => mapping(uint256 => DataTypes.Note))
-        internal _noteByIdByProfile;
+    mapping(uint256 => mapping(uint256 => DataTypes.Note)) internal _noteByIdByProfile;
 }

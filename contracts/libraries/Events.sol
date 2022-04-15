@@ -9,11 +9,7 @@ library Events {
 
     event LinklistNFTInitialized(uint256 timestamp);
 
-    event MintNFTInitialized(
-        uint256 profileId,
-        uint256 noteId,
-        uint256 timestamp
-    );
+    event MintNFTInitialized(uint256 profileId, uint256 noteId, uint256 timestamp);
 
     event ProfileCreated(
         uint256 indexed profileId,
@@ -23,16 +19,9 @@ library Events {
         uint256 timestamp
     );
 
-    event SetPrimaryProfileId(
-        address indexed account,
-        uint256 indexed profileId
-    );
+    event SetPrimaryProfileId(address indexed account, uint256 indexed profileId);
 
-    event SetHandle(
-        address indexed account,
-        uint256 indexed profileId,
-        string newHandle
-    );
+    event SetHandle(address indexed account, uint256 indexed profileId, string newHandle);
 
     event SetSocialToken(
         address indexed account,

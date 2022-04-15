@@ -17,23 +17,13 @@ interface ILinklist {
 
     function addLinkingProfileId(uint256 tokenId, uint256 toProfileId) external;
 
-    function removeLinkingProfileId(uint256 tokenId, uint256 toProfileId)
-        external;
+    function removeLinkingProfileId(uint256 tokenId, uint256 toProfileId) external;
 
-    function getLinkingProfileIds(uint256 tokenId)
-        external
-        view
-        returns (uint256[] memory);
+    function getLinkingProfileIds(uint256 tokenId) external view returns (uint256[] memory);
 
-    function getLinkingProfileListLength(uint256 tokenId)
-        external
-        view
-        returns (uint256);
+    function getLinkingProfileListLength(uint256 tokenId) external view returns (uint256);
 
-    function getCurrentTakeOver(uint256 tokenId)
-        external
-        view
-        returns (uint256);
+    function getCurrentTakeOver(uint256 tokenId) external view returns (uint256);
 
     function getLinkType(uint256 tokenId) external view returns (bytes32);
 

@@ -68,41 +68,25 @@ contract Linklist is ILinklist, NFTBase {
         _uris[tokenId] = _uri;
     }
 
-    function addLinkingProfileId(uint256 tokenId, uint256 toProfileId)
-        external
-    {
+    function addLinkingProfileId(uint256 tokenId, uint256 toProfileId) external {
         _validateCallerIsWeb3Entry();
         linkingProfileList[tokenId].add(toProfileId);
     }
 
-    function removeLinkingProfileId(uint256 tokenId, uint256 toProfileId)
-        external
-    {
+    function removeLinkingProfileId(uint256 tokenId, uint256 toProfileId) external {
         _validateCallerIsWeb3Entry();
         linkingProfileList[tokenId].remove(toProfileId);
     }
 
-    function getLinkingProfileIds(uint256 tokenId)
-        external
-        view
-        returns (uint256[] memory)
-    {
+    function getLinkingProfileIds(uint256 tokenId) external view returns (uint256[] memory) {
         return linkingProfileList[tokenId].values();
     }
 
-    function getLinkingProfileListLength(uint256 tokenId)
-        external
-        view
-        returns (uint256)
-    {
+    function getLinkingProfileListLength(uint256 tokenId) external view returns (uint256) {
         return linkingProfileList[tokenId].length();
     }
 
-    function getCurrentTakeOver(uint256 tokenId)
-        external
-        view
-        returns (uint256 profileId)
-    {
+    function getCurrentTakeOver(uint256 tokenId) external view returns (uint256 profileId) {
         profileId = currentTakeOver[tokenId];
     }
 
@@ -114,12 +98,7 @@ contract Linklist is ILinklist, NFTBase {
         return _getTokenUri(tokenId);
     }
 
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override
-        returns (string memory)
-    {
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
         return _getTokenUri(tokenId);
     }
 
@@ -133,11 +112,7 @@ contract Linklist is ILinklist, NFTBase {
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
-    function _getTokenUri(uint256 tokenId)
-        internal
-        view
-        returns (string memory)
-    {
+    function _getTokenUri(uint256 tokenId) internal view returns (string memory) {
         require(_exists(tokenId), "Linklist: URI query for nonexistent token");
 
         return _uris[tokenId];
