@@ -15,8 +15,10 @@ contract Linklist is ILinklist, NFTBase {
 
     // tokenId =>  profileIds
     mapping(uint256 => EnumerableSet.UintSet) internal linkingProfileList;
-    // profileId => external addresses
+    // tokenId => external addresses
     mapping(uint256 => EnumerableSet.AddressSet) internal linkingAddressList;
+    // tokenId => noteIds
+    mapping(uint256 => EnumerableSet.UintSet) internal linkingNoteList;
 
     // tokenId => profileId
     mapping(uint256 => uint256) internal currentTakeOver;

@@ -21,4 +21,13 @@ contract Web3EntryStorage {
 
     // profileId => noteId => Note
     mapping(uint256 => mapping(uint256 => DataTypes.Note)) internal _noteByIdByProfile;
+
+    // address => linkModule4Address
+    mapping(address => address) internal _linkModules4Address;
+
+    // tokenAddress => tokenId => linkModule4ERC721
+    mapping(address => mapping(uint256 => address)) internal _linkModules4ERC721;
+
+    // tokenId => linkModule4Linklist
+    mapping(uint256 => address) internal _linkModules4Linklist;
 }

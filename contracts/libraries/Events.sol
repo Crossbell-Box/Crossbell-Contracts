@@ -58,6 +58,13 @@ library Events {
         uint256 timestamp
     );
 
+    event SetLinkModule4Address(
+        address indexed account,
+        address indexed linkModule,
+        bytes returnData,
+        uint256 timestamp
+    );
+
     event SetMintModule4Note(
         uint256 indexed profileId,
         uint256 indexed noteId,

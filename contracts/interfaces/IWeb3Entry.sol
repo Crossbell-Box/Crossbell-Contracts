@@ -170,10 +170,7 @@ interface IWeb3Entry {
         view
         returns (address);
 
-    function getMintModule4Note(uint256 profileId, uint256 toNoteId)
-        external
-        view
-        returns (address);
+    function getMintModule4Note(uint256 profileId, uint256 noteId) external view returns (address);
 
     function getMintModule4Link(DataTypes.LinkData calldata linkData)
         external

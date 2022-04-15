@@ -7,6 +7,7 @@ import "./interfaces/IWeb3Entry.sol";
 import "./interfaces/ILinklist.sol";
 import "./interfaces/ILinkModule4Profile.sol";
 import "./interfaces/ILinkModule4Note.sol";
+import "./interfaces/ILinkModule4Address.sol";
 import "./interfaces/IMintModule4Note.sol";
 import "./storage/Web3EntryStorage.sol";
 import "./libraries/DataTypes.sol";
@@ -137,7 +138,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         bytes32 linkType
     ) external {
         _validateCallerIsProfileOwner(fromProfileId);
-        require(_exists(toProfileId), "Web3Entry: toProfileId not exist");
+        _validateProfileExists(toProfileId);
 
         uint256 linkListId = _primaryLinkListsByProfileId[fromProfileId][linkType];
         if (linkListId == 0) {
@@ -160,7 +161,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         bytes32 linkType
     ) external {
         _validateCallerIsProfileOwner(fromProfileId);
-        require(_exists(toProfileId), "Web3Entry: toProfileId not exist");
+        _validateProfileExists(toProfileId);
 
         uint256 linkListId = _primaryLinkListsByProfileId[fromProfileId][linkType];
         uint256 profileId = ILinklist(linkList).getCurrentTakeOver(linkListId);
@@ -177,7 +178,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         uint256 toProfileId,
         uint256 toNoteId,
         bytes32 linkType
-    ) external {}
+    ) external {
+        _validateCallerIsProfileOwner(fromProfileId);
+        _validateProfileExists(toProfileId);
+        _validateNoteExists(toProfileId, noteId);
+    }
 
     function linkERC721(
         uint256 fromProfileId,
@@ -235,7 +240,22 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         uint256 noteId,
         address linkModule,
         bytes calldata linkModuleInitData
-    ) external {} // set link module for his profile
+    ) external {
+        _validateCallerIsProfileOwner(profileId);
+        _validateNoteExists(profileId, noteId);
+
+        if (linkModule != address(0)) {
+            _noteByIdByProfile[profileId][noteId].linkModule = linkModule;
+        }
+
+        bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
+            profileId,
+            noteId,
+            linkModuleInitData
+        );
+
+        emit Events.SetLinkModule4Note(profileId, noteId, linkModule, returnData, block.timestamp);
+    }
 
     function setLinkModule4Linklist(
         uint256 tokenId,
@@ -254,7 +274,22 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         address account,
         address linkModule,
         bytes calldata linkModuleInitData
-    ) external {}
+    ) external {
+        require(msg.sender == account, "Web3Entry: NotAddressOwner");
+
+        _linkModules4Address[account] = linkModule;
+        bytes memory linkModuleReturnData = ILinkModule4Address(linkModule).initializeLinkModule(
+            account,
+            linkModuleInitData
+        );
+
+        emit Events.SetLinkModule4Address(
+            account,
+            linkModule,
+            linkModuleReturnData,
+            block.timestamp
+        );
+    }
 
     function setLinkModule4Link(
         DataTypes.LinkData calldata linkData,
@@ -333,17 +368,25 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         return tokenURI(profileId);
     }
 
-    function getLinkModule4Profile(uint256 profileId) external view returns (address) {}
+    function getLinkModule4Profile(uint256 profileId) external view returns (address) {
+        return _profileById[profileId].linkModule;
+    }
 
-    function getLinkModule4Address(address account) external view returns (address) {}
+    function getLinkModule4Address(address account) external view returns (address) {
+        return _linkModules4Address[account];
+    }
 
-    function getLinkModule4Linklist(uint256 tokenId) external view returns (address) {}
+    function getLinkModule4Linklist(uint256 tokenId) external view returns (address) {
+        return _linkModules4Linklist[tokenId];
+    }
 
     function getLinkModule4ERC721(address tokenAddress, uint256 tokenId)
         external
         view
         returns (address)
-    {}
+    {
+        return _linkModules4ERC721[tokenAddress][tokenId];
+    }
 
     function getLinkModule4Link(DataTypes.LinkData calldata linkData)
         external
@@ -351,11 +394,9 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
         returns (address)
     {}
 
-    function getMintModule4Note(uint256 profileId, uint256 toNoteId)
-        external
-        view
-        returns (address)
-    {}
+    function getMintModule4Note(uint256 profileId, uint256 noteId) external view returns (address) {
+        return _noteByIdByProfile[profileId][noteId].mintModule;
+    }
 
     function getMintModule4Link(DataTypes.LinkData calldata linkData)
         external
@@ -470,5 +511,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
 
     function _validateCallerIsLinklistOwner(uint256 tokenId) internal view {
         require(msg.sender == ERC721(linkList).ownerOf(tokenId), "Web3Entry: NotLinkListOwner");
+    }
+
+    function _validateProfileExists(uint256 profileId) internal view {
+        require(_exists(profileId), "Web3Entry: ProfileNotExists");
+    }
+
+    function _validateNoteExists(uint256 profileId, uint256 noteId) internal view {
+        require(noteId <= _profileById[profileId].noteCount, "Web3Entry: NoteNotExists");
     }
 }
