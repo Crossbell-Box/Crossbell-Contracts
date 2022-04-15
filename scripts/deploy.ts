@@ -13,7 +13,8 @@ async function main() {
     // manually to make sure everything is compiled
     // await hre.run('compile');
 
-    const admin = "0x";
+    const [owner, addr1] = await ethers.getSigners();
+    const admin = owner.address;
 
     // We get the contract to deploy
     const Linklist = await ethers.getContractFactory("Linklist");
@@ -31,9 +32,9 @@ async function main() {
 
     await linkList.initialize("Link List Token", "LLT", proxy.address);
 
-    web3Entry.attach(proxy.address).initialize("Web3 Entry Profile", "WEP", linkList.address);
+    await web3Entry.attach(proxy.address).connect(addr1).initialize("Web3 Entry Profile", "WEP", linkList.address);
     console.log("Linklist deployed to:", linkList.address);
-    console.log("proxy deployed to:", proxy.address);
+    console.log("Proxy deployed to:", proxy.address);
     console.log("Web3Entry deployed to:", web3Entry.address);
 }
 
