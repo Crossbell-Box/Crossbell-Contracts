@@ -1,5 +1,5 @@
-import '@nomiclabs/hardhat-ethers';
-import { BigNumberish, Bytes, logger, utils, BigNumber, Contract } from 'ethers';
+import "@nomiclabs/hardhat-ethers";
+import { BigNumberish, Bytes, logger, utils, BigNumber, Contract } from "ethers";
 // import {
 //   eventsLib,
 //   helper,
@@ -9,15 +9,13 @@ import { BigNumberish, Bytes, logger, utils, BigNumber, Contract } from 'ethers'
 //   PERIPHERY_DATA_PROVIDER_NAME,
 //   testWallet,
 // } from '../__setup.spec';
-import { eventsLib } from './setup';
-import { expect } from 'chai';
+import { eventsLib } from "./setup";
+import { expect } from "chai";
 // import { HARDHAT_CHAINID, MAX_UINT256 } from './constants';
-import { hexlify, keccak256, RLP, toUtf8Bytes } from 'ethers/lib/utils';
+import { hexlify, keccak256, RLP, toUtf8Bytes } from "ethers/lib/utils";
 // import { LensHub__factory } from '../../typechain-types';
-import { TransactionReceipt, TransactionResponse } from '@ethersproject/providers';
-import hre, { ethers } from 'hardhat';
-
-
+import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
+import hre, { ethers } from "hardhat";
 
 export function matchEvent(
     receipt: TransactionReceipt,
@@ -32,7 +30,7 @@ export function matchEvent(
         // match name from list of events in eventContract, when found, compute the sigHash
         let sigHash: string | undefined;
         for (let contractEvent of Object.keys(eventContract.interface.events)) {
-            if (contractEvent.startsWith(name) && contractEvent.charAt(name.length) == '(') {
+            if (contractEvent.startsWith(name) && contractEvent.charAt(name.length) == "(") {
                 sigHash = keccak256(toUtf8Bytes(contractEvent));
                 break;
             }
@@ -66,7 +64,7 @@ export function matchEvent(
                     for (let i = 0; i < expectedArgs.length; i++) {
                         // Parse empty arrays as empty bytes
                         if (expectedArgs[i].constructor == Array && expectedArgs[i].length == 0) {
-                            expectedArgs[i] = '0x';
+                            expectedArgs[i] = "0x";
                         }
 
                         // Break out of the expected args loop if there is a mismatch, this will continue the emitted event loop
@@ -113,12 +111,12 @@ export function matchEvent(
             );
         }
     } else {
-        logger.throwError('No events were emitted');
+        logger.throwError("No events were emitted");
     }
 }
 
 export async function getTimestamp(): Promise<any> {
-    const blockNumber = await hre.ethers.provider.send('eth_blockNumber', []);
-    const block = await hre.ethers.provider.send('eth_getBlockByNumber', [blockNumber, false]);
+    const blockNumber = await hre.ethers.provider.send("eth_blockNumber", []);
+    const block = await hre.ethers.provider.send("eth_getBlockByNumber", [blockNumber, false]);
     return block.timestamp;
 }

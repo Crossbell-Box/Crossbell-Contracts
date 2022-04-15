@@ -32,7 +32,10 @@ async function main() {
 
     await linkList.initialize("Link List Token", "LLT", proxy.address);
 
-    await web3Entry.attach(proxy.address).connect(addr1).initialize("Web3 Entry Profile", "WEP", linkList.address);
+    await web3Entry
+        .attach(proxy.address)
+        .connect(addr1)
+        .initialize("Web3 Entry Profile", "WEP", linkList.address);
     console.log("Linklist deployed to:", linkList.address);
     console.log("Proxy deployed to:", proxy.address);
     console.log("Web3Entry deployed to:", web3Entry.address);

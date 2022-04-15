@@ -1,12 +1,12 @@
 import { ethers } from "hardhat";
-import { Events__factory, Events, Linklist, Web3Entry } from '../typechain';
+import { Events__factory, Events, Linklist, Web3Entry } from "../typechain";
 
 export let eventsLib: Events;
 export let linkList: Linklist;
 export let web3Entry: Web3Entry;
 
 beforeEach(async () => {
-    const [deployer] = await ethers.getSigners()
+    const [deployer] = await ethers.getSigners();
 
     const Linklist = await ethers.getContractFactory("Linklist");
     linkList = await Linklist.deploy();
@@ -21,4 +21,4 @@ beforeEach(async () => {
     await web3Entry.initialize("Web3 Entry Profile", "WEP", linkList.address);
 
     eventsLib = await new Events__factory(deployer).deploy();
-})
+});
