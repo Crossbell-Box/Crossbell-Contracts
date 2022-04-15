@@ -24,8 +24,6 @@ library DataTypes {
 
     struct LinkData {
         uint256 linklistId;
-        bytes32 linkType;
-        uint256 linkTargetType;
         bytes content;
     }
 
