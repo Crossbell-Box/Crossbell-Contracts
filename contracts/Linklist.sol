@@ -6,8 +6,9 @@ import "./interfaces/ILinklist.sol";
 import "./base/NFTBase.sol";
 import "./libraries/Events.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-contract Linklist is ILinklist, NFTBase {
+contract Linklist is ILinklist, NFTBase, Initializable {
     using EnumerableSet for EnumerableSet.UintSet;
 
     // tokenId => linkType
@@ -24,17 +25,13 @@ contract Linklist is ILinklist, NFTBase {
     mapping(uint256 => uint256) internal currentTakeOver;
     mapping(uint256 => string) internal _uris; // tokenId => tokenURI
 
-    bool private _initialized;
     address public web3Entry;
 
     function initialize(
         string calldata _name,
         string calldata _symbol,
         address _web3Entry
-    ) external {
-        require(!_initialized, "LinklistNFT: Initialized");
-        _initialized = true;
-
+    ) external initializer {
         web3Entry = _web3Entry;
 
         super._initialize(_name, _symbol);

@@ -6,13 +6,12 @@ import "./base/NFTBase.sol";
 import "./interfaces/IMintNFT.sol";
 import "./interfaces/IWeb3Entry.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-contract MintNFT is NFTBase, IMintNFT {
+contract MintNFT is NFTBase, IMintNFT, Initializable {
     using Counters for Counters.Counter;
 
     address public _web3Entry;
-
-    bool private _initialized;
 
     uint256 internal _profileId;
     uint256 internal _noteId;
@@ -24,15 +23,12 @@ contract MintNFT is NFTBase, IMintNFT {
         address web3Entry,
         string calldata name,
         string calldata symbol
-    ) external {
-        require(!_initialized, "MintNFT: Initialized");
-        _initialized = true;
-
+    ) external initializer {
+        super._initialize(name, symbol);
         _profileId = profileId;
         _noteId = noteId;
         _web3Entry = web3Entry;
 
-        super._initialize(name, symbol);
         emit Events.MintNFTInitialized(profileId, noteId, block.timestamp);
     }
 

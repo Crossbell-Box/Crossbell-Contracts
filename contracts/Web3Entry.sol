@@ -13,19 +13,16 @@ import "./storage/Web3EntryStorage.sol";
 import "./libraries/DataTypes.sol";
 import "./libraries/Events.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage {
+contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     using SafeMath for uint256;
-
-    bool private _initialized;
 
     function initialize(
         string calldata _name,
         string calldata _symbol,
         address _linkListContract
-    ) external {
-        require(!_initialized, "Web3Entry: Initialized");
-
+    ) external initializer {
         super._initialize(_name, _symbol);
         linkList = _linkListContract;
 
