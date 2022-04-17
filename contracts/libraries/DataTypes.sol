@@ -56,13 +56,13 @@ library DataTypes {
         address mintModule;
     }
 
-    struct linkERC721Item {
-        address tokenAddress;
-        uint256 tokenId;
-    }
-
     struct linkNoteItem {
         uint256 profileId;
         uint256 noteId;
+    }
+
+    struct linkERC721Item {
+        address tokenAddress;
+        uint256 erc721TokenId;
     }
 }

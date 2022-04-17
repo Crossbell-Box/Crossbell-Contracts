@@ -44,6 +44,25 @@ interface ILinklist {
 
     function getLinkingNoteListLength(uint256 tokenId) external view returns (uint256);
 
+    function addLinkingERC721(
+        uint256 tokenId,
+        address tokenAddress,
+        uint256 erc721TokenId
+    ) external;
+
+    function removeLinkingERC721(
+        uint256 tokenId,
+        address tokenAddress,
+        uint256 erc721TokenId
+    ) external;
+
+    function getLinkingERC721s(uint256 tokenId)
+        external
+        view
+        returns (DataTypes.linkERC721Item[] memory results);
+
+    function getLinkingERC721ListLength(uint256 tokenId) external view returns (uint256);
+
     function getCurrentTakeOver(uint256 tokenId) external view returns (uint256);
 
     function getLinkType(uint256 tokenId) external view returns (bytes32);

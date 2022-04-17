@@ -250,7 +250,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         address tokenAddress,
         uint256 tokenId,
         bytes32 linkType
-    ) external {}
+    ) external {
+        _validateCallerIsProfileOwner(fromProfileId);
+
+        _linkERC721(fromProfileId, tokenAddress, tokenId, linkType);
+    }
 
     //TODO linkERC1155
     function linkAddress(
@@ -588,6 +592,27 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         ILinklist(linkList).addLinkingNote(linklistId, toProfileId, toNoteId);
 
         emit Events.LinkNote(fromProfileId, toProfileId, toNoteId, linkType, linklistId);
+    }
+
+    function _linkERC721(
+        uint256 fromProfileId,
+        address tokenAddress,
+        uint256 tokenId,
+        bytes32 linkType
+    ) internal {
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        if (linklistId == 0) {
+            linklistId = IERC721Enumerable(linkList).totalSupply().add(1);
+            // mint linkList nft
+            ILinklist(linkList).mint(msg.sender, linkType, linklistId);
+            // set primary linkList
+            attachLinklist(linklistId, fromProfileId);
+        }
+
+        // add to link list
+        ILinklist(linkList).addLinkingERC721(linklistId, tokenAddress, tokenId);
+
+        emit Events.LinkERC721(fromProfileId, tokenAddress, tokenId, linkType, linklistId);
     }
 
     function _takeOverLinkList(uint256 tokenId, uint256 profileId) internal {

@@ -23,9 +23,9 @@ contract Linklist is ILinklist, NFTBase, Initializable {
     mapping(uint256 => EnumerableSet.AddressSet) internal linkingAddressList;
 
     // tokenId => linkKeys
-    mapping(uint256 => EnumerableSet.Bytes32Set) internal linkingNoteKeyList;
+    mapping(uint256 => EnumerableSet.Bytes32Set) internal linkKeysList;
     // linkKey => linking ERC721
-    mapping(bytes32 => DataTypes.linkERC721Item) internal linkERC721list;
+    mapping(bytes32 => DataTypes.linkERC721Item) internal linkingERC721list;
     // linkKey => linking Note
     mapping(bytes32 => DataTypes.linkNoteItem) internal linkNoteList;
 
@@ -101,7 +101,7 @@ contract Linklist is ILinklist, NFTBase, Initializable {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked(toProfileId, toNoteId));
-        linkingNoteKeyList[tokenId].add(linkKey);
+        linkKeysList[tokenId].add(linkKey);
 
         linkNoteList[linkKey] = DataTypes.linkNoteItem({profileId: toProfileId, noteId: toNoteId});
     }
@@ -114,7 +114,7 @@ contract Linklist is ILinklist, NFTBase, Initializable {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked(toProfileId, toNoteId));
-        linkingNoteKeyList[tokenId].remove(linkKey);
+        linkKeysList[tokenId].remove(linkKey);
 
         delete linkNoteList[linkKey];
     }
@@ -124,7 +124,7 @@ contract Linklist is ILinklist, NFTBase, Initializable {
         view
         returns (DataTypes.linkNoteItem[] memory results)
     {
-        bytes32[] memory linkKeys = linkingNoteKeyList[tokenId].values();
+        bytes32[] memory linkKeys = linkKeysList[tokenId].values();
 
         results = new DataTypes.linkNoteItem[](linkKeys.length);
         for (uint256 i = 0; i < linkKeys.length; i++) {
@@ -134,7 +134,54 @@ contract Linklist is ILinklist, NFTBase, Initializable {
     }
 
     function getLinkingNoteListLength(uint256 tokenId) external view returns (uint256) {
-        return linkingNoteKeyList[tokenId].length();
+        return linkKeysList[tokenId].length();
+    }
+
+    function addLinkingERC721(
+        uint256 tokenId,
+        address tokenAddress,
+        uint256 erc721TokenId
+    ) external {
+        _validateCallerIsWeb3Entry();
+
+        bytes32 linkKey = keccak256(abi.encodePacked(tokenAddress, erc721TokenId));
+        linkKeysList[tokenId].add(linkKey);
+
+        linkingERC721list[linkKey] = DataTypes.linkERC721Item({
+            tokenAddress: tokenAddress,
+            erc721TokenId: erc721TokenId
+        });
+    }
+
+    function removeLinkingERC721(
+        uint256 tokenId,
+        address tokenAddress,
+        uint256 erc721TokenId
+    ) external {
+        _validateCallerIsWeb3Entry();
+
+        bytes32 linkKey = keccak256(abi.encodePacked(tokenAddress, erc721TokenId));
+        linkKeysList[tokenId].remove(linkKey);
+
+        delete linkingERC721list[linkKey];
+    }
+
+    function getLinkingERC721s(uint256 tokenId)
+        external
+        view
+        returns (DataTypes.linkERC721Item[] memory results)
+    {
+        bytes32[] memory linkKeys = linkKeysList[tokenId].values();
+
+        results = new DataTypes.linkERC721Item[](linkKeys.length);
+        for (uint256 i = 0; i < linkKeys.length; i++) {
+            bytes32 key = linkKeys[i];
+            results[i] = linkingERC721list[key];
+        }
+    }
+
+    function getLinkingERC721ListLength(uint256 tokenId) external view returns (uint256) {
+        return linkKeysList[tokenId].length();
     }
 
     function getCurrentTakeOver(uint256 tokenId) external view returns (uint256 profileId) {
