@@ -176,6 +176,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external {
         _validateCallerIsProfileOwner(fromProfileId);
         _validateProfileExists(toProfileId);
+
         _linkProfile(fromProfileId, toProfileId, linkType);
     }
 
@@ -187,12 +188,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(fromProfileId);
         _validateProfileExists(toProfileId);
 
-        uint256 linkListId = _attachedLinklists[fromProfileId][linkType];
-        uint256 profileId = ILinklist(linkList).getCurrentTakeOver(linkListId);
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        uint256 profileId = ILinklist(linkList).getCurrentTakeOver(linklistId);
         require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
 
         // remove from link list
-        ILinklist(linkList).removeLinkingProfileId(linkListId, toProfileId);
+        ILinklist(linkList).removeLinkingProfileId(linklistId, toProfileId);
 
         emit Events.UnlinkProfile(msg.sender, fromProfileId, toProfileId, linkType);
     }
@@ -220,6 +221,28 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(fromProfileId);
         _validateProfileExists(toProfileId);
         _validateNoteExists(toProfileId, toNoteId);
+
+        _linkNote(fromProfileId, toProfileId, toNoteId, linkType);
+    }
+
+    function unlinkNote(
+        uint256 fromProfileId,
+        uint256 toProfileId,
+        uint256 toNoteId,
+        bytes32 linkType
+    ) external {
+        _validateCallerIsProfileOwner(fromProfileId);
+        _validateProfileExists(toProfileId);
+        _validateNoteExists(toProfileId, toNoteId);
+
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        uint256 profileId = ILinklist(linkList).getCurrentTakeOver(linklistId);
+        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
+
+        // remove from link list
+        ILinklist(linkList).removeLinkingNote(linklistId, toProfileId, toNoteId);
+
+        emit Events.UnlinkNote(fromProfileId, toProfileId, toNoteId, linkType, linklistId);
     }
 
     function linkERC721(
@@ -544,6 +567,27 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         );
 
         return noteId;
+    }
+
+    function _linkNote(
+        uint256 fromProfileId,
+        uint256 toProfileId,
+        uint256 toNoteId,
+        bytes32 linkType
+    ) internal {
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        if (linklistId == 0) {
+            linklistId = IERC721Enumerable(linkList).totalSupply().add(1);
+            // mint linkList nft
+            ILinklist(linkList).mint(msg.sender, linkType, linklistId);
+            // set primary linkList
+            attachLinklist(linklistId, fromProfileId);
+        }
+
+        // add to link list
+        ILinklist(linkList).addLinkingNote(linklistId, toProfileId, toNoteId);
+
+        emit Events.LinkNote(fromProfileId, toProfileId, toNoteId, linkType, linklistId);
     }
 
     function _takeOverLinkList(uint256 tokenId, uint256 profileId) internal {

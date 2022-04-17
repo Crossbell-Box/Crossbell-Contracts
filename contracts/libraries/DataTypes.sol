@@ -50,9 +50,19 @@ library DataTypes {
     struct Note {
         uint256 noteType;
         uint256 linkType;
-        bytes32 IdPointed;
+        bytes32 linkKey;
         string contentUri;
         address linkModule;
         address mintModule;
+    }
+
+    struct linkERC721Item {
+        address tokenAddress;
+        uint256 tokenId;
+    }
+
+    struct linkNoteItem {
+        uint256 profileId;
+        uint256 noteId;
     }
 }

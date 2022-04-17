@@ -5,11 +5,14 @@ pragma solidity 0.8.10;
 import "./interfaces/ILinklist.sol";
 import "./base/NFTBase.sol";
 import "./libraries/Events.sol";
+import "./libraries/DataTypes.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 contract Linklist is ILinklist, NFTBase, Initializable {
     using EnumerableSet for EnumerableSet.UintSet;
+    using EnumerableSet for EnumerableSet.Bytes32Set;
+    using EnumerableSet for EnumerableSet.AddressSet;
 
     // tokenId => linkType
     mapping(uint256 => bytes32) internal linkTypes;
@@ -18,8 +21,13 @@ contract Linklist is ILinklist, NFTBase, Initializable {
     mapping(uint256 => EnumerableSet.UintSet) internal linkingProfileList;
     // tokenId => external addresses
     mapping(uint256 => EnumerableSet.AddressSet) internal linkingAddressList;
-    // tokenId => noteIds
-    mapping(uint256 => EnumerableSet.UintSet) internal linkingNoteList;
+
+    // tokenId => linkKeys
+    mapping(uint256 => EnumerableSet.Bytes32Set) internal linkingNoteKeyList;
+    // linkKey => linking ERC721
+    mapping(bytes32 => DataTypes.linkERC721Item) internal linkERC721list;
+    // linkKey => linking Note
+    mapping(bytes32 => DataTypes.linkNoteItem) internal linkNoteList;
 
     // tokenId => profileId
     mapping(uint256 => uint256) internal currentTakeOver;
@@ -83,6 +91,50 @@ contract Linklist is ILinklist, NFTBase, Initializable {
 
     function getLinkingProfileListLength(uint256 tokenId) external view returns (uint256) {
         return linkingProfileList[tokenId].length();
+    }
+
+    function addLinkingNote(
+        uint256 tokenId,
+        uint256 toProfileId,
+        uint256 toNoteId
+    ) external {
+        _validateCallerIsWeb3Entry();
+
+        bytes32 linkKey = keccak256(abi.encodePacked(toProfileId, toNoteId));
+        linkingNoteKeyList[tokenId].add(linkKey);
+
+        linkNoteList[linkKey] = DataTypes.linkNoteItem({profileId: toProfileId, noteId: toNoteId});
+    }
+
+    function removeLinkingNote(
+        uint256 tokenId,
+        uint256 toProfileId,
+        uint256 toNoteId
+    ) external {
+        _validateCallerIsWeb3Entry();
+
+        bytes32 linkKey = keccak256(abi.encodePacked(toProfileId, toNoteId));
+        linkingNoteKeyList[tokenId].remove(linkKey);
+
+        delete linkNoteList[linkKey];
+    }
+
+    function getLinkingNotes(uint256 tokenId)
+        external
+        view
+        returns (DataTypes.linkNoteItem[] memory results)
+    {
+        bytes32[] memory linkKeys = linkingNoteKeyList[tokenId].values();
+
+        results = new DataTypes.linkNoteItem[](linkKeys.length);
+        for (uint256 i = 0; i < linkKeys.length; i++) {
+            bytes32 key = linkKeys[i];
+            results[i] = linkNoteList[key];
+        }
+    }
+
+    function getLinkingNoteListLength(uint256 tokenId) external view returns (uint256) {
+        return linkingNoteKeyList[tokenId].length();
     }
 
     function getCurrentTakeOver(uint256 tokenId) external view returns (uint256 profileId) {

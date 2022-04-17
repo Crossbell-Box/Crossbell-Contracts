@@ -48,6 +48,22 @@ library Events {
         bytes32 linkType
     );
 
+    event LinkNote(
+        uint256 indexed fromProfileId,
+        uint256 indexed toProfileId,
+        uint256 indexed toNoteId,
+        bytes32 linkType,
+        uint256 linklistId
+    );
+
+    event UnlinkNote(
+        uint256 indexed fromProfileId,
+        uint256 indexed toProfileId,
+        uint256 indexed toNoteId,
+        bytes32 linkType,
+        uint256 linklistId
+    );
+
     event SetLinkModule4Profile(
         uint256 indexed profileId,
         address indexed linkModule,

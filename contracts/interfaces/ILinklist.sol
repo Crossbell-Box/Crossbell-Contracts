@@ -1,5 +1,7 @@
 pragma solidity 0.8.10;
 
+import "../libraries/DataTypes.sol";
+
 interface ILinklist {
     function mint(
         address to,
@@ -22,6 +24,25 @@ interface ILinklist {
     function getLinkingProfileIds(uint256 tokenId) external view returns (uint256[] memory);
 
     function getLinkingProfileListLength(uint256 tokenId) external view returns (uint256);
+
+    function addLinkingNote(
+        uint256 tokenId,
+        uint256 toProfileId,
+        uint256 toNoteId
+    ) external;
+
+    function removeLinkingNote(
+        uint256 tokenId,
+        uint256 toProfileId,
+        uint256 toNoteId
+    ) external;
+
+    function getLinkingNotes(uint256 tokenId)
+        external
+        view
+        returns (DataTypes.linkNoteItem[] memory results);
+
+    function getLinkingNoteListLength(uint256 tokenId) external view returns (uint256);
 
     function getCurrentTakeOver(uint256 tokenId) external view returns (uint256);
 

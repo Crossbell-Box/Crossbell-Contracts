@@ -67,7 +67,13 @@ interface IWeb3Entry {
         bytes32 linkType
     ) external;
 
-    // next launch
+    function unlinkNote(
+        uint256 fromProfileId,
+        uint256 toProfileId,
+        uint256 toNoteId,
+        bytes32 linkType
+    ) external;
+
     // When implement, should check if ERC721 is linklist contract
     function linkERC721(
         uint256 fromProfileId,
