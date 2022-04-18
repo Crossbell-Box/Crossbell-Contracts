@@ -173,7 +173,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         // add to link list
         ILinklist(linkList).addLinkingProfileId(linklistId, toProfileId);
 
-        //return linklist id
         emit Events.LinkProfile(msg.sender, fromProfileId, toProfileId, linkType, linklistId);
     }
 
@@ -293,8 +292,39 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         bytes32 linkType
     ) external {}
 
-    // TODO:
-    function linkProfileLink(uint256 fromProfileId) external {}
+    function linkProfileLink(
+        uint256 fromProfileId,
+        DataTypes.ProfileLinkStruct calldata linkData,
+        bytes32 linkType
+    ) external {
+        _validateCallerIsProfileOwner(fromProfileId);
+
+        _linkProfileLink(fromProfileId, linkType, linkData);
+    }
+
+    function unlinkProfileLink(
+        uint256 fromProfileId,
+        DataTypes.ProfileLinkStruct calldata linkData,
+        bytes32 linkType
+    ) external {
+        _validateCallerIsProfileOwner(fromProfileId);
+
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        uint256 profileId = ILinklist(linkList).getCurrentTakeOver(linklistId);
+        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
+
+        // remove from link list
+        ILinklist(linkList).removeLinkingProfileLink(linklistId, linkData);
+
+        // event
+        emit Events.UnlinkProfileLink(
+            fromProfileId,
+            linkType,
+            linkData.fromProfileId,
+            linkData.toProfileId,
+            linkData.linkType
+        );
+    }
 
     function linkAddressLink(uint256 fromProfileId) external {}
 
@@ -717,6 +747,33 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         ILinklist(linkList).removeLinkingERC721(linklistId, tokenAddress, tokenId);
 
         emit Events.UnlinkERC721(fromProfileId, tokenAddress, tokenId, linkType, linklistId);
+    }
+
+    function _linkProfileLink(
+        uint256 fromProfileId,
+        bytes32 linkType,
+        DataTypes.ProfileLinkStruct memory linkData
+    ) internal {
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        if (linklistId == 0) {
+            linklistId = IERC721Enumerable(linkList).totalSupply().add(1);
+            // mint linkList nft
+            ILinklist(linkList).mint(msg.sender, linkType, linklistId);
+            // set primary linkList
+            attachLinklist(linklistId, fromProfileId);
+        }
+
+        // add to link list
+        ILinklist(linkList).addLinkingProfileLink(linklistId, linkData);
+
+        // event
+        emit Events.LinkProfileLink(
+            fromProfileId,
+            linkType,
+            linkData.fromProfileId,
+            linkData.toProfileId,
+            linkData.linkType
+        );
     }
 
     function _takeOverLinkList(uint256 tokenId, uint256 profileId) internal {

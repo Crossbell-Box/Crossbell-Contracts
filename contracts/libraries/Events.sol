@@ -72,6 +72,22 @@ library Events {
         uint256 linklistId
     );
 
+    event LinkProfileLink(
+        uint256 indexed fromProfileId,
+        bytes32 indexed linkType,
+        uint256 plFromProfileId,
+        uint256 plToProfileId,
+        bytes32 plLinkType
+    );
+
+    event UnlinkProfileLink(
+        uint256 indexed fromProfileId,
+        bytes32 indexed linkType,
+        uint256 plFromProfileId,
+        uint256 plToProfileId,
+        bytes32 plLinkType
+    );
+
     event UnlinkERC721(
         uint256 indexed fromProfileId,
         address indexed tokenAddress,

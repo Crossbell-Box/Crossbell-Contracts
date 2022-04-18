@@ -23,9 +23,11 @@ contract LinklistStorage {
     // tokenId => linkKeys
     mapping(uint256 => EnumerableSet.Bytes32Set) internal linkKeysList;
     // linkKey => linking ERC721
-    mapping(bytes32 => DataTypes.linkERC721Item) internal linkingERC721list;
+    mapping(bytes32 => DataTypes.ERC721Struct) internal linkingERC721list;
     // linkKey => linking Note
-    mapping(bytes32 => DataTypes.linkNoteItem) internal linkNoteList;
+    mapping(bytes32 => DataTypes.NoteStruct) internal linkNoteList;
+    // linkKey => linking ProfileLink
+    mapping(bytes32 => DataTypes.ProfileLinkStruct) internal linkingProfileLinklist;
 
     // tokenId => profileId
     mapping(uint256 => uint256) internal currentTakeOver;

@@ -22,6 +22,14 @@ library DataTypes {
         bytes linkModuleInitData;
     }
 
+    struct linkProfileLinkData {
+        uint256 fromProfileId;
+        bytes32 linkType;
+        uint256 profileLinkFromProfileId;
+        uint256 profileLinkToProfileId;
+        bytes32 profileLinkLinkType;
+    }
+
     struct LinkData {
         uint256 linklistId;
         bytes content;
@@ -57,12 +65,18 @@ library DataTypes {
         address mintNFT;
     }
 
-    struct linkNoteItem {
+    struct ProfileLinkStruct {
+        uint256 fromProfileId;
+        uint256 toProfileId;
+        bytes32 linkType;
+    }
+
+    struct NoteStruct {
         uint256 profileId;
         uint256 noteId;
     }
 
-    struct linkERC721Item {
+    struct ERC721Struct {
         address tokenAddress;
         uint256 erc721TokenId;
     }
