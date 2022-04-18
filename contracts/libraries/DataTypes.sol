@@ -54,6 +54,7 @@ library DataTypes {
         string contentUri;
         address linkModule;
         address mintModule;
+        address mintNFT;
     }
 
     struct linkNoteItem {

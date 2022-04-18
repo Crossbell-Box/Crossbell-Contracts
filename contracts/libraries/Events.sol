@@ -72,6 +72,15 @@ library Events {
         uint256 linklistId
     );
 
+    event MintNote(
+        address indexed to,
+        uint256 indexed profileId,
+        uint256 indexed noteId,
+        uint256 tokenId,
+        bytes data,
+        uint256 timestamp
+    );
+
     event SetLinkModule4Profile(
         uint256 indexed profileId,
         address indexed linkModule,

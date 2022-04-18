@@ -9,22 +9,30 @@ import "./interfaces/ILinkModule4Profile.sol";
 import "./interfaces/ILinkModule4Note.sol";
 import "./interfaces/ILinkModule4Address.sol";
 import "./interfaces/IMintModule4Note.sol";
+import "./interfaces/IMintNFT.sol";
 import "./storage/Web3EntryStorage.sol";
 import "./libraries/DataTypes.sol";
 import "./libraries/Events.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/proxy/Clones.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     using SafeMath for uint256;
+    using Strings for uint256;
+
+    address MINT_NFT_IMPL;
 
     function initialize(
         string calldata _name,
         string calldata _symbol,
-        address _linkListContract
+        address _linkListContract,
+        address _mintNFTImpl
     ) external initializer {
         super._initialize(_name, _symbol);
         linkList = _linkListContract;
+        MINT_NFT_IMPL = _mintNFTImpl;
 
         emit Events.Web3EntryInitialized(block.timestamp);
     }
@@ -376,8 +384,51 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function mintNote(
         uint256 profileId,
         uint256 noteId,
-        address to
-    ) external {}
+        address to,
+        bytes calldata mintModuleData
+    ) external returns (uint256) {
+        uint256 tokenId;
+
+        address mintNFT = _noteByIdByProfile[profileId][noteId].mintNFT;
+        if (mintNFT == address(0)) {
+            mintNFT = _deployMintNFT(
+                profileId,
+                noteId,
+                _profileById[profileId].handle,
+                MINT_NFT_IMPL
+            );
+            _noteByIdByProfile[profileId][noteId].mintNFT = mintNFT;
+        }
+        tokenId = IMintNFT(mintNFT).mint(to);
+
+        address mintModule = _noteByIdByProfile[profileId][noteId].mintModule;
+        IMintModule4Note(mintModule).processMint(profileId, noteId, mintModuleData);
+
+        emit Events.MintNote(to, profileId, noteId, tokenId, mintModuleData, block.timestamp);
+
+        return tokenId;
+    }
+
+    function _deployMintNFT(
+        uint256 profileId,
+        uint256 noteId,
+        string memory handle,
+        address mintNFTImpl
+    ) internal returns (address) {
+        address mintNFT = Clones.clone(mintNFTImpl);
+
+        bytes4 firstBytes = bytes4(bytes(handle));
+
+        string memory NFTName = string(
+            abi.encodePacked(handle, "-Mint-", profileId.toString(), "-", noteId.toString())
+        );
+        string memory NFTSymbol = string(
+            abi.encodePacked(firstBytes, "-Mint-", profileId.toString(), "-", noteId.toString())
+        );
+
+        IMintNFT(mintNFT).initialize(profileId, noteId, address(this), NFTName, NFTSymbol);
+        return mintNFT;
+    }
 
     function mintProfileLink(DataTypes.LinkData calldata linkData, address to) external {}
 
@@ -393,10 +444,37 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function setMintModule4Note(
         uint256 profileId,
-        uint256 toNoteId,
+        uint256 noteId,
         address mintModule,
         bytes calldata mintModuleInitData
-    ) external {} // set mint module for himself
+    ) external {
+        _validateCallerIsProfileOwner(profileId);
+        _validateNoteExists(profileId, noteId);
+
+        bytes memory returnData = _initMintModule4Note(
+            profileId,
+            noteId,
+            mintModule,
+            mintModuleInitData
+        );
+
+        emit Events.SetMintModule4Note(profileId, noteId, mintModule, returnData, block.timestamp);
+    }
+
+    function _initMintModule4Note(
+        uint256 profileId,
+        uint256 noteId,
+        address mintModule,
+        bytes memory mintModuleInitData
+    ) internal returns (bytes memory) {
+        _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
+        return
+            IMintModule4Note(mintModule).initializeMintModule(
+                profileId,
+                noteId,
+                mintModuleInitData
+            );
+    }
 
     function setMintModule4Link(
         DataTypes.LinkData calldata linkData,

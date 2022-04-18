@@ -9,7 +9,8 @@ interface IWeb3Entry {
     function initialize(
         string calldata _name,
         string calldata _symbol,
-        address _linkListContract
+        address _linkListContract,
+        address _mintNFTImpl
     ) external;
 
     // createProfile creates a profile, and mint a profile NFT
@@ -137,8 +138,9 @@ interface IWeb3Entry {
     function mintNote(
         uint256 profileId,
         uint256 noteId,
-        address to
-    ) external;
+        address to,
+        bytes calldata mintModuleData
+    ) external returns (uint256);
 
     function mintProfileLink(DataTypes.LinkData calldata linkData, address to) external;
 
@@ -154,7 +156,7 @@ interface IWeb3Entry {
 
     function setMintModule4Note(
         uint256 profileId,
-        uint256 toNoteId,
+        uint256 noteId,
         address mintModule,
         bytes calldata mintModuleInitData
     ) external;
