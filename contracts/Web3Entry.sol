@@ -228,7 +228,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external {
         _validateCallerIsProfileOwner(fromProfileId);
         _validateProfileExists(toProfileId);
-        _validateNoteExists(toProfileId, toNoteId);
 
         _linkNote(fromProfileId, toProfileId, toNoteId, linkType);
     }
@@ -262,6 +261,17 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(fromProfileId);
 
         _linkERC721(fromProfileId, tokenAddress, tokenId, linkType);
+    }
+
+    function unlinkERC721(
+        uint256 fromProfileId,
+        address tokenAddress,
+        uint256 tokenId,
+        bytes32 linkType
+    ) external {
+        _validateCallerIsProfileOwner(fromProfileId);
+
+        _unlinkERC721(fromProfileId, tokenAddress, tokenId, linkType);
     }
 
     //TODO linkERC1155
@@ -691,6 +701,22 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         ILinklist(linkList).addLinkingERC721(linklistId, tokenAddress, tokenId);
 
         emit Events.LinkERC721(fromProfileId, tokenAddress, tokenId, linkType, linklistId);
+    }
+
+    function _unlinkERC721(
+        uint256 fromProfileId,
+        address tokenAddress,
+        uint256 tokenId,
+        bytes32 linkType
+    ) internal {
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        uint256 profileId = ILinklist(linkList).getCurrentTakeOver(linklistId);
+        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
+
+        // remove from link list
+        ILinklist(linkList).removeLinkingERC721(linklistId, tokenAddress, tokenId);
+
+        emit Events.UnlinkERC721(fromProfileId, tokenAddress, tokenId, linkType, linklistId);
     }
 
     function _takeOverLinkList(uint256 tokenId, uint256 profileId) internal {
