@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 contract MintNFT is NFTBase, IMintNFT, Initializable {
     using Counters for Counters.Counter;
 
-    address public _web3Entry;
+    address public Web3Entry;
 
     uint256 internal _profileId;
     uint256 internal _noteId;
@@ -27,13 +27,13 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
         super._initialize(name, symbol);
         _profileId = profileId;
         _noteId = noteId;
-        _web3Entry = web3Entry;
+        Web3Entry = web3Entry;
 
         emit Events.MintNFTInitialized(profileId, noteId, block.timestamp);
     }
 
     function mint(address to) external returns (uint256) {
-        require(msg.sender != _web3Entry, "MintNFT: not Web3Entry");
+        require(msg.sender != Web3Entry, "MintNFT: not Web3Entry");
 
         _tokenIdCounter.increment();
         _mint(to, _tokenIdCounter.current());
@@ -46,7 +46,7 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         require(_exists(tokenId), "MintNFT: TokenDoesNotExist");
-        return IWeb3Entry(_web3Entry).getNoteUri(_profileId, _noteId);
+        return IWeb3Entry(Web3Entry).getNoteUri(_profileId, _noteId);
     }
 
     function _beforeTokenTransfer(

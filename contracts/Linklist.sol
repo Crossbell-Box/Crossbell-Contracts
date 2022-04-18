@@ -20,14 +20,10 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         string calldata _symbol,
         address _web3Entry
     ) external initializer {
-        web3Entry = _web3Entry;
+        Web3Entry = _web3Entry;
 
         super._initialize(_name, _symbol);
         emit Events.LinklistNFTInitialized(block.timestamp);
-    }
-
-    function getWeb3Entry() external view returns (address) {
-        return web3Entry;
     }
 
     function mint(
@@ -201,12 +197,12 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
     }
 
     function _validateCallerIsWeb3Entry() internal view {
-        require(msg.sender == web3Entry, "Linklist: NotWeb3Entry");
+        require(msg.sender == Web3Entry, "Linklist: NotWeb3Entry");
     }
 
     function _validateCallerIsWeb3EntryOrOwner(uint256 tokenId) internal view {
         require(
-            msg.sender == web3Entry || msg.sender == ownerOf(tokenId),
+            msg.sender == Web3Entry || msg.sender == ownerOf(tokenId),
             "Linklist: NotWeb3EntryOrNotOwner"
         );
     }
