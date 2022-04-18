@@ -6,34 +6,14 @@ import "./interfaces/ILinklist.sol";
 import "./base/NFTBase.sol";
 import "./libraries/Events.sol";
 import "./libraries/DataTypes.sol";
+import "./storage/LinklistStorage.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-contract Linklist is ILinklist, NFTBase, Initializable {
+contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using EnumerableSet for EnumerableSet.AddressSet;
-
-    // tokenId => linkType
-    mapping(uint256 => bytes32) internal linkTypes;
-
-    // tokenId =>  profileIds
-    mapping(uint256 => EnumerableSet.UintSet) internal linkingProfileList;
-    // tokenId => external addresses
-    mapping(uint256 => EnumerableSet.AddressSet) internal linkingAddressList;
-
-    // tokenId => linkKeys
-    mapping(uint256 => EnumerableSet.Bytes32Set) internal linkKeysList;
-    // linkKey => linking ERC721
-    mapping(bytes32 => DataTypes.linkERC721Item) internal linkingERC721list;
-    // linkKey => linking Note
-    mapping(bytes32 => DataTypes.linkNoteItem) internal linkNoteList;
-
-    // tokenId => profileId
-    mapping(uint256 => uint256) internal currentTakeOver;
-    mapping(uint256 => string) internal _uris; // tokenId => tokenURI
-
-    address public web3Entry;
 
     function initialize(
         string calldata _name,
@@ -44,6 +24,10 @@ contract Linklist is ILinklist, NFTBase, Initializable {
 
         super._initialize(_name, _symbol);
         emit Events.LinklistNFTInitialized(block.timestamp);
+    }
+
+    function getWeb3Entry() external view returns (address) {
+        return web3Entry;
     }
 
     function mint(

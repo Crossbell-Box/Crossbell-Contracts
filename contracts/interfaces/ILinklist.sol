@@ -3,6 +3,8 @@ pragma solidity 0.8.10;
 import "../libraries/DataTypes.sol";
 
 interface ILinklist {
+    function getWeb3Entry() external view returns (address);
+
     function mint(
         address to,
         bytes32 linkType,
