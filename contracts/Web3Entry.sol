@@ -449,7 +449,27 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         uint256 tokenId,
         address linkModule,
         bytes calldata linkModuleInitData
-    ) external {}
+    ) external {
+        require(
+            msg.sender == IERC721Metadata(tokenAddress).ownerOf(tokenId),
+            "Web3Entry: NotERC721TokenOwner"
+        );
+
+        _linkModules4ERC721[tokenAddress][tokenId] = linkModule;
+        bytes memory linkModuleReturnData = ILinkModule4ERC721(linkModule).initializeLinkModule(
+            tokenAddress,
+            tokenId,
+            linkModuleInitData
+        );
+
+        emit Events.SetLinkModule4ERC721(
+            tokenAddress,
+            tokenId,
+            linkModule,
+            linkModuleReturnData,
+            block.timestamp
+        );
+    }
 
     function setLinkModule4Address(
         address account,

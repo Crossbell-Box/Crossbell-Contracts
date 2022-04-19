@@ -149,6 +149,14 @@ library Events {
         uint256 timestamp
     );
 
+    event SetLinkModule4ERC721(
+        address indexed tokenAddress,
+        uint256 indexed tokenId,
+        address indexed linkModule,
+        bytes returnData,
+        uint256 timestamp
+    );
+
     event SetMintModule4Note(
         uint256 indexed profileId,
         uint256 indexed noteId,
