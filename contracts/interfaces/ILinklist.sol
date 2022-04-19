@@ -17,6 +17,9 @@ interface ILinklist {
 
     function setUri(uint256 tokenId, string memory uri) external;
 
+    /////////////////////////////////
+    // linking Profile
+    /////////////////////////////////
     function addLinkingProfileId(uint256 tokenId, uint256 toProfileId) external;
 
     function removeLinkingProfileId(uint256 tokenId, uint256 toProfileId) external;
@@ -25,6 +28,9 @@ interface ILinklist {
 
     function getLinkingProfileListLength(uint256 tokenId) external view returns (uint256);
 
+    /////////////////////////////////
+    // linking Note
+    /////////////////////////////////
     function addLinkingNote(
         uint256 tokenId,
         uint256 toProfileId,
@@ -44,6 +50,9 @@ interface ILinklist {
 
     function getLinkingNoteListLength(uint256 tokenId) external view returns (uint256);
 
+    /////////////////////////////////
+    // linking ProfileLink
+    /////////////////////////////////
     function addLinkingProfileLink(uint256 tokenId, DataTypes.ProfileLinkStruct calldata linkData)
         external;
 
@@ -59,6 +68,9 @@ interface ILinklist {
 
     function getLinkingProfileLinkListLength(uint256 tokenId) external view returns (uint256);
 
+    /////////////////////////////////
+    // linking ERC721
+    /////////////////////////////////
     function addLinkingERC721(
         uint256 tokenId,
         address tokenAddress,
@@ -77,6 +89,17 @@ interface ILinklist {
         returns (DataTypes.ERC721Struct[] memory results);
 
     function getLinkingERC721ListLength(uint256 tokenId) external view returns (uint256);
+
+    /////////////////////////////////
+    // linking Address
+    /////////////////////////////////
+    function addLinkingAddress(uint256 tokenId, address ethAddress) external;
+
+    function removeLinkingAddress(uint256 tokenId, address ethAddress) external;
+
+    function getLinkingAddresses(uint256 tokenId) external view returns (address[] memory);
+
+    function getLinkingAddressListLength(uint256 tokenId) external view returns (uint256);
 
     function getCurrentTakeOver(uint256 tokenId) external view returns (uint256);
 

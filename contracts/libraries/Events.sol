@@ -72,6 +72,19 @@ library Events {
         uint256 linklistId
     );
 
+    event LinkAddress(
+        uint256 indexed fromProfileId,
+        address indexed ethAddress,
+        bytes32 linkType,
+        uint256 linklistId
+    );
+
+    event UnlinkAddress(
+        uint256 indexed fromProfileId,
+        address indexed ethAddress,
+        bytes32 linkType
+    );
+
     event LinkProfileLink(
         uint256 indexed fromProfileId,
         bytes32 indexed linkType,
