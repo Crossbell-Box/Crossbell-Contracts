@@ -17,6 +17,10 @@ async function main() {
     const admin = owner.address;
 
     // We get the contract to deploy
+
+    const MintNFT = await ethers.getContractFactory("MintNFT");
+    const mintNFT = await MintNFT.deploy();
+
     const Linklist = await ethers.getContractFactory("Linklist");
     const linkList = await Linklist.deploy();
 
@@ -24,21 +28,29 @@ async function main() {
     const web3Entry = await Web3Entry.deploy();
 
     const Proxy = await ethers.getContractFactory("TransparentUpgradeableProxy");
-    const proxy = await Proxy.deploy(web3Entry.address, admin, "0x");
+    const proxyWeb3Entry = await Proxy.deploy(web3Entry.address, admin, "0x");
+    const proxyLinklist = await Proxy.deploy(linkList.address, admin, "0x");
 
+    await mintNFT.deployed();
     await linkList.deployed();
     await web3Entry.deployed();
-    await proxy.deployed();
-
-    await linkList.initialize("Link List Token", "LLT", proxy.address);
+    await proxyWeb3Entry.deployed();
+    await proxyLinklist.deployed();
 
     await web3Entry
-        .attach(proxy.address)
+        .attach(proxyWeb3Entry.address)
         .connect(addr1)
-        .initialize("Web3 Entry Profile", "WEP", linkList.address);
+        .initialize("Web3 Entry Profile", "WEP", linkList.address, mintNFT.address);
+
+    await linkList
+        .attach(proxyLinklist.address)
+        .connect(addr1)
+        .initialize("Link List Token", "LLT", proxyWeb3Entry.address);
+
     console.log("Linklist deployed to:", linkList.address);
-    console.log("Proxy deployed to:", proxy.address);
     console.log("Web3Entry deployed to:", web3Entry.address);
+    console.log("ProxyWeb3Entry deployed to:", proxyWeb3Entry.address);
+    console.log("ProxyLinklist deployed to:", proxyLinklist.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
