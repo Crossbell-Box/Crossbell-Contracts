@@ -387,10 +387,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         );
     }
 
-    function linkAddressLink(uint256 fromProfileId) external {}
-
-    function linkNoteLink(uint256 fromProfileId) external {}
-
     function linkLinklist(
         uint256 fromProfileId,
         uint256 linkListId,
@@ -476,12 +472,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         );
     }
 
-    function setLinkModule4Link(
-        DataTypes.LinkData calldata linkData,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) external {}
-
     function mintNote(
         uint256 profileId,
         uint256 noteId,
@@ -531,18 +521,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         return mintNFT;
     }
 
-    function mintProfileLink(DataTypes.LinkData calldata linkData, address to) external {}
-
-    function mintNoteLink(DataTypes.LinkData calldata linkData, address to) external {}
-
-    function mintERC721Link(DataTypes.LinkData calldata linkData, address to) external {}
-
-    function mintAddressLink(DataTypes.LinkData calldata linkData, address to) external {}
-
-    function mintAnyLink(DataTypes.LinkData calldata linkData, address to) external {}
-
-    function mintLinklistLink(DataTypes.LinkData calldata linkData, address to) external {}
-
     function setMintModule4Note(
         uint256 profileId,
         uint256 noteId,
@@ -576,12 +554,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
                 mintModuleInitData
             );
     }
-
-    function setMintModule4Link(
-        DataTypes.LinkData calldata linkData,
-        address mintModule,
-        bytes calldata mintModuleInitData
-    ) external {} // set mint module for his single link item
 
     function postNote(DataTypes.PostNoteData calldata noteData) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
@@ -653,21 +625,9 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         return _linkModules4ERC721[tokenAddress][tokenId];
     }
 
-    function getLinkModule4Link(DataTypes.LinkData calldata linkData)
-        external
-        view
-        returns (address)
-    {}
-
     function getMintModule4Note(uint256 profileId, uint256 noteId) external view returns (address) {
         return _noteByIdByProfile[profileId][noteId].mintModule;
     }
-
-    function getMintModule4Link(DataTypes.LinkData calldata linkData)
-        external
-        view
-        returns (address)
-    {}
 
     function tokenURI(uint256 profileId) public view override returns (string memory) {
         return _profileById[profileId].uri;
