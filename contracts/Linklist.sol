@@ -135,7 +135,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
             abi.encodePacked(linkData.fromProfileId, linkData.toProfileId, linkData.linkType)
         );
         linkKeysList[tokenId].add(linkKey);
-        linkingProfileLinklist[linkKey] = linkData;
+        linkingProfileLinkList[linkKey] = linkData;
     }
 
     function removeLinkingProfileLink(
@@ -149,7 +149,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         );
         linkKeysList[tokenId].remove(linkKey);
 
-        delete linkingProfileLinklist[linkKey];
+        delete linkingProfileLinkList[linkKey];
     }
 
     function getLinkingProfileLinks(uint256 tokenId)
@@ -162,11 +162,11 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         results = new DataTypes.ProfileLinkStruct[](linkKeys.length);
         for (uint256 i = 0; i < linkKeys.length; i++) {
             bytes32 key = linkKeys[i];
-            results[i] = linkingProfileLinklist[key];
+            results[i] = linkingProfileLinkList[key];
         }
     }
 
-    function getLinkingProfileLinkListLength(uint256 tokenId) external view returns (uint256) {
+    function getlinkingProfileLinkListLength(uint256 tokenId) external view returns (uint256) {
         return linkKeysList[tokenId].length();
     }
 
@@ -183,7 +183,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         bytes32 linkKey = keccak256(abi.encodePacked(tokenAddress, erc721TokenId));
         linkKeysList[tokenId].add(linkKey);
 
-        linkingERC721list[linkKey] = DataTypes.ERC721Struct({
+        linkingERC721List[linkKey] = DataTypes.ERC721Struct({
             tokenAddress: tokenAddress,
             erc721TokenId: erc721TokenId
         });
@@ -199,7 +199,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         bytes32 linkKey = keccak256(abi.encodePacked(tokenAddress, erc721TokenId));
         linkKeysList[tokenId].remove(linkKey);
 
-        delete linkingERC721list[linkKey];
+        delete linkingERC721List[linkKey];
     }
 
     function getLinkingERC721s(uint256 tokenId)
@@ -212,11 +212,11 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         results = new DataTypes.ERC721Struct[](linkKeys.length);
         for (uint256 i = 0; i < linkKeys.length; i++) {
             bytes32 key = linkKeys[i];
-            results[i] = linkingERC721list[key];
+            results[i] = linkingERC721List[key];
         }
     }
 
-    function getLinkingERC721ListLength(uint256 tokenId) external view returns (uint256) {
+    function getlinkingERC721ListLength(uint256 tokenId) external view returns (uint256) {
         return linkKeysList[tokenId].length();
     }
 
@@ -239,6 +239,41 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
 
     function getLinkingAddressListLength(uint256 tokenId) external view returns (uint256) {
         return linkingAddressList[tokenId].length();
+    }
+
+    /////////////////////////////////
+    // linking Any
+    /////////////////////////////////
+    function addLinkingAny(uint256 tokenId, string memory toUri) external {
+        _validateCallerIsWeb3Entry();
+
+        bytes32 linkKey = keccak256(abi.encodePacked("LinkAny", toUri));
+        linkKeysList[tokenId].add(linkKey);
+
+        linkingAnylist[linkKey] = toUri;
+    }
+
+    function removeLinkingAny(uint256 tokenId, string memory toUri) external {
+        _validateCallerIsWeb3Entry();
+
+        bytes32 linkKey = keccak256(abi.encodePacked("LinkAny", toUri));
+        linkKeysList[tokenId].remove(linkKey);
+
+        delete linkingAnylist[linkKey];
+    }
+
+    function getLinkingAnys(uint256 tokenId) external view returns (string[] memory results) {
+        bytes32[] memory linkKeys = linkKeysList[tokenId].values();
+
+        results = new string[](linkKeys.length);
+        for (uint256 i = 0; i < linkKeys.length; i++) {
+            bytes32 key = linkKeys[i];
+            results[i] = linkingAnylist[key];
+        }
+    }
+
+    function getLinkingAnyListLength(uint256 tokenId) external view returns (uint256) {
+        return linkKeysList[tokenId].length();
     }
 
     /////////////////////////////////

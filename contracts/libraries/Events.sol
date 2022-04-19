@@ -85,6 +85,15 @@ library Events {
         bytes32 linkType
     );
 
+    event LinkAny(
+        uint256 indexed fromProfileId,
+        string toUri,
+        bytes32 linkType,
+        uint256 linklistId
+    );
+
+    event UnlinkAny(uint256 indexed fromProfileId, string toUri, bytes32 linkType);
+
     event LinkProfileLink(
         uint256 indexed fromProfileId,
         bytes32 indexed linkType,

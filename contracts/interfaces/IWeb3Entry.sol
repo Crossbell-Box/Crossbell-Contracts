@@ -91,6 +91,12 @@ interface IWeb3Entry {
         bytes32 linkType
     ) external;
 
+    function unlinkAny(
+        uint256 fromProfileId,
+        string calldata toUri,
+        bytes32 linkType
+    ) external;
+
     function linkProfileLink(
         uint256 fromProfileId,
         DataTypes.ProfileLinkStruct calldata linkData,

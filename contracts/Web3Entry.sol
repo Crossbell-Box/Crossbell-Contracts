@@ -318,7 +318,40 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         uint256 fromProfileId,
         string calldata toUri,
         bytes32 linkType
-    ) external {}
+    ) external {
+        _validateCallerIsProfileOwner(fromProfileId);
+
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        if (linklistId == 0) {
+            linklistId = IERC721Enumerable(linkList).totalSupply().add(1);
+            // mint linkList nft
+            ILinklist(linkList).mint(msg.sender, linkType, linklistId);
+            // set primary linkList
+            attachLinklist(linklistId, fromProfileId);
+        }
+
+        // add to link list
+        ILinklist(linkList).addLinkingAny(linklistId, toUri);
+
+        emit Events.LinkAny(fromProfileId, toUri, linkType, linklistId);
+    }
+
+    function unlinkAny(
+        uint256 fromProfileId,
+        string calldata toUri,
+        bytes32 linkType
+    ) external {
+        _validateCallerIsProfileOwner(fromProfileId);
+
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        uint256 profileId = ILinklist(linkList).getCurrentTakeOver(linklistId);
+        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
+
+        // remove from link list
+        ILinklist(linkList).removeLinkingAny(linklistId, toUri);
+
+        emit Events.UnlinkAny(fromProfileId, toUri, linkType);
+    }
 
     function linkProfileLink(
         uint256 fromProfileId,
