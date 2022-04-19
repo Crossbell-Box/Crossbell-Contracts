@@ -118,6 +118,20 @@ library Events {
         uint256 linklistId
     );
 
+    event LinkLinklist(
+        uint256 indexed fromProfileId,
+        uint256 indexed toLinklistId,
+        bytes32 linkType,
+        uint256 indexed linklistId
+    );
+
+    event UninkLinklist(
+        uint256 indexed fromProfileId,
+        uint256 indexed toLinklistId,
+        bytes32 linkType,
+        uint256 indexed linklistId
+    );
+
     event MintNote(
         address indexed to,
         uint256 indexed profileId,

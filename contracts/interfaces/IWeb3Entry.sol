@@ -111,7 +111,13 @@ interface IWeb3Entry {
 
     function linkLinklist(
         uint256 fromProfileId,
-        uint256 linkListId,
+        uint256 toLinkListId,
+        bytes32 linkType
+    ) external;
+
+    function unlinkLinklist(
+        uint256 fromProfileId,
+        uint256 toLinkListId,
         bytes32 linkType
     ) external;
 

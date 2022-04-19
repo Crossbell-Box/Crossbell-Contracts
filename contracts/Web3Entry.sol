@@ -8,6 +8,7 @@ import "./interfaces/ILinklist.sol";
 import "./interfaces/ILinkModule4Profile.sol";
 import "./interfaces/ILinkModule4Note.sol";
 import "./interfaces/ILinkModule4Address.sol";
+import "./interfaces/ILinkModule4ERC721.sol";
 import "./interfaces/IMintModule4Note.sol";
 import "./interfaces/IMintNFT.sol";
 import "./storage/Web3EntryStorage.sol";
@@ -389,9 +390,42 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function linkLinklist(
         uint256 fromProfileId,
-        uint256 linkListId,
+        uint256 toLinkListId,
         bytes32 linkType
-    ) external {}
+    ) external {
+        _validateCallerIsProfileOwner(fromProfileId);
+
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        if (linklistId == 0) {
+            linklistId = IERC721Enumerable(linkList).totalSupply().add(1);
+            // mint linkList nft
+            ILinklist(linkList).mint(msg.sender, linkType, linklistId);
+            // set primary linkList
+            attachLinklist(linklistId, fromProfileId);
+        }
+
+        // add to link list
+        ILinklist(linkList).addLinkingLinklistId(linklistId, toLinkListId);
+
+        emit Events.LinkLinklist(fromProfileId, toLinkListId, linkType, linklistId);
+    }
+
+    function unlinkLinklist(
+        uint256 fromProfileId,
+        uint256 toLinkListId,
+        bytes32 linkType
+    ) external {
+        _validateCallerIsProfileOwner(fromProfileId);
+
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        uint256 profileId = ILinklist(linkList).getCurrentTakeOver(linklistId);
+        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
+
+        // add to link list
+        ILinklist(linkList).removeLinkingLinklistId(linklistId, toLinkListId);
+
+        emit Events.UninkLinklist(fromProfileId, toLinkListId, linkType, linklistId);
+    }
 
     // set link module for his profile
     function setLinkModule4Profile(

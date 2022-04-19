@@ -112,6 +112,17 @@ interface ILinklist {
 
     function getLinkingAnyListLength(uint256 tokenId) external view returns (uint256);
 
+    /////////////////////////////////
+    // linking Linklist
+    /////////////////////////////////
+    function addLinkingLinklistId(uint256 tokenId, uint256 linklistId) external;
+
+    function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId) external;
+
+    function getLinkingLinklistIds(uint256 tokenId) external view returns (uint256[] memory);
+
+    function getLinkingLinklistLength(uint256 tokenId) external view returns (uint256);
+
     function getCurrentTakeOver(uint256 tokenId) external view returns (uint256);
 
     function getLinkType(uint256 tokenId) external view returns (bytes32);

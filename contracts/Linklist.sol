@@ -277,6 +277,27 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
     }
 
     /////////////////////////////////
+    // linking Linklist
+    /////////////////////////////////
+    function addLinkingLinklistId(uint256 tokenId, uint256 linklistId) external {
+        _validateCallerIsWeb3Entry();
+        linkingLinklists[tokenId].add(linklistId);
+    }
+
+    function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId) external {
+        _validateCallerIsWeb3Entry();
+        linkingLinklists[tokenId].remove(linklistId);
+    }
+
+    function getLinkingLinklistIds(uint256 tokenId) external view returns (uint256[] memory) {
+        return linkingLinklists[tokenId].values();
+    }
+
+    function getLinkingLinklistLength(uint256 tokenId) external view returns (uint256) {
+        return linkingLinklists[tokenId].length();
+    }
+
+    /////////////////////////////////
     // common
     /////////////////////////////////
     function getCurrentTakeOver(uint256 tokenId) external view returns (uint256 profileId) {

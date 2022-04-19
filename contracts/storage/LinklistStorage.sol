@@ -19,6 +19,8 @@ contract LinklistStorage {
     mapping(uint256 => EnumerableSet.UintSet) internal linkingProfileList;
     // tokenId => external addresses
     mapping(uint256 => EnumerableSet.AddressSet) internal linkingAddressList;
+    // tokenId =>  LinklistId
+    mapping(uint256 => EnumerableSet.UintSet) internal linkingLinklists;
 
     // tokenId => linkKeys
     mapping(uint256 => EnumerableSet.Bytes32Set) internal linkKeysList;
