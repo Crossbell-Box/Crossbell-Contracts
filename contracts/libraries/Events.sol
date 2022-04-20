@@ -72,6 +72,66 @@ library Events {
         uint256 linklistId
     );
 
+    event LinkAddress(
+        uint256 indexed fromProfileId,
+        address indexed ethAddress,
+        bytes32 linkType,
+        uint256 linklistId
+    );
+
+    event UnlinkAddress(
+        uint256 indexed fromProfileId,
+        address indexed ethAddress,
+        bytes32 linkType
+    );
+
+    event LinkAny(
+        uint256 indexed fromProfileId,
+        string toUri,
+        bytes32 linkType,
+        uint256 linklistId
+    );
+
+    event UnlinkAny(uint256 indexed fromProfileId, string toUri, bytes32 linkType);
+
+    event LinkProfileLink(
+        uint256 indexed fromProfileId,
+        bytes32 indexed linkType,
+        uint256 plFromProfileId,
+        uint256 plToProfileId,
+        bytes32 plLinkType
+    );
+
+    event UnlinkProfileLink(
+        uint256 indexed fromProfileId,
+        bytes32 indexed linkType,
+        uint256 plFromProfileId,
+        uint256 plToProfileId,
+        bytes32 plLinkType
+    );
+
+    event UnlinkERC721(
+        uint256 indexed fromProfileId,
+        address indexed tokenAddress,
+        uint256 indexed toNoteId,
+        bytes32 linkType,
+        uint256 linklistId
+    );
+
+    event LinkLinklist(
+        uint256 indexed fromProfileId,
+        uint256 indexed toLinklistId,
+        bytes32 linkType,
+        uint256 indexed linklistId
+    );
+
+    event UninkLinklist(
+        uint256 indexed fromProfileId,
+        uint256 indexed toLinklistId,
+        bytes32 linkType,
+        uint256 indexed linklistId
+    );
+
     event MintNote(
         address indexed to,
         uint256 indexed profileId,
@@ -98,6 +158,14 @@ library Events {
 
     event SetLinkModule4Address(
         address indexed account,
+        address indexed linkModule,
+        bytes returnData,
+        uint256 timestamp
+    );
+
+    event SetLinkModule4ERC721(
+        address indexed tokenAddress,
+        uint256 indexed tokenId,
         address indexed linkModule,
         bytes returnData,
         uint256 timestamp

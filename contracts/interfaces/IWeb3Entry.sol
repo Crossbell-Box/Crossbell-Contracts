@@ -91,9 +91,33 @@ interface IWeb3Entry {
         bytes32 linkType
     ) external;
 
+    function unlinkAny(
+        uint256 fromProfileId,
+        string calldata toUri,
+        bytes32 linkType
+    ) external;
+
+    function linkProfileLink(
+        uint256 fromProfileId,
+        DataTypes.ProfileLinkStruct calldata linkData,
+        bytes32 linkType
+    ) external;
+
+    function unlinkProfileLink(
+        uint256 fromProfileId,
+        DataTypes.ProfileLinkStruct calldata linkData,
+        bytes32 linkType
+    ) external;
+
     function linkLinklist(
         uint256 fromProfileId,
-        uint256 linkListId,
+        uint256 toLinkListId,
+        bytes32 linkType
+    ) external;
+
+    function unlinkLinklist(
+        uint256 fromProfileId,
+        uint256 toLinkListId,
         bytes32 linkType
     ) external;
 
@@ -129,12 +153,6 @@ interface IWeb3Entry {
         bytes calldata linkModuleInitData
     ) external;
 
-    function setLinkModule4Link(
-        DataTypes.LinkData calldata linkData,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) external;
-
     function mintNote(
         uint256 profileId,
         uint256 noteId,
@@ -142,28 +160,9 @@ interface IWeb3Entry {
         bytes calldata mintModuleData
     ) external returns (uint256);
 
-    function mintProfileLink(DataTypes.LinkData calldata linkData, address to) external;
-
-    function mintNoteLink(DataTypes.LinkData calldata linkData, address to) external;
-
-    function mintERC721Link(DataTypes.LinkData calldata linkData, address to) external;
-
-    function mintAddressLink(DataTypes.LinkData calldata linkData, address to) external;
-
-    function mintAnyLink(DataTypes.LinkData calldata linkData, address to) external;
-
-    function mintLinklistLink(DataTypes.LinkData calldata linkData, address to) external;
-
     function setMintModule4Note(
         uint256 profileId,
         uint256 noteId,
-        address mintModule,
-        bytes calldata mintModuleInitData
-    ) external;
-
-    // set mint module for his single link item
-    function setMintModule4Link(
-        DataTypes.LinkData calldata linkData,
         address mintModule,
         bytes calldata mintModuleInitData
     ) external;
@@ -201,17 +200,7 @@ interface IWeb3Entry {
         view
         returns (address);
 
-    function getLinkModule4Link(DataTypes.LinkData calldata linkData)
-        external
-        view
-        returns (address);
-
     function getMintModule4Note(uint256 profileId, uint256 noteId) external view returns (address);
-
-    function getMintModule4Link(DataTypes.LinkData calldata linkData)
-        external
-        view
-        returns (address);
 
     function getLinklistUri(uint256 profileId, bytes32 linkType)
         external
