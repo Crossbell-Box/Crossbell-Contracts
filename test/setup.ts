@@ -1,6 +1,11 @@
 import { ethers } from "hardhat";
 import { Events__factory, Events, Linklist, Web3Entry } from "../typechain";
 
+export const FIRST_PROFILE_ID = 1;
+export const SECOND_PROFILE_ID = 2;
+
+export const FIRST_LINKLIST_ID = 1;
+
 export let eventsLib: Events;
 export let linkList: Linklist;
 export let web3Entry: Web3Entry;
@@ -18,7 +23,7 @@ beforeEach(async () => {
     await web3Entry.deployed();
 
     await linkList.initialize("Link List Token", "LLT", web3Entry.address);
-    await web3Entry.initialize("Web3 Entry Profile", "WEP", linkList.address);
+    await web3Entry.initialize("Web3 Entry Profile", "WEP", linkList.address, ethers.constants.AddressZero);
 
     eventsLib = await new Events__factory(deployer).deploy();
 });

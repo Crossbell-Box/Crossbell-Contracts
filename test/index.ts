@@ -1,32 +1,106 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { web3Entry } from "./setup";
+import { FIRST_LINKLIST_ID, FIRST_PROFILE_ID, SECOND_PROFILE_ID, web3Entry } from "./setup";
 import { getTimestamp, matchEvent } from "./utils";
 describe("Profile", function () {
-    it("Should emit the new created profile data once it's created", async function () {
-        const [deployer, addr1] = await ethers.getSigners();
+  it("Should emit the new created profile data once it's created", async function () {
+    const [deployer, addr1] = await ethers.getSigners()
+    const profileData = {
+      to: await addr1.address,
+      handle: "newHandle",
+      uri: "uri",
+      linkModule: ethers.constants.AddressZero,
+      linkModuleInitData: []
+    };
 
-        const profileData = {
-            to: await addr1.getAddress(),
-            handle: "newHandle",
-            uri: "uri",
-            linkModule: ethers.constants.AddressZero,
-            linkModuleInitData: [],
-        };
+    const receipt = await (await web3Entry.createProfile(profileData)).wait();
 
-        const receipt = await (await web3Entry.createProfile(profileData)).wait();
+    matchEvent(receipt, 'ProfileCreated', [
+      FIRST_PROFILE_ID,
+      deployer.address,
+      profileData.to,
+      profileData.handle,
+      await getTimestamp()
+    ])
 
-        matchEvent(receipt, "ProfileCreated", [
-            1,
-            deployer.address,
-            profileData.to,
-            profileData.handle,
-            await getTimestamp(),
-        ]);
+    const profile = await web3Entry.getProfileByHandle("newHandle")
 
-        const profile = await web3Entry.getProfileByHandle("newHandle");
+    expect(profile.handle).to.equal(profileData.handle)
+    expect(profile.uri).to.equal(profileData.uri)
+  });
 
-        expect(profile.handle).to.equal(profileData.handle);
-        expect(profile.uri).to.equal(profileData.uri);
-    });
+  it("Should emit the follow data once it's linked or unlinked", async function () {
+    const [deployer, addr1] = await ethers.getSigners()
+    const profileData = (handle?: string) => {
+      return {
+        to: addr1.address,
+        handle: handle ? handle : "newHandle",
+        uri: "uri",
+        linkModule: ethers.constants.AddressZero,
+        linkModuleInitData: []
+      };
+
+    }
+
+    await web3Entry.createProfile(profileData("handle1"))
+    await web3Entry.createProfile(profileData("handle2"))
+
+    const followLinkType = ethers.utils.formatBytes32String("follow")
+
+    let receipt = await (await web3Entry.connect(addr1).linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, followLinkType)).wait()
+    matchEvent(receipt, "LinkProfile", [
+      addr1.address,
+      FIRST_PROFILE_ID,
+      SECOND_PROFILE_ID,
+      followLinkType,
+      FIRST_LINKLIST_ID
+    ])
+
+    let followings = await web3Entry.getLinkingProfileIds(FIRST_PROFILE_ID, followLinkType)
+    expect(followings.length).to.be.eq(1)
+    expect(followings[0]).to.be.eq(SECOND_PROFILE_ID)
+
+    // unlink
+    receipt = await (await web3Entry.connect(addr1).unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, followLinkType)).wait()
+
+    matchEvent(receipt, "UnlinkProfile", [
+      addr1.address,
+      FIRST_PROFILE_ID,
+      SECOND_PROFILE_ID,
+      followLinkType,
+    ])
+
+    followings = await web3Entry.getLinkingProfileIds(FIRST_PROFILE_ID, followLinkType)
+    expect(followings.length).to.be.eq(0)
+  });
+
+  it("Should create and link the profile of an address", async function () {
+    const [deployer, addr1, addr2] = await ethers.getSigners()
+    const profileData = (handle?: string) => {
+      return {
+        to: addr1.address,
+        handle: handle ? handle : "newHandle",
+        uri: "uri",
+        linkModule: ethers.constants.AddressZero,
+        linkModuleInitData: []
+      };
+    }
+
+    const followLinkType = ethers.utils.formatBytes32String("follow")
+
+
+    await web3Entry.createProfile(profileData("handle1"))
+
+    let receipt = await (await web3Entry.connect(addr1).createThenLinkProfile(FIRST_PROFILE_ID, addr2.address, followLinkType)).wait()
+
+    matchEvent(receipt, "ProfileCreated")
+    matchEvent(receipt, "LinkProfile")
+
+    let followings = await web3Entry.getLinkingProfileIds(FIRST_PROFILE_ID, followLinkType)
+    expect(followings.length).to.be.eq(1)
+    expect(followings[0]).to.be.eq(SECOND_PROFILE_ID)
+
+    // createThenLinkProfile will fail if the profile has been created
+    expect(web3Entry.connect(addr1).createThenLinkProfile(FIRST_PROFILE_ID, addr2.address, followLinkType)).to.be.revertedWith("Target address already has primary profile.")
+  })
 });

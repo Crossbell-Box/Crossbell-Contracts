@@ -15,7 +15,7 @@ contract Web3EntryStorage {
     uint256 internal _profileCounter;
 
     // LinkList NFT token contract
-    address internal linkList;
+    address internal linklist;
     // profileId =>  (linkType => linklistId)
     mapping(uint256 => mapping(bytes32 => uint256)) internal _attachedLinklists;
 
