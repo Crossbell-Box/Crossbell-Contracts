@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.10;
+
 import "hardhat/console.sol";
 import "./base/NFTBase.sol";
 import "./interfaces/IWeb3Entry.sol";
@@ -9,16 +10,16 @@ import "./interfaces/ILinkModule4Profile.sol";
 import "./interfaces/ILinkModule4Note.sol";
 import "./interfaces/ILinkModule4Address.sol";
 import "./interfaces/ILinkModule4ERC721.sol";
+import "./interfaces/ILinkModule4Linklist.sol";
 import "./interfaces/IMintModule4Note.sol";
-import "./interfaces/IMintNFT.sol";
 import "./storage/Web3EntryStorage.sol";
 import "./libraries/DataTypes.sol";
 import "./libraries/Constants.sol";
 import "./libraries/Events.sol";
+import "./libraries/ProfileLogic.sol";
+import "./libraries/InteractionLogic.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts/proxy/Clones.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     using SafeMath for uint256;
@@ -39,54 +40,18 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         emit Events.Web3EntryInitialized(block.timestamp);
     }
 
-    function _createProfile(
-        string memory handle,
-        string memory uri,
-        address receiver
-    ) internal returns (uint256 profileId) {
-        bytes32 handleHash = keccak256(bytes(handle));
-        require(_profileIdByHandleHash[handleHash] == 0, "HandleExists");
+    function createProfile(DataTypes.CreateProfileData calldata vars) external {
+        _profileCounter = _profileCounter.add(1);
 
-        profileId = ++_profileCounter;
+        // mint profile nft
+        _mint(vars.to, _profileCounter);
 
-        _mint(receiver, profileId);
-
-        _profileIdByHandleHash[handleHash] = profileId;
-
-        _profileById[profileId].profileId = profileId;
-        _profileById[profileId].handle = handle;
-        _profileById[profileId].uri = uri;
-
-        emit Events.ProfileCreated(profileId, msg.sender, receiver, handle, block.timestamp);
-    }
-
-    function _setProfileLinkModule(
-        uint256 profileId,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) internal {
-        _profileById[profileId].linkModule = linkModule;
-
-        bytes memory returnData;
-        if (linkModule != address(0)) {
-            returnData = ILinkModule4Profile(linkModule).initializeLinkModule(
-                profileId,
-                linkModuleInitData
-            );
-            emit Events.SetLinkModule4Profile(profileId, linkModule, returnData, block.timestamp);
-        }
-    }
-
-    function createProfile(DataTypes.CreateProfileData calldata profileData) external {
-        uint256 profileId = _createProfile(profileData.handle, profileData.uri, profileData.to);
+        ProfileLogic.createProfile(vars, _profileCounter, _profileIdByHandleHash, _profileById);
 
         // set primary profile
-        if (_primaryProfileByAddress[profileData.to] == 0) {
-            _primaryProfileByAddress[profileData.to] = profileId;
+        if (_primaryProfileByAddress[vars.to] == 0) {
+            _primaryProfileByAddress[vars.to] = _profileCounter;
         }
-
-        // init link module
-        _setProfileLinkModule(profileId, profileData.linkModule, profileData.linkModuleInitData);
     }
 
     function setHandle(uint256 profileId, string calldata newHandle) external {
@@ -141,15 +106,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
         _takeOverLinkList(linklistId, profileId);
         _attachedLinklists[profileId][linkType] = linklistId;
-
-        emit Events.AttachLinklist(profileId, linkType, linklistId);
     }
 
     function detachLinklist(uint256 linklistId, uint256 profileId) public {
         bytes32 linkType = ILinklist(linklist).getLinkType(linklistId);
         _attachedLinklists[profileId][linkType] = 0;
-
-        emit Events.DetachLinklist(profileId, linkType, linklistId);
     }
 
     function setLinklistUri(uint256 linklistId, string calldata uri) external {
@@ -206,12 +167,30 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         bytes32 linkType
     ) external {
         _validateCallerIsProfileOwner(fromProfileId);
-
         require(_primaryProfileByAddress[to] == 0, "Target address already has primary profile.");
-        uint256 toProfileId = _createProfile(string(abi.encodePacked(to)), "", to);
-        _primaryProfileByAddress[to] = toProfileId;
 
-        _linkProfile(fromProfileId, toProfileId, linkType);
+        uint256 profileId = ++_profileCounter;
+        // mint profile nft
+        _mint(to, profileId);
+
+        ProfileLogic.createProfile(
+            DataTypes.CreateProfileData({
+                to: to,
+                handle: string(abi.encodePacked(to)),
+                uri: "",
+                linkModule: address(0),
+                linkModuleInitData: ""
+            }),
+            profileId,
+            _profileIdByHandleHash,
+            _profileById
+        );
+
+        // set primary profile
+        _primaryProfileByAddress[to] = profileId;
+
+        // link profile
+        _linkProfile(fromProfileId, profileId, linkType);
     }
 
     function linkNote(
@@ -405,7 +384,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(profileId);
 
         if (linkModule != _profileById[profileId].linkModule) {
-            _setProfileLinkModule(profileId, linkModule, linkModuleInitData);
+            ProfileLogic.setProfileLinkModule(
+                profileId,
+                linkModule,
+                linkModuleInitData,
+                _profileById
+            );
         }
     }
 
@@ -432,10 +416,23 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function setLinkModule4Linklist(
-        uint256 tokenId,
+        uint256 linklistId,
         address linkModule,
         bytes calldata linkModuleInitData
-    ) external {}
+    ) external {
+        _linkModules4Linklist[linklistId] = linkModule;
+        bytes memory linkModuleReturnData = ILinkModule4Linklist(linkModule).initializeLinkModule(
+            linklistId,
+            linkModuleInitData
+        );
+
+        emit Events.SetLinkModule4Linklist(
+            linklistId,
+            linkModule,
+            linkModuleReturnData,
+            block.timestamp
+        );
+    }
 
     function setLinkModule4ERC721(
         address tokenAddress,
@@ -491,47 +488,16 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         address to,
         bytes calldata mintModuleData
     ) external returns (uint256) {
-        uint256 tokenId;
-
-        address mintNFT = _noteByIdByProfile[profileId][noteId].mintNFT;
-        if (mintNFT == address(0)) {
-            mintNFT = _deployMintNFT(
+        return
+            InteractionLogic.mintNote(
                 profileId,
                 noteId,
-                _profileById[profileId].handle,
-                MINT_NFT_IMPL
+                to,
+                mintModuleData,
+                MINT_NFT_IMPL,
+                _profileById,
+                _noteByIdByProfile
             );
-            _noteByIdByProfile[profileId][noteId].mintNFT = mintNFT;
-        }
-        tokenId = IMintNFT(mintNFT).mint(to);
-
-        address mintModule = _noteByIdByProfile[profileId][noteId].mintModule;
-        IMintModule4Note(mintModule).processMint(profileId, noteId, mintModuleData);
-
-        emit Events.MintNote(to, profileId, noteId, tokenId, mintModuleData, block.timestamp);
-
-        return tokenId;
-    }
-
-    function _deployMintNFT(
-        uint256 profileId,
-        uint256 noteId,
-        string memory handle,
-        address mintNFTImpl
-    ) internal returns (address) {
-        address mintNFT = Clones.clone(mintNFTImpl);
-
-        bytes4 firstBytes = bytes4(bytes(handle));
-
-        string memory NFTName = string(
-            abi.encodePacked(handle, "-Mint-", profileId.toString(), "-", noteId.toString())
-        );
-        string memory NFTSymbol = string(
-            abi.encodePacked(firstBytes, "-Mint-", profileId.toString(), "-", noteId.toString())
-        );
-
-        IMintNFT(mintNFT).initialize(profileId, noteId, address(this), NFTName, NFTSymbol);
-        return mintNFT;
     }
 
     function setMintModule4Note(
@@ -827,10 +793,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     {
         uint256 linkListId = _attachedLinklists[fromProfileId][linkType];
         return ILinklist(linklist).getLinkingProfileIds(linkListId);
-    }
-
-    function getNoteUri(uint256 profileId, uint256 noteId) external view returns (string memory) {
-        return _noteByIdByProfile[profileId][noteId].contentUri;
     }
 
     function getLinklistContract() external view returns (address) {

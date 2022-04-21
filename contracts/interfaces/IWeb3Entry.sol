@@ -256,7 +256,5 @@ interface IWeb3Entry {
         view
         returns (uint256[] memory);
 
-    function getNoteUri(uint256 profileId, uint256 noteId) external view returns (string memory);
-
     function getLinklistContract() external view returns (address);
 }

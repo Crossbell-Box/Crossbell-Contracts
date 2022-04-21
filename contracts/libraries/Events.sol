@@ -29,10 +29,6 @@ library Events {
         address indexed tokenAddress
     );
 
-    event AttachLinklist(uint256 indexed profileId, bytes32 linkType, uint256 indexed linklistId);
-
-    event DetachLinklist(uint256 indexed profileId, bytes32 linkType, uint256 indexed linklistId);
-
     event LinkProfile(
         address indexed account,
         uint256 indexed fromProfileId,
@@ -166,6 +162,13 @@ library Events {
     event SetLinkModule4ERC721(
         address indexed tokenAddress,
         uint256 indexed tokenId,
+        address indexed linkModule,
+        bytes returnData,
+        uint256 timestamp
+    );
+
+    event SetLinkModule4Linklist(
+        uint256 indexed linklistId,
         address indexed linkModule,
         bytes returnData,
         uint256 timestamp

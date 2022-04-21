@@ -46,7 +46,7 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         require(_exists(tokenId), "MintNFT: TokenDoesNotExist");
-        return IWeb3Entry(Web3Entry).getNoteUri(_profileId, _noteId);
+        return IWeb3Entry(Web3Entry).getNote(_profileId, _noteId).contentUri;
     }
 
     function _beforeTokenTransfer(
