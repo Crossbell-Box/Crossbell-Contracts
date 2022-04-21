@@ -13,6 +13,7 @@ import "./interfaces/IMintModule4Note.sol";
 import "./interfaces/IMintNFT.sol";
 import "./storage/Web3EntryStorage.sol";
 import "./libraries/DataTypes.sol";
+import "./libraries/Constants.sol";
 import "./libraries/Events.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
@@ -254,6 +255,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         bytes32 linkType
     ) external {
         _validateCallerIsProfileOwner(fromProfileId);
+        _validateERC721Exists(tokenAddress, tokenId);
 
         _linkERC721(fromProfileId, tokenAddress, tokenId, linkType);
     }
@@ -577,20 +579,178 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(noteData.profileId);
 
         return
-            _postNote(
+            _postNote4Link(
                 noteData.profileId,
                 noteData.contentUri,
                 noteData.linkModule,
                 noteData.linkModuleInitData,
                 noteData.mintModule,
-                noteData.mintModuleInitData
+                noteData.mintModuleInitData,
+                0,
+                0,
+                0
             );
     }
 
-    function postNoteWithLink(
+    function postNote4ProfileLink(
         DataTypes.PostNoteData calldata noteData,
-        DataTypes.LinkData calldata linkData
-    ) external {}
+        uint256 fromProfileId,
+        uint256 toProfileId,
+        bytes32 linkType
+    ) external returns (uint256) {
+        _validateCallerIsProfileOwner(noteData.profileId);
+
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        bytes32 linkItemType = Constants.LinkItemTypeProfile;
+        bytes32 linkKey = bytes32(toProfileId);
+
+        return
+            _postNote4Link(
+                noteData.profileId,
+                noteData.contentUri,
+                noteData.linkModule,
+                noteData.linkModuleInitData,
+                noteData.mintModule,
+                noteData.mintModuleInitData,
+                linklistId,
+                linkItemType,
+                linkKey
+            );
+    }
+
+    function postNote4AddressLink(
+        DataTypes.PostNoteData calldata noteData,
+        uint256 fromProfileId,
+        address ethAddress,
+        bytes32 linkType
+    ) external returns (uint256) {
+        _validateCallerIsProfileOwner(noteData.profileId);
+
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        bytes32 linkItemType = Constants.LinkItemTypeAddress;
+        bytes32 linkKey = bytes32(ethAddress);
+
+        return
+            _postNote4Link(
+                noteData.profileId,
+                noteData.contentUri,
+                noteData.linkModule,
+                noteData.linkModuleInitData,
+                noteData.mintModule,
+                noteData.mintModuleInitData,
+                linklistId,
+                linkItemType,
+                linkKey
+            );
+    }
+
+    function postNote4LinklistLink(
+        DataTypes.PostNoteData calldata noteData,
+        uint256 fromProfileId,
+        uint256 toLinkListId,
+        bytes32 linkType
+    ) external returns (uint256) {
+        _validateCallerIsProfileOwner(noteData.profileId);
+
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        bytes32 linkItemType = Constants.LinkItemTypeList;
+        bytes32 linkKey = bytes32(toLinkListId);
+
+        return
+            _postNote4Link(
+                noteData.profileId,
+                noteData.contentUri,
+                noteData.linkModule,
+                noteData.linkModuleInitData,
+                noteData.mintModule,
+                noteData.mintModuleInitData,
+                linklistId,
+                linkItemType,
+                linkKey
+            );
+    }
+
+    function postNote4NoteLink(
+        DataTypes.PostNoteData calldata noteData,
+        uint256 fromProfileId,
+        uint256 toProfileId,
+        uint256 toNoteId,
+        bytes32 linkType
+    ) external returns (uint256) {
+        _validateCallerIsProfileOwner(noteData.profileId);
+
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        bytes32 linkItemType = Constants.LinkItemTypeNote;
+        bytes32 linkKey = keccak256(abi.encodePacked(toProfileId, toNoteId));
+
+        return
+            _postNote4Link(
+                noteData.profileId,
+                noteData.contentUri,
+                noteData.linkModule,
+                noteData.linkModuleInitData,
+                noteData.mintModule,
+                noteData.mintModuleInitData,
+                linklistId,
+                linkItemType,
+                linkKey
+            );
+    }
+
+    function postNote4ERC721Link(
+        DataTypes.PostNoteData calldata noteData,
+        uint256 fromProfileId,
+        address tokenAddress,
+        uint256 tokenId,
+        bytes32 linkType
+    ) external returns (uint256) {
+        _validateCallerIsProfileOwner(noteData.profileId);
+        _validateERC721Exists(tokenAddress, tokenId);
+
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        bytes32 linkItemType = Constants.LinkItemTypeERC721;
+        bytes32 linkKey = keccak256(abi.encodePacked(tokenAddress, tokenId));
+
+        return
+            _postNote4Link(
+                noteData.profileId,
+                noteData.contentUri,
+                noteData.linkModule,
+                noteData.linkModuleInitData,
+                noteData.mintModule,
+                noteData.mintModuleInitData,
+                linklistId,
+                linkItemType,
+                linkKey
+            );
+    }
+
+    function postNote4AnyLink(
+        DataTypes.PostNoteData calldata noteData,
+        uint256 fromProfileId,
+        string calldata toUri,
+        bytes32 linkType
+    ) external returns (uint256) {
+        _validateCallerIsProfileOwner(noteData.profileId);
+        _validateERC721Exists(tokenAddress, tokenId);
+
+        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        bytes32 linkItemType = Constants.LinkItemTypeAny;
+        bytes32 linkKey = keccak256(abi.encodePacked("LinkAny", toUri));
+
+        return
+            _postNote4Link(
+                noteData.profileId,
+                noteData.contentUri,
+                noteData.linkModule,
+                noteData.linkModuleInitData,
+                noteData.mintModule,
+                noteData.mintModuleInitData,
+                linklistId,
+                linkItemType,
+                linkKey
+            );
+    }
 
     function getPrimaryProfileId(address account) external view returns (uint256) {
         return _primaryProfileByAddress[account];
@@ -677,18 +837,25 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         return linklist;
     }
 
-    function _postNote(
+    function _postNote4Link(
         uint256 profileId,
         string calldata contentURI,
         address linkModule,
         bytes memory linkModuleInitData,
         address mintModule,
-        bytes memory mintModuleInitData
+        bytes memory mintModuleInitData,
+        uint256 linklistId,
+        bytes32 linkItemType,
+        bytes32 linkKey
     ) internal returns (uint256) {
         uint256 noteId = ++_profileById[profileId].noteCount;
 
         // save note
-        _noteByIdByProfile[profileId][noteId].noteType = DataTypes.NoteTypeNote;
+        if (linkItemType != bytes32(0)) {
+            _noteByIdByProfile[profileId][noteId].linkItemType = linkItemType;
+            _noteByIdByProfile[profileId][noteId].linklistId = linklistId;
+            _noteByIdByProfile[profileId][noteId].linkKey = linkKey;
+        }
         _noteByIdByProfile[profileId][noteId].contentUri = contentURI;
         _noteByIdByProfile[profileId][noteId].linkModule = linkModule;
         _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
@@ -832,11 +999,15 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function _validateCallerIsLinklistOwner(uint256 tokenId) internal view {
-        require(msg.sender == ERC721(linklist).ownerOf(tokenId), "Web3Entry: NotLinkListOwner");
+        require(msg.sender == IERC721(linklist).ownerOf(tokenId), "Web3Entry: NotLinkListOwner");
     }
 
     function _validateProfileExists(uint256 profileId) internal view {
         require(_exists(profileId), "Web3Entry: ProfileNotExists");
+    }
+
+    function _validateERC721Exists(address tokenAddress, uint256 tokenId) internal view {
+        require(address(0) != IERC721(tokenAddress).ownerOf(tokenId), "Web3Entry: REC721NotExists");
     }
 
     function _validateNoteExists(uint256 profileId, uint256 noteId) internal view {

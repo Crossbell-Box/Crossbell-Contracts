@@ -3,17 +3,6 @@
 pragma solidity 0.8.10;
 
 library DataTypes {
-    // link type
-    uint256 constant LinkTypeProfile = 1;
-    uint256 constant LinkTypeAddress = 2;
-    uint256 constant LinkTypeNote = 3;
-    uint256 constant LinkTypeAsset = 4;
-    uint256 constant LinkTypeList = 5;
-
-    // note type
-    uint256 constant NoteTypeNote = 1;
-    uint256 constant NoteTypeLink = 2;
-
     struct CreateProfileData {
         address to;
         string handle;
@@ -32,7 +21,11 @@ library DataTypes {
 
     struct LinkData {
         uint256 linklistId;
-        bytes content;
+        uint256 linkItemType;
+        uint256 linkingProfileId;
+        address linkingAddress;
+        uint256 linkingLinklistId;
+        bytes32 linkKey;
     }
 
     struct PostNoteData {
@@ -56,9 +49,9 @@ library DataTypes {
 
     // note struct
     struct Note {
-        uint256 noteType;
-        uint256 linkType;
-        bytes32 linkKey;
+        bytes32 linkItemType;
+        uint256 linklistId;
+        bytes32 linkKey; // if linkKey is not empty, it is a note with link
         string contentUri;
         address linkModule;
         address mintModule;

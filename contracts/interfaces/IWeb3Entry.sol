@@ -169,10 +169,49 @@ interface IWeb3Entry {
 
     function postNote(DataTypes.PostNoteData calldata noteData) external returns (uint256);
 
-    function postNoteWithLink(
+    function postNote4ProfileLink(
         DataTypes.PostNoteData calldata noteData,
-        DataTypes.LinkData calldata linkData
-    ) external;
+        uint256 fromProfileId,
+        uint256 toProfileId,
+        bytes32 linkType
+    ) external returns (uint256);
+
+    function postNote4AddressLink(
+        DataTypes.PostNoteData calldata noteData,
+        uint256 fromProfileId,
+        address ethAddress,
+        bytes32 linkType
+    ) external returns (uint256);
+
+    function postNote4LinklistLink(
+        DataTypes.PostNoteData calldata noteData,
+        uint256 fromProfileId,
+        uint256 toLinkListId,
+        bytes32 linkType
+    ) external returns (uint256);
+
+    function postNote4NoteLink(
+        DataTypes.PostNoteData calldata noteData,
+        uint256 fromProfileId,
+        uint256 toProfileId,
+        uint256 toNoteId,
+        bytes32 linkType
+    ) external returns (uint256);
+
+    function postNote4ERC721Link(
+        DataTypes.PostNoteData calldata noteData,
+        uint256 fromProfileId,
+        address tokenAddress,
+        uint256 tokenId,
+        bytes32 linkType
+    ) external returns (uint256);
+
+    function postNote4AnyLink(
+        DataTypes.PostNoteData calldata noteData,
+        uint256 fromProfileId,
+        string calldata toUri,
+        bytes32 linkType
+    ) external returns (uint256);
 
     function getPrimaryProfileId(address account) external view returns (uint256);
 
