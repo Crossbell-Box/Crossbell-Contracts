@@ -228,6 +228,11 @@ interface IWeb3Entry {
 
     function getProfileUri(uint256 profileId) external view returns (string memory);
 
+    function getNote(uint256 profileId, uint256 noteId)
+        external
+        view
+        returns (DataTypes.Note memory);
+
     function getLinkModule4Profile(uint256 profileId) external view returns (address);
 
     function getLinkModule4Address(address account) external view returns (address);

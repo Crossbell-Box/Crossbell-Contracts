@@ -45,10 +45,9 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         address receiver
     ) internal returns (uint256 profileId) {
         bytes32 handleHash = keccak256(bytes(handle));
-        require(_profileIdByHandleHash[handleHash] == 0, "Web3Entry: HandleExists");
+        require(_profileIdByHandleHash[handleHash] == 0, "HandleExists");
 
         profileId = ++_profileCounter;
-        console.log("%d is creating.", profileId);
 
         _mint(receiver, profileId);
 
@@ -774,6 +773,14 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function getProfileUri(uint256 profileId) external view returns (string memory) {
         return tokenURI(profileId);
+    }
+
+    function getNote(uint256 profileId, uint256 noteId)
+        external
+        view
+        returns (DataTypes.Note memory)
+    {
+        return _noteByIdByProfile[profileId][noteId];
     }
 
     function getLinkModule4Profile(uint256 profileId) external view returns (address) {
