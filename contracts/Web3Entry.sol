@@ -628,7 +628,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
         uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
         bytes32 linkItemType = Constants.LinkItemTypeAddress;
-        bytes32 linkKey = bytes32(ethAddress);
+        bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
 
         return
             _postNote4Link(
@@ -732,7 +732,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         bytes32 linkType
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
-        _validateERC721Exists(tokenAddress, tokenId);
 
         uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
         bytes32 linkItemType = Constants.LinkItemTypeAny;
