@@ -193,8 +193,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateProfileExists(toProfileId);
 
         uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        uint256 profileId = ILinklist(linklist).getCurrentTakeOver(linklistId);
-        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
+        _validateLinklistAttached(linklistId, fromProfileId);
 
         // remove from link list
         ILinklist(linklist).removeLinkingProfileId(linklistId, toProfileId);
@@ -239,8 +238,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateNoteExists(toProfileId, toNoteId);
 
         uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        uint256 profileId = ILinklist(linklist).getCurrentTakeOver(linklistId);
-        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
+        _validateLinklistAttached(linklistId, fromProfileId);
 
         // remove from link list
         ILinklist(linklist).removeLinkingNote(linklistId, toProfileId, toNoteId);
@@ -296,8 +294,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(fromProfileId);
 
         uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        uint256 profileId = ILinklist(linklist).getCurrentTakeOver(linklistId);
-        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
+        _validateLinklistAttached(linklistId, fromProfileId);
 
         // remove from link list
         ILinklist(linklist).removeLinkingAddress(linklistId, ethAddress);
@@ -328,8 +325,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(fromProfileId);
 
         uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        uint256 profileId = ILinklist(linklist).getCurrentTakeOver(linklistId);
-        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
+        _validateLinklistAttached(linklistId, fromProfileId);
 
         // remove from link list
         ILinklist(linklist).removeLinkingAny(linklistId, toUri);
@@ -355,8 +351,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(fromProfileId);
 
         uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        uint256 profileId = ILinklist(linklist).getCurrentTakeOver(linklistId);
-        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
+        _validateLinklistAttached(linklistId, fromProfileId);
 
         // remove from link list
         ILinklist(linklist).removeLinkingProfileLink(linklistId, linkData);
@@ -394,8 +389,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(fromProfileId);
 
         uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        uint256 profileId = ILinklist(linklist).getCurrentTakeOver(linklistId);
-        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
+        _validateLinklistAttached(linklistId, fromProfileId);
 
         // add to link list
         ILinklist(linklist).removeLinkingLinklistId(linklistId, toLinkListId);
@@ -931,8 +925,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         bytes32 linkType
     ) internal {
         uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        uint256 profileId = ILinklist(linklist).getCurrentTakeOver(linklistId);
-        require(profileId == fromProfileId, "Web3Entry: unauthorised linkList");
+        _validateLinklistAttached(linklistId, fromProfileId);
 
         // remove from link list
         ILinklist(linklist).removeLinkingERC721(linklistId, tokenAddress, tokenId);
@@ -1011,5 +1004,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function _validateNoteExists(uint256 profileId, uint256 noteId) internal view {
         require(noteId <= _profileById[profileId].noteCount, "Web3Entry: NoteNotExists");
+    }
+
+    function _validateLinklistAttached(uint256 linklistId, uint256 profileId) internal view {
+        require(
+            profileId == ILinklist(linklist).getCurrentTakeOver(linklistId),
+            "Web3Entry: unattached linkList"
+        );
     }
 }
