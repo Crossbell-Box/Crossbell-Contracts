@@ -60,11 +60,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         emit Events.ProfileCreated(profileId, msg.sender, receiver, handle, block.timestamp);
     }
 
-    function _setLinkModule(
+    function _setProfileLinkModule(
         uint256 profileId,
         address linkModule,
         bytes calldata linkModuleInitData
     ) internal {
+        _profileById[profileId].linkModule = linkModule;
+
         bytes memory returnData;
         if (linkModule != address(0)) {
             returnData = ILinkModule4Profile(linkModule).initializeLinkModule(
@@ -84,12 +86,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         }
 
         // init link module
-        // hmmm why is it useful?
-        if (profileData.linkModule != _profileById[profileId].linkModule) {
-            _profileById[profileId].linkModule = profileData.linkModule;
-        }
-
-        _setLinkModule(profileId, profileData.linkModule, profileData.linkModuleInitData);
+        _setProfileLinkModule(profileId, profileData.linkModule, profileData.linkModuleInitData);
     }
 
     function setHandle(uint256 profileId, string calldata newHandle) external {
@@ -413,10 +410,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(profileId);
 
         if (linkModule != _profileById[profileId].linkModule) {
-            _profileById[profileId].linkModule = linkModule;
+            _setProfileLinkModule(profileId, linkModule, linkModuleInitData);
         }
-
-        _setLinkModule(profileId, linkModule, linkModuleInitData);
     }
 
     function setLinkModule4Note(
