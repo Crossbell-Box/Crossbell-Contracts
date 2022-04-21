@@ -40,7 +40,7 @@ async function main() {
     await web3Entry
         .attach(proxyWeb3Entry.address)
         .connect(addr1)
-        .initialize("Web3 Entry Profile", "WEP", linkList.address, mintNFT.address);
+        .initialize("Web3 Entry Profile", "WEP", proxyLinklist.address, mintNFT.address);
 
     await linkList
         .attach(proxyLinklist.address)
