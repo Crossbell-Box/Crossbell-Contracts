@@ -24,7 +24,18 @@ async function main() {
     const Linklist = await ethers.getContractFactory("Linklist");
     const linkList = await Linklist.deploy();
 
-    const Web3Entry = await ethers.getContractFactory("Web3Entry");
+    const InteractionLogic = await ethers.getContractFactory("InteractionLogic")
+    const interactionLogic = await InteractionLogic.deploy();
+
+    const ProfileLogic = await ethers.getContractFactory("ProfileLogic");
+    const profileLogic = await ProfileLogic.deploy();
+
+    const Web3Entry = await ethers.getContractFactory("Web3Entry", {
+        libraries: {
+            InteractionLogic: interactionLogic.address,
+            ProfileLogic: profileLogic.address,
+        },
+    });
     const web3Entry = await Web3Entry.deploy();
 
     const Proxy = await ethers.getContractFactory("TransparentUpgradeableProxy");
