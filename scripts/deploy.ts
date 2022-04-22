@@ -30,10 +30,14 @@ async function main() {
     const ProfileLogic = await ethers.getContractFactory("ProfileLogic");
     const profileLogic = await ProfileLogic.deploy();
 
+    const PostLogic = await ethers.getContractFactory("PostLogic");
+    const postLogic = await PostLogic.deploy();
+
     const Web3Entry = await ethers.getContractFactory("Web3Entry", {
         libraries: {
             InteractionLogic: interactionLogic.address,
             ProfileLogic: profileLogic.address,
+            PostLogic: postLogic.address,
         },
     });
     const web3Entry = await Web3Entry.deploy();

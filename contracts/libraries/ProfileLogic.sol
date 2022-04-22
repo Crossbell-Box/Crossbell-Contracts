@@ -38,9 +38,9 @@ library ProfileLogic {
         uint256 profileId,
         address linkModule,
         bytes calldata linkModuleInitData,
-        mapping(uint256 => DataTypes.Profile) storage _profileById
+        DataTypes.Profile storage _profile
     ) external {
-        _profileById[profileId].linkModule = linkModule;
+        _profile.linkModule = linkModule;
 
         if (linkModule != address(0)) {
             bytes memory returnData = ILinkModule4Profile(linkModule).initializeLinkModule(

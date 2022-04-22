@@ -19,6 +19,9 @@ beforeEach(async () => {
     const ProfileLogic = await ethers.getContractFactory("ProfileLogic");
     const profileLogic = await ProfileLogic.deploy();
 
+    const PostLogic = await ethers.getContractFactory("PostLogic");
+    const postLogic = await PostLogic.deploy();
+
     const Linklist = await ethers.getContractFactory("Linklist");
     linkList = await Linklist.deploy();
 
@@ -26,6 +29,7 @@ beforeEach(async () => {
         libraries: {
             InteractionLogic: interactionLogic.address,
             ProfileLogic: profileLogic.address,
+            PostLogic: postLogic.address,
         },
     });
     web3Entry = await Web3Entry.deploy();

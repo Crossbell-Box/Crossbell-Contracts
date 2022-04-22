@@ -17,6 +17,7 @@ import "./libraries/DataTypes.sol";
 import "./libraries/Constants.sol";
 import "./libraries/Events.sol";
 import "./libraries/ProfileLogic.sol";
+import "./libraries/PostLogic.sol";
 import "./libraries/InteractionLogic.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
@@ -389,7 +390,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
                 profileId,
                 linkModule,
                 linkModuleInitData,
-                _profileById
+                _profileById[profileId]
             );
         }
     }
@@ -510,46 +511,24 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(profileId);
         _validateNoteExists(profileId, noteId);
 
-        bytes memory returnData = _initMintModule4Note(
+        _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
+
+        bytes memory returnData = IMintModule4Note(mintModule).initializeMintModule(
             profileId,
             noteId,
-            mintModule,
             mintModuleInitData
         );
 
         emit Events.SetMintModule4Note(profileId, noteId, mintModule, returnData, block.timestamp);
     }
 
-    function _initMintModule4Note(
-        uint256 profileId,
-        uint256 noteId,
-        address mintModule,
-        bytes memory mintModuleInitData
-    ) internal returns (bytes memory) {
-        _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
-        return
-            IMintModule4Note(mintModule).initializeMintModule(
-                profileId,
-                noteId,
-                mintModuleInitData
-            );
-    }
-
     function postNote(DataTypes.PostNoteData calldata noteData) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        return
-            _postNote4Link(
-                noteData.profileId,
-                noteData.contentUri,
-                noteData.linkModule,
-                noteData.linkModuleInitData,
-                noteData.mintModule,
-                noteData.mintModuleInitData,
-                0,
-                0,
-                0
-            );
+        uint256 noteId = ++_profileById[noteData.profileId].noteCount;
+
+        PostLogic.postNote4Link(noteData, noteId, 0, 0, 0, _noteByIdByProfile);
+        return noteId;
     }
 
     function postNote4ProfileLink(
@@ -564,18 +543,18 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         bytes32 linkItemType = Constants.LinkItemTypeProfile;
         bytes32 linkKey = bytes32(toProfileId);
 
-        return
-            _postNote4Link(
-                noteData.profileId,
-                noteData.contentUri,
-                noteData.linkModule,
-                noteData.linkModuleInitData,
-                noteData.mintModule,
-                noteData.mintModuleInitData,
-                linklistId,
-                linkItemType,
-                linkKey
-            );
+        uint256 noteId = ++_profileById[fromProfileId].noteCount;
+
+        PostLogic.postNote4Link(
+            noteData,
+            noteId,
+            linklistId,
+            linkItemType,
+            linkKey,
+            _noteByIdByProfile
+        );
+
+        return noteId;
     }
 
     function postNote4AddressLink(
@@ -590,18 +569,18 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         bytes32 linkItemType = Constants.LinkItemTypeAddress;
         bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
 
-        return
-            _postNote4Link(
-                noteData.profileId,
-                noteData.contentUri,
-                noteData.linkModule,
-                noteData.linkModuleInitData,
-                noteData.mintModule,
-                noteData.mintModuleInitData,
-                linklistId,
-                linkItemType,
-                linkKey
-            );
+        uint256 noteId = ++_profileById[fromProfileId].noteCount;
+
+        PostLogic.postNote4Link(
+            noteData,
+            noteId,
+            linklistId,
+            linkItemType,
+            linkKey,
+            _noteByIdByProfile
+        );
+
+        return noteId;
     }
 
     function postNote4LinklistLink(
@@ -616,18 +595,18 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         bytes32 linkItemType = Constants.LinkItemTypeList;
         bytes32 linkKey = bytes32(toLinkListId);
 
-        return
-            _postNote4Link(
-                noteData.profileId,
-                noteData.contentUri,
-                noteData.linkModule,
-                noteData.linkModuleInitData,
-                noteData.mintModule,
-                noteData.mintModuleInitData,
-                linklistId,
-                linkItemType,
-                linkKey
-            );
+        uint256 noteId = ++_profileById[fromProfileId].noteCount;
+
+        PostLogic.postNote4Link(
+            noteData,
+            noteId,
+            linklistId,
+            linkItemType,
+            linkKey,
+            _noteByIdByProfile
+        );
+
+        return noteId;
     }
 
     function postNote4NoteLink(
@@ -643,18 +622,18 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         bytes32 linkItemType = Constants.LinkItemTypeNote;
         bytes32 linkKey = keccak256(abi.encodePacked(toProfileId, toNoteId));
 
-        return
-            _postNote4Link(
-                noteData.profileId,
-                noteData.contentUri,
-                noteData.linkModule,
-                noteData.linkModuleInitData,
-                noteData.mintModule,
-                noteData.mintModuleInitData,
-                linklistId,
-                linkItemType,
-                linkKey
-            );
+        uint256 noteId = ++_profileById[fromProfileId].noteCount;
+
+        PostLogic.postNote4Link(
+            noteData,
+            noteId,
+            linklistId,
+            linkItemType,
+            linkKey,
+            _noteByIdByProfile
+        );
+
+        return noteId;
     }
 
     function postNote4ERC721Link(
@@ -671,18 +650,18 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         bytes32 linkItemType = Constants.LinkItemTypeERC721;
         bytes32 linkKey = keccak256(abi.encodePacked(tokenAddress, tokenId));
 
-        return
-            _postNote4Link(
-                noteData.profileId,
-                noteData.contentUri,
-                noteData.linkModule,
-                noteData.linkModuleInitData,
-                noteData.mintModule,
-                noteData.mintModuleInitData,
-                linklistId,
-                linkItemType,
-                linkKey
-            );
+        uint256 noteId = ++_profileById[fromProfileId].noteCount;
+
+        PostLogic.postNote4Link(
+            noteData,
+            noteId,
+            linklistId,
+            linkItemType,
+            linkKey,
+            _noteByIdByProfile
+        );
+
+        return noteId;
     }
 
     function postNote4AnyLink(
@@ -697,18 +676,18 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         bytes32 linkItemType = Constants.LinkItemTypeAny;
         bytes32 linkKey = keccak256(abi.encodePacked("LinkAny", toUri));
 
-        return
-            _postNote4Link(
-                noteData.profileId,
-                noteData.contentUri,
-                noteData.linkModule,
-                noteData.linkModuleInitData,
-                noteData.mintModule,
-                noteData.mintModuleInitData,
-                linklistId,
-                linkItemType,
-                linkKey
-            );
+        uint256 noteId = ++_profileById[fromProfileId].noteCount;
+
+        PostLogic.postNote4Link(
+            noteData,
+            noteId,
+            linklistId,
+            linkItemType,
+            linkKey,
+            _noteByIdByProfile
+        );
+
+        return noteId;
     }
 
     function getPrimaryProfileId(address account) external view returns (uint256) {
@@ -790,66 +769,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function getLinklistContract() external view returns (address) {
         return linklist;
-    }
-
-    function _postNote4Link(
-        uint256 profileId,
-        string calldata contentURI,
-        address linkModule,
-        bytes memory linkModuleInitData,
-        address mintModule,
-        bytes memory mintModuleInitData,
-        uint256 linklistId,
-        bytes32 linkItemType,
-        bytes32 linkKey
-    ) internal returns (uint256) {
-        uint256 noteId = ++_profileById[profileId].noteCount;
-
-        // save note
-        if (linkItemType != bytes32(0)) {
-            _noteByIdByProfile[profileId][noteId].linkItemType = linkItemType;
-            _noteByIdByProfile[profileId][noteId].linklistId = linklistId;
-            _noteByIdByProfile[profileId][noteId].linkKey = linkKey;
-        }
-        _noteByIdByProfile[profileId][noteId].contentUri = contentURI;
-        _noteByIdByProfile[profileId][noteId].linkModule = linkModule;
-        _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
-
-        // init link module
-        bytes memory linkModuleReturnData;
-        if (linkModule != address(0)) {
-            linkModuleReturnData = ILinkModule4Note(linkModule).initializeLinkModule(
-                profileId,
-                noteId,
-                linkModuleInitData
-            );
-        }
-        // init mint module
-        bytes memory mintModuleReturnData;
-        if (mintModule != address(0)) {
-            mintModuleReturnData = IMintModule4Note(mintModule).initializeMintModule(
-                profileId,
-                noteId,
-                mintModuleInitData
-            );
-        }
-
-        emit Events.SetLinkModule4Note(
-            profileId,
-            noteId,
-            linkModule,
-            linkModuleReturnData,
-            block.timestamp
-        );
-        emit Events.SetMintModule4Note(
-            profileId,
-            noteId,
-            mintModule,
-            mintModuleReturnData,
-            block.timestamp
-        );
-
-        return noteId;
     }
 
     function _linkNote(
