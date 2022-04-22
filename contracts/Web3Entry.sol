@@ -25,6 +25,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     using SafeMath for uint256;
     using Strings for uint256;
 
+    uint256 internal constant REVISION = 1;
     address MINT_NFT_IMPL;
 
     function initialize(
@@ -749,10 +750,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         return _noteByIdByProfile[profileId][noteId];
     }
 
-    function getLinkModule4Profile(uint256 profileId) external view returns (address) {
-        return _profileById[profileId].linkModule;
-    }
-
     function getLinkModule4Address(address account) external view returns (address) {
         return _linkModules4Address[account];
     }
@@ -767,10 +764,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         returns (address)
     {
         return _linkModules4ERC721[tokenAddress][tokenId];
-    }
-
-    function getMintModule4Note(uint256 profileId, uint256 noteId) external view returns (address) {
-        return _noteByIdByProfile[profileId][noteId].mintModule;
     }
 
     function tokenURI(uint256 profileId) public view override returns (string memory) {
@@ -980,5 +973,9 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
             profileId == ILinklist(linklist).getCurrentTakeOver(linklistId),
             "Web3Entry: unattached linkList"
         );
+    }
+
+    function getRevision() external pure returns (uint256) {
+        return REVISION;
     }
 }

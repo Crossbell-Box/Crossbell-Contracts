@@ -233,8 +233,6 @@ interface IWeb3Entry {
         view
         returns (DataTypes.Note memory);
 
-    function getLinkModule4Profile(uint256 profileId) external view returns (address);
-
     function getLinkModule4Address(address account) external view returns (address);
 
     function getLinkModule4Linklist(uint256 tokenId) external view returns (address);
@@ -243,8 +241,6 @@ interface IWeb3Entry {
         external
         view
         returns (address);
-
-    function getMintModule4Note(uint256 profileId, uint256 noteId) external view returns (address);
 
     function getLinklistUri(uint256 profileId, bytes32 linkType)
         external
@@ -257,4 +253,6 @@ interface IWeb3Entry {
         returns (uint256[] memory);
 
     function getLinklistContract() external view returns (address);
+
+    function getRevision() external pure returns (uint256);
 }

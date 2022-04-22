@@ -3,6 +3,11 @@ import { ethers } from "hardhat";
 import { FIRST_LINKLIST_ID, FIRST_PROFILE_ID, SECOND_PROFILE_ID, web3Entry } from "./setup";
 import { getTimestamp, matchEvent } from "./utils";
 describe("Profile", function () {
+    it("Should returns an revision", async function () {
+        const revision = await web3Entry.getRevision();
+        expect(revision).to.equal(1);
+    });
+
     it("Should emit the new created profile data once it's created", async function () {
         const [deployer, addr1] = await ethers.getSigners();
         const profileData = {
