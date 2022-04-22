@@ -24,7 +24,7 @@ async function main() {
     const Linklist = await ethers.getContractFactory("Linklist");
     const linkList = await Linklist.deploy();
 
-    const InteractionLogic = await ethers.getContractFactory("InteractionLogic")
+    const InteractionLogic = await ethers.getContractFactory("InteractionLogic");
     const interactionLogic = await InteractionLogic.deploy();
 
     const ProfileLogic = await ethers.getContractFactory("ProfileLogic");

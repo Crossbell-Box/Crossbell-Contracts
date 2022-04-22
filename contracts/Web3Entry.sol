@@ -176,7 +176,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         ProfileLogic.createProfile(
             DataTypes.CreateProfileData({
                 to: to,
-                handle: string(abi.encodePacked(to)),
+                handle: Strings.toHexString(uint160(to), 20),
                 uri: "",
                 linkModule: address(0),
                 linkModuleInitData: ""

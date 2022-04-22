@@ -58,7 +58,6 @@ library InteractionLogic {
             abi.encodePacked(firstBytes, "-Mint-", profileId.toString(), "-", noteId.toString())
         );
 
-        // TODO:  check address(this) ???
         IMintNFT(mintNFT).initialize(profileId, noteId, address(this), NFTName, NFTSymbol);
         return mintNFT;
     }
