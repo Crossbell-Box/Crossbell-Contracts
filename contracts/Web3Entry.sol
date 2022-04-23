@@ -59,20 +59,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function setHandle(uint256 profileId, string calldata newHandle) external {
         _validateCallerIsProfileOwner(profileId);
 
-        // set new handle
-        bytes32 handleHash = keccak256(bytes(newHandle));
-        require(_profileIdByHandleHash[handleHash] == 0, "Web3Entry: HandleExists");
-
-        // remove old handle
-        string memory oldHandle = _profileById[profileId].handle;
-        bytes32 oldHandleHash = keccak256(bytes(oldHandle));
-        delete _profileIdByHandleHash[oldHandleHash];
-
-        _profileIdByHandleHash[handleHash] = profileId;
-
-        _profileById[profileId].handle = newHandle;
-
-        emit Events.SetHandle(msg.sender, profileId, newHandle);
+        ProfileLogic.setHandle(profileId, newHandle, _profileIdByHandleHash, _profileById);
     }
 
     function setSocialToken(uint256 profileId, address tokenAddress) external {

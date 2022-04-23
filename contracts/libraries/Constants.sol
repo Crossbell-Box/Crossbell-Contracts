@@ -3,6 +3,8 @@
 pragma solidity 0.8.10;
 
 library Constants {
+    uint8 internal constant MAX_HANDLE_LENGTH = 42;
+
     // note link type
     // "ProfileLink"
     bytes32 constant LinkItemTypeProfile =

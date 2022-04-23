@@ -12,7 +12,7 @@ describe("Profile", function () {
         const [deployer, addr1] = await ethers.getSigners();
         const profileData = {
             to: await addr1.address,
-            handle: "newHandle",
+            handle: "new.handle",
             uri: "uri",
             linkModule: ethers.constants.AddressZero,
             linkModuleInitData: [],
@@ -28,8 +28,51 @@ describe("Profile", function () {
             await getTimestamp(),
         ]);
 
-        const profile = await web3Entry.getProfileByHandle("newHandle");
+        const profile = await web3Entry.getProfileByHandle("new.handle");
 
+        expect(profile.handle).to.equal(profileData.handle);
+        expect(profile.uri).to.equal(profileData.uri);
+    });
+
+    it("Should fail when creating profile with existing handle", async function () {
+        const [deployer, addr1] = await ethers.getSigners();
+
+        const profileData = {
+            to: await addr1.address,
+            handle: "new.handle",
+            uri: "uri",
+            linkModule: ethers.constants.AddressZero,
+            linkModuleInitData: [],
+        };
+
+        await expect(web3Entry.createProfile(profileData)).to.not.be.reverted;
+        // await expect(web3Entry.createProfile(profileData)).to.not.be.reverted;
+        await expect(web3Entry.createProfile(profileData)).to.be.revertedWith("HandleExists");
+    });
+
+    it("Created profile with address as handle", async function () {
+        const [deployer, addr1, addr2] = await ethers.getSigners();
+        const handle = addr2.address.toString().toLowerCase();
+        console.log("handle:", handle);
+        const profileData = {
+            to: await addr1.address,
+            handle: handle,
+            uri: "uri",
+            linkModule: ethers.constants.AddressZero,
+            linkModuleInitData: [],
+        };
+
+        const receipt = await (await web3Entry.createProfile(profileData)).wait();
+
+        matchEvent(receipt, "ProfileCreated", [
+            FIRST_PROFILE_ID,
+            deployer.address,
+            profileData.to,
+            profileData.handle,
+            await getTimestamp(),
+        ]);
+
+        const profile = await web3Entry.getProfileByHandle(handle);
         expect(profile.handle).to.equal(profileData.handle);
         expect(profile.uri).to.equal(profileData.uri);
     });
@@ -39,7 +82,7 @@ describe("Profile", function () {
         const profileData = (handle?: string) => {
             return {
                 to: addr1.address,
-                handle: handle ? handle : "newHandle",
+                handle: handle ? handle : "new.handle",
                 uri: "uri",
                 linkModule: ethers.constants.AddressZero,
                 linkModuleInitData: [],
@@ -91,7 +134,7 @@ describe("Profile", function () {
         const profileData = (handle?: string) => {
             return {
                 to: addr1.address,
-                handle: handle ? handle : "newHandle",
+                handle: handle ? handle : "new.handle",
                 uri: "uri",
                 linkModule: ethers.constants.AddressZero,
                 linkModuleInitData: [],
@@ -127,6 +170,10 @@ describe("Profile", function () {
         // get handle
         const handle = await web3Entry.getHandle(SECOND_PROFILE_ID);
         expect(handle).to.equal(addr2.address.toLowerCase());
+        // get profile by handle
+        profile = await web3Entry.getProfileByHandle(addr2.address.toLowerCase());
+        expect(profile.handle).to.equal(addr2.address.toLowerCase());
+        expect(profile.profileId).to.equal(SECOND_PROFILE_ID);
 
         // check profile nft totalSupply
         const totalSupply = await web3Entry.totalSupply();
