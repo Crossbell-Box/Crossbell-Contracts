@@ -6,6 +6,8 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+import { chainConfig } from "@nomiclabs/hardhat-etherscan/dist/src/ChainConfig";
+import { ChainConfig } from "@nomiclabs/hardhat-etherscan/dist/src/types";
 
 dotenv.config();
 
@@ -19,10 +21,26 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
     }
 });
 
-// You need to export an object to set up your config
-// Go to https://hardhat.org/config/ to learn more
+// hack way to add network support of crossbell
+(chainConfig as any).crossbell = {
+    chainId: 3737,
+    urls: {
+        apiURL: "https://scan.crossbell.io/api",
+        browserURL: "https://scan.crossbell.io",
+    },
+};
 
-const config: HardhatUserConfig = {
+type CsbEtherscanApiKeys = {
+    [P in keyof Required<ChainConfig> & {
+        crossbell: string;
+    }]: string;
+};
+
+interface CsbHardhatUserConfig extends HardhatUserConfig {
+    etherscan: CsbEtherscanApiKeys | undefined;
+}
+
+const config: CsbHardhatUserConfig = {
     solidity: {
         compilers: [
             {
@@ -42,7 +60,11 @@ const config: HardhatUserConfig = {
     networks: {
         ropsten: {
             url: process.env.ROPSTEN_URL || "",
-            accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+            accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY2 as string],
+        },
+        crossbell: {
+            url: "https://rpc.crossbell.io",
+            accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY2 as string],
         },
     },
     gasReporter: {
@@ -51,7 +73,8 @@ const config: HardhatUserConfig = {
     },
     etherscan: {
         apiKey: {
-            ropsten: process.env.ROPSTEN_API_KEY,
+            crossbell: "api key",
+            ropsten: process.env.ETHERSCAN_API_KEY,
         },
     },
 };
