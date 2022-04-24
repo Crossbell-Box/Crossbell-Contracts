@@ -29,6 +29,8 @@ library Events {
         address indexed tokenAddress
     );
 
+    event SetProfileUri(uint256 indexed profileId, string newUri);
+
     event PostNote(
         uint256 indexed profileId,
         uint256 indexed noteId,

@@ -1,8 +1,6 @@
 {
     "name": "Atlas",
-    "avatars": [
-        "ipfs://QmNks3cJWDXzG5WSBzTVv1regkhXhzChK6LhJYu1HiBLS2"
-    ],
+    "avatars": ["ipfs://QmNks3cJWDXzG5WSBzTVv1regkhXhzChK6LhJYu1HiBLS2"],
     "bio": "We shall meet in the place with no darkness.",
     "attachments": [
         {

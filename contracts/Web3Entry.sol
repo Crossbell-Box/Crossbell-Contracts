@@ -6,7 +6,6 @@ import "hardhat/console.sol";
 import "./base/NFTBase.sol";
 import "./interfaces/IWeb3Entry.sol";
 import "./interfaces/ILinklist.sol";
-import "./interfaces/ILinkModule4Profile.sol";
 import "./interfaces/ILinkModule4Note.sol";
 import "./interfaces/ILinkModule4Address.sol";
 import "./interfaces/ILinkModule4ERC721.sol";
@@ -82,6 +81,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(profileId);
 
         _profileById[profileId].uri = newUri;
+
+        emit Events.SetProfileUri(profileId, newUri);
     }
 
     function setPrimaryProfileId(uint256 profileId) external {
@@ -400,15 +401,21 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
         if (linkModule != address(0)) {
             _noteByIdByProfile[profileId][noteId].linkModule = linkModule;
+
+            bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
+                profileId,
+                noteId,
+                linkModuleInitData
+            );
+
+            emit Events.SetLinkModule4Note(
+                profileId,
+                noteId,
+                linkModule,
+                returnData,
+                block.timestamp
+            );
         }
-
-        bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
-            profileId,
-            noteId,
-            linkModuleInitData
-        );
-
-        emit Events.SetLinkModule4Note(profileId, noteId, linkModule, returnData, block.timestamp);
     }
 
     function setLinkModule4Linklist(
@@ -416,18 +423,20 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         address linkModule,
         bytes calldata linkModuleInitData
     ) external {
-        _linkModules4Linklist[linklistId] = linkModule;
-        bytes memory linkModuleReturnData = ILinkModule4Linklist(linkModule).initializeLinkModule(
-            linklistId,
-            linkModuleInitData
-        );
+        _validateCallerIsLinklistOwner(linklistId);
 
-        emit Events.SetLinkModule4Linklist(
-            linklistId,
-            linkModule,
-            linkModuleReturnData,
-            block.timestamp
-        );
+        if (linkModule != address(0)) {
+            _linkModules4Linklist[linklistId] = linkModule;
+            bytes memory linkModuleReturnData = ILinkModule4Linklist(linkModule)
+                .initializeLinkModule(linklistId, linkModuleInitData);
+
+            emit Events.SetLinkModule4Linklist(
+                linklistId,
+                linkModule,
+                linkModuleReturnData,
+                block.timestamp
+            );
+        }
     }
 
     function setLinkModule4ERC721(
@@ -436,25 +445,24 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         address linkModule,
         bytes calldata linkModuleInitData
     ) external {
-        require(
-            msg.sender == IERC721Metadata(tokenAddress).ownerOf(tokenId),
-            "Web3Entry: NotERC721TokenOwner"
-        );
+        _validateCallerIsERC721Owner(tokenAddress, tokenId);
 
-        _linkModules4ERC721[tokenAddress][tokenId] = linkModule;
-        bytes memory linkModuleReturnData = ILinkModule4ERC721(linkModule).initializeLinkModule(
-            tokenAddress,
-            tokenId,
-            linkModuleInitData
-        );
+        if (linkModule != address(0)) {
+            _linkModules4ERC721[tokenAddress][tokenId] = linkModule;
+            bytes memory linkModuleReturnData = ILinkModule4ERC721(linkModule).initializeLinkModule(
+                tokenAddress,
+                tokenId,
+                linkModuleInitData
+            );
 
-        emit Events.SetLinkModule4ERC721(
-            tokenAddress,
-            tokenId,
-            linkModule,
-            linkModuleReturnData,
-            block.timestamp
-        );
+            emit Events.SetLinkModule4ERC721(
+                tokenAddress,
+                tokenId,
+                linkModule,
+                linkModuleReturnData,
+                block.timestamp
+            );
+        }
     }
 
     function setLinkModule4Address(
@@ -464,18 +472,18 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external {
         require(msg.sender == account, "Web3Entry: NotAddressOwner");
 
-        _linkModules4Address[account] = linkModule;
-        bytes memory linkModuleReturnData = ILinkModule4Address(linkModule).initializeLinkModule(
-            account,
-            linkModuleInitData
-        );
+        if (linkModule != address(0)) {
+            _linkModules4Address[account] = linkModule;
+            bytes memory linkModuleReturnData = ILinkModule4Address(linkModule)
+                .initializeLinkModule(account, linkModuleInitData);
 
-        emit Events.SetLinkModule4Address(
-            account,
-            linkModule,
-            linkModuleReturnData,
-            block.timestamp
-        );
+            emit Events.SetLinkModule4Address(
+                account,
+                linkModule,
+                linkModuleReturnData,
+                block.timestamp
+            );
+        }
     }
 
     function mintNote(
@@ -505,15 +513,23 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(profileId);
         _validateNoteExists(profileId, noteId);
 
-        _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
+        if (mintModule != address(0)) {
+            _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
 
-        bytes memory returnData = IMintModule4Note(mintModule).initializeMintModule(
-            profileId,
-            noteId,
-            mintModuleInitData
-        );
+            bytes memory returnData = IMintModule4Note(mintModule).initializeMintModule(
+                profileId,
+                noteId,
+                mintModuleInitData
+            );
 
-        emit Events.SetMintModule4Note(profileId, noteId, mintModule, returnData, block.timestamp);
+            emit Events.SetMintModule4Note(
+                profileId,
+                noteId,
+                mintModule,
+                returnData,
+                block.timestamp
+            );
+        }
     }
 
     function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256) {
@@ -871,6 +887,10 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function _validateProfileExists(uint256 profileId) internal view {
         require(_exists(profileId), "Web3Entry: ProfileNotExists");
+    }
+
+    function _validateCallerIsERC721Owner(address tokenAddress, uint256 tokenId) internal view {
+        require(msg.sender == ERC721(tokenAddress).ownerOf(tokenId), "Web3Entry: NotERC721Owner");
     }
 
     function _validateERC721Exists(address tokenAddress, uint256 tokenId) internal view {
