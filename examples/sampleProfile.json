@@ -1,0 +1,19 @@
+{
+    "name": "Atlas",
+    "avatars": [
+        "ipfs://QmNks3cJWDXzG5WSBzTVv1regkhXhzChK6LhJYu1HiBLS2"
+    ],
+    "bio": "We shall meet in the place with no darkness.",
+    "attachments": [
+        {
+            "type": "websites",
+            "content": "https://rss3.io\nhttps://atlasoin.xyz",
+            "mime_type": "text/uri-list"
+        }
+    ],
+
+    "connected_accounts": [
+        "rss3://account:Atlasoin@twitter",
+        "rss3://account:0xc560eb6fd0c2eb80Df50E5e06715295AE1205049@ethereum"
+    ]
+}
