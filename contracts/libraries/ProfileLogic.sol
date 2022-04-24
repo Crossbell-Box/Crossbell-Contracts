@@ -11,11 +11,14 @@ import "../interfaces/ILinkModule4Profile.sol";
 library ProfileLogic {
     function createProfile(
         DataTypes.CreateProfileData calldata vars,
+        bool validateHandle,
         uint256 profileId,
         mapping(bytes32 => uint256) storage _profileIdByHandleHash,
         mapping(uint256 => DataTypes.Profile) storage _profileById
     ) external {
-        _validateHandle(vars.handle);
+        if (validateHandle) {
+            _validateHandle(vars.handle);
+        }
 
         bytes32 handleHash = keccak256(bytes(vars.handle));
         require(_profileIdByHandleHash[handleHash] == 0, "HandleExists");

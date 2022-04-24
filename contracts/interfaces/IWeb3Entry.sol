@@ -167,7 +167,7 @@ interface IWeb3Entry {
         bytes calldata mintModuleInitData
     ) external;
 
-    function postNote(DataTypes.PostNoteData calldata noteData) external returns (uint256);
+    function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256);
 
     function postNote4ProfileLink(
         DataTypes.PostNoteData calldata noteData,

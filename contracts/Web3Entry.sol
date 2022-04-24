@@ -48,7 +48,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         // mint profile nft
         _mint(vars.to, _profileCounter);
 
-        ProfileLogic.createProfile(vars, _profileCounter, _profileIdByHandleHash, _profileById);
+        ProfileLogic.createProfile(
+            vars,
+            true,
+            _profileCounter,
+            _profileIdByHandleHash,
+            _profileById
+        );
 
         // set primary profile
         if (_primaryProfileByAddress[vars.to] == 0) {
@@ -170,6 +176,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
                 linkModule: address(0),
                 linkModuleInitData: ""
             }),
+            false,
             profileId,
             _profileIdByHandleHash,
             _profileById
@@ -509,12 +516,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         emit Events.SetMintModule4Note(profileId, noteId, mintModule, returnData, block.timestamp);
     }
 
-    function postNote(DataTypes.PostNoteData calldata noteData) external returns (uint256) {
-        _validateCallerIsProfileOwner(noteData.profileId);
+    function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256) {
+        _validateCallerIsProfileOwner(vars.profileId);
 
-        uint256 noteId = ++_profileById[noteData.profileId].noteCount;
+        uint256 noteId = ++_profileById[vars.profileId].noteCount;
 
-        PostLogic.postNote4Link(noteData, noteId, 0, 0, 0, _noteByIdByProfile);
+        PostLogic.postNote4Link(vars, noteId, 0, 0, 0, _noteByIdByProfile);
         return noteId;
     }
 

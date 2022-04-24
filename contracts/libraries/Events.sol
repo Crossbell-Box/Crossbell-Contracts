@@ -29,6 +29,13 @@ library Events {
         address indexed tokenAddress
     );
 
+    event PostNote(
+        uint256 indexed profileId,
+        uint256 indexed noteId,
+        bool noteWithlink,
+        uint256 timestamp
+    );
+
     event LinkProfile(
         address indexed account,
         uint256 indexed fromProfileId,
