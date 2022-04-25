@@ -1,7 +1,20 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { FIRST_LINKLIST_ID, FIRST_PROFILE_ID, SECOND_PROFILE_ID, web3Entry } from "./setup";
+import {
+    FIRST_LINKLIST_ID,
+    FIRST_PROFILE_ID,
+    SECOND_PROFILE_ID,
+    MOCK_PROFILE_HANDLE,
+    MOCK_PROFILE_URI,
+    user,
+    deployerAddress,
+    userAddress,
+    userTwoAddress,
+    userThreeAddress,
+    web3Entry,
+} from "./setup";
 import { getTimestamp, matchEvent } from "./utils";
+
 describe("Profile", function () {
     it("Should returns an revision", async function () {
         const revision = await web3Entry.getRevision();
@@ -9,11 +22,10 @@ describe("Profile", function () {
     });
 
     it("Should emit the new created profile data once it's created", async function () {
-        const [deployer, addr1] = await ethers.getSigners();
         const profileData = {
-            to: await addr1.address,
-            handle: "new.handle",
-            uri: "uri",
+            to: userAddress,
+            handle: MOCK_PROFILE_HANDLE,
+            uri: MOCK_PROFILE_URI,
             linkModule: ethers.constants.AddressZero,
             linkModuleInitData: [],
         };
@@ -22,25 +34,22 @@ describe("Profile", function () {
 
         matchEvent(receipt, "ProfileCreated", [
             FIRST_PROFILE_ID,
-            deployer.address,
+            userAddress,
             profileData.to,
             profileData.handle,
             await getTimestamp(),
         ]);
 
-        const profile = await web3Entry.getProfileByHandle("new.handle");
-
+        const profile = await web3Entry.getProfileByHandle(profileData.handle);
         expect(profile.handle).to.equal(profileData.handle);
         expect(profile.uri).to.equal(profileData.uri);
     });
 
     it("Should fail when creating profile with existing handle", async function () {
-        const [deployer, addr1] = await ethers.getSigners();
-
         const profileData = {
-            to: await addr1.address,
-            handle: "new.handle",
-            uri: "uri",
+            to: userAddress,
+            handle: MOCK_PROFILE_HANDLE,
+            uri: MOCK_PROFILE_URI,
             linkModule: ethers.constants.AddressZero,
             linkModuleInitData: [],
         };
@@ -51,13 +60,11 @@ describe("Profile", function () {
     });
 
     it("Created profile with address as handle", async function () {
-        const [deployer, addr1, addr2] = await ethers.getSigners();
-        const handle = addr2.address.toString().toLowerCase();
-        console.log("handle:", handle);
+        const handle = userAddress.toLowerCase();
         const profileData = {
-            to: await addr1.address,
+            to: userAddress,
             handle: handle,
-            uri: "uri",
+            uri: MOCK_PROFILE_URI,
             linkModule: ethers.constants.AddressZero,
             linkModuleInitData: [],
         };
@@ -66,7 +73,7 @@ describe("Profile", function () {
 
         matchEvent(receipt, "ProfileCreated", [
             FIRST_PROFILE_ID,
-            deployer.address,
+            userAddress,
             profileData.to,
             profileData.handle,
             await getTimestamp(),
@@ -78,12 +85,11 @@ describe("Profile", function () {
     });
 
     it("Should emit the follow data once it's linked or unlinked", async function () {
-        const [deployer, addr1] = await ethers.getSigners();
         const profileData = (handle?: string) => {
             return {
-                to: addr1.address,
-                handle: handle ? handle : "new.handle",
-                uri: "uri",
+                to: userAddress,
+                handle: handle ? handle : MOCK_PROFILE_HANDLE,
+                uri: MOCK_PROFILE_URI,
                 linkModule: ethers.constants.AddressZero,
                 linkModuleInitData: [],
             };
@@ -96,11 +102,11 @@ describe("Profile", function () {
 
         let receipt = await (
             await web3Entry
-                .connect(addr1)
+                .connect(user)
                 .linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, followLinkType)
         ).wait();
         matchEvent(receipt, "LinkProfile", [
-            addr1.address,
+            userAddress,
             FIRST_PROFILE_ID,
             SECOND_PROFILE_ID,
             followLinkType,
@@ -114,12 +120,12 @@ describe("Profile", function () {
         // unlink
         receipt = await (
             await web3Entry
-                .connect(addr1)
+                .connect(user)
                 .unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, followLinkType)
         ).wait();
 
         matchEvent(receipt, "UnlinkProfile", [
-            addr1.address,
+            userAddress,
             FIRST_PROFILE_ID,
             SECOND_PROFILE_ID,
             followLinkType,
@@ -130,12 +136,11 @@ describe("Profile", function () {
     });
 
     it("Should create and link the profile of an address", async function () {
-        const [deployer, addr1, addr2] = await ethers.getSigners();
         const profileData = (handle?: string) => {
             return {
-                to: addr1.address,
-                handle: handle ? handle : "new.handle",
-                uri: "uri",
+                to: userAddress,
+                handle: handle ? handle : MOCK_PROFILE_HANDLE,
+                uri: MOCK_PROFILE_URI,
                 linkModule: ethers.constants.AddressZero,
                 linkModuleInitData: [],
             };
@@ -145,16 +150,16 @@ describe("Profile", function () {
 
         await web3Entry.createProfile(profileData("handle1"));
 
-        let receipt = await (
+        const receipt = await (
             await web3Entry
-                .connect(addr1)
-                .createThenLinkProfile(FIRST_PROFILE_ID, addr2.address, followLinkType)
+                .connect(user)
+                .createThenLinkProfile(FIRST_PROFILE_ID, userTwoAddress, followLinkType)
         ).wait();
 
         matchEvent(receipt, "ProfileCreated");
         matchEvent(receipt, "LinkProfile");
 
-        let followings = await web3Entry.getLinkingProfileIds(FIRST_PROFILE_ID, followLinkType);
+        const followings = await web3Entry.getLinkingProfileIds(FIRST_PROFILE_ID, followLinkType);
         expect(followings.length).to.be.eq(1);
         expect(followings[0]).to.be.eq(SECOND_PROFILE_ID);
 
@@ -165,14 +170,14 @@ describe("Profile", function () {
 
         profile = await web3Entry.getProfile(SECOND_PROFILE_ID);
         expect(profile.profileId).to.equal(SECOND_PROFILE_ID);
-        expect(profile.handle).to.equal(addr2.address.toLowerCase());
+        expect(profile.handle).to.equal(userTwoAddress.toLowerCase());
 
         // get handle
         const handle = await web3Entry.getHandle(SECOND_PROFILE_ID);
-        expect(handle).to.equal(addr2.address.toLowerCase());
+        expect(handle).to.equal(userTwoAddress.toLowerCase());
         // get profile by handle
-        profile = await web3Entry.getProfileByHandle(addr2.address.toLowerCase());
-        expect(profile.handle).to.equal(addr2.address.toLowerCase());
+        profile = await web3Entry.getProfileByHandle(userTwoAddress.toLowerCase());
+        expect(profile.handle).to.equal(userTwoAddress.toLowerCase());
         expect(profile.profileId).to.equal(SECOND_PROFILE_ID);
 
         // check profile nft totalSupply
@@ -182,8 +187,8 @@ describe("Profile", function () {
         // createThenLinkProfile will fail if the profile has been created
         expect(
             web3Entry
-                .connect(addr1)
-                .createThenLinkProfile(FIRST_PROFILE_ID, addr2.address, followLinkType)
+                .connect(user)
+                .createThenLinkProfile(FIRST_PROFILE_ID, userTwoAddress, followLinkType)
         ).to.be.revertedWith("Target address already has primary profile.");
     });
 });
