@@ -59,36 +59,11 @@ describe("Profile", function () {
         await expect(web3Entry.createProfile(profileData)).to.be.revertedWith("HandleExists");
     });
 
-    it("Created profile with address as handle", async function () {
-        const handle = userAddress.toLowerCase();
-        const profileData = {
-            to: userAddress,
-            handle: handle,
-            uri: MOCK_PROFILE_URI,
-            linkModule: ethers.constants.AddressZero,
-            linkModuleInitData: [],
-        };
-
-        const receipt = await (await web3Entry.createProfile(profileData)).wait();
-
-        matchEvent(receipt, "ProfileCreated", [
-            FIRST_PROFILE_ID,
-            userAddress,
-            profileData.to,
-            profileData.handle,
-            await getTimestamp(),
-        ]);
-
-        const profile = await web3Entry.getProfileByHandle(handle);
-        expect(profile.handle).to.equal(profileData.handle);
-        expect(profile.uri).to.equal(profileData.uri);
-    });
-
     it("Should emit the follow data once it's linked or unlinked", async function () {
         const profileData = (handle?: string) => {
             return {
                 to: userAddress,
-                handle: handle ? handle : MOCK_PROFILE_HANDLE,
+                handle: handle || MOCK_PROFILE_HANDLE,
                 uri: MOCK_PROFILE_URI,
                 linkModule: ethers.constants.AddressZero,
                 linkModuleInitData: [],
