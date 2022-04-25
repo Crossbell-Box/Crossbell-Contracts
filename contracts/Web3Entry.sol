@@ -369,7 +369,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         // add to link list
         ILinklist(linklist).removeLinkingLinklistId(linklistId, toLinkListId);
 
-        emit Events.UninkLinklist(fromProfileId, toLinkListId, linkType, linklistId);
+        emit Events.UnlinkLinklist(fromProfileId, toLinkListId, linkType, linklistId);
     }
 
     // set link module for his profile

@@ -1,37 +1,24 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { makeProfileData } from "./helpers/utils";
 import {
-    FIRST_LINKLIST_ID,
-    FIRST_PROFILE_ID,
-    MOCK_CONTENT_URI,
-    MOCK_PROFILE_HANDLE,
-    MOCK_PROFILE_URI,
-    SECOND_PROFILE_ID,
-    web3Entry,
     bytes32Zero,
-    user,
-    userAddress,
     FIRST_NOTE_ID,
-} from "./setup";
-import { getTimestamp, matchEvent } from "./utils";
+    FIRST_PROFILE_ID,
+    MOCK_NOTE_URI,
+    user,
+    web3Entry,
+} from "./setup.test";
 
-describe("Post", function () {
+describe("Note", function () {
     it("User should create profile and then post note", async function () {
-        const profileData = {
-            to: userAddress,
-            handle: MOCK_PROFILE_HANDLE,
-            uri: MOCK_PROFILE_URI,
-            linkModule: ethers.constants.AddressZero,
-            linkModuleInitData: [],
-        };
-
         // create profile
-        await expect(web3Entry.createProfile(profileData)).to.not.be.reverted;
+        await expect(web3Entry.createProfile(makeProfileData())).to.not.be.reverted;
 
         // post note
         const noteData = {
             profileId: FIRST_PROFILE_ID,
-            contentUri: MOCK_CONTENT_URI,
+            contentUri: MOCK_NOTE_URI,
             linkModule: ethers.constants.AddressZero,
             linkModuleInitData: [],
             mintModule: ethers.constants.AddressZero,

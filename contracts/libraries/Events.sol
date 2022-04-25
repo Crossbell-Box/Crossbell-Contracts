@@ -130,7 +130,7 @@ library Events {
         uint256 indexed linklistId
     );
 
-    event UninkLinklist(
+    event UnlinkLinklist(
         uint256 indexed fromProfileId,
         uint256 indexed toLinklistId,
         bytes32 linkType,

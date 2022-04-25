@@ -9,13 +9,32 @@ import { BigNumberish, Bytes, logger, utils, BigNumber, Contract } from "ethers"
 //   PERIPHERY_DATA_PROVIDER_NAME,
 //   testWallet,
 // } from '../__setup.spec';
-import { eventsLib } from "./setup";
+import { eventsLib, MOCK_PROFILE_HANDLE, MOCK_PROFILE_URI, userAddress } from "../setup.test";
 import { expect } from "chai";
 // import { HARDHAT_CHAINID, MAX_UINT256 } from './constants';
 import { hexlify, keccak256, RLP, toUtf8Bytes } from "ethers/lib/utils";
 // import { LensHub__factory } from '../../typechain-types';
 import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import hre, { ethers } from "hardhat";
+import { CreateProfileData } from "./types";
+export const makeProfileData = (handle: string = MOCK_PROFILE_HANDLE, to: string = userAddress) => {
+    return {
+        to,
+        handle,
+        uri: MOCK_PROFILE_URI,
+        linkModule: ethers.constants.AddressZero,
+        linkModuleInitData: [],
+    } as CreateProfileData;
+};
+
+let snapshotId: string = "0x1";
+export async function takeSnapshot() {
+    snapshotId = await hre.ethers.provider.send("evm_snapshot", []);
+}
+
+export async function revertToSnapshot() {
+    await hre.ethers.provider.send("evm_revert", [snapshotId]);
+}
 
 export function matchEvent(
     receipt: TransactionReceipt,
@@ -119,13 +138,4 @@ export async function getTimestamp(): Promise<any> {
     const blockNumber = await hre.ethers.provider.send("eth_blockNumber", []);
     const block = await hre.ethers.provider.send("eth_getBlockByNumber", [blockNumber, false]);
     return block.timestamp;
-}
-
-let snapshotId: string = "0x1";
-export async function takeSnapshot() {
-    snapshotId = await hre.ethers.provider.send("evm_snapshot", []);
-}
-
-export async function revertToSnapshot() {
-    await hre.ethers.provider.send("evm_revert", [snapshotId]);
 }

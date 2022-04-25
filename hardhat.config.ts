@@ -11,16 +11,6 @@ import { ChainConfig } from "@nomiclabs/hardhat-etherscan/dist/src/types";
 
 dotenv.config();
 
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
-    const accounts = await hre.ethers.getSigners();
-
-    for (const account of accounts) {
-        console.log(account.address);
-    }
-});
-
 // hack way to add network support of crossbell
 (chainConfig as any).crossbell = {
     chainId: 3737,
@@ -74,7 +64,7 @@ const config: CsbHardhatUserConfig = {
     etherscan: {
         apiKey: {
             crossbell: "api key",
-            ropsten: process.env.ETHERSCAN_API_KEY,
+            ropsten: process.env.ROPSTEN_API_KEY,
         },
     },
 };
