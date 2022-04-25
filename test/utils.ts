@@ -121,7 +121,6 @@ export async function getTimestamp(): Promise<any> {
     return block.timestamp;
 }
 
-
 let snapshotId: string = "0x1";
 export async function takeSnapshot() {
     snapshotId = await hre.ethers.provider.send("evm_snapshot", []);

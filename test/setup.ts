@@ -8,7 +8,7 @@ import {
     Web3Entry,
     Web3Entry__factory,
     TransparentUpgradeableProxy__factory,
-    Linklist__factory
+    Linklist__factory,
 } from "../typechain";
 
 import {
@@ -34,7 +34,7 @@ export let eventsLib: Events;
 export let linkList: Linklist;
 export let linkListImpl: Linklist;
 export let web3Entry: Web3Entry;
-export let web3EntryImpl: Web3Entry
+export let web3EntryImpl: Web3Entry;
 
 export let accounts: Signer[];
 export let deployer: Signer;
@@ -59,7 +59,6 @@ export function makeSuiteCleanRoom(name: string, tests: () => void) {
         });
     });
 }
-
 
 beforeEach(async () => {
     accounts = await ethers.getSigners();
@@ -99,7 +98,9 @@ beforeEach(async () => {
     });
     web3EntryImpl = await Web3Entry.deploy();
 
-    const TransparentUpgradeableProxy = await ethers.getContractFactory("TransparentUpgradeableProxy")
+    const TransparentUpgradeableProxy = await ethers.getContractFactory(
+        "TransparentUpgradeableProxy"
+    );
     const web3EntryProxy = await TransparentUpgradeableProxy.deploy(
         web3EntryImpl.address,
         adminAddress,
