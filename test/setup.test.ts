@@ -1,4 +1,4 @@
-// import { AbiCoder } from "@ethersproject/contracts/node_modules/@ethersproject/abi";
+import { AbiCoder } from "@ethersproject/abi";
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
 // eslint-disable-next-line node/no-missing-import
@@ -52,7 +52,7 @@ export let userThreeAddress: string;
 
 export const FOLLOW_LINKTYPE = ethers.utils.formatBytes32String("follow");
 
-// export let abiCoder: AbiCoder;
+export let abiCoder: AbiCoder;
 
 export function makeSuiteCleanRoom(name: string, tests: () => void) {
     describe(name, () => {
@@ -70,7 +70,7 @@ beforeEach(async () => {
     let linklistImpl: Linklist;
     let web3EntryImpl: Web3Entry;
 
-    // abiCoder = ethers.utils.defaultAbiCoder;
+    abiCoder = ethers.utils.defaultAbiCoder;
 
     accounts = await ethers.getSigners();
     deployer = accounts[0];
@@ -127,8 +127,8 @@ beforeEach(async () => {
     await linkListProxy.deployed();
     await web3EntryProxy.deployed();
 
-    web3Entry = Web3Entry__factory.connect(web3EntryProxy.address, user);
-    linkList = Linklist__factory.connect(linkListProxy.address, user);
+    web3Entry = Web3Entry__factory.connect(web3EntryProxy.address, deployer);
+    linkList = Linklist__factory.connect(linkListProxy.address, deployer);
 
     await linkList.initialize(LINK_LIST_NFT_NAME, LINK_LIST_NFT_SYMBOL, web3Entry.address);
     await web3Entry.initialize(

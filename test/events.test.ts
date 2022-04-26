@@ -1,4 +1,6 @@
 import {
+    deployer,
+    deployerAddress,
     FIRST_LINKLIST_ID,
     FIRST_PROFILE_ID,
     FOLLOW_LINKTYPE,
@@ -18,7 +20,7 @@ describe("Profile Events", function () {
 
         matchEvent(receipt, "ProfileCreated", [
             FIRST_PROFILE_ID,
-            userAddress,
+            deployerAddress,
             userAddress,
             MOCK_PROFILE_HANDLE,
             await getTimestamp(),

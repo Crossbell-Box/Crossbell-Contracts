@@ -47,7 +47,9 @@ makeSuiteCleanRoom("Profile URI Functionality", function () {
 
             it("Should return the correct tokenURI after transfer", async function () {
                 await expect(
-                    web3Entry.transferFrom(userAddress, userTwoAddress, FIRST_PROFILE_ID)
+                    web3Entry
+                        .connect(user)
+                        .transferFrom(userAddress, userTwoAddress, FIRST_PROFILE_ID)
                 ).to.not.be.reverted;
                 expect(await web3Entry.getProfileUri(FIRST_PROFILE_ID)).to.eq(MOCK_PROFILE_URI);
                 expect(await web3Entry.tokenURI(FIRST_PROFILE_ID)).to.eq(MOCK_PROFILE_URI);

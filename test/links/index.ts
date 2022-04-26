@@ -23,8 +23,11 @@ makeSuiteCleanRoom("Link", function () {
         beforeEach(async function () {
             await web3Entry.createProfile(makeProfileData("handle1"));
             await web3Entry.createProfile(makeProfileData("handle2"));
+
             await expect(
-                web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                web3Entry
+                    .connect(user)
+                    .linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
             ).to.not.be.reverted;
         });
         context("Negatives", function () {

@@ -858,10 +858,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) internal returns (uint256 linklistId) {
         linklistId = _attachedLinklists[profileId][linkType];
         if (linklistId == 0) {
-            uint256 total = IERC721Enumerable(linklist).totalSupply();
-            linklistId = total.add(1);
-            console.log("link list id: %d", linklistId);
-
+            linklistId = IERC721Enumerable(linklist).totalSupply().add(1);
             // mint linkList nft
             ILinklist(linklist).mint(to, linkType, linklistId);
             // set primary linkList
