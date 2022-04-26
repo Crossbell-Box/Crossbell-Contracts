@@ -31,16 +31,16 @@ makeSuiteCleanRoom("Link", function () {
             it("User should fail to link an non-existed profile", async function () {
                 await expect(
                     web3Entry
-                        .connect(userTwo)
+                        .connect(user)
                         .linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID + 1, FOLLOW_LINKTYPE)
-                ).to.be.revertedWith(ERRORS.NOT_PROFILE_OWNER);
+                ).to.be.revertedWith(ERRORS.PROFILE_NOT_EXISTED);
             });
             it("UserTwo should fail to emit a link from a profile not owned by him", async function () {
                 await expect(
                     web3Entry
                         .connect(userTwo)
                         .linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
-                ).to.be.revertedWith(ERRORS.PROFILE_NOT_EXISTED);
+                ).to.be.revertedWith(ERRORS.NOT_PROFILE_OWNER);
             });
         });
         // it("Should emit the follow data once it's linked or unlinked", async function () {
