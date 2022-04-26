@@ -1,10 +1,10 @@
 import {
-    deployerAddress,
     FIRST_LINKLIST_ID,
     FIRST_PROFILE_ID,
     FOLLOW_LINKTYPE,
     MOCK_PROFILE_HANDLE,
     SECOND_PROFILE_ID,
+    user,
     userAddress,
     web3Entry,
 } from "./setup.test";
@@ -18,7 +18,7 @@ describe("Profile Events", function () {
 
         matchEvent(receipt, "ProfileCreated", [
             FIRST_PROFILE_ID,
-            deployerAddress,
+            userAddress,
             userAddress,
             MOCK_PROFILE_HANDLE,
             await getTimestamp(),
