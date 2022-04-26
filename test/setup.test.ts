@@ -45,6 +45,7 @@ export let deployer: Signer;
 export let user: Signer;
 export let userTwo: Signer;
 export let userThree: Signer;
+export let admin: Signer;
 export let deployerAddress: string;
 export let userAddress: string;
 export let userTwoAddress: string;
@@ -77,7 +78,7 @@ beforeEach(async () => {
     user = accounts[1];
     userTwo = accounts[2];
     userThree = accounts[3];
-    const admin = accounts[4];
+    admin = accounts[4];
 
     deployerAddress = await deployer.getAddress();
     userAddress = await user.getAddress();
