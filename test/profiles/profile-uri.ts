@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 // eslint-disable-next-line node/no-missing-import
-import { ERRORS } from "./helpers/errors";
+import { ERRORS } from "../helpers/errors";
 import {
     FIRST_LINKLIST_ID,
     FIRST_PROFILE_ID,
@@ -19,8 +19,8 @@ import {
     MOCK_PROFILE_HANDLE2,
     MOCK_URI,
     // eslint-disable-next-line node/no-missing-import
-} from "./setup.test";
-import { makeProfileData } from "./helpers/utils";
+} from "../setup.test";
+import { makeProfileData } from "../helpers/utils";
 
 makeSuiteCleanRoom("Profile URI Functionality", function () {
     context("Generic", function () {
