@@ -6,6 +6,7 @@ import {
     FIRST_PROFILE_ID,
     makeSuiteCleanRoom,
     MOCK_PROFILE_HANDLE,
+    MOCK_PROFILE_HANDLE2,
     MOCK_PROFILE_URI,
     SECOND_PROFILE_ID,
     user,
@@ -13,8 +14,11 @@ import {
     userTwo,
     userTwoAddress,
     web3Entry,
+    // eslint-disable-next-line node/no-missing-import
 } from "../setup.test";
+// eslint-disable-next-line node/no-missing-import
 import { makeProfileData, matchEvent } from "../helpers/utils";
+// eslint-disable-next-line node/no-missing-import
 import { ERRORS } from "../helpers/errors";
 
 makeSuiteCleanRoom("Primary Profile", function () {
@@ -85,6 +89,12 @@ makeSuiteCleanRoom("Primary Profile", function () {
                     web3Entry.connect(userTwo).setPrimaryProfileId(FIRST_PROFILE_ID)
                 ).to.not.be.reverted;
                 expect(await web3Entry.getPrimaryProfileId(userTwoAddress)).to.eq(FIRST_PROFILE_ID);
+            });
+
+            it("UserTwo should fail to set handle as a profile owned by user 1", async function () {
+                await expect(
+                    web3Entry.connect(userTwo).setHandle(FIRST_PROFILE_ID, MOCK_PROFILE_HANDLE2)
+                ).to.be.revertedWith(ERRORS.NOT_PROFILE_OWNER);
             });
         });
     });

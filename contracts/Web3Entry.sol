@@ -20,6 +20,7 @@ import "./libraries/PostLogic.sol";
 import "./libraries/InteractionLogic.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     using SafeMath for uint256;
@@ -857,7 +858,10 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) internal returns (uint256 linklistId) {
         linklistId = _attachedLinklists[profileId][linkType];
         if (linklistId == 0) {
-            linklistId = IERC721Enumerable(linklist).totalSupply().add(1);
+            uint256 total = IERC721Enumerable(linklist).totalSupply();
+            linklistId = total.add(1);
+            console.log("link list id: %d", linklistId);
+
             // mint linkList nft
             ILinklist(linklist).mint(to, linkType, linklistId);
             // set primary linkList

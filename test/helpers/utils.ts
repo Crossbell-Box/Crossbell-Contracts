@@ -1,14 +1,7 @@
 import "@nomiclabs/hardhat-ethers";
 import { BigNumberish, Bytes, logger, utils, BigNumber, Contract } from "ethers";
-// import {
-//   eventsLib,
-//   helper,
-//   lensHub,
-//   LENS_HUB_NFT_NAME,
-//   peripheryDataProvider,
-//   PERIPHERY_DATA_PROVIDER_NAME,
-//   testWallet,
-// } from '../__setup.spec';
+
+// eslint-disable-next-line node/no-missing-import
 import { eventsLib, MOCK_PROFILE_HANDLE, MOCK_PROFILE_URI, userAddress } from "../setup.test";
 import { expect } from "chai";
 // import { HARDHAT_CHAINID, MAX_UINT256 } from './constants';
@@ -16,6 +9,7 @@ import { hexlify, keccak256, RLP, toUtf8Bytes } from "ethers/lib/utils";
 // import { LensHub__factory } from '../../typechain-types';
 import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import hre, { ethers } from "hardhat";
+// eslint-disable-next-line node/no-missing-import
 import { CreateProfileData } from "./types";
 export const makeProfileData = (handle: string = MOCK_PROFILE_HANDLE, to: string = userAddress) => {
     return {

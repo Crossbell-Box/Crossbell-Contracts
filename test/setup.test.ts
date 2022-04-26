@@ -1,5 +1,9 @@
-import { Signer } from "ethers";
+// import { AbiCoder } from "@ethersproject/contracts/node_modules/@ethersproject/abi";
 import { ethers } from "hardhat";
+import { Signer } from "ethers";
+// eslint-disable-next-line node/no-missing-import
+
+// eslint-disable-next-line camelcase,node/no-missing-import
 import {
     Events__factory,
     Events,
@@ -7,6 +11,7 @@ import {
     Web3Entry,
     Linklist__factory,
     Web3Entry__factory,
+    // eslint-disable-next-line node/no-missing-import
 } from "../typechain";
 import { revertToSnapshot, takeSnapshot } from "./helpers/utils";
 
@@ -21,12 +26,14 @@ export const WEB3_ENTRY_NFT_SYMBOL = "WEP";
 export const LINK_LIST_NFT_NAME = "Link List Token";
 export const LINK_LIST_NFT_SYMBOL = "LLT";
 
-export const MOCK_PROFILE_URI =
-    "https://raw.githubusercontent.com/Crossbell-Box/Crossbell-Contracts/main/examples/sampleProfile.json";
-export const MOCK_NOTE_URI =
-    "https://github.com/Crossbell-Box/Crossbell-Contracts/blob/main/examples/sampleContent.json";
 export const MOCK_PROFILE_HANDLE = "0xcrossbell.eth";
 export const MOCK_PROFILE_HANDLE2 = "0xcrossbell-2.eth";
+export const MOCK_PROFILE_URI =
+    "https://raw.githubusercontent.com/Crossbell-Box/Crossbell-Contracts/main/examples/sampleProfile.json";
+export const MOCK_URI = "ipfs://QmadFPhP7n5rJkACMY6QqhtLtKgX1ixoySmxQNrU4Wo5JW";
+export const MOCK_CONTENT_URI = "ipfs://QmfHKajYAGcaWaBXGsEWory9ensGsesN2GwWedVEuzk5Gg";
+export const MOCK_NOTE_URI =
+    "https://github.com/Crossbell-Box/Crossbell-Contracts/blob/main/examples/sampleContent.json";
 export const bytes32Zero = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 export let eventsLib: Events;
@@ -45,6 +52,8 @@ export let userThreeAddress: string;
 
 export const FOLLOW_LINKTYPE = ethers.utils.formatBytes32String("follow");
 
+// export let abiCoder: AbiCoder;
+
 export function makeSuiteCleanRoom(name: string, tests: () => void) {
     describe(name, () => {
         beforeEach(async function () {
@@ -61,18 +70,20 @@ beforeEach(async () => {
     let linklistImpl: Linklist;
     let web3EntryImpl: Web3Entry;
 
+    // abiCoder = ethers.utils.defaultAbiCoder;
+
     accounts = await ethers.getSigners();
     deployer = accounts[0];
     user = accounts[1];
     userTwo = accounts[2];
-    userThree = accounts[4];
-    let admin = accounts[4];
+    userThree = accounts[3];
+    const admin = accounts[4];
 
     deployerAddress = await deployer.getAddress();
-    userAddress = await deployer.getAddress();
+    userAddress = await user.getAddress();
     userTwoAddress = await userTwo.getAddress();
     userThreeAddress = await userThree.getAddress();
-    let adminAddress = await admin.getAddress();
+    const adminAddress = await admin.getAddress();
 
     const InteractionLogic = await ethers.getContractFactory("InteractionLogic");
     const interactionLogic = await InteractionLogic.deploy();
