@@ -67,6 +67,7 @@ export function matchEvent(
                 const event = eventContract.interface.parseLog(emittedEvent);
                 // If there are expected arguments, validate them, otherwise, return here
                 if (expectedArgs) {
+                    console.log(event.args);
                     if (expectedArgs.length != event.args.length) {
                         logger.throwError(
                             `Event "${name}" emitted with correct signature, but expected args are of invalid length`
@@ -83,6 +84,9 @@ export function matchEvent(
                         // Break out of the expected args loop if there is a mismatch, this will continue the emitted event loop
                         if (BigNumber.isBigNumber(event.args[i])) {
                             if (!event.args[i].eq(BigNumber.from(expectedArgs[i]))) {
+                                logger.info("The " + i + " th param:");
+                                logger.info("Received: " + event.args[i]);
+                                logger.info("Expected: " + expectedArgs[i]);
                                 invalidParamsButExists = true;
                                 break;
                             }
@@ -92,16 +96,25 @@ export function matchEvent(
                             for (let j = 0; j < params.length; j++) {
                                 if (BigNumber.isBigNumber(params[j])) {
                                     if (!params[j].eq(BigNumber.from(expected[j]))) {
+                                        logger.info("The " + i + " th param:");
+                                        logger.info("Received: " + params[i]);
+                                        logger.info("Expected: " + expected[i]);
                                         invalidParamsButExists = true;
                                         break;
                                     }
                                 } else if (params[j] != expected[j]) {
+                                    logger.info("The " + i + " th param:");
+                                    logger.info("Received: " + params[i]);
+                                    logger.info("Expected: " + expected[i]);
                                     invalidParamsButExists = true;
                                     break;
                                 }
                             }
                             if (invalidParamsButExists) break;
                         } else if (event.args[i] != expectedArgs[i]) {
+                            logger.info("The " + i + " th param:");
+                            logger.info("Received: " + event.args[i]);
+                            logger.info("Expected: " + expectedArgs[i]);
                             invalidParamsButExists = true;
                             break;
                         }

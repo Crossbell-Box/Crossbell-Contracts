@@ -127,15 +127,15 @@ beforeEach(async () => {
     await linkListProxy.deployed();
     await web3EntryProxy.deployed();
 
-    await linklistImpl.initialize(LINK_LIST_NFT_NAME, LINK_LIST_NFT_SYMBOL, web3EntryImpl.address);
+    web3Entry = Web3Entry__factory.connect(web3EntryProxy.address, user);
+    linkList = Linklist__factory.connect(linkListProxy.address, user);
+
+    await linklistImpl.initialize(LINK_LIST_NFT_NAME, LINK_LIST_NFT_SYMBOL, web3Entry.address);
     await web3EntryImpl.initialize(
         WEB3_ENTRY_NFT_NAME,
         WEB3_ENTRY_NFT_SYMBOL,
-        linklistImpl.address,
-        ethers.constants.AddressZero
+        linkList.address,
+        mintNFT.address
     );
     eventsLib = await new Events__factory(deployer).deploy();
-
-    web3Entry = Web3Entry__factory.connect(web3EntryProxy.address, user);
-    linkList = Linklist__factory.connect(linkListProxy.address, user);
 });
