@@ -2,6 +2,7 @@
 
 pragma solidity 0.8.10;
 
+import "hardhat/console.sol";
 import "../interfaces/IMintNFT.sol";
 import "./Events.sol";
 import "./DataTypes.sol";
@@ -36,7 +37,9 @@ library InteractionLogic {
         tokenId = IMintNFT(mintNFT).mint(to);
 
         address mintModule = _noteByIdByProfile[profileId][noteId].mintModule;
-        IMintModule4Note(mintModule).processMint(profileId, noteId, mintModuleData);
+        if (mintModule != address(0)) {
+            IMintModule4Note(mintModule).processMint(profileId, noteId, mintModuleData);
+        }
 
         emit Events.MintNote(to, profileId, noteId, tokenId, mintModuleData, block.timestamp);
     }

@@ -33,7 +33,7 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
     }
 
     function mint(address to) external returns (uint256) {
-        require(msg.sender != Web3Entry, "MintNFT: not Web3Entry");
+        require(msg.sender == Web3Entry, "MintNFT: NotWeb3Entry");
 
         _tokenIdCounter.increment();
         _mint(to, _tokenIdCounter.current());
