@@ -25,17 +25,13 @@ makeSuiteCleanRoom("Link", function () {
             await web3Entry.createProfile(makeProfileData("handle2"));
 
             await expect(
-                web3Entry
-                    .connect(user)
-                    .linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
             ).to.not.be.reverted;
         });
         context("Negatives", function () {
             it("User should fail to link an non-existed profile", async function () {
                 await expect(
-                    web3Entry
-                        .connect(user)
-                        .linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID + 1, FOLLOW_LINKTYPE)
+                    web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID + 1, FOLLOW_LINKTYPE)
                 ).to.be.revertedWith(ERRORS.PROFILE_NOT_EXISTED);
             });
             it("UserTwo should fail to emit a link from a profile not owned by him", async function () {

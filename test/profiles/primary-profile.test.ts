@@ -42,9 +42,7 @@ makeSuiteCleanRoom("Primary Profile", function () {
             });
 
             it("User should set the primary profile", async function () {
-                await expect(
-                    web3Entry.connect(user).setPrimaryProfileId(FIRST_PROFILE_ID)
-                ).to.not.be.reverted;
+                await expect(web3Entry.setPrimaryProfileId(FIRST_PROFILE_ID)).to.not.be.reverted;
                 expect(await web3Entry.getPrimaryProfileId(userAddress)).to.eq(FIRST_PROFILE_ID);
             });
 
@@ -56,9 +54,7 @@ makeSuiteCleanRoom("Primary Profile", function () {
                 ).to.not.be.reverted;
 
                 // set new primary profile
-                await expect(
-                    web3Entry.connect(user).setPrimaryProfileId(SECOND_PROFILE_ID)
-                ).to.not.be.reverted;
+                await expect(web3Entry.setPrimaryProfileId(SECOND_PROFILE_ID)).to.not.be.reverted;
                 expect(await web3Entry.getPrimaryProfileId(userAddress)).to.eq(SECOND_PROFILE_ID);
             });
 
@@ -66,18 +62,14 @@ makeSuiteCleanRoom("Primary Profile", function () {
                 expect(await web3Entry.getPrimaryProfileId(userAddress)).to.eq(FIRST_PROFILE_ID);
 
                 await expect(
-                    web3Entry
-                        .connect(user)
-                        .transferFrom(userAddress, userTwoAddress, FIRST_PROFILE_ID)
+                    web3Entry.transferFrom(userAddress, userTwoAddress, FIRST_PROFILE_ID)
                 ).to.not.be.reverted;
                 expect(await web3Entry.getPrimaryProfileId(userAddress)).to.eq(0);
             });
 
             it("User without a profile, and then receives a profile, it should be unset", async function () {
                 await expect(
-                    web3Entry
-                        .connect(user)
-                        .transferFrom(userAddress, userTwoAddress, FIRST_PROFILE_ID)
+                    web3Entry.transferFrom(userAddress, userTwoAddress, FIRST_PROFILE_ID)
                 ).to.not.be.reverted;
                 // user's primary profile should be unset
                 expect(await web3Entry.getPrimaryProfileId(userAddress)).to.eq(0);

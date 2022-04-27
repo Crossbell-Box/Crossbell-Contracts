@@ -27,12 +27,14 @@ import {
     linkList,
     deployer,
     userThreeAddress,
+    FollowLinkType,
 } from "./setup.test";
 import { makePostNoteData, makeProfileData, matchEvent, matchNote } from "./helpers/utils";
 import { ERRORS } from "./helpers/errors";
 import { formatBytes32String } from "@ethersproject/strings/src.ts/bytes32";
 // eslint-disable-next-line node/no-missing-import,camelcase
 import { MintNFT__factory } from "../typechain";
+import { hexlify } from "@ethersproject/bytes/src.ts";
 
 makeSuiteCleanRoom("Note and mint functionality ", function () {
     context("Generic", function () {
@@ -44,7 +46,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
         it("User should post note", async function () {
             // post note
             const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
-            await expect(web3Entry.connect(user).postNote(noteData)).to.not.be.reverted;
+            await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
 
             let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
             matchNote(note, [
@@ -74,22 +76,17 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
 
         it("User should post note with profile link", async function () {
             // link profile
-            const followLinkType = ethers.utils.formatBytes32String("follow");
-            await web3Entry
-                .connect(user)
-                .linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, followLinkType);
+            await web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FollowLinkType);
 
             // post note
             const noteData = makePostNoteData("1");
             await expect(
-                web3Entry
-                    .connect(user)
-                    .postNote4ProfileLink(
-                        noteData,
-                        FIRST_PROFILE_ID,
-                        SECOND_PROFILE_ID,
-                        followLinkType
-                    )
+                web3Entry.postNote4ProfileLink(
+                    noteData,
+                    FIRST_PROFILE_ID,
+                    SECOND_PROFILE_ID,
+                    FollowLinkType
+                )
             ).to.not.be.reverted;
 
             let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
@@ -97,6 +94,47 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 LinkItemTypeProfile,
                 FIRST_LINKLIST_ID,
                 ethers.utils.hexZeroPad(ethers.utils.hexlify(SECOND_PROFILE_ID), 32),
+                noteData.contentUri,
+                ethers.constants.AddressZero,
+                ethers.constants.AddressZero,
+                ethers.constants.AddressZero,
+            ]);
+
+            // mint note
+            await web3Entry
+                .connect(userThree)
+                .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userTwoAddress, []);
+            await web3Entry
+                .connect(userThree)
+                .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userThreeAddress, []);
+
+            note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+            expect(note.mintNFT).to.not.equal(ethers.constants.AddressZero);
+            const mintNFT = MintNFT__factory.connect(note.mintNFT, deployer);
+            expect(await mintNFT.ownerOf(1)).to.equal(userTwoAddress);
+            expect(await mintNFT.ownerOf(2)).to.equal(userThreeAddress);
+        });
+
+        it("User should post note with address link", async function () {
+            // link address
+            await web3Entry.linkAddress(FIRST_PROFILE_ID, userThreeAddress, FollowLinkType);
+
+            // post note
+            const noteData = makePostNoteData();
+            await expect(
+                web3Entry.postNote4ProfileLink(
+                    noteData,
+                    FIRST_PROFILE_ID,
+                    userThreeAddress,
+                    FollowLinkType
+                )
+            ).to.not.be.reverted;
+
+            let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+            matchNote(note, [
+                LinkItemTypeProfile,
+                FIRST_LINKLIST_ID,
+                ethers.utils.hexZeroPad(ethers.utils.hexlify(userThreeAddress), 32),
                 noteData.contentUri,
                 ethers.constants.AddressZero,
                 ethers.constants.AddressZero,

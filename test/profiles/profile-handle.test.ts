@@ -33,7 +33,7 @@ makeSuiteCleanRoom("Profile handle Functionality ", function () {
                 );
 
                 await expect(
-                    web3Entry.connect(user).setHandle(FIRST_PROFILE_ID, MOCK_PROFILE_HANDLE)
+                    web3Entry.setHandle(FIRST_PROFILE_ID, MOCK_PROFILE_HANDLE)
                 ).to.be.revertedWith(ERRORS.HANDLE_EXISTS);
             });
 
@@ -46,9 +46,9 @@ makeSuiteCleanRoom("Profile handle Functionality ", function () {
                 );
 
                 // set handle
-                await expect(
-                    web3Entry.connect(user).setHandle(FIRST_PROFILE_ID, handle)
-                ).to.be.revertedWith(ERRORS.HANDLE_LENGTH_INVALID);
+                await expect(web3Entry.setHandle(FIRST_PROFILE_ID, handle)).to.be.revertedWith(
+                    ERRORS.HANDLE_LENGTH_INVALID
+                );
             });
 
             it("User should fail to create profile set handle with empty handle", async function () {
@@ -60,9 +60,9 @@ makeSuiteCleanRoom("Profile handle Functionality ", function () {
                 );
 
                 // set handle
-                await expect(
-                    web3Entry.connect(user).setHandle(FIRST_PROFILE_ID, handle)
-                ).to.be.revertedWith(ERRORS.HANDLE_LENGTH_INVALID);
+                await expect(web3Entry.setHandle(FIRST_PROFILE_ID, handle)).to.be.revertedWith(
+                    ERRORS.HANDLE_LENGTH_INVALID
+                );
             });
 
             it("User should fail to create profile set handle with invalid handle", async function () {
@@ -75,9 +75,9 @@ makeSuiteCleanRoom("Profile handle Functionality ", function () {
                     );
 
                     // set handle
-                    await expect(
-                        web3Entry.connect(user).setHandle(FIRST_PROFILE_ID, c)
-                    ).to.be.revertedWith(ERRORS.HANDLE_CONTAINS_INVALID_CHARS);
+                    await expect(web3Entry.setHandle(FIRST_PROFILE_ID, c)).to.be.revertedWith(
+                        ERRORS.HANDLE_CONTAINS_INVALID_CHARS
+                    );
                 }
             });
 
@@ -86,9 +86,7 @@ makeSuiteCleanRoom("Profile handle Functionality ", function () {
                 await expect(web3Entry.createProfile(profileData)).to.not.be.reverted;
 
                 await expect(
-                    web3Entry
-                        .connect(user)
-                        .setHandle(FIRST_PROFILE_ID, "_ab2423cea4f1047556e7a14-f1.btc")
+                    web3Entry.setHandle(FIRST_PROFILE_ID, "_ab2423cea4f1047556e7a14-f1.btc")
                 ).to.not.be.reverted;
             });
         });
