@@ -2,7 +2,14 @@ import "@nomiclabs/hardhat-ethers";
 import { BigNumberish, Bytes, logger, utils, BigNumber, Contract } from "ethers";
 
 // eslint-disable-next-line node/no-missing-import
-import { eventsLib, MOCK_PROFILE_HANDLE, MOCK_PROFILE_URI, userAddress } from "../setup.test";
+import {
+    eventsLib,
+    FIRST_PROFILE_ID,
+    MOCK_NOTE_URI,
+    MOCK_PROFILE_HANDLE,
+    MOCK_PROFILE_URI,
+    userAddress,
+} from "../setup.test";
 import { expect } from "chai";
 // import { HARDHAT_CHAINID, MAX_UINT256 } from './constants';
 import { hexlify, keccak256, RLP, toUtf8Bytes } from "ethers/lib/utils";
@@ -10,7 +17,7 @@ import { hexlify, keccak256, RLP, toUtf8Bytes } from "ethers/lib/utils";
 import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import hre, { ethers } from "hardhat";
 // eslint-disable-next-line node/no-missing-import
-import { CreateProfileData } from "./types";
+import { CreateProfileData, PostNoteData, NoteStruct } from "./types";
 export const makeProfileData = (handle: string = MOCK_PROFILE_HANDLE, to: string = userAddress) => {
     return {
         to,
@@ -19,6 +26,17 @@ export const makeProfileData = (handle: string = MOCK_PROFILE_HANDLE, to: string
         linkModule: ethers.constants.AddressZero,
         linkModuleInitData: [],
     } as CreateProfileData;
+};
+
+export const makePostNoteData = (num: string = "1") => {
+    return {
+        profileId: BigNumber.from(num),
+        contentUri: MOCK_NOTE_URI,
+        linkModule: ethers.constants.AddressZero,
+        linkModuleInitData: [],
+        mintModule: ethers.constants.AddressZero,
+        mintModuleInitData: [],
+    } as PostNoteData;
 };
 
 let snapshotId: string = "0x1";
@@ -145,4 +163,43 @@ export async function getTimestamp(): Promise<any> {
     const blockNumber = await hre.ethers.provider.send("eth_blockNumber", []);
     const block = await hre.ethers.provider.send("eth_getBlockByNumber", [blockNumber, false]);
     return block.timestamp;
+}
+
+export function matchNote(note: NoteStruct, expectedArgs?: any[]) {
+    if (expectedArgs) {
+        if (expectedArgs.length != 7) {
+            logger.throwError(`Note expected args are of invalid length`);
+        }
+        if (note.linkItemType !== expectedArgs[0]) {
+            logger.info(
+                "linkItemType, Received: " + note.linkItemType + "Expected: " + expectedArgs[0]
+            );
+        }
+        if (!note.linklistId.eq(BigNumber.from(expectedArgs[1]))) {
+            logger.info(
+                "linklistId, Received: " + note.linklistId + "Expected: " + expectedArgs[1]
+            );
+        }
+        if (note.linkKey !== expectedArgs[2]) {
+            logger.info("linkKey, Received: " + note.linkKey + "Expected: " + expectedArgs[2]);
+        }
+        if (note.contentUri !== expectedArgs[3]) {
+            logger.info(
+                "contentUri, Received: " + note.contentUri + "Expected: " + expectedArgs[3]
+            );
+        }
+        if (note.linkModule !== expectedArgs[4]) {
+            logger.info(
+                "linkModule, Received: " + note.linkModule + "Expected: " + expectedArgs[4]
+            );
+        }
+        if (note.mintModule !== expectedArgs[5]) {
+            logger.info(
+                "mintModule, Received: " + note.mintModule + "Expected: " + expectedArgs[5]
+            );
+        }
+        if (note.mintNFT !== expectedArgs[6]) {
+            logger.info("mintNFT, Received: " + note.mintNFT + "Expected: " + expectedArgs[6]);
+        }
+    }
 }

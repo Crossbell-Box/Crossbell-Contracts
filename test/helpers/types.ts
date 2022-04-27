@@ -16,3 +16,22 @@ export interface ProfileData {
     socialToken: string;
     linkModule: string;
 }
+
+export interface PostNoteData {
+    profileId: BigNumber;
+    contentUri: string;
+    linkModule: string;
+    linkModuleInitData: BytesLike;
+    mintModule: string;
+    mintModuleInitData: BytesLike;
+}
+
+export interface NoteStruct {
+    linkItemType: BytesLike;
+    linklistId: BigNumber;
+    linkKey: BytesLike;
+    contentUri: string;
+    linkModule: string;
+    mintModule: string;
+    mintNFT: string;
+}

@@ -1,6 +1,8 @@
 import { AbiCoder } from "@ethersproject/abi";
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
+import { expect } from "chai";
+
 // eslint-disable-next-line node/no-missing-import
 
 // eslint-disable-next-line camelcase,node/no-missing-import
@@ -35,6 +37,17 @@ export const MOCK_CONTENT_URI = "ipfs://QmfHKajYAGcaWaBXGsEWory9ensGsesN2GwWedVE
 export const MOCK_NOTE_URI =
     "https://github.com/Crossbell-Box/Crossbell-Contracts/blob/main/examples/sampleContent.json";
 export const bytes32Zero = "0x0000000000000000000000000000000000000000000000000000000000000000";
+export const LinkItemTypeProfile =
+    "0x50726f66696c654c696e6b000000000000000000000000000000000000000000";
+export const LinkItemTypeAddress =
+    "0x416464726573734c696e6b000000000000000000000000000000000000000000";
+export const LinkItemTypeNote =
+    "0x4e6f74654c696e6b000000000000000000000000000000000000000000000000";
+export const LinkItemTypeERC721 =
+    "0x4552433732314c696e6b00000000000000000000000000000000000000000000";
+export const LinkItemTypeList =
+    "0x4c6973744c696e6b000000000000000000000000000000000000000000000000";
+export const LinkItemTypeAny = "0x416e794c696e6b00000000000000000000000000000000000000000000000000";
 
 export let eventsLib: Events;
 export let linkList: Linklist;
@@ -138,5 +151,9 @@ beforeEach(async () => {
         linkList.address,
         mintNFT.address
     );
+
+    expect(web3Entry).to.not.be.undefined;
+    expect(linkList).to.not.be.undefined;
+
     eventsLib = await new Events__factory(deployer).deploy();
 });
