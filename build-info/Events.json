@@ -1,954 +1,1004 @@
 {
-    "_format": "hh-sol-artifact-1",
-    "contractName": "Events",
-    "sourceName": "contracts/libraries/Events.sol",
-    "abi": [
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Events",
+  "sourceName": "contracts/libraries/Events.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
         {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "string",
-                    "name": "name",
-                    "type": "string"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "string",
-                    "name": "symbol",
-                    "type": "string"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "BaseInitialized",
-            "type": "event"
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "linklistId",
+          "type": "uint256"
         },
         {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "ethAddress",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "linklistId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "LinkAddress",
-            "type": "event"
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "profileId",
+          "type": "uint256"
         },
         {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "string",
-                    "name": "toUri",
-                    "type": "string"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "linklistId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "LinkAny",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "tokenAddress",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "toNoteId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "linklistId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "LinkERC721",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "toLinklistId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "linklistId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "LinkLinklist",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "toProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "toNoteId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "linklistId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "LinkNote",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "toProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "linklistId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "LinkProfile",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "plFromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "plToProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "plLinkType",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "LinkProfileLink",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "LinklistNFTInitialized",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "profileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "noteId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "MintNFTInitialized",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "to",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "profileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "noteId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "tokenId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes",
-                    "name": "data",
-                    "type": "bytes"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "MintNote",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "profileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "noteId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bool",
-                    "name": "noteWithlink",
-                    "type": "bool"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "PostNote",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "profileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "creator",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "to",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "string",
-                    "name": "handle",
-                    "type": "string"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "ProfileCreated",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "profileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "string",
-                    "name": "newHandle",
-                    "type": "string"
-                }
-            ],
-            "name": "SetHandle",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "linkModule",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes",
-                    "name": "returnData",
-                    "type": "bytes"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "SetLinkModule4Address",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "tokenAddress",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "tokenId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "linkModule",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes",
-                    "name": "returnData",
-                    "type": "bytes"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "SetLinkModule4ERC721",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "linklistId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "linkModule",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes",
-                    "name": "returnData",
-                    "type": "bytes"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "SetLinkModule4Linklist",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "profileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "noteId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "linkModule",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes",
-                    "name": "returnData",
-                    "type": "bytes"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "SetLinkModule4Note",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "profileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "linkModule",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes",
-                    "name": "returnData",
-                    "type": "bytes"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "SetLinkModule4Profile",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "profileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "noteId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "mintModule",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes",
-                    "name": "returnData",
-                    "type": "bytes"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "SetMintModule4Note",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "profileId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "SetPrimaryProfileId",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "profileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "string",
-                    "name": "newUri",
-                    "type": "string"
-                }
-            ],
-            "name": "SetProfileUri",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "profileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "tokenAddress",
-                    "type": "address"
-                }
-            ],
-            "name": "SetSocialToken",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "toLinklistId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "linklistId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "UninkLinklist",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "ethAddress",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "UnlinkAddress",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "string",
-                    "name": "toUri",
-                    "type": "string"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "UnlinkAny",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "tokenAddress",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "toNoteId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "linklistId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "UnlinkERC721",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "toProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "toNoteId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "linklistId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "UnlinkNote",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "toProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "UnlinkProfile",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
-                    "name": "fromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "plFromProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "plToProfileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "plLinkType",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "UnlinkProfileLink",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "Web3EntryInitialized",
-            "type": "event"
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
         }
-    ],
-    "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220e33c6e01feeaeef7703596e109a515e8ac67a10d71df2a0f98e718bb55a4c13a64736f6c634300080a0033",
-    "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220e33c6e01feeaeef7703596e109a515e8ac67a10d71df2a0f98e718bb55a4c13a64736f6c634300080a0033",
-    "linkReferences": {},
-    "deployedLinkReferences": {}
+      ],
+      "name": "AttachLinklist",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "BaseInitialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "linklistId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "profileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        }
+      ],
+      "name": "DetachLinklist",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "ethAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "linklistId",
+          "type": "uint256"
+        }
+      ],
+      "name": "LinkAddress",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "toUri",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "linklistId",
+          "type": "uint256"
+        }
+      ],
+      "name": "LinkAny",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "toNoteId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "linklistId",
+          "type": "uint256"
+        }
+      ],
+      "name": "LinkERC721",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "toLinklistId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "linklistId",
+          "type": "uint256"
+        }
+      ],
+      "name": "LinkLinklist",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "toProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "toNoteId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "linklistId",
+          "type": "uint256"
+        }
+      ],
+      "name": "LinkNote",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "toProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "linklistId",
+          "type": "uint256"
+        }
+      ],
+      "name": "LinkProfile",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "plFromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "plToProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "plLinkType",
+          "type": "bytes32"
+        }
+      ],
+      "name": "LinkProfileLink",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "LinklistNFTInitialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "profileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "noteId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "MintNFTInitialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "profileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "noteId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "MintNote",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "profileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "noteId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "noteWithlink",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "PostNote",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "profileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "handle",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "ProfileCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "profileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "newHandle",
+          "type": "string"
+        }
+      ],
+      "name": "SetHandle",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "linkModule",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "returnData",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetLinkModule4Address",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "linkModule",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "returnData",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetLinkModule4ERC721",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "linklistId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "linkModule",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "returnData",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetLinkModule4Linklist",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "profileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "noteId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "linkModule",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "returnData",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetLinkModule4Note",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "profileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "linkModule",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "returnData",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetLinkModule4Profile",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "profileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "noteId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "mintModule",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "returnData",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetMintModule4Note",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "profileId",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetPrimaryProfileId",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "profileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "newUri",
+          "type": "string"
+        }
+      ],
+      "name": "SetProfileUri",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "profileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        }
+      ],
+      "name": "SetSocialToken",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "ethAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        }
+      ],
+      "name": "UnlinkAddress",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "toUri",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        }
+      ],
+      "name": "UnlinkAny",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "toNoteId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "linklistId",
+          "type": "uint256"
+        }
+      ],
+      "name": "UnlinkERC721",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "toLinklistId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "linklistId",
+          "type": "uint256"
+        }
+      ],
+      "name": "UnlinkLinklist",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "toProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "toNoteId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "linklistId",
+          "type": "uint256"
+        }
+      ],
+      "name": "UnlinkNote",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "toProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        }
+      ],
+      "name": "UnlinkProfile",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "linkType",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "plFromProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "plToProfileId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "plLinkType",
+          "type": "bytes32"
+        }
+      ],
+      "name": "UnlinkProfileLink",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "Web3EntryInitialized",
+      "type": "event"
+    }
+  ],
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122015c8f865b3c0ed7bbc1917ab8f25c5b743f8f60f88ff140865ded8fd8f5d1fcf64736f6c634300080a0033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122015c8f865b3c0ed7bbc1917ab8f25c5b743f8f60f88ff140865ded8fd8f5d1fcf64736f6c634300080a0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
 }
