@@ -102,11 +102,15 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
         _takeOverLinkList(linklistId, profileId);
         _attachedLinklists[profileId][linkType] = linklistId;
+
+        emit Events.AttachLinklist(linklistId, profileId, linkType);
     }
 
     function detachLinklist(uint256 linklistId, uint256 profileId) public {
         bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
         _attachedLinklists[profileId][linkType] = 0;
+
+        emit Events.DetachLinklist(linklistId, profileId, linkType);
     }
 
     function setLinklistUri(uint256 linklistId, string calldata uri) external {

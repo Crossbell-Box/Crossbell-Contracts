@@ -190,4 +190,16 @@ library Events {
         bytes returnData,
         uint256 timestamp
     );
+
+    event AttachLinklist(
+        uint256 indexed linklistId,
+        uint256 indexed profileId,
+        bytes32 indexed linkType
+    );
+
+    event DetachLinklist(
+        uint256 indexed linklistId,
+        uint256 indexed profileId,
+        bytes32 indexed linkType
+    );
 }
