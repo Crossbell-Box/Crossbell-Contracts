@@ -701,6 +701,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         return noteId;
     }
 
+    function burn(uint256 tokenId) public override {
+        super.burn(tokenId);
+        _clearHandleHash(tokenId);
+    }
+
     function getPrimaryProfileId(address account) external view returns (uint256) {
         return _primaryProfileByAddress[account];
     }
@@ -772,10 +777,27 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function getLinkingProfileIds(uint256 fromProfileId, bytes32 linkType)
         external
         view
-        returns (uint256[] memory)
+        returns (uint256[] memory results)
     {
         uint256 linkListId = _attachedLinklists[fromProfileId][linkType];
-        return ILinklist(linklist).getLinkingProfileIds(linkListId);
+        uint256[] memory linkingProfileIds = ILinklist(linklist).getLinkingProfileIds(linkListId);
+
+        uint256 l = linkingProfileIds.length;
+
+        uint256 j = 0;
+        for (uint256 i = 0; i < l; i++) {
+            if (_exists(linkingProfileIds[i])) {
+                j++;
+            }
+        }
+        results = new uint256[](j);
+        j = 0;
+        for (uint256 i = 0; i < l; i++) {
+            if (_exists(linkingProfileIds[i])) {
+                results[j] = linkingProfileIds[i];
+                j++;
+            }
+        }
     }
 
     function getLinklistContract() external view returns (address) {
@@ -866,6 +888,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         }
     }
 
+    function _clearHandleHash(uint256 profileId) internal {
+        bytes32 handleHash = keccak256(bytes(_profileById[profileId].handle));
+        _profileIdByHandleHash[handleHash] = 0;
+    }
+
     function _beforeTokenTransfer(
         address from,
         address to,
@@ -905,7 +932,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function _validateLinklistAttached(uint256 linklistId, uint256 profileId) internal view {
         require(
             profileId == ILinklist(linklist).getCurrentTakeOver(linklistId),
-            "Web3Entry: unattached linkList"
+            "Web3Entry: UnattachedLinklist"
         );
     }
 

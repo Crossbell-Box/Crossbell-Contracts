@@ -4,4 +4,5 @@ export const ERRORS = {
     HANDLE_EXISTS: "HandleExists",
     HANDLE_LENGTH_INVALID: "HandleLengthInvalid",
     HANDLE_CONTAINS_INVALID_CHARS: "HandleContainsInvalidCharacters",
+    UNATTACHED_LINKLIST: "UnattachedLinklist",
 };

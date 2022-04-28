@@ -9,10 +9,11 @@ import {
     MOCK_PROFILE_HANDLE,
     MOCK_PROFILE_URI,
     userAddress,
+    web3Entry,
 } from "../setup.test";
 import { expect } from "chai";
 // import { HARDHAT_CHAINID, MAX_UINT256 } from './constants';
-import { hexlify, keccak256, RLP, toUtf8Bytes } from "ethers/lib/utils";
+import { BytesLike, hexlify, keccak256, RLP, toUtf8Bytes } from "ethers/lib/utils";
 // import { LensHub__factory } from '../../typechain-types';
 import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import hre, { ethers } from "hardhat";
@@ -201,5 +202,19 @@ export function matchNote(note: NoteStruct, expectedArgs?: any[]) {
         if (note.mintNFT !== expectedArgs[6]) {
             logger.info("mintNFT, Received: " + note.mintNFT + "Expected: " + expectedArgs[6]);
         }
+    }
+}
+
+export async function matchLinkingProfileIds(
+    fromProfileId: BigNumberish,
+    linkType: BytesLike,
+    expectedArgs: number[]
+) {
+    const linklist = await web3Entry.getLinkingProfileIds(fromProfileId, linkType);
+    if (linklist.length !== expectedArgs.length) {
+        logger.throwError(`Linklist mismatched. Expected args are of invalid length`);
+    }
+    for (let i = 0; i < linklist.length; i++) {
+        expect(linklist[i]).to.eq(expectedArgs[i]);
     }
 }

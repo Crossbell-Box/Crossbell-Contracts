@@ -1,18 +1,10 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import {
-    deployerAddress,
-    FIRST_LINKLIST_ID,
     FIRST_PROFILE_ID,
     makeSuiteCleanRoom,
     MOCK_PROFILE_HANDLE,
-    MOCK_PROFILE_HANDLE2,
-    MOCK_PROFILE_URI,
-    SECOND_PROFILE_ID,
     user,
-    userAddress,
-    userTwo,
-    userTwoAddress,
     web3Entry,
 } from "../setup.test";
 import { makeProfileData, matchEvent } from "../helpers/utils";

@@ -3,20 +3,14 @@ import { ethers } from "hardhat";
 // eslint-disable-next-line node/no-missing-import
 import { ERRORS } from "../helpers/errors";
 import {
-    FIRST_LINKLIST_ID,
     FIRST_PROFILE_ID,
-    SECOND_PROFILE_ID,
-    MOCK_PROFILE_HANDLE,
     MOCK_PROFILE_URI,
     makeSuiteCleanRoom,
-    deployer,
     user,
     userTwo,
     userAddress,
     userTwoAddress,
-    userThreeAddress,
     web3Entry,
-    MOCK_PROFILE_HANDLE2,
     MOCK_URI,
     // eslint-disable-next-line node/no-missing-import
 } from "../setup.test";

@@ -24,7 +24,7 @@ import {
     userTwoAddress,
     web3Entry,
     userThree,
-    linkList,
+    linklist,
     deployer,
     userThreeAddress,
 } from "./setup.test";

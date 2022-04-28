@@ -50,7 +50,7 @@ export const LinkItemTypeList =
 export const LinkItemTypeAny = "0x416e794c696e6b00000000000000000000000000000000000000000000000000";
 
 export let eventsLib: Events;
-export let linkList: Linklist;
+export let linklist: Linklist;
 export let web3Entry: Web3Entry;
 
 export let accounts: Signer[];
@@ -65,6 +65,7 @@ export let userTwoAddress: string;
 export let userThreeAddress: string;
 
 export const FOLLOW_LINKTYPE = ethers.utils.formatBytes32String("follow");
+export const ARBITRARY_LINKTYPE = ethers.utils.formatBytes32String("arbitrary");
 
 export let abiCoder: AbiCoder;
 
@@ -142,18 +143,18 @@ beforeEach(async () => {
     await web3EntryProxy.deployed();
 
     web3Entry = Web3Entry__factory.connect(web3EntryProxy.address, deployer);
-    linkList = Linklist__factory.connect(linkListProxy.address, deployer);
+    linklist = Linklist__factory.connect(linkListProxy.address, deployer);
 
-    await linkList.initialize(LINK_LIST_NFT_NAME, LINK_LIST_NFT_SYMBOL, web3Entry.address);
+    await linklist.initialize(LINK_LIST_NFT_NAME, LINK_LIST_NFT_SYMBOL, web3Entry.address);
     await web3Entry.initialize(
         WEB3_ENTRY_NFT_NAME,
         WEB3_ENTRY_NFT_SYMBOL,
-        linkList.address,
+        linklist.address,
         mintNFT.address
     );
 
     expect(web3Entry).to.not.be.undefined;
-    expect(linkList).to.not.be.undefined;
+    expect(linklist).to.not.be.undefined;
 
     eventsLib = await new Events__factory(deployer).deploy();
 });

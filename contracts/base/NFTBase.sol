@@ -11,4 +11,9 @@ abstract contract NFTBase is ERC721Enumerable {
 
         emit Events.BaseInitialized(name, symbol, block.timestamp);
     }
+
+    function burn(uint256 tokenId) public virtual {
+        require(_isApprovedOrOwner(msg.sender, tokenId), "NFTBase: NotOwnerOrApproved");
+        _burn(tokenId);
+    }
 }
