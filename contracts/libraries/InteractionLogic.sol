@@ -38,7 +38,7 @@ library InteractionLogic {
 
         address mintModule = _noteByIdByProfile[profileId][noteId].mintModule;
         if (mintModule != address(0)) {
-            IMintModule4Note(mintModule).processMint(profileId, noteId, mintModuleData);
+            IMintModule4Note(mintModule).processMint(to, profileId, noteId, mintModuleData);
         }
 
         emit Events.MintNote(to, profileId, noteId, tokenId, mintModuleData, block.timestamp);

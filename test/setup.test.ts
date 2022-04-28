@@ -11,8 +11,11 @@ import {
     Events,
     Linklist,
     Web3Entry,
+    Currency,
+    FeeMintModule,
     Linklist__factory,
     Web3Entry__factory,
+    ApprovalMintModule,
     // eslint-disable-next-line node/no-missing-import
 } from "../typechain";
 import { revertToSnapshot, takeSnapshot } from "./helpers/utils";
@@ -59,6 +62,9 @@ export const LinkItemTypeAny = "0x416e794c696e6b00000000000000000000000000000000
 export let eventsLib: Events;
 export let linklist: Linklist;
 export let web3Entry: Web3Entry;
+export let currency: Currency;
+export let feeMintModule: FeeMintModule;
+export let approvalMintModule: ApprovalMintModule;
 
 export let accounts: Signer[];
 export let deployer: Signer;
@@ -160,6 +166,20 @@ beforeEach(async () => {
         mintNFT.address
     );
 
+    // Currency
+    const Currency = await ethers.getContractFactory("Currency");
+    currency = await Currency.deploy();
+
+    // Modules
+    const FeeMintModule = await ethers.getContractFactory("FeeMintModule");
+    feeMintModule = await FeeMintModule.deploy(web3Entry.address);
+
+    const ApprovalMintModule = await ethers.getContractFactory("ApprovalMintModule");
+    approvalMintModule = await ApprovalMintModule.deploy(web3Entry.address);
+
+    expect(feeMintModule).to.not.be.undefined;
+    expect(approvalMintModule).to.not.be.undefined;
+    expect(currency).to.not.be.undefined;
     expect(web3Entry).to.not.be.undefined;
     expect(linklist).to.not.be.undefined;
 

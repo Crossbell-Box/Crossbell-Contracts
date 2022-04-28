@@ -10,6 +10,7 @@ interface IMintModule4Note {
     ) external returns (bytes memory);
 
     function processMint(
+        address to,
         uint256 profileId,
         uint256 noteId,
         bytes calldata data
