@@ -1,30 +1,19 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
 import {
     FIRST_LINKLIST_ID,
     FIRST_PROFILE_ID,
     SECOND_PROFILE_ID,
-    MOCK_PROFILE_HANDLE,
-    MOCK_PROFILE_URI,
     user,
-    deployerAddress,
     userAddress,
     userTwoAddress,
-    userThreeAddress,
     web3Entry,
     makeSuiteCleanRoom,
     linklist,
     ARBITRARY_LINKTYPE,
 } from "../setup.test";
-import {
-    getTimestamp,
-    makeProfileData,
-    matchEvent,
-    matchLinkingProfileIds,
-} from "../helpers/utils";
+import { makeProfileData, matchLinkingProfileIds } from "../helpers/utils";
 import { FOLLOW_LINKTYPE, userTwo } from "../setup.test";
 import { ERRORS } from "../helpers/errors";
-import { Linklist__factory } from "../../typechain";
 
 makeSuiteCleanRoom("Link", function () {
     context("Generic", function () {
@@ -32,17 +21,13 @@ makeSuiteCleanRoom("Link", function () {
             await web3Entry.createProfile(makeProfileData("handle1"));
             await web3Entry.createProfile(makeProfileData("handle2"));
             await expect(
-                web3Entry
-                    .connect(user)
-                    .linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
             ).to.not.be.reverted;
         });
         context("Negatives", function () {
             it("User should fail to link a non-existed profile", async function () {
                 await expect(
-                    web3Entry
-                        .connect(user)
-                        .linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID + 1, FOLLOW_LINKTYPE)
+                    web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID + 1, FOLLOW_LINKTYPE)
                 ).to.be.revertedWith(ERRORS.PROFILE_NOT_EXISTED);
             });
             it("UserTwo should fail to emit a link from a profile not owned by him", async function () {
@@ -60,16 +45,14 @@ makeSuiteCleanRoom("Link", function () {
                 await expect(
                     web3Entry.connect(userTwo).linkProfile(pid, FIRST_PROFILE_ID, FOLLOW_LINKTYPE)
                 ).to.not.be.reverted;
-                await expect(web3Entry.connect(user).burn(FIRST_PROFILE_ID)).to.be.not.reverted;
+                await expect(web3Entry.burn(FIRST_PROFILE_ID)).to.be.not.reverted;
                 await expect(
                     web3Entry.connect(userTwo).linkProfile(pid, FIRST_PROFILE_ID, FOLLOW_LINKTYPE)
                 ).to.be.revertedWith(ERRORS.PROFILE_NOT_EXISTED);
             });
             it("User should fail to unlink a profile with an unattached type.", async function () {
                 await expect(
-                    web3Entry
-                        .connect(user)
-                        .unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, ARBITRARY_LINKTYPE)
+                    web3Entry.unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, ARBITRARY_LINKTYPE)
                 ).to.be.revertedWith(ERRORS.UNATTACHED_LINKLIST);
             });
             it("UserTwo should fail to unlink a profile that ", async function () {
@@ -101,9 +84,7 @@ makeSuiteCleanRoom("Link", function () {
             });
             it("User should get correct linking profile ids after unlink, and linklist nft still exist.", async function () {
                 await expect(
-                    web3Entry
-                        .connect(user)
-                        .unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                    web3Entry.unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
                 ).to.not.be.reverted;
                 await matchLinkingProfileIds(FIRST_PROFILE_ID, FOLLOW_LINKTYPE, []);
 
@@ -121,9 +102,7 @@ makeSuiteCleanRoom("Link", function () {
             });
             it("User could link a profile twice, and get correct linking profile ids.", async function () {
                 await expect(
-                    web3Entry
-                        .connect(user)
-                        .linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                    web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
                 ).to.not.reverted;
                 await matchLinkingProfileIds(FIRST_PROFILE_ID, FOLLOW_LINKTYPE, [
                     SECOND_PROFILE_ID,
@@ -143,14 +122,10 @@ makeSuiteCleanRoom("Link", function () {
             });
             it("User could unlink a profile twice.", async function () {
                 await expect(
-                    web3Entry
-                        .connect(user)
-                        .unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                    web3Entry.unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
                 ).to.not.be.reverted;
                 await expect(
-                    web3Entry
-                        .connect(user)
-                        .unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                    web3Entry.unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
                 ).to.not.be.reverted;
                 await matchLinkingProfileIds(FIRST_PROFILE_ID, FOLLOW_LINKTYPE, []);
 
@@ -167,7 +142,7 @@ makeSuiteCleanRoom("Link", function () {
                 expect(total).to.eq(1);
             });
             it("User should get correct linking profile ids when the linking profile is burned.", async function () {
-                await expect(web3Entry.connect(user).burn(SECOND_PROFILE_ID)).to.be.not.reverted;
+                await expect(web3Entry.burn(SECOND_PROFILE_ID)).to.be.not.reverted;
                 await matchLinkingProfileIds(FIRST_PROFILE_ID, FOLLOW_LINKTYPE, []);
             });
         });

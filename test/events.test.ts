@@ -44,9 +44,7 @@ describe("Profile Events", function () {
         ]);
 
         receipt = await (
-            await web3Entry
-                .connect(user)
-                .unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+            await web3Entry.unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
         ).wait();
 
         await web3Entry.unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE);

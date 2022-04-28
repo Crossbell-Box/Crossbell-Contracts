@@ -86,7 +86,6 @@ export function matchEvent(
                 const event = eventContract.interface.parseLog(emittedEvent);
                 // If there are expected arguments, validate them, otherwise, return here
                 if (expectedArgs) {
-                    console.log(event.args);
                     if (expectedArgs.length != event.args.length) {
                         logger.throwError(
                             `Event "${name}" emitted with correct signature, but expected args are of invalid length`
