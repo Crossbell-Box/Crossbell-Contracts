@@ -21,7 +21,10 @@ export const FIRST_PROFILE_ID = 1;
 export const SECOND_PROFILE_ID = 2;
 
 export const FIRST_LINKLIST_ID = 1;
+export const SECOND_LINKLIST_ID = 2;
+
 export const FIRST_NOTE_ID = 1;
+export const SECOND_NOTE_ID = 1;
 
 export const WEB3_ENTRY_NFT_NAME = "Web3 Entry Profile";
 export const WEB3_ENTRY_NFT_SYMBOL = "WEP";
@@ -39,6 +42,7 @@ export const MOCK_NOTE_URI =
 export const bytes32Zero = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 export const FollowLinkType = ethers.utils.formatBytes32String("follow");
+export const LikeLinkType = ethers.utils.formatBytes32String("like");
 
 export const LinkItemTypeProfile =
     "0x50726f66696c654c696e6b000000000000000000000000000000000000000000";

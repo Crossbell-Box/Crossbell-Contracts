@@ -177,7 +177,7 @@ export function matchNote(note: NoteStruct, expectedArgs?: any[]) {
         }
         if (!note.linklistId.eq(BigNumber.from(expectedArgs[1]))) {
             logger.throwError(
-                `linkItemType, Received: "${note.linkItemType}" Expected: "${expectedArgs[1]}`
+                `linklistId, Received: "${note.linklistId}" Expected: "${expectedArgs[1]}`
             );
         }
         if (note.linkKey !== expectedArgs[2]) {
