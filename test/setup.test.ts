@@ -21,7 +21,10 @@ export const FIRST_PROFILE_ID = 1;
 export const SECOND_PROFILE_ID = 2;
 
 export const FIRST_LINKLIST_ID = 1;
+export const SECOND_LINKLIST_ID = 2;
+
 export const FIRST_NOTE_ID = 1;
+export const SECOND_NOTE_ID = 1;
 
 export const WEB3_ENTRY_NFT_NAME = "Web3 Entry Profile";
 export const WEB3_ENTRY_NFT_SYMBOL = "WEP";
@@ -37,6 +40,10 @@ export const MOCK_CONTENT_URI = "ipfs://QmfHKajYAGcaWaBXGsEWory9ensGsesN2GwWedVE
 export const MOCK_NOTE_URI =
     "https://github.com/Crossbell-Box/Crossbell-Contracts/blob/main/examples/sampleContent.json";
 export const bytes32Zero = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+export const FollowLinkType = ethers.utils.formatBytes32String("follow");
+export const LikeLinkType = ethers.utils.formatBytes32String("like");
+
 export const LinkItemTypeProfile =
     "0x50726f66696c654c696e6b000000000000000000000000000000000000000000";
 export const LinkItemTypeAddress =
@@ -142,8 +149,8 @@ beforeEach(async () => {
     await linkListProxy.deployed();
     await web3EntryProxy.deployed();
 
-    web3Entry = Web3Entry__factory.connect(web3EntryProxy.address, deployer);
-    linklist = Linklist__factory.connect(linkListProxy.address, deployer);
+    web3Entry = Web3Entry__factory.connect(web3EntryProxy.address, user);
+    linkList = Linklist__factory.connect(linkListProxy.address, user);
 
     await linklist.initialize(LINK_LIST_NFT_NAME, LINK_LIST_NFT_SYMBOL, web3Entry.address);
     await web3Entry.initialize(

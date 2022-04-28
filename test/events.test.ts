@@ -20,7 +20,7 @@ describe("Profile Events", function () {
 
         matchEvent(receipt, "ProfileCreated", [
             FIRST_PROFILE_ID,
-            deployerAddress,
+            userAddress,
             userAddress,
             MOCK_PROFILE_HANDLE,
             await getTimestamp(),
@@ -31,9 +31,15 @@ describe("Profile Events", function () {
         await web3Entry.createProfile(makeProfileData("handle1"));
         await web3Entry.createProfile(makeProfileData("handle2"));
 
+<<<<<<< HEAD
         let receipt = await (
             await web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
         ).wait();
+=======
+        // let receipt = await (
+        await web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE);
+        // ).wait();
+>>>>>>> 1693f0c1055fb1cde27eebaeea48d4c4f7194420
 
         matchEvent(receipt, "LinkProfile", [
             userAddress,

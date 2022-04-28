@@ -27,6 +27,9 @@ import {
     linklist,
     deployer,
     userThreeAddress,
+    FollowLinkType,
+    LikeLinkType,
+    SECOND_LINKLIST_ID,
 } from "./setup.test";
 import { makePostNoteData, makeProfileData, matchEvent, matchNote } from "./helpers/utils";
 import { ERRORS } from "./helpers/errors";
@@ -41,81 +44,178 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
             await web3Entry.createProfile(makeProfileData(MOCK_PROFILE_HANDLE2));
         });
 
-        it("User should post note", async function () {
-            // post note
-            const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
-            await expect(web3Entry.connect(user).postNote(noteData)).to.not.be.reverted;
+        context("Negatives", function () {
+            it("UserTwo should fail to post note at a profile owned by user 1", async function () {
+                await expect(
+                    web3Entry
+                        .connect(userTwo)
+                        .postNote(makePostNoteData(FIRST_PROFILE_ID.toString()))
+                ).to.be.revertedWith(ERRORS.NOT_PROFILE_OWNER);
+            });
 
-            let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
-            matchNote(note, [
-                bytes32Zero,
-                0,
-                bytes32Zero,
-                noteData.contentUri,
-                ethers.constants.AddressZero,
-                ethers.constants.AddressZero,
-                ethers.constants.AddressZero,
-            ]);
+            it("UserTwo should fail to post note for profile link at a profile owned by user 1", async function () {
+                // link profile
+                await web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FollowLinkType);
 
-            // mint note
-            await web3Entry
-                .connect(userThree)
-                .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userTwoAddress, []);
-            await web3Entry
-                .connect(userThree)
-                .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userThreeAddress, []);
-
-            note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
-            expect(note.mintNFT).to.not.equal(ethers.constants.AddressZero);
-            const mintNFT = MintNFT__factory.connect(note.mintNFT, deployer);
-            expect(await mintNFT.ownerOf(1)).to.equal(userTwoAddress);
-            expect(await mintNFT.ownerOf(2)).to.equal(userThreeAddress);
+                // post note for profile link
+                await expect(
+                    web3Entry
+                        .connect(userTwo)
+                        .postNote4ProfileLink(
+                            makePostNoteData(FIRST_PROFILE_ID.toString()),
+                            FIRST_PROFILE_ID,
+                            SECOND_PROFILE_ID,
+                            FollowLinkType
+                        )
+                ).to.be.revertedWith(ERRORS.NOT_PROFILE_OWNER);
+            });
         });
 
-        it("User should post note with profile link", async function () {
-            // link profile
-            const followLinkType = ethers.utils.formatBytes32String("follow");
-            await web3Entry
-                .connect(user)
-                .linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, followLinkType);
+        context("Scenarios", function () {
+            it("User should post note", async function () {
+                // post note
+                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
 
-            // post note
-            const noteData = makePostNoteData("1");
-            await expect(
-                web3Entry
-                    .connect(user)
-                    .postNote4ProfileLink(
+                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    0,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                ]);
+
+                // mint note
+                await web3Entry
+                    .connect(userThree)
+                    .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userTwoAddress, []);
+                await web3Entry
+                    .connect(userThree)
+                    .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userThreeAddress, []);
+
+                note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+                expect(note.mintNFT).to.not.equal(ethers.constants.AddressZero);
+                const mintNFT = MintNFT__factory.connect(note.mintNFT, deployer);
+                expect(await mintNFT.ownerOf(1)).to.equal(userTwoAddress);
+                expect(await mintNFT.ownerOf(2)).to.equal(userThreeAddress);
+            });
+
+            it("User should post note with profile link", async function () {
+                // link profile
+                await web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FollowLinkType);
+
+                // post note
+                const noteData = makePostNoteData("1");
+                await expect(
+                    web3Entry.postNote4ProfileLink(
                         noteData,
                         FIRST_PROFILE_ID,
                         SECOND_PROFILE_ID,
-                        followLinkType
+                        FollowLinkType
                     )
-            ).to.not.be.reverted;
+                ).to.not.be.reverted;
 
-            let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
-            matchNote(note, [
-                LinkItemTypeProfile,
-                FIRST_LINKLIST_ID,
-                ethers.utils.hexZeroPad(ethers.utils.hexlify(SECOND_PROFILE_ID), 32),
-                noteData.contentUri,
-                ethers.constants.AddressZero,
-                ethers.constants.AddressZero,
-                ethers.constants.AddressZero,
-            ]);
+                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    LinkItemTypeProfile,
+                    FIRST_LINKLIST_ID,
+                    ethers.utils.hexZeroPad(ethers.utils.hexlify(SECOND_PROFILE_ID), 32),
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                ]);
 
-            // mint note
-            await web3Entry
-                .connect(userThree)
-                .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userTwoAddress, []);
-            await web3Entry
-                .connect(userThree)
-                .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userThreeAddress, []);
+                // mint note
+                await web3Entry
+                    .connect(userThree)
+                    .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userTwoAddress, []);
 
-            note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
-            expect(note.mintNFT).to.not.equal(ethers.constants.AddressZero);
-            const mintNFT = MintNFT__factory.connect(note.mintNFT, deployer);
-            expect(await mintNFT.ownerOf(1)).to.equal(userTwoAddress);
-            expect(await mintNFT.ownerOf(2)).to.equal(userThreeAddress);
+                note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+                expect(await MintNFT__factory.connect(note.mintNFT, deployer).ownerOf(1)).to.equal(
+                    userTwoAddress
+                );
+            });
+
+            it("User should post note with address link", async function () {
+                // link address
+                await web3Entry.linkAddress(FIRST_PROFILE_ID, userThreeAddress, FollowLinkType);
+
+                // post note
+                const noteData = makePostNoteData();
+                await expect(
+                    web3Entry.postNote4ProfileLink(
+                        noteData,
+                        FIRST_PROFILE_ID,
+                        userThreeAddress,
+                        FollowLinkType
+                    )
+                ).to.not.be.reverted;
+
+                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    LinkItemTypeProfile,
+                    FIRST_LINKLIST_ID,
+                    ethers.utils.hexZeroPad(ethers.utils.hexlify(userThreeAddress), 32),
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                ]);
+
+                // mint note
+                await web3Entry
+                    .connect(userThree)
+                    .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userTwoAddress, []);
+
+                note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+                expect(await MintNFT__factory.connect(note.mintNFT, deployer).ownerOf(1)).to.equal(
+                    userTwoAddress
+                );
+            });
+
+            it("User should post note with linklist link", async function () {
+                // link profile
+                await web3Entry.linkProfile(SECOND_PROFILE_ID, FIRST_PROFILE_ID, FollowLinkType);
+
+                // link linklist
+                await web3Entry.linkLinklist(FIRST_PROFILE_ID, FIRST_LINKLIST_ID, LikeLinkType);
+
+                // post note
+                const noteData = makePostNoteData();
+                await expect(
+                    web3Entry.postNote4LinklistLink(
+                        noteData,
+                        FIRST_PROFILE_ID,
+                        SECOND_LINKLIST_ID,
+                        LikeLinkType
+                    )
+                ).to.not.be.reverted;
+
+                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    LinkItemTypeList,
+                    SECOND_LINKLIST_ID,
+                    ethers.utils.hexZeroPad(ethers.utils.hexlify(SECOND_LINKLIST_ID), 32),
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                ]);
+
+                // mint note
+                await web3Entry
+                    .connect(userThree)
+                    .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userTwoAddress, []);
+
+                note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+                expect(await MintNFT__factory.connect(note.mintNFT, deployer).ownerOf(1)).to.equal(
+                    userTwoAddress
+                );
+            });
         });
     });
 });

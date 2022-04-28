@@ -172,35 +172,35 @@ export function matchNote(note: NoteStruct, expectedArgs?: any[]) {
             logger.throwError(`Note expected args are of invalid length`);
         }
         if (note.linkItemType !== expectedArgs[0]) {
-            logger.info(
-                "linkItemType, Received: " + note.linkItemType + "Expected: " + expectedArgs[0]
+            logger.throwError(
+                `linkItemType, Received: "${note.linkItemType}" Expected: "${expectedArgs[0]}`
             );
         }
         if (!note.linklistId.eq(BigNumber.from(expectedArgs[1]))) {
-            logger.info(
-                "linklistId, Received: " + note.linklistId + "Expected: " + expectedArgs[1]
+            logger.throwError(
+                `linklistId, Received: "${note.linklistId}" Expected: "${expectedArgs[1]}`
             );
         }
         if (note.linkKey !== expectedArgs[2]) {
-            logger.info("linkKey, Received: " + note.linkKey + "Expected: " + expectedArgs[2]);
+            logger.throwError(`linkKey, Received: "${note.linkKey}" Expected: "${expectedArgs[2]}`);
         }
         if (note.contentUri !== expectedArgs[3]) {
-            logger.info(
-                "contentUri, Received: " + note.contentUri + "Expected: " + expectedArgs[3]
+            logger.throwError(
+                `contentUri, Received: "${note.contentUri}" Expected: "${expectedArgs[3]}`
             );
         }
         if (note.linkModule !== expectedArgs[4]) {
-            logger.info(
-                "linkModule, Received: " + note.linkModule + "Expected: " + expectedArgs[4]
+            logger.throwError(
+                `linkModule, Received: "${note.linkModule}" Expected: "${expectedArgs[4]}`
             );
         }
         if (note.mintModule !== expectedArgs[5]) {
-            logger.info(
-                "mintModule, Received: " + note.mintModule + "Expected: " + expectedArgs[5]
+            logger.throwError(
+                `mintModule, Received: "${note.mintModule}" Expected: "${expectedArgs[5]}`
             );
         }
         if (note.mintNFT !== expectedArgs[6]) {
-            logger.info("mintNFT, Received: " + note.mintNFT + "Expected: " + expectedArgs[6]);
+            logger.throwError(`mintNFT, Received: "${note.mintNFT}" Expected: "${expectedArgs[6]}`);
         }
     }
 }
