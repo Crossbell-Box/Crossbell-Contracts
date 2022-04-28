@@ -779,7 +779,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         returns (uint256[] memory results)
     {
         uint256 linkListId = _attachedLinklists[fromProfileId][linkType];
-        uint256[] memory linkingProfileIds = ILinklist(linklist).getLinkingProfileIds(linkListId);
+        uint256[] memory linkingProfileIds = ILinklist(_linklist).getLinkingProfileIds(linkListId);
 
         uint256 l = linkingProfileIds.length;
 
@@ -930,13 +930,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function _validateLinklistAttached(uint256 linklistId, uint256 profileId) internal view {
         require(
-<<<<<<< HEAD
-            profileId == ILinklist(linklist).getCurrentTakeOver(linklistId),
-            "Web3Entry: UnattachedLinklist"
-=======
             profileId == ILinklist(_linklist).getCurrentTakeOver(linklistId),
-            "Web3Entry: unattached linkList"
->>>>>>> 1693f0c1055fb1cde27eebaeea48d4c4f7194420
+            "Web3Entry: UnattachedLinklist"
         );
     }
 

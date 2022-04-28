@@ -150,7 +150,7 @@ beforeEach(async () => {
     await web3EntryProxy.deployed();
 
     web3Entry = Web3Entry__factory.connect(web3EntryProxy.address, user);
-    linkList = Linklist__factory.connect(linkListProxy.address, user);
+    linklist = Linklist__factory.connect(linkListProxy.address, user);
 
     await linklist.initialize(LINK_LIST_NFT_NAME, LINK_LIST_NFT_SYMBOL, web3Entry.address);
     await web3Entry.initialize(
