@@ -16,6 +16,7 @@ import {
     Linklist__factory,
     Web3Entry__factory,
     ApprovalMintModule,
+    ApprovalLinkModule4Profile,
     // eslint-disable-next-line node/no-missing-import
 } from "../typechain";
 import { revertToSnapshot, takeSnapshot } from "./helpers/utils";
@@ -63,6 +64,7 @@ export let eventsLib: Events;
 export let linklist: Linklist;
 export let web3Entry: Web3Entry;
 export let currency: Currency;
+export let approvalLinkModule4Profile: ApprovalLinkModule4Profile;
 export let feeMintModule: FeeMintModule;
 export let approvalMintModule: ApprovalMintModule;
 
@@ -171,12 +173,18 @@ beforeEach(async () => {
     currency = await Currency.deploy();
 
     // Modules
+    const ApprovalLinkModule4Profile = await ethers.getContractFactory(
+        "ApprovalLinkModule4Profile"
+    );
+    approvalLinkModule4Profile = await ApprovalLinkModule4Profile.deploy(web3Entry.address);
+
     const FeeMintModule = await ethers.getContractFactory("FeeMintModule");
     feeMintModule = await FeeMintModule.deploy(web3Entry.address);
 
     const ApprovalMintModule = await ethers.getContractFactory("ApprovalMintModule");
     approvalMintModule = await ApprovalMintModule.deploy(web3Entry.address);
 
+    expect(approvalLinkModule4Profile).to.not.be.undefined;
     expect(feeMintModule).to.not.be.undefined;
     expect(approvalMintModule).to.not.be.undefined;
     expect(currency).to.not.be.undefined;

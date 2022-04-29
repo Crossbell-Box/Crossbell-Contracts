@@ -49,6 +49,13 @@ interface IWeb3Entry {
         bytes32 linkType
     ) external;
 
+    function linkProfileV2(
+        uint256 fromProfileId,
+        uint256 toProfileId,
+        bytes32 linkType,
+        bytes calldata data
+    ) external;
+
     function unlinkProfile(
         uint256 fromProfileId,
         uint256 toProfileId,
@@ -59,6 +66,13 @@ interface IWeb3Entry {
         uint256 fromProfileId,
         address toProfileId,
         bytes32 linkType
+    ) external;
+
+    function createThenLinkProfileV2(
+        uint256 fromProfileId,
+        address toProfileId,
+        bytes32 linkType,
+        bytes calldata data
     ) external;
 
     function linkNote(

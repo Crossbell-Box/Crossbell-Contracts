@@ -31,6 +31,8 @@ library ProfileLogic {
 
         // init link module
         if (vars.linkModule != address(0)) {
+            _profileById[profileId].linkModule = vars.linkModule;
+
             ILinkModule4Profile(vars.linkModule).initializeLinkModule(
                 profileId,
                 vars.linkModuleInitData

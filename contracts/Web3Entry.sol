@@ -70,7 +70,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function setSocialToken(uint256 profileId, address tokenAddress) external {
         _validateCallerIsProfileOwner(profileId);
 
-        require(_profileById[profileId].socialToken == address(0), "Web3Entry: SocialTokenExists");
+        require(_profileById[profileId].socialToken == address(0), "SocialTokenExists");
 
         _profileById[profileId].socialToken = tokenAddress;
 
@@ -120,18 +120,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     // emit a link from a profile
-    function _linkProfile(
-        uint256 fromProfileId,
-        uint256 toProfileId,
-        bytes32 linkType
-    ) internal {
-        uint256 linklistId = _mintLinklist(fromProfileId, linkType, msg.sender);
-
-        // add to link list
-        ILinklist(_linklist).addLinkingProfileId(linklistId, toProfileId);
-
-        emit Events.LinkProfile(msg.sender, fromProfileId, toProfileId, linkType, linklistId);
-    }
 
     function linkProfile(
         uint256 fromProfileId,
@@ -141,7 +129,43 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(fromProfileId);
         _validateProfileExists(toProfileId);
 
-        _linkProfile(fromProfileId, toProfileId, linkType);
+        _linkProfile(fromProfileId, toProfileId, linkType, "0x");
+    }
+
+    function _linkProfile(
+        uint256 fromProfileId,
+        uint256 toProfileId,
+        bytes32 linkType,
+        bytes memory data
+    ) internal {
+        uint256 linklistId = _mintLinklist(fromProfileId, linkType, msg.sender);
+
+        // add to link list
+        ILinklist(_linklist).addLinkingProfileId(linklistId, toProfileId);
+
+        // process link module
+        if (_profileById[toProfileId].linkModule != address(0)) {
+            address linker = ownerOf(fromProfileId);
+            ILinkModule4Profile(_profileById[toProfileId].linkModule).processLink(
+                linker,
+                toProfileId,
+                data
+            );
+        }
+
+        emit Events.LinkProfile(msg.sender, fromProfileId, toProfileId, linkType, linklistId);
+    }
+
+    function linkProfileV2(
+        uint256 fromProfileId,
+        uint256 toProfileId,
+        bytes32 linkType,
+        bytes calldata data
+    ) external {
+        _validateCallerIsProfileOwner(fromProfileId);
+        _validateProfileExists(toProfileId);
+
+        _linkProfile(fromProfileId, toProfileId, linkType, data);
     }
 
     function unlinkProfile(
@@ -166,6 +190,24 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         address to,
         bytes32 linkType
     ) external {
+        _createThenLinkProfile(fromProfileId, to, linkType, "0x");
+    }
+
+    function createThenLinkProfileV2(
+        uint256 fromProfileId,
+        address to,
+        bytes32 linkType,
+        bytes calldata data
+    ) external {
+        _createThenLinkProfile(fromProfileId, to, linkType, data);
+    }
+
+    function _createThenLinkProfile(
+        uint256 fromProfileId,
+        address to,
+        bytes32 linkType,
+        bytes memory data
+    ) internal {
         _validateCallerIsProfileOwner(fromProfileId);
         require(_primaryProfileByAddress[to] == 0, "Target address already has primary profile.");
 
@@ -191,7 +233,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _primaryProfileByAddress[to] = profileId;
 
         // link profile
-        _linkProfile(fromProfileId, profileId, linkType);
+        _linkProfile(fromProfileId, profileId, linkType, data);
     }
 
     function linkNote(
@@ -474,7 +516,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         address linkModule,
         bytes calldata linkModuleInitData
     ) external {
-        require(msg.sender == account, "Web3Entry: NotAddressOwner");
+        require(msg.sender == account, "NotAddressOwner");
 
         if (linkModule != address(0)) {
             _linkModules4Address[account] = linkModule;
@@ -706,7 +748,9 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function burn(uint256 tokenId) public override {
         super.burn(tokenId);
-        _clearHandleHash(tokenId);
+
+        bytes32 handleHash = keccak256(bytes(_profileById[tokenId].handle));
+        _profileIdByHandleHash[handleHash] = 0;
     }
 
     function getPrimaryProfileId(address account) external view returns (uint256) {
@@ -891,11 +935,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         }
     }
 
-    function _clearHandleHash(uint256 profileId) internal {
-        bytes32 handleHash = keccak256(bytes(_profileById[profileId].handle));
-        _profileIdByHandleHash[handleHash] = 0;
-    }
-
     function _beforeTokenTransfer(
         address from,
         address to,
@@ -909,33 +948,33 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function _validateCallerIsProfileOwner(uint256 profileId) internal view {
-        require(msg.sender == ownerOf(profileId), "Web3Entry: NotProfileOwner");
+        require(msg.sender == ownerOf(profileId), "NotProfileOwner");
     }
 
     function _validateCallerIsLinklistOwner(uint256 tokenId) internal view {
-        require(msg.sender == IERC721(_linklist).ownerOf(tokenId), "Web3Entry: NotLinkListOwner");
+        require(msg.sender == IERC721(_linklist).ownerOf(tokenId), "NotLinkListOwner");
     }
 
     function _validateProfileExists(uint256 profileId) internal view {
-        require(_exists(profileId), "Web3Entry: ProfileNotExists");
+        require(_exists(profileId), "ProfileNotExists");
     }
 
     function _validateCallerIsERC721Owner(address tokenAddress, uint256 tokenId) internal view {
-        require(msg.sender == ERC721(tokenAddress).ownerOf(tokenId), "Web3Entry: NotERC721Owner");
+        require(msg.sender == ERC721(tokenAddress).ownerOf(tokenId), "NotERC721Owner");
     }
 
     function _validateERC721Exists(address tokenAddress, uint256 tokenId) internal view {
-        require(address(0) != IERC721(tokenAddress).ownerOf(tokenId), "Web3Entry: REC721NotExists");
+        require(address(0) != IERC721(tokenAddress).ownerOf(tokenId), "REC721NotExists");
     }
 
     function _validateNoteExists(uint256 profileId, uint256 noteId) internal view {
-        require(noteId <= _profileById[profileId].noteCount, "Web3Entry: NoteNotExists");
+        require(noteId <= _profileById[profileId].noteCount, "NoteNotExists");
     }
 
     function _validateLinklistAttached(uint256 linklistId, uint256 profileId) internal view {
         require(
             profileId == ILinklist(_linklist).getCurrentTakeOver(linklistId),
-            "Web3Entry: UnattachedLinklist"
+            "UnattachedLinklist"
         );
     }
 

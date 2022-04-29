@@ -7,5 +7,9 @@ interface ILinkModule4Profile {
         external
         returns (bytes memory);
 
-    function processLink(uint256 profileId, bytes calldata data) external;
+    function processLink(
+        address caller,
+        uint256 profileId,
+        bytes calldata data
+    ) external;
 }
