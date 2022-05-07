@@ -79,7 +79,8 @@ interface IWeb3Entry {
         uint256 fromProfileId,
         uint256 toProfileId,
         uint256 toNoteId,
-        bytes32 linkType
+        bytes32 linkType,
+        bytes calldata data
     ) external;
 
     function unlinkNote(

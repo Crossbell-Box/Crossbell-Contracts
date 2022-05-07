@@ -2,17 +2,17 @@
 
 pragma solidity 0.8.10;
 
-import "../../interfaces/IMintModule4Note.sol";
+import "../../interfaces/ILinkModule4Note.sol";
 import "../ModuleBase.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
-contract ApprovalMintModule is IMintModule4Note, ModuleBase {
+contract ApprovalLinkModule4Note is ILinkModule4Note, ModuleBase {
     mapping(address => mapping(uint256 => mapping(uint256 => mapping(address => bool))))
         internal _approvedByProfileByNoteByOwner;
 
     constructor(address web3Entry) ModuleBase(web3Entry) {}
 
-    function initializeMintModule(
+    function initializeLinkModule(
         uint256 profileId,
         uint256 noteId,
         bytes calldata data
@@ -51,8 +51,8 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         }
     }
 
-    function processMint(
-        address to,
+    function processLink(
+        address caller,
         uint256 profileId,
         uint256 noteId,
         bytes calldata data
@@ -60,8 +60,8 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         address owner = IERC721(Web3Entry).ownerOf(profileId);
 
         require(
-            _approvedByProfileByNoteByOwner[owner][profileId][noteId][to],
-            "ApprovalMintModule: NotApproved"
+            _approvedByProfileByNoteByOwner[owner][profileId][noteId][caller],
+            "ApprovalLinkModule4Note: NotApproved"
         );
     }
 

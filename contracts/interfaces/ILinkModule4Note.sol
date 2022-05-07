@@ -10,6 +10,7 @@ interface ILinkModule4Note {
     ) external returns (bytes memory);
 
     function processLink(
+        address caller,
         uint256 profileId,
         uint256 noteId,
         bytes calldata data
