@@ -13,7 +13,7 @@ async function main() {
     // manually to make sure everything is compiled
     // await hre.run('compile');
 
-    const [owner, addr1] = await ethers.getSigners();
+    const [owner] = await ethers.getSigners();
 
     // We get the contract to deploy
 
@@ -38,7 +38,7 @@ async function main() {
 
     // proxyWeb3Entry
     const Proxy = await ethers.getContractFactory("TransparentUpgradeableProxy");
-    const proxyWeb3Entry = await Proxy.attach("0x72E0Bc50e94804bC8F6DDdC527c7223D3b352b43");
+    const proxyWeb3Entry = await Proxy.attach("0xa6f969045641Cf486a747A2688F3a5A6d43cd0D8");
     await proxyWeb3Entry.upgradeTo(web3Entry.address);
 
     console.log("InteractionLogic deployed to:", interactionLogic.address);

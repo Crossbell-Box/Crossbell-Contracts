@@ -95,7 +95,6 @@ library ProfileLogic {
             require(
                 (byteHandle[i] <= "9" && byteHandle[i] >= "0") ||
                     (byteHandle[i] <= "z" && byteHandle[i] >= "a") ||
-                    byteHandle[i] == "." ||
                     byteHandle[i] == "-" ||
                     byteHandle[i] == "_",
                 "HandleContainsInvalidCharacters"
