@@ -7,6 +7,7 @@ import "../interfaces/IMintNFT.sol";
 import "./Events.sol";
 import "./DataTypes.sol";
 import "../interfaces/IMintModule4Note.sol";
+import "../interfaces/ILinkModule4Note.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
@@ -42,6 +43,58 @@ library InteractionLogic {
         }
 
         emit Events.MintNote(to, profileId, noteId, tokenId, mintModuleData, block.timestamp);
+    }
+
+    function setLinkModule4Note(
+        uint256 profileId,
+        uint256 noteId,
+        address linkModule,
+        bytes calldata linkModuleInitData,
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile
+    ) external {
+        if (linkModule != address(0)) {
+            _noteByIdByProfile[profileId][noteId].linkModule = linkModule;
+
+            bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
+                profileId,
+                noteId,
+                linkModuleInitData
+            );
+
+            emit Events.SetLinkModule4Note(
+                profileId,
+                noteId,
+                linkModule,
+                returnData,
+                block.timestamp
+            );
+        }
+    }
+
+    function setMintModule4Note(
+        uint256 profileId,
+        uint256 noteId,
+        address mintModule,
+        bytes calldata mintModuleInitData,
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile
+    ) external {
+        if (mintModule != address(0)) {
+            _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
+
+            bytes memory returnData = IMintModule4Note(mintModule).initializeMintModule(
+                profileId,
+                noteId,
+                mintModuleInitData
+            );
+
+            emit Events.SetMintModule4Note(
+                profileId,
+                noteId,
+                mintModule,
+                returnData,
+                block.timestamp
+            );
+        }
     }
 
     function _deployMintNFT(

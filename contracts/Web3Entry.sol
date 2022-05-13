@@ -70,11 +70,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function setSocialToken(uint256 profileId, address tokenAddress) external {
         _validateCallerIsProfileOwner(profileId);
 
-        require(_profileById[profileId].socialToken == address(0), "SocialTokenExists");
-
-        _profileById[profileId].socialToken = tokenAddress;
-
-        emit Events.SetSocialToken(msg.sender, profileId, tokenAddress);
+        ProfileLogic.setSocialToken(profileId, tokenAddress, _profileById);
     }
 
     function setProfileUri(uint256 profileId, string calldata newUri) external {
@@ -461,14 +457,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external {
         _validateCallerIsProfileOwner(profileId);
 
-        if (linkModule != _profileById[profileId].linkModule) {
-            ProfileLogic.setProfileLinkModule(
-                profileId,
-                linkModule,
-                linkModuleInitData,
-                _profileById[profileId]
-            );
-        }
+        ProfileLogic.setProfileLinkModule(
+            profileId,
+            linkModule,
+            linkModuleInitData,
+            _profileById[profileId]
+        );
     }
 
     function setLinkModule4Note(
@@ -480,23 +474,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(profileId);
         _validateNoteExists(profileId, noteId);
 
-        if (linkModule != address(0)) {
-            _noteByIdByProfile[profileId][noteId].linkModule = linkModule;
-
-            bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
-                profileId,
-                noteId,
-                linkModuleInitData
-            );
-
-            emit Events.SetLinkModule4Note(
-                profileId,
-                noteId,
-                linkModule,
-                returnData,
-                block.timestamp
-            );
-        }
+        InteractionLogic.setLinkModule4Note(
+            profileId,
+            noteId,
+            linkModule,
+            linkModuleInitData,
+            _noteByIdByProfile
+        );
     }
 
     function setLinkModule4Linklist(
@@ -594,23 +578,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(profileId);
         _validateNoteExists(profileId, noteId);
 
-        if (mintModule != address(0)) {
-            _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
-
-            bytes memory returnData = IMintModule4Note(mintModule).initializeMintModule(
-                profileId,
-                noteId,
-                mintModuleInitData
-            );
-
-            emit Events.SetMintModule4Note(
-                profileId,
-                noteId,
-                mintModule,
-                returnData,
-                block.timestamp
-            );
-        }
+        InteractionLogic.setMintModule4Note(
+            profileId,
+            noteId,
+            mintModule,
+            mintModuleInitData,
+            _noteByIdByProfile
+        );
     }
 
     function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256) {
@@ -620,6 +594,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
         PostLogic.postNote4Link(vars, noteId, 0, 0, 0, _noteByIdByProfile);
         return noteId;
+    }
+
+    function deleteNote(uint256 profileId, uint256 noteId) external {
+        _validateCallerIsProfileOwner(profileId);
+        _validateNoteExists(profileId, noteId);
+
+        _noteByIdByProfile[profileId][noteId].deleted = true;
     }
 
     function postNote4ProfileLink(

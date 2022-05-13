@@ -5,6 +5,7 @@ import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
+import "hardhat-contract-sizer";
 import "solidity-coverage";
 import { chainConfig } from "@nomiclabs/hardhat-etherscan/dist/src/ChainConfig";
 import { ChainConfig } from "@nomiclabs/hardhat-etherscan/dist/src/types";

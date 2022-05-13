@@ -56,6 +56,7 @@ library DataTypes {
         address linkModule;
         address mintModule;
         address mintNFT;
+        bool deleted;
     }
 
     struct ProfileLinkStruct {

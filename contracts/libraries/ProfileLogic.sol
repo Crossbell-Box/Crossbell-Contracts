@@ -42,6 +42,18 @@ library ProfileLogic {
         emit Events.ProfileCreated(profileId, msg.sender, vars.to, vars.handle, block.timestamp);
     }
 
+    function setSocialToken(
+        uint256 profileId,
+        address tokenAddress,
+        mapping(uint256 => DataTypes.Profile) storage _profileById
+    ) external {
+        require(_profileById[profileId].socialToken == address(0), "SocialTokenExists");
+
+        _profileById[profileId].socialToken = tokenAddress;
+
+        emit Events.SetSocialToken(msg.sender, profileId, tokenAddress);
+    }
+
     function setProfileLinkModule(
         uint256 profileId,
         address linkModule,
@@ -50,13 +62,14 @@ library ProfileLogic {
     ) external {
         _profile.linkModule = linkModule;
 
+        bytes memory returnData;
         if (linkModule != address(0)) {
-            bytes memory returnData = ILinkModule4Profile(linkModule).initializeLinkModule(
+            returnData = ILinkModule4Profile(linkModule).initializeLinkModule(
                 profileId,
                 linkModuleInitData
             );
-            emit Events.SetLinkModule4Profile(profileId, linkModule, returnData, block.timestamp);
         }
+        emit Events.SetLinkModule4Profile(profileId, linkModule, returnData, block.timestamp);
     }
 
     function setHandle(
