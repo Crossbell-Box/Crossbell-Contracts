@@ -40,7 +40,7 @@ makeSuiteCleanRoom("Link", function () {
             it("UserTwo should fail to follow a profile that has been burned", async function () {
                 await web3Entry
                     .connect(userTwo)
-                    .createProfile(makeProfileData("user.2", userTwoAddress));
+                    .createProfile(makeProfileData("user-2", userTwoAddress));
                 const pid = SECOND_PROFILE_ID + 1;
                 await expect(
                     web3Entry.connect(userTwo).linkProfile(pid, FIRST_PROFILE_ID, FOLLOW_LINKTYPE)

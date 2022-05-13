@@ -35,8 +35,8 @@ export const WEB3_ENTRY_NFT_SYMBOL = "WEP";
 export const LINK_LIST_NFT_NAME = "Link List Token";
 export const LINK_LIST_NFT_SYMBOL = "LLT";
 
-export const MOCK_PROFILE_HANDLE = "0xcrossbell.eth";
-export const MOCK_PROFILE_HANDLE2 = "0xcrossbell-2.eth";
+export const MOCK_PROFILE_HANDLE = "0xcrossbell-eth";
+export const MOCK_PROFILE_HANDLE2 = "0xcrossbell-2-eth";
 export const MOCK_PROFILE_URI =
     "https://raw.githubusercontent.com/Crossbell-Box/Crossbell-Contracts/main/examples/sampleProfile.json";
 export const MOCK_URI = "ipfs://QmadFPhP7n5rJkACMY6QqhtLtKgX1ixoySmxQNrU4Wo5JW";

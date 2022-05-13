@@ -74,11 +74,11 @@ makeSuiteCleanRoom("Profile handle Functionality ", function () {
             });
 
             it("User should create profile set handle with handle length == 31", async function () {
-                const profileData = makeProfileData("_ab2423cea4f1047556e7a14-f1.eth");
+                const profileData = makeProfileData("_ab2423cea4f1047556e7a14-f1-eth");
                 await expect(web3Entry.createProfile(profileData)).to.not.be.reverted;
 
                 await expect(
-                    web3Entry.setHandle(FIRST_PROFILE_ID, "_ab2423cea4f1047556e7a14-f1.btc")
+                    web3Entry.setHandle(FIRST_PROFILE_ID, "_ab2423cea4f1047556e7a14-f1-btc")
                 ).to.not.be.reverted;
             });
         });

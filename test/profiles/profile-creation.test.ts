@@ -83,7 +83,7 @@ makeSuiteCleanRoom("Profile Creation", function () {
                 expect(profile.handle).to.equal(MOCK_PROFILE_HANDLE);
                 expect(profile.uri).to.equal(MOCK_PROFILE_URI);
 
-                const testHandle = "handle.2";
+                const testHandle = "handle-2";
                 profileData = makeProfileData(testHandle, userTwoAddress);
                 await expect(
                     web3Entry.connect(userTwo).createProfile(profileData)

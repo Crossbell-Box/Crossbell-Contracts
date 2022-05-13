@@ -48,7 +48,7 @@ makeSuiteCleanRoom("Primary Profile", function () {
 
             it("User should set new primary profile", async function () {
                 // create new profile
-                const newHandle = "handle.2";
+                const newHandle = "handle-2";
                 await expect(
                     web3Entry.createProfile(makeProfileData(newHandle))
                 ).to.not.be.reverted;
