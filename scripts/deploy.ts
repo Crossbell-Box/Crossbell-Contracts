@@ -24,8 +24,8 @@ async function main() {
     const Linklist = await ethers.getContractFactory("Linklist");
     const linkList = await Linklist.deploy();
 
-    const InteractionLogic = await ethers.getContractFactory("InteractionLogic");
-    const interactionLogic = await InteractionLogic.deploy();
+    const LinkModuleLogic = await ethers.getContractFactory("LinkModuleLogic");
+    const linkModuleLogic = await LinkModuleLogic.deploy();
 
     const ProfileLogic = await ethers.getContractFactory("ProfileLogic");
     const profileLogic = await ProfileLogic.deploy();
@@ -35,7 +35,7 @@ async function main() {
 
     const Web3Entry = await ethers.getContractFactory("Web3Entry", {
         libraries: {
-            InteractionLogic: interactionLogic.address,
+            LinkModuleLogic: linkModuleLogic.address,
             ProfileLogic: profileLogic.address,
             PostLogic: postLogic.address,
         },
@@ -62,7 +62,7 @@ async function main() {
         .connect(addr1)
         .initialize("Link List Token", "LLT", proxyWeb3Entry.address);
 
-    console.log("InteractionLogic deployed to:", interactionLogic.address);
+    console.log("LinkModuleLogic deployed to:", linkModuleLogic.address);
     console.log("ProfileLogic deployed to:", profileLogic.address);
     console.log("PostLogic deployed to:", postLogic.address);
     console.log("Linklist deployed to:", linkList.address);

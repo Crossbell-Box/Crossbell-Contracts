@@ -17,8 +17,8 @@ async function main() {
 
     // We get the contract to deploy
 
-    const InteractionLogic = await ethers.getContractFactory("InteractionLogic");
-    const interactionLogic = await InteractionLogic.deploy();
+    const LinkModuleLogic = await ethers.getContractFactory("LinkModuleLogic");
+    const linkModuleLogic = await LinkModuleLogic.deploy();
 
     const ProfileLogic = await ethers.getContractFactory("ProfileLogic");
     const profileLogic = await ProfileLogic.deploy();
@@ -28,7 +28,7 @@ async function main() {
 
     const Web3Entry = await ethers.getContractFactory("Web3Entry", {
         libraries: {
-            InteractionLogic: interactionLogic.address,
+            LinkModuleLogic: linkModuleLogic.address,
             ProfileLogic: profileLogic.address,
             PostLogic: postLogic.address,
         },
@@ -41,7 +41,7 @@ async function main() {
     const proxyWeb3Entry = await Proxy.attach("0xa6f969045641Cf486a747A2688F3a5A6d43cd0D8");
     await proxyWeb3Entry.upgradeTo(web3Entry.address);
 
-    console.log("InteractionLogic deployed to:", interactionLogic.address);
+    console.log("LinkModuleLogic deployed to:", linkModuleLogic.address);
     console.log("ProfileLogic deployed to:", profileLogic.address);
     console.log("PostLogic deployed to:", postLogic.address);
     console.log("Web3Entry deployed to:", web3Entry.address);

@@ -14,7 +14,7 @@ import "./libraries/Constants.sol";
 import "./libraries/Events.sol";
 import "./libraries/ProfileLogic.sol";
 import "./libraries/PostLogic.sol";
-import "./libraries/InteractionLogic.sol";
+import "./libraries/LinkModuleLogic.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
@@ -471,7 +471,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(profileId);
         _validateNoteExists(profileId, noteId);
 
-        InteractionLogic.setLinkModule4Note(
+        LinkModuleLogic.setLinkModule4Note(
             profileId,
             noteId,
             linkModule,
@@ -487,7 +487,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external {
         _validateCallerIsLinklistOwner(linklistId);
 
-        InteractionLogic.setLinkModule4Linklist(
+        LinkModuleLogic.setLinkModule4Linklist(
             linklistId,
             linkModule,
             linkModuleInitData,
@@ -503,7 +503,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external {
         _validateCallerIsERC721Owner(tokenAddress, tokenId);
 
-        InteractionLogic.setLinkModule4ERC721(
+        LinkModuleLogic.setLinkModule4ERC721(
             tokenAddress,
             tokenId,
             linkModule,
@@ -517,7 +517,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         address linkModule,
         bytes calldata linkModuleInitData
     ) external {
-        InteractionLogic.setLinkModule4Address(
+        LinkModuleLogic.setLinkModule4Address(
             account,
             linkModule,
             linkModuleInitData,
@@ -532,7 +532,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         bytes calldata mintModuleData
     ) external returns (uint256) {
         return
-            InteractionLogic.mintNote(
+            PostLogic.mintNote(
                 profileId,
                 noteId,
                 to,
@@ -552,7 +552,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(profileId);
         _validateNoteExists(profileId, noteId);
 
-        InteractionLogic.setMintModule4Note(
+        LinkModuleLogic.setMintModule4Note(
             profileId,
             noteId,
             mintModule,

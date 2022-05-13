@@ -115,8 +115,8 @@ beforeEach(async () => {
     userThreeAddress = await userThree.getAddress();
     const adminAddress = await admin.getAddress();
 
-    const InteractionLogic = await ethers.getContractFactory("InteractionLogic");
-    const interactionLogic = await InteractionLogic.deploy();
+    const LinkModuleLogic = await ethers.getContractFactory("LinkModuleLogic");
+    const linkModuleLogic = await LinkModuleLogic.deploy();
 
     const ProfileLogic = await ethers.getContractFactory("ProfileLogic");
     const profileLogic = await ProfileLogic.deploy();
@@ -132,7 +132,7 @@ beforeEach(async () => {
 
     const Web3Entry = await ethers.getContractFactory("Web3Entry", {
         libraries: {
-            InteractionLogic: interactionLogic.address,
+            LinkModuleLogic: linkModuleLogic.address,
             ProfileLogic: profileLogic.address,
             PostLogic: postLogic.address,
         },
