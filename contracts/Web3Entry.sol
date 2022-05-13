@@ -7,9 +7,6 @@ import "./base/NFTBase.sol";
 import "./interfaces/IWeb3Entry.sol";
 import "./interfaces/ILinklist.sol";
 import "./interfaces/ILinkModule4Note.sol";
-import "./interfaces/ILinkModule4Address.sol";
-import "./interfaces/ILinkModule4ERC721.sol";
-import "./interfaces/ILinkModule4Linklist.sol";
 import "./interfaces/IMintModule4Note.sol";
 import "./storage/Web3EntryStorage.sol";
 import "./libraries/DataTypes.sol";
@@ -490,18 +487,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external {
         _validateCallerIsLinklistOwner(linklistId);
 
-        if (linkModule != address(0)) {
-            _linkModules4Linklist[linklistId] = linkModule;
-            bytes memory linkModuleReturnData = ILinkModule4Linklist(linkModule)
-                .initializeLinkModule(linklistId, linkModuleInitData);
-
-            emit Events.SetLinkModule4Linklist(
-                linklistId,
-                linkModule,
-                linkModuleReturnData,
-                block.timestamp
-            );
-        }
+        InteractionLogic.setLinkModule4Linklist(
+            linklistId,
+            linkModule,
+            linkModuleInitData,
+            _linkModules4Linklist
+        );
     }
 
     function setLinkModule4ERC721(
@@ -512,22 +503,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external {
         _validateCallerIsERC721Owner(tokenAddress, tokenId);
 
-        if (linkModule != address(0)) {
-            _linkModules4ERC721[tokenAddress][tokenId] = linkModule;
-            bytes memory linkModuleReturnData = ILinkModule4ERC721(linkModule).initializeLinkModule(
-                tokenAddress,
-                tokenId,
-                linkModuleInitData
-            );
-
-            emit Events.SetLinkModule4ERC721(
-                tokenAddress,
-                tokenId,
-                linkModule,
-                linkModuleReturnData,
-                block.timestamp
-            );
-        }
+        InteractionLogic.setLinkModule4ERC721(
+            tokenAddress,
+            tokenId,
+            linkModule,
+            linkModuleInitData,
+            _linkModules4ERC721
+        );
     }
 
     function setLinkModule4Address(
@@ -535,20 +517,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         address linkModule,
         bytes calldata linkModuleInitData
     ) external {
-        require(msg.sender == account, "NotAddressOwner");
-
-        if (linkModule != address(0)) {
-            _linkModules4Address[account] = linkModule;
-            bytes memory linkModuleReturnData = ILinkModule4Address(linkModule)
-                .initializeLinkModule(account, linkModuleInitData);
-
-            emit Events.SetLinkModule4Address(
-                account,
-                linkModule,
-                linkModuleReturnData,
-                block.timestamp
-            );
-        }
+        InteractionLogic.setLinkModule4Address(
+            account,
+            linkModule,
+            linkModuleInitData,
+            _linkModules4Address
+        );
     }
 
     function mintNote(
