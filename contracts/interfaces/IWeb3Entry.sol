@@ -5,7 +5,6 @@ pragma solidity 0.8.10;
 import "../libraries/DataTypes.sol";
 
 interface IWeb3Entry {
-    // TODO: add sig for all write functions
     function initialize(
         string calldata _name,
         string calldata _symbol,
@@ -64,7 +63,7 @@ interface IWeb3Entry {
 
     function createThenLinkProfile(
         uint256 fromProfileId,
-        address toProfileId,
+        address to,
         bytes32 linkType
     ) external;
 
