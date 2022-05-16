@@ -4,11 +4,12 @@ pragma solidity 0.8.10;
 
 import "../interfaces/IWeb3Entry.sol";
 import "../libraries/DataTypes.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-contract Periphery {
+contract Periphery is Initializable {
     IWeb3Entry public web3Entry;
 
-    constructor(IWeb3Entry _web3Entry) {
+    function initialize(IWeb3Entry _web3Entry) external initializer {
         web3Entry = _web3Entry;
     }
 
