@@ -14,7 +14,7 @@ contract Periphery is Initializable {
     }
 
     function linkProfilesInBatch(DataTypes.linkProfilesInBatchData calldata vars) external {
-        require(vars.toProfileIds.length == vars.data.length, "ArrayLengthMisMatch");
+        require(vars.toProfileIds.length == vars.data.length, "ArrayLengthMismatch");
 
         for (uint256 i = 0; i < vars.toProfileIds.length; i++) {
             web3Entry.linkProfileV2(
