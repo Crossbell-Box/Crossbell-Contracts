@@ -11,6 +11,28 @@ library DataTypes {
         bytes linkModuleInitData;
     }
 
+    struct createThenLinkProfileData {
+        uint256 fromProfileId;
+        address to;
+        bytes32 linkType;
+        bytes data;
+    }
+
+    struct linkNoteData {
+        uint256 fromProfileId;
+        uint256 toProfileId;
+        uint256 toNoteId;
+        bytes32 linkType;
+        bytes data;
+    }
+
+    struct linkProfileData {
+        uint256 fromProfileId;
+        uint256 toProfileId;
+        bytes32 linkType;
+        bytes data;
+    }
+
     struct linkProfileLinkData {
         uint256 fromProfileId;
         bytes32 linkType;

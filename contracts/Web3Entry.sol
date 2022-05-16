@@ -148,16 +148,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         emit Events.LinkProfile(msg.sender, fromProfileId, toProfileId, linkType, linklistId);
     }
 
-    function linkProfileV2(
-        uint256 fromProfileId,
-        uint256 toProfileId,
-        bytes32 linkType,
-        bytes calldata data
-    ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
-        _validateProfileExists(toProfileId);
+    function linkProfileV2(DataTypes.linkProfileData calldata vars) external {
+        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateProfileExists(vars.toProfileId);
 
-        _linkProfile(fromProfileId, toProfileId, linkType, data);
+        _linkProfile(vars.fromProfileId, vars.toProfileId, vars.linkType, vars.data);
     }
 
     function unlinkProfile(
@@ -185,13 +180,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _createThenLinkProfile(fromProfileId, to, linkType, "0x");
     }
 
-    function createThenLinkProfileV2(
-        uint256 fromProfileId,
-        address to,
-        bytes32 linkType,
-        bytes calldata data
-    ) external {
-        _createThenLinkProfile(fromProfileId, to, linkType, data);
+    function createThenLinkProfileV2(DataTypes.createThenLinkProfileData calldata vars) external {
+        _createThenLinkProfile(vars.fromProfileId, vars.to, vars.linkType, vars.data);
     }
 
     function _createThenLinkProfile(
@@ -228,28 +218,33 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _linkProfile(fromProfileId, profileId, linkType, data);
     }
 
-    function linkNote(
-        uint256 fromProfileId,
-        uint256 toProfileId,
-        uint256 toNoteId,
-        bytes32 linkType,
-        bytes calldata data
-    ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
-        _validateProfileExists(toProfileId);
+    function linkNote(DataTypes.linkNoteData calldata vars) external {
+        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateProfileExists(vars.toProfileId);
 
-        uint256 linklistId = _mintLinklist(fromProfileId, linkType, msg.sender);
+        uint256 linklistId = _mintLinklist(vars.fromProfileId, vars.linkType, msg.sender);
 
         // add to link list
-        ILinklist(_linklist).addLinkingNote(linklistId, toProfileId, toNoteId);
+        ILinklist(_linklist).addLinkingNote(linklistId, vars.toProfileId, vars.toNoteId);
 
         // process link
-        address linkModule = _noteByIdByProfile[toProfileId][toNoteId].linkModule;
+        address linkModule = _noteByIdByProfile[vars.toProfileId][vars.toNoteId].linkModule;
         if (linkModule != address(0)) {
-            ILinkModule4Note(linkModule).processLink(msg.sender, toProfileId, toNoteId, data);
+            ILinkModule4Note(linkModule).processLink(
+                msg.sender,
+                vars.toProfileId,
+                vars.toNoteId,
+                vars.data
+            );
         }
 
-        emit Events.LinkNote(fromProfileId, toProfileId, toNoteId, linkType, linklistId);
+        emit Events.LinkNote(
+            vars.fromProfileId,
+            vars.toProfileId,
+            vars.toNoteId,
+            vars.linkType,
+            linklistId
+        );
     }
 
     function unlinkNote(

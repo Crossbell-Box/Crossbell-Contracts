@@ -36,12 +36,12 @@ makeSuiteCleanRoom("Link Module", function () {
                 });
 
                 await expect(
-                    web3Entry.linkProfileV2(
-                        FIRST_PROFILE_ID,
-                        SECOND_PROFILE_ID,
-                        FOLLOW_LINKTYPE,
-                        []
-                    )
+                    web3Entry.linkProfileV2({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: SECOND_PROFILE_ID,
+                        linkType: FOLLOW_LINKTYPE,
+                        data: [],
+                    })
                 ).to.be.revertedWith(ERRORS.NOT_APROVED);
             });
         });

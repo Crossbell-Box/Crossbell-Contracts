@@ -18,10 +18,12 @@ contract Periphery is Initializable {
 
         for (uint256 i = 0; i < vars.toProfileIds.length; i++) {
             web3Entry.linkProfileV2(
-                vars.fromProfileId,
-                vars.toProfileIds[i],
-                vars.linkType,
-                vars.data[i]
+                DataTypes.linkProfileData({
+                    fromProfileId: vars.fromProfileId,
+                    toProfileId: vars.toProfileIds[i],
+                    linkType: vars.linkType,
+                    data: vars.data[i]
+                })
             );
         }
 
