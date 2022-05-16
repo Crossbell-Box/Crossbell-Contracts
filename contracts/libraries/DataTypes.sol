@@ -19,6 +19,14 @@ library DataTypes {
         bytes32 profileLinkLinkType;
     }
 
+    struct linkProfilesInBatchData {
+        uint256 fromProfileId;
+        uint256[] toProfileIds;
+        bytes[] data;
+        address[] toAddresses;
+        bytes32 linkType;
+    }
+
     struct LinkData {
         uint256 linklistId;
         uint256 linkItemType;
