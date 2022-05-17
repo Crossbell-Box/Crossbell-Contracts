@@ -498,17 +498,15 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function postNote4ProfileLink(
         DataTypes.PostNoteData calldata noteData,
-        uint256 fromProfileId,
-        uint256 toProfileId,
-        bytes32 linkType
+        DataTypes.linkProfileData calldata linkData
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        uint256 linklistId = _attachedLinklists[linkData.fromProfileId][linkData.linkType];
         bytes32 linkItemType = Constants.LinkItemTypeProfile;
-        bytes32 linkKey = bytes32(toProfileId);
+        bytes32 linkKey = bytes32(linkData.toProfileId);
 
-        uint256 noteId = ++_profileById[fromProfileId].noteCount;
+        uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
 
         PostLogic.postNote4Link(
             noteData,
@@ -524,17 +522,15 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function postNote4AddressLink(
         DataTypes.PostNoteData calldata noteData,
-        uint256 fromProfileId,
-        address ethAddress,
-        bytes32 linkType
+        DataTypes.linkAddressData calldata linkData
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        uint256 linklistId = _attachedLinklists[linkData.fromProfileId][linkData.linkType];
         bytes32 linkItemType = Constants.LinkItemTypeAddress;
-        bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
+        bytes32 linkKey = bytes32(uint256(uint160(linkData.ethAddress)));
 
-        uint256 noteId = ++_profileById[fromProfileId].noteCount;
+        uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
 
         PostLogic.postNote4Link(
             noteData,
@@ -550,17 +546,15 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function postNote4LinklistLink(
         DataTypes.PostNoteData calldata noteData,
-        uint256 fromProfileId,
-        uint256 toLinkListId,
-        bytes32 linkType
+        DataTypes.linkLinklistData calldata linkData
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        uint256 linklistId = _attachedLinklists[linkData.fromProfileId][linkData.linkType];
         bytes32 linkItemType = Constants.LinkItemTypeList;
-        bytes32 linkKey = bytes32(toLinkListId);
+        bytes32 linkKey = bytes32(linkData.toLinkListId);
 
-        uint256 noteId = ++_profileById[fromProfileId].noteCount;
+        uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
 
         PostLogic.postNote4Link(
             noteData,
@@ -576,18 +570,15 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function postNote4NoteLink(
         DataTypes.PostNoteData calldata noteData,
-        uint256 fromProfileId,
-        uint256 toProfileId,
-        uint256 toNoteId,
-        bytes32 linkType
+        DataTypes.linkNoteData calldata linkData
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        uint256 linklistId = _attachedLinklists[linkData.fromProfileId][linkData.linkType];
         bytes32 linkItemType = Constants.LinkItemTypeNote;
-        bytes32 linkKey = keccak256(abi.encodePacked(toProfileId, toNoteId));
+        bytes32 linkKey = keccak256(abi.encodePacked(linkData.toProfileId, linkData.toNoteId));
 
-        uint256 noteId = ++_profileById[fromProfileId].noteCount;
+        uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
 
         PostLogic.postNote4Link(
             noteData,
@@ -603,19 +594,16 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function postNote4ERC721Link(
         DataTypes.PostNoteData calldata noteData,
-        uint256 fromProfileId,
-        address tokenAddress,
-        uint256 tokenId,
-        bytes32 linkType
+        DataTypes.linkERC721Data calldata linkData
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
-        _validateERC721Exists(tokenAddress, tokenId);
+        _validateERC721Exists(linkData.tokenAddress, linkData.tokenId);
 
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        uint256 linklistId = _attachedLinklists[linkData.fromProfileId][linkData.linkType];
         bytes32 linkItemType = Constants.LinkItemTypeERC721;
-        bytes32 linkKey = keccak256(abi.encodePacked(tokenAddress, tokenId));
+        bytes32 linkKey = keccak256(abi.encodePacked(linkData.tokenAddress, linkData.tokenId));
 
-        uint256 noteId = ++_profileById[fromProfileId].noteCount;
+        uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
 
         PostLogic.postNote4Link(
             noteData,
@@ -631,17 +619,15 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function postNote4AnyLink(
         DataTypes.PostNoteData calldata noteData,
-        uint256 fromProfileId,
-        string calldata toUri,
-        bytes32 linkType
+        DataTypes.linkAnyData calldata linkData
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        uint256 linklistId = _attachedLinklists[linkData.fromProfileId][linkData.linkType];
         bytes32 linkItemType = Constants.LinkItemTypeAny;
-        bytes32 linkKey = keccak256(abi.encodePacked("LinkAny", toUri));
+        bytes32 linkKey = keccak256(abi.encodePacked("LinkAny", linkData.toUri));
 
-        uint256 noteId = ++_profileById[fromProfileId].noteCount;
+        uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
 
         PostLogic.postNote4Link(
             noteData,

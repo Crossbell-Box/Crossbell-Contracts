@@ -70,12 +70,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 await expect(
                     web3Entry
                         .connect(userTwo)
-                        .postNote4ProfileLink(
-                            makePostNoteData(FIRST_PROFILE_ID.toString()),
-                            FIRST_PROFILE_ID,
-                            SECOND_PROFILE_ID,
-                            FollowLinkType
-                        )
+                        .postNote4ProfileLink(makePostNoteData(FIRST_PROFILE_ID.toString()), {
+                            fromProfileId: FIRST_PROFILE_ID,
+                            toProfileId: SECOND_PROFILE_ID,
+                            linkType: FollowLinkType,
+                            data: [],
+                        })
                 ).to.be.revertedWith(ERRORS.NOT_PROFILE_OWNER);
             });
         });
@@ -130,12 +130,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 // post note
                 const noteData = makePostNoteData("1");
                 await expect(
-                    web3Entry.postNote4ProfileLink(
-                        noteData,
-                        FIRST_PROFILE_ID,
-                        SECOND_PROFILE_ID,
-                        FollowLinkType
-                    )
+                    web3Entry.postNote4ProfileLink(noteData, {
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: SECOND_PROFILE_ID,
+                        linkType: FollowLinkType,
+                        data: [],
+                    })
                 ).to.not.be.reverted;
 
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
@@ -175,12 +175,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 // post note
                 const noteData = makePostNoteData();
                 await expect(
-                    web3Entry.postNote4ProfileLink(
-                        noteData,
-                        FIRST_PROFILE_ID,
-                        userThreeAddress,
-                        FollowLinkType
-                    )
+                    web3Entry.postNote4ProfileLink(noteData, {
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: userThreeAddress,
+                        linkType: FollowLinkType,
+                        data: [],
+                    })
                 ).to.not.be.reverted;
 
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
@@ -228,12 +228,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 // post note
                 const noteData = makePostNoteData();
                 await expect(
-                    web3Entry.postNote4LinklistLink(
-                        noteData,
-                        FIRST_PROFILE_ID,
-                        SECOND_LINKLIST_ID,
-                        LikeLinkType
-                    )
+                    web3Entry.postNote4LinklistLink(noteData, {
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toLinkListId: SECOND_LINKLIST_ID,
+                        linkType: LikeLinkType,
+                        data: [],
+                    })
                 ).to.not.be.reverted;
 
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
