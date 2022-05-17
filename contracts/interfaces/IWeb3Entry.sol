@@ -30,70 +30,27 @@ interface IWeb3Entry {
     function setLinklistUri(uint256 linkListId, string calldata uri) external;
 
     // emit a link from a profile
-    function linkAddress(
-        uint256 fromProfileId,
-        address ethAddress,
-        bytes32 linkType
-    ) external;
+    function linkAddress(DataTypes.linkAddressData calldata vars) external;
 
-    function unlinkAddress(
-        uint256 fromProfileId,
-        address ethAddress,
-        bytes32 linkType
-    ) external;
+    function unlinkAddress(DataTypes.linkAddressData calldata vars) external;
 
-    function linkProfile(
-        uint256 fromProfileId,
-        uint256 toProfileId,
-        bytes32 linkType
-    ) external;
+    function linkProfile(DataTypes.linkProfileData calldata vars) external;
 
-    function linkProfileV2(DataTypes.linkProfileData calldata vars) external;
+    function unlinkProfile(DataTypes.unlinkProfileData calldata vars) external;
 
-    function unlinkProfile(
-        uint256 fromProfileId,
-        uint256 toProfileId,
-        bytes32 linkType
-    ) external;
-
-    function createThenLinkProfile(
-        uint256 fromProfileId,
-        address to,
-        bytes32 linkType
-    ) external;
-
-    function createThenLinkProfileV2(DataTypes.createThenLinkProfileData calldata vars) external;
+    function createThenLinkProfile(DataTypes.createThenLinkProfileData calldata vars) external;
 
     function linkNote(DataTypes.linkNoteData calldata vars) external;
 
-    function unlinkNote(
-        uint256 fromProfileId,
-        uint256 toProfileId,
-        uint256 toNoteId,
-        bytes32 linkType
-    ) external;
+    function unlinkNote(DataTypes.unlinkNoteData calldata vars) external;
 
-    // When implement, should check if ERC721 is linklist contract
-    function linkERC721(
-        uint256 fromProfileId,
-        address tokenAddress,
-        uint256 tokenId,
-        bytes32 linkType
-    ) external;
+    function linkERC721(DataTypes.linkERC721Data calldata vars) external;
 
-    //TODO linkERC1155
+    function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external;
 
-    function linkAny(
-        uint256 fromProfileId,
-        string calldata toUri,
-        bytes32 linkType
-    ) external;
+    function linkAny(DataTypes.linkAnyData calldata vars) external;
 
-    function unlinkAny(
-        uint256 fromProfileId,
-        string calldata toUri,
-        bytes32 linkType
-    ) external;
+    function unlinkAny(DataTypes.unlinkAnyData calldata vars) external;
 
     function linkProfileLink(
         uint256 fromProfileId,
@@ -107,63 +64,23 @@ interface IWeb3Entry {
         bytes32 linkType
     ) external;
 
-    function linkLinklist(
-        uint256 fromProfileId,
-        uint256 toLinkListId,
-        bytes32 linkType
-    ) external;
+    function linkLinklist(DataTypes.linkLinklistData calldata vars) external;
 
-    function unlinkLinklist(
-        uint256 fromProfileId,
-        uint256 toLinkListId,
-        bytes32 linkType
-    ) external;
+    function unlinkLinklist(DataTypes.linkLinklistData calldata vars) external;
 
-    function setLinkModule4Profile(
-        uint256 profileId,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) external;
+    function setLinkModule4Profile(DataTypes.setLinkModule4ProfileData calldata vars) external;
 
-    function setLinkModule4Note(
-        uint256 profileId,
-        uint256 noteId,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) external;
+    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external;
 
-    function setLinkModule4Linklist(
-        uint256 tokenId,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) external;
+    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external;
 
-    function setLinkModule4ERC721(
-        address tokenAddress,
-        uint256 tokenId,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) external;
+    function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external;
 
-    function setLinkModule4Address(
-        address account,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) external;
+    function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external;
 
-    function mintNote(
-        uint256 profileId,
-        uint256 noteId,
-        address to,
-        bytes calldata mintModuleData
-    ) external returns (uint256);
+    function mintNote(DataTypes.MintNoteData calldata vars) external returns (uint256);
 
-    function setMintModule4Note(
-        uint256 profileId,
-        uint256 noteId,
-        address mintModule,
-        bytes calldata mintModuleInitData
-    ) external;
+    function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external;
 
     function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256);
 

@@ -32,7 +32,12 @@ describe("Profile Events", function () {
         await web3Entry.createProfile(makeProfileData("handle2"));
 
         let receipt = await (
-            await web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+            await web3Entry.linkProfile({
+                fromProfileId: FIRST_PROFILE_ID,
+                toProfileId: SECOND_PROFILE_ID,
+                linkType: FOLLOW_LINKTYPE,
+                data: [],
+            })
         ).wait();
 
         matchEvent(receipt, "LinkProfile", [
@@ -44,10 +49,18 @@ describe("Profile Events", function () {
         ]);
 
         receipt = await (
-            await web3Entry.unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+            await web3Entry.unlinkProfile({
+                fromProfileId: FIRST_PROFILE_ID,
+                toProfileId: SECOND_PROFILE_ID,
+                linkType: FOLLOW_LINKTYPE,
+            })
         ).wait();
 
-        await web3Entry.unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE);
+        await web3Entry.unlinkProfile({
+            fromProfileId: FIRST_PROFILE_ID,
+            toProfileId: SECOND_PROFILE_ID,
+            linkType: FOLLOW_LINKTYPE,
+        });
 
         matchEvent(receipt, "UnlinkProfile", [
             userAddress,

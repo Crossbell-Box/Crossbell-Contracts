@@ -15,7 +15,6 @@ library DataTypes {
         uint256 fromProfileId;
         address to;
         bytes32 linkType;
-        bytes data;
     }
 
     struct linkNoteData {
@@ -26,11 +25,24 @@ library DataTypes {
         bytes data;
     }
 
+    struct unlinkNoteData {
+        uint256 fromProfileId;
+        uint256 toProfileId;
+        uint256 toNoteId;
+        bytes32 linkType;
+    }
+
     struct linkProfileData {
         uint256 fromProfileId;
         uint256 toProfileId;
         bytes32 linkType;
         bytes data;
+    }
+
+    struct unlinkProfileData {
+        uint256 fromProfileId;
+        uint256 toProfileId;
+        bytes32 linkType;
     }
 
     struct linkProfileLinkData {
@@ -39,6 +51,87 @@ library DataTypes {
         uint256 profileLinkFromProfileId;
         uint256 profileLinkToProfileId;
         bytes32 profileLinkLinkType;
+    }
+
+    struct linkERC721Data {
+        uint256 fromProfileId;
+        address tokenAddress;
+        uint256 tokenId;
+        bytes32 linkType;
+        bytes data;
+    }
+
+    struct unlinkERC721Data {
+        uint256 fromProfileId;
+        address tokenAddress;
+        uint256 tokenId;
+        bytes32 linkType;
+    }
+
+    struct linkAddressData {
+        uint256 fromProfileId;
+        address ethAddress;
+        bytes32 linkType;
+        bytes data;
+    }
+
+    struct linkAnyData {
+        uint256 fromProfileId;
+        string toUri;
+        bytes32 linkType;
+        bytes data;
+    }
+
+    struct unlinkAnyData {
+        uint256 fromProfileId;
+        string toUri;
+        bytes32 linkType;
+    }
+
+    struct linkLinklistData {
+        uint256 fromProfileId;
+        uint256 toLinkListId;
+        bytes32 linkType;
+        bytes data;
+    }
+
+    struct setLinkModule4ProfileData {
+        uint256 profileId;
+        address linkModule;
+        bytes linkModuleInitData;
+    }
+
+    struct setLinkModule4NoteData {
+        uint256 profileId;
+        uint256 noteId;
+        address linkModule;
+        bytes linkModuleInitData;
+    }
+
+    struct setLinkModule4LinklistData {
+        uint256 linklistId;
+        address linkModule;
+        bytes linkModuleInitData;
+    }
+
+    struct setLinkModule4ERC721Data {
+        address tokenAddress;
+        uint256 tokenId;
+        address linkModule;
+        bytes linkModuleInitData;
+    }
+
+    struct setLinkModule4AddressData {
+        address account;
+        address linkModule;
+        bytes linkModuleInitData;
+    }
+
+    struct setMintModule4NoteData {
+        uint256 profileId;
+        uint256 noteId;
+        address mintModule;
+        bytes mintModuleInitData;
     }
 
     struct linkProfilesInBatchData {
@@ -65,6 +158,13 @@ library DataTypes {
         bytes linkModuleInitData;
         address mintModule;
         bytes mintModuleInitData;
+    }
+
+    struct MintNoteData {
+        uint256 profileId;
+        uint256 noteId;
+        address to;
+        bytes mintModuleData;
     }
 
     // profile struct

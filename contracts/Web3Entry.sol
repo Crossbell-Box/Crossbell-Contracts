@@ -22,7 +22,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     using SafeMath for uint256;
     using Strings for uint256;
 
-    uint256 internal constant REVISION = 2;
+    uint256 internal constant REVISION = 3;
 
     function initialize(
         string calldata _name,
@@ -111,19 +111,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         ILinklist(_linklist).setUri(linklistId, uri);
     }
 
-    // emit a link from a profile
-
-    function linkProfile(
-        uint256 fromProfileId,
-        uint256 toProfileId,
-        bytes32 linkType
-    ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
-        _validateProfileExists(toProfileId);
-
-        _linkProfile(fromProfileId, toProfileId, linkType, "0x");
-    }
-
     function _linkProfile(
         uint256 fromProfileId,
         uint256 toProfileId,
@@ -148,40 +135,28 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         emit Events.LinkProfile(msg.sender, fromProfileId, toProfileId, linkType, linklistId);
     }
 
-    function linkProfileV2(DataTypes.linkProfileData calldata vars) external {
+    function linkProfile(DataTypes.linkProfileData calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
         _validateProfileExists(vars.toProfileId);
 
         _linkProfile(vars.fromProfileId, vars.toProfileId, vars.linkType, vars.data);
     }
 
-    function unlinkProfile(
-        uint256 fromProfileId,
-        uint256 toProfileId,
-        bytes32 linkType
-    ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
-        _validateProfileExists(toProfileId);
+    function unlinkProfile(DataTypes.unlinkProfileData calldata vars) external {
+        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateProfileExists(vars.toProfileId);
 
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        _validateLinklistAttached(linklistId, fromProfileId);
+        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
+        _validateLinklistAttached(linklistId, vars.fromProfileId);
 
         // remove from link list
-        ILinklist(_linklist).removeLinkingProfileId(linklistId, toProfileId);
+        ILinklist(_linklist).removeLinkingProfileId(linklistId, vars.toProfileId);
 
-        emit Events.UnlinkProfile(msg.sender, fromProfileId, toProfileId, linkType);
+        emit Events.UnlinkProfile(msg.sender, vars.fromProfileId, vars.toProfileId, vars.linkType);
     }
 
-    function createThenLinkProfile(
-        uint256 fromProfileId,
-        address to,
-        bytes32 linkType
-    ) external {
-        _createThenLinkProfile(fromProfileId, to, linkType, "0x");
-    }
-
-    function createThenLinkProfileV2(DataTypes.createThenLinkProfileData calldata vars) external {
-        _createThenLinkProfile(vars.fromProfileId, vars.to, vars.linkType, vars.data);
+    function createThenLinkProfile(DataTypes.createThenLinkProfileData calldata vars) external {
+        _createThenLinkProfile(vars.fromProfileId, vars.to, vars.linkType, "0x");
     }
 
     function _createThenLinkProfile(
@@ -247,121 +222,106 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         );
     }
 
-    function unlinkNote(
-        uint256 fromProfileId,
-        uint256 toProfileId,
-        uint256 toNoteId,
-        bytes32 linkType
-    ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
-        _validateProfileExists(toProfileId);
-        _validateNoteExists(toProfileId, toNoteId);
+    function unlinkNote(DataTypes.unlinkNoteData calldata vars) external {
+        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateProfileExists(vars.toProfileId);
+        _validateNoteExists(vars.toProfileId, vars.toNoteId);
 
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        _validateLinklistAttached(linklistId, fromProfileId);
+        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
+        _validateLinklistAttached(linklistId, vars.fromProfileId);
 
         // remove from link list
-        ILinklist(_linklist).removeLinkingNote(linklistId, toProfileId, toNoteId);
+        ILinklist(_linklist).removeLinkingNote(linklistId, vars.toProfileId, vars.toNoteId);
 
-        emit Events.UnlinkNote(fromProfileId, toProfileId, toNoteId, linkType, linklistId);
+        emit Events.UnlinkNote(
+            vars.fromProfileId,
+            vars.toProfileId,
+            vars.toNoteId,
+            vars.linkType,
+            linklistId
+        );
     }
 
-    function linkERC721(
-        uint256 fromProfileId,
-        address tokenAddress,
-        uint256 tokenId,
-        bytes32 linkType
-    ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
-        _validateERC721Exists(tokenAddress, tokenId);
+    function linkERC721(DataTypes.linkERC721Data calldata vars) external {
+        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateERC721Exists(vars.tokenAddress, vars.tokenId);
 
-        uint256 linklistId = _mintLinklist(fromProfileId, linkType, msg.sender);
+        uint256 linklistId = _mintLinklist(vars.fromProfileId, vars.linkType, msg.sender);
 
         // add to link list
-        ILinklist(_linklist).addLinkingERC721(linklistId, tokenAddress, tokenId);
+        ILinklist(_linklist).addLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId);
 
-        emit Events.LinkERC721(fromProfileId, tokenAddress, tokenId, linkType, linklistId);
+        emit Events.LinkERC721(
+            vars.fromProfileId,
+            vars.tokenAddress,
+            vars.tokenId,
+            vars.linkType,
+            linklistId
+        );
     }
 
-    function unlinkERC721(
-        uint256 fromProfileId,
-        address tokenAddress,
-        uint256 tokenId,
-        bytes32 linkType
-    ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
+    function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external {
+        _validateCallerIsProfileOwner(vars.fromProfileId);
 
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        _validateLinklistAttached(linklistId, fromProfileId);
+        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
+        _validateLinklistAttached(linklistId, vars.fromProfileId);
 
         // remove from link list
-        ILinklist(_linklist).removeLinkingERC721(linklistId, tokenAddress, tokenId);
+        ILinklist(_linklist).removeLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId);
 
-        emit Events.UnlinkERC721(fromProfileId, tokenAddress, tokenId, linkType, linklistId);
+        emit Events.UnlinkERC721(
+            vars.fromProfileId,
+            vars.tokenAddress,
+            vars.tokenId,
+            vars.linkType,
+            linklistId
+        );
     }
 
-    //TODO linkERC1155
+    function linkAddress(DataTypes.linkAddressData calldata vars) external {
+        _validateCallerIsProfileOwner(vars.fromProfileId);
 
-    function linkAddress(
-        uint256 fromProfileId,
-        address ethAddress,
-        bytes32 linkType
-    ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
-
-        uint256 linklistId = _mintLinklist(fromProfileId, linkType, msg.sender);
+        uint256 linklistId = _mintLinklist(vars.fromProfileId, vars.linkType, msg.sender);
 
         // add to link list
-        ILinklist(_linklist).addLinkingAddress(linklistId, ethAddress);
+        ILinklist(_linklist).addLinkingAddress(linklistId, vars.ethAddress);
 
-        emit Events.LinkAddress(fromProfileId, ethAddress, linkType, linklistId);
+        emit Events.LinkAddress(vars.fromProfileId, vars.ethAddress, vars.linkType, linklistId);
     }
 
-    function unlinkAddress(
-        uint256 fromProfileId,
-        address ethAddress,
-        bytes32 linkType
-    ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
+    function unlinkAddress(DataTypes.linkAddressData calldata vars) external {
+        _validateCallerIsProfileOwner(vars.fromProfileId);
 
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        _validateLinklistAttached(linklistId, fromProfileId);
+        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
+        _validateLinklistAttached(linklistId, vars.fromProfileId);
 
         // remove from link list
-        ILinklist(_linklist).removeLinkingAddress(linklistId, ethAddress);
+        ILinklist(_linklist).removeLinkingAddress(linklistId, vars.ethAddress);
 
-        emit Events.UnlinkAddress(fromProfileId, ethAddress, linkType);
+        emit Events.UnlinkAddress(vars.fromProfileId, vars.ethAddress, vars.linkType);
     }
 
-    function linkAny(
-        uint256 fromProfileId,
-        string calldata toUri,
-        bytes32 linkType
-    ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
+    function linkAny(DataTypes.linkAnyData calldata vars) external {
+        _validateCallerIsProfileOwner(vars.fromProfileId);
 
-        uint256 linklistId = _mintLinklist(fromProfileId, linkType, msg.sender);
+        uint256 linklistId = _mintLinklist(vars.fromProfileId, vars.linkType, msg.sender);
 
         // add to link list
-        ILinklist(_linklist).addLinkingAny(linklistId, toUri);
+        ILinklist(_linklist).addLinkingAny(linklistId, vars.toUri);
 
-        emit Events.LinkAny(fromProfileId, toUri, linkType, linklistId);
+        emit Events.LinkAny(vars.fromProfileId, vars.toUri, vars.linkType, linklistId);
     }
 
-    function unlinkAny(
-        uint256 fromProfileId,
-        string calldata toUri,
-        bytes32 linkType
-    ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
+    function unlinkAny(DataTypes.unlinkAnyData calldata vars) external {
+        _validateCallerIsProfileOwner(vars.fromProfileId);
 
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        _validateLinklistAttached(linklistId, fromProfileId);
+        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
+        _validateLinklistAttached(linklistId, vars.fromProfileId);
 
         // remove from link list
-        ILinklist(_linklist).removeLinkingAny(linklistId, toUri);
+        ILinklist(_linklist).removeLinkingAny(linklistId, vars.toUri);
 
-        emit Events.UnlinkAny(fromProfileId, toUri, linkType);
+        emit Events.UnlinkAny(vars.fromProfileId, vars.toUri, vars.linkType);
     }
 
     function linkProfileLink(
@@ -409,148 +369,113 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         );
     }
 
-    function linkLinklist(
-        uint256 fromProfileId,
-        uint256 toLinkListId,
-        bytes32 linkType
-    ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
+    function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
+        _validateCallerIsProfileOwner(vars.fromProfileId);
 
-        uint256 linklistId = _mintLinklist(fromProfileId, linkType, msg.sender);
+        uint256 linklistId = _mintLinklist(vars.fromProfileId, vars.linkType, msg.sender);
 
         // add to link list
-        ILinklist(_linklist).addLinkingLinklistId(linklistId, toLinkListId);
+        ILinklist(_linklist).addLinkingLinklistId(linklistId, vars.toLinkListId);
 
-        emit Events.LinkLinklist(fromProfileId, toLinkListId, linkType, linklistId);
+        emit Events.LinkLinklist(vars.fromProfileId, vars.toLinkListId, vars.linkType, linklistId);
     }
 
-    function unlinkLinklist(
-        uint256 fromProfileId,
-        uint256 toLinkListId,
-        bytes32 linkType
-    ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
+    function unlinkLinklist(DataTypes.linkLinklistData calldata vars) external {
+        _validateCallerIsProfileOwner(vars.fromProfileId);
 
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        _validateLinklistAttached(linklistId, fromProfileId);
+        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
+        _validateLinklistAttached(linklistId, vars.fromProfileId);
 
         // add to link list
-        ILinklist(_linklist).removeLinkingLinklistId(linklistId, toLinkListId);
+        ILinklist(_linklist).removeLinkingLinklistId(linklistId, vars.toLinkListId);
 
-        emit Events.UnlinkLinklist(fromProfileId, toLinkListId, linkType, linklistId);
-    }
-
-    // set link module for his profile
-    function setLinkModule4Profile(
-        uint256 profileId,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) external {
-        _validateCallerIsProfileOwner(profileId);
-
-        ProfileLogic.setProfileLinkModule(
-            profileId,
-            linkModule,
-            linkModuleInitData,
-            _profileById[profileId]
+        emit Events.UnlinkLinklist(
+            vars.fromProfileId,
+            vars.toLinkListId,
+            vars.linkType,
+            linklistId
         );
     }
 
-    function setLinkModule4Note(
-        uint256 profileId,
-        uint256 noteId,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) external {
-        _validateCallerIsProfileOwner(profileId);
-        _validateNoteExists(profileId, noteId);
+    // set link module for his profile
+    function setLinkModule4Profile(DataTypes.setLinkModule4ProfileData calldata vars) external {
+        _validateCallerIsProfileOwner(vars.profileId);
+
+        ProfileLogic.setProfileLinkModule(
+            vars.profileId,
+            vars.linkModule,
+            vars.linkModuleInitData,
+            _profileById[vars.profileId]
+        );
+    }
+
+    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external {
+        _validateCallerIsProfileOwner(vars.profileId);
+        _validateNoteExists(vars.profileId, vars.noteId);
 
         LinkModuleLogic.setLinkModule4Note(
-            profileId,
-            noteId,
-            linkModule,
-            linkModuleInitData,
+            vars.profileId,
+            vars.noteId,
+            vars.linkModule,
+            vars.linkModuleInitData,
             _noteByIdByProfile
         );
     }
 
-    function setLinkModule4Linklist(
-        uint256 linklistId,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) external {
-        _validateCallerIsLinklistOwner(linklistId);
+    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external {
+        _validateCallerIsLinklistOwner(vars.linklistId);
 
         LinkModuleLogic.setLinkModule4Linklist(
-            linklistId,
-            linkModule,
-            linkModuleInitData,
+            vars.linklistId,
+            vars.linkModule,
+            vars.linkModuleInitData,
             _linkModules4Linklist
         );
     }
 
-    function setLinkModule4ERC721(
-        address tokenAddress,
-        uint256 tokenId,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) external {
-        _validateCallerIsERC721Owner(tokenAddress, tokenId);
+    function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external {
+        _validateCallerIsERC721Owner(vars.tokenAddress, vars.tokenId);
 
         LinkModuleLogic.setLinkModule4ERC721(
-            tokenAddress,
-            tokenId,
-            linkModule,
-            linkModuleInitData,
+            vars.tokenAddress,
+            vars.tokenId,
+            vars.linkModule,
+            vars.linkModuleInitData,
             _linkModules4ERC721
         );
     }
 
-    function setLinkModule4Address(
-        address account,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) external {
+    function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external {
         LinkModuleLogic.setLinkModule4Address(
-            account,
-            linkModule,
-            linkModuleInitData,
+            vars.account,
+            vars.linkModule,
+            vars.linkModuleInitData,
             _linkModules4Address
         );
     }
 
-    function mintNote(
-        uint256 profileId,
-        uint256 noteId,
-        address to,
-        bytes calldata mintModuleData
-    ) external returns (uint256) {
+    function mintNote(DataTypes.MintNoteData calldata vars) external returns (uint256) {
         return
             PostLogic.mintNote(
-                profileId,
-                noteId,
-                to,
-                mintModuleData,
+                vars.profileId,
+                vars.noteId,
+                vars.to,
+                vars.mintModuleData,
                 MINT_NFT_IMPL,
                 _profileById,
                 _noteByIdByProfile
             );
     }
 
-    function setMintModule4Note(
-        uint256 profileId,
-        uint256 noteId,
-        address mintModule,
-        bytes calldata mintModuleInitData
-    ) external {
-        _validateCallerIsProfileOwner(profileId);
-        _validateNoteExists(profileId, noteId);
+    function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external {
+        _validateCallerIsProfileOwner(vars.profileId);
+        _validateNoteExists(vars.profileId, vars.noteId);
 
         LinkModuleLogic.setMintModule4Note(
-            profileId,
-            noteId,
-            mintModule,
-            mintModuleInitData,
+            vars.profileId,
+            vars.noteId,
+            vars.mintModule,
+            vars.mintModuleInitData,
             _noteByIdByProfile
         );
     }

@@ -17,7 +17,7 @@ contract Periphery is Initializable {
         require(vars.toProfileIds.length == vars.data.length, "ArrayLengthMismatch");
 
         for (uint256 i = 0; i < vars.toProfileIds.length; i++) {
-            web3Entry.linkProfileV2(
+            web3Entry.linkProfile(
                 DataTypes.linkProfileData({
                     fromProfileId: vars.fromProfileId,
                     toProfileId: vars.toProfileIds[i],
@@ -28,7 +28,13 @@ contract Periphery is Initializable {
         }
 
         for (uint256 i = 0; i < vars.toAddresses.length; i++) {
-            web3Entry.createThenLinkProfile(vars.fromProfileId, vars.toAddresses[i], vars.linkType);
+            web3Entry.createThenLinkProfile(
+                DataTypes.createThenLinkProfileData({
+                    fromProfileId: vars.fromProfileId,
+                    to: vars.toAddresses[i],
+                    linkType: vars.linkType
+                })
+            );
         }
     }
 }

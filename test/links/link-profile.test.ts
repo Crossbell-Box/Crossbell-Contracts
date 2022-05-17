@@ -21,20 +21,33 @@ makeSuiteCleanRoom("Link", function () {
             await web3Entry.createProfile(makeProfileData("handle1"));
             await web3Entry.createProfile(makeProfileData("handle2"));
             await expect(
-                web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                web3Entry.linkProfile({
+                    fromProfileId: FIRST_PROFILE_ID,
+                    toProfileId: SECOND_PROFILE_ID,
+                    linkType: FOLLOW_LINKTYPE,
+                    data: [],
+                })
             ).to.not.be.reverted;
         });
         context("Negatives", function () {
             it("User should fail to link a non-existed profile", async function () {
                 await expect(
-                    web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID + 1, FOLLOW_LINKTYPE)
+                    web3Entry.linkProfile({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: SECOND_PROFILE_ID + 1,
+                        linkType: FOLLOW_LINKTYPE,
+                        data: [],
+                    })
                 ).to.be.revertedWith(ERRORS.PROFILE_NOT_EXISTED);
             });
             it("UserTwo should fail to emit a link from a profile not owned by him", async function () {
                 await expect(
-                    web3Entry
-                        .connect(userTwo)
-                        .linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                    web3Entry.connect(userTwo).linkProfile({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: SECOND_PROFILE_ID,
+                        linkType: FOLLOW_LINKTYPE,
+                        data: [],
+                    })
                 ).to.be.revertedWith(ERRORS.NOT_PROFILE_OWNER);
             });
             it("UserTwo should fail to follow a profile that has been burned", async function () {
@@ -43,23 +56,39 @@ makeSuiteCleanRoom("Link", function () {
                     .createProfile(makeProfileData("user-2", userTwoAddress));
                 const pid = SECOND_PROFILE_ID + 1;
                 await expect(
-                    web3Entry.connect(userTwo).linkProfile(pid, FIRST_PROFILE_ID, FOLLOW_LINKTYPE)
+                    web3Entry.connect(userTwo).linkProfile({
+                        fromProfileId: pid,
+                        toProfileId: FIRST_PROFILE_ID,
+                        linkType: FOLLOW_LINKTYPE,
+                        data: [],
+                    })
                 ).to.not.be.reverted;
                 await expect(web3Entry.burn(FIRST_PROFILE_ID)).to.be.not.reverted;
                 await expect(
-                    web3Entry.connect(userTwo).linkProfile(pid, FIRST_PROFILE_ID, FOLLOW_LINKTYPE)
+                    web3Entry.connect(userTwo).linkProfile({
+                        fromProfileId: pid,
+                        toProfileId: FIRST_PROFILE_ID,
+                        linkType: FOLLOW_LINKTYPE,
+                        data: [],
+                    })
                 ).to.be.revertedWith(ERRORS.PROFILE_NOT_EXISTED);
             });
             it("User should fail to unlink a profile with an unattached type.", async function () {
                 await expect(
-                    web3Entry.unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, ARBITRARY_LINKTYPE)
+                    web3Entry.unlinkProfile({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: SECOND_PROFILE_ID,
+                        linkType: ARBITRARY_LINKTYPE,
+                    })
                 ).to.be.revertedWith(ERRORS.UNATTACHED_LINKLIST);
             });
             it("UserTwo should fail to unlink a profile that ", async function () {
                 await expect(
-                    web3Entry
-                        .connect(userTwo)
-                        .unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                    web3Entry.connect(userTwo).unlinkProfile({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: SECOND_PROFILE_ID,
+                        linkType: FOLLOW_LINKTYPE,
+                    })
                 ).to.be.revertedWith(ERRORS.NOT_PROFILE_OWNER);
             });
         });
@@ -84,7 +113,11 @@ makeSuiteCleanRoom("Link", function () {
             });
             it("User should get correct linking profile ids after unlink, and linklist nft still exist.", async function () {
                 await expect(
-                    web3Entry.unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                    web3Entry.unlinkProfile({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: SECOND_PROFILE_ID,
+                        linkType: FOLLOW_LINKTYPE,
+                    })
                 ).to.not.be.reverted;
                 await matchLinkingProfileIds(FIRST_PROFILE_ID, FOLLOW_LINKTYPE, []);
 
@@ -102,7 +135,12 @@ makeSuiteCleanRoom("Link", function () {
             });
             it("User could link a profile twice, and get correct linking profile ids.", async function () {
                 await expect(
-                    web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                    web3Entry.linkProfile({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: SECOND_PROFILE_ID,
+                        linkType: FOLLOW_LINKTYPE,
+                        data: [],
+                    })
                 ).to.not.reverted;
                 await matchLinkingProfileIds(FIRST_PROFILE_ID, FOLLOW_LINKTYPE, [
                     SECOND_PROFILE_ID,
@@ -122,10 +160,18 @@ makeSuiteCleanRoom("Link", function () {
             });
             it("User could unlink a profile twice.", async function () {
                 await expect(
-                    web3Entry.unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                    web3Entry.unlinkProfile({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: SECOND_PROFILE_ID,
+                        linkType: FOLLOW_LINKTYPE,
+                    })
                 ).to.not.be.reverted;
                 await expect(
-                    web3Entry.unlinkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FOLLOW_LINKTYPE)
+                    web3Entry.unlinkProfile({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: SECOND_PROFILE_ID,
+                        linkType: FOLLOW_LINKTYPE,
+                    })
                 ).to.not.be.reverted;
                 await matchLinkingProfileIds(FIRST_PROFILE_ID, FOLLOW_LINKTYPE, []);
 
@@ -151,17 +197,21 @@ makeSuiteCleanRoom("Link", function () {
         beforeEach(async function () {
             await expect(web3Entry.createProfile(makeProfileData())).to.not.be.reverted;
             await expect(
-                web3Entry
-                    .connect(user)
-                    .createThenLinkProfile(FIRST_PROFILE_ID, userTwoAddress, FOLLOW_LINKTYPE)
+                web3Entry.connect(user).createThenLinkProfile({
+                    fromProfileId: FIRST_PROFILE_ID,
+                    to: userTwoAddress,
+                    linkType: FOLLOW_LINKTYPE,
+                })
             ).to.not.be.reverted;
         });
         context("Negatives", function () {
             it("createThenLinkProfile will be failed to be called twice.", async function () {
                 await expect(
-                    web3Entry
-                        .connect(user)
-                        .createThenLinkProfile(FIRST_PROFILE_ID, userTwoAddress, FOLLOW_LINKTYPE)
+                    web3Entry.connect(user).createThenLinkProfile({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        to: userTwoAddress,
+                        linkType: FOLLOW_LINKTYPE,
+                    })
                 ).to.be.reverted;
             });
         });

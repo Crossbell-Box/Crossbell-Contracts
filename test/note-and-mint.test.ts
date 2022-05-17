@@ -59,7 +59,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
 
             it("UserTwo should fail to post note for profile link at a profile owned by user 1", async function () {
                 // link profile
-                await web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FollowLinkType);
+                await web3Entry.linkProfile({
+                    fromProfileId: SECOND_PROFILE_ID,
+                    toProfileId: FIRST_PROFILE_ID,
+                    linkType: FollowLinkType,
+                    data: [],
+                });
 
                 // post note for profile link
                 await expect(
@@ -93,12 +98,18 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 ]);
 
                 // mint note
-                await web3Entry
-                    .connect(userThree)
-                    .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userTwoAddress, []);
-                await web3Entry
-                    .connect(userThree)
-                    .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userThreeAddress, []);
+                await web3Entry.connect(userThree).mintNote({
+                    profileId: FIRST_PROFILE_ID,
+                    noteId: FIRST_NOTE_ID,
+                    to: userTwoAddress,
+                    mintModuleData: [],
+                });
+                await web3Entry.connect(userThree).mintNote({
+                    profileId: FIRST_PROFILE_ID,
+                    noteId: FIRST_NOTE_ID,
+                    to: userThreeAddress,
+                    mintModuleData: [],
+                });
 
                 note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
                 expect(note.mintNFT).to.not.equal(ethers.constants.AddressZero);
@@ -109,7 +120,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
 
             it("User should post note with profile link", async function () {
                 // link profile
-                await web3Entry.linkProfile(FIRST_PROFILE_ID, SECOND_PROFILE_ID, FollowLinkType);
+                await web3Entry.linkProfile({
+                    fromProfileId: FIRST_PROFILE_ID,
+                    toProfileId: SECOND_PROFILE_ID,
+                    linkType: FollowLinkType,
+                    data: [],
+                });
 
                 // post note
                 const noteData = makePostNoteData("1");
@@ -134,9 +150,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 ]);
 
                 // mint note
-                await web3Entry
-                    .connect(userThree)
-                    .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userTwoAddress, []);
+                await web3Entry.connect(userThree).mintNote({
+                    profileId: FIRST_PROFILE_ID,
+                    noteId: FIRST_NOTE_ID,
+                    to: userTwoAddress,
+                    mintModuleData: [],
+                });
 
                 note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
                 expect(await MintNFT__factory.connect(note.mintNFT, deployer).ownerOf(1)).to.equal(
@@ -146,7 +165,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
 
             it("User should post note with address link", async function () {
                 // link address
-                await web3Entry.linkAddress(FIRST_PROFILE_ID, userThreeAddress, FollowLinkType);
+                await web3Entry.linkAddress({
+                    fromProfileId: FIRST_PROFILE_ID,
+                    ethAddress: userThreeAddress,
+                    linkType: FollowLinkType,
+                    data: [],
+                });
 
                 // post note
                 const noteData = makePostNoteData();
@@ -171,9 +195,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 ]);
 
                 // mint note
-                await web3Entry
-                    .connect(userThree)
-                    .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userTwoAddress, []);
+                await web3Entry.connect(userThree).mintNote({
+                    profileId: FIRST_PROFILE_ID,
+                    noteId: FIRST_NOTE_ID,
+                    to: userTwoAddress,
+                    mintModuleData: [],
+                });
 
                 note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
                 expect(await MintNFT__factory.connect(note.mintNFT, deployer).ownerOf(1)).to.equal(
@@ -183,10 +210,20 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
 
             it("User should post note with linklist link", async function () {
                 // link profile
-                await web3Entry.linkProfile(SECOND_PROFILE_ID, FIRST_PROFILE_ID, FollowLinkType);
+                await web3Entry.linkProfile({
+                    fromProfileId: SECOND_PROFILE_ID,
+                    toProfileId: FIRST_PROFILE_ID,
+                    linkType: FollowLinkType,
+                    data: [],
+                });
 
                 // link linklist
-                await web3Entry.linkLinklist(FIRST_PROFILE_ID, FIRST_LINKLIST_ID, LikeLinkType);
+                await web3Entry.linkLinklist({
+                    fromProfileId: FIRST_PROFILE_ID,
+                    toLinkListId: FIRST_LINKLIST_ID,
+                    linkType: LikeLinkType,
+                    data: [],
+                });
 
                 // post note
                 const noteData = makePostNoteData();
@@ -211,9 +248,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 ]);
 
                 // mint note
-                await web3Entry
-                    .connect(userThree)
-                    .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userTwoAddress, []);
+                await web3Entry.connect(userThree).mintNote({
+                    profileId: FIRST_PROFILE_ID,
+                    noteId: FIRST_NOTE_ID,
+                    to: userTwoAddress,
+                    mintModuleData: [],
+                });
 
                 note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
                 expect(await MintNFT__factory.connect(note.mintNFT, deployer).ownerOf(1)).to.equal(
@@ -263,13 +303,19 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 // console.log(isApproved);
 
                 // mint note
-                await web3Entry
-                    .connect(userThree)
-                    .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userTwoAddress, []);
+                await web3Entry.connect(userThree).mintNote({
+                    profileId: FIRST_PROFILE_ID,
+                    noteId: FIRST_NOTE_ID,
+                    to: userTwoAddress,
+                    mintModuleData: [],
+                });
                 await expect(
-                    web3Entry
-                        .connect(userThree)
-                        .mintNote(FIRST_PROFILE_ID, FIRST_NOTE_ID, userThreeAddress, [])
+                    web3Entry.connect(userThree).mintNote({
+                        profileId: FIRST_PROFILE_ID,
+                        noteId: FIRST_NOTE_ID,
+                        to: userThreeAddress,
+                        mintModuleData: [],
+                    })
                 ).to.be.revertedWith(ERRORS.NOT_APROVED);
 
                 note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);

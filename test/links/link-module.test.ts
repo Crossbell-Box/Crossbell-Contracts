@@ -36,7 +36,7 @@ makeSuiteCleanRoom("Link Module", function () {
                 });
 
                 await expect(
-                    web3Entry.linkProfileV2({
+                    web3Entry.linkProfile({
                         fromProfileId: FIRST_PROFILE_ID,
                         toProfileId: SECOND_PROFILE_ID,
                         linkType: FOLLOW_LINKTYPE,
