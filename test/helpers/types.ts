@@ -28,10 +28,10 @@ export interface PostNoteData {
 
 export interface NoteStruct {
     linkItemType: BytesLike;
-    linklistId: BigNumber;
     linkKey: BytesLike;
     contentUri: string;
     linkModule: string;
     mintModule: string;
     mintNFT: string;
+    deleted: boolean;
 }

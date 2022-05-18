@@ -45,7 +45,7 @@ interface ILinklist {
         uint256 toNoteId
     ) external;
 
-    function getLinkingNotes(uint256 tokenId)
+    function getLinkingNotes(bytes32[] calldata linkKeys)
         external
         view
         returns (DataTypes.NoteStruct[] memory results);

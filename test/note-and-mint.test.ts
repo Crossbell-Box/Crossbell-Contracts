@@ -89,12 +89,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
-                    0,
                     bytes32Zero,
                     noteData.contentUri,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
+                    false,
                 ]);
 
                 // mint note
@@ -116,6 +116,38 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 const mintNFT = MintNFT__factory.connect(note.mintNFT, deployer);
                 expect(await mintNFT.ownerOf(1)).to.equal(userTwoAddress);
                 expect(await mintNFT.ownerOf(2)).to.equal(userThreeAddress);
+            });
+
+            it("User should post and delete note", async function () {
+                // post note
+                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
+
+                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                ]);
+
+                // delete note
+                await expect(
+                    web3Entry.deleteNote(noteData.profileId, FIRST_NOTE_ID)
+                ).to.not.be.reverted;
+                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    true,
+                ]);
             });
 
             it("User should post note with profile link", async function () {
@@ -141,12 +173,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
                 matchNote(note, [
                     LinkItemTypeProfile,
-                    FIRST_LINKLIST_ID,
                     ethers.utils.hexZeroPad(ethers.utils.hexlify(SECOND_PROFILE_ID), 32),
                     noteData.contentUri,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
+                    false,
                 ]);
 
                 // mint note
@@ -186,12 +218,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
                 matchNote(note, [
                     LinkItemTypeProfile,
-                    FIRST_LINKLIST_ID,
                     ethers.utils.hexZeroPad(ethers.utils.hexlify(userThreeAddress), 32),
                     noteData.contentUri,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
+                    false,
                 ]);
 
                 // mint note
@@ -239,12 +271,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
                 matchNote(note, [
                     LinkItemTypeList,
-                    SECOND_LINKLIST_ID,
                     ethers.utils.hexZeroPad(ethers.utils.hexlify(SECOND_LINKLIST_ID), 32),
                     noteData.contentUri,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
+                    false,
                 ]);
 
                 // mint note
@@ -281,12 +313,12 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
-                    0,
                     bytes32Zero,
                     noteData.contentUri,
                     ethers.constants.AddressZero,
                     approvalMintModule.address,
                     ethers.constants.AddressZero,
+                    false,
                 ]);
 
                 const ApproveMint = ApprovalMintModule__factory.connect(

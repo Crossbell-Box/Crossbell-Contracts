@@ -175,31 +175,29 @@ export function matchNote(note: NoteStruct, expectedArgs?: any[]) {
                 `linkItemType, Received: "${note.linkItemType}" Expected: "${expectedArgs[0]}`
             );
         }
-        if (!note.linklistId.eq(BigNumber.from(expectedArgs[1]))) {
+        if (note.linkKey !== expectedArgs[1]) {
+            logger.throwError(`linkKey, Received: "${note.linkKey}" Expected: "${expectedArgs[1]}`);
+        }
+        if (note.contentUri !== expectedArgs[2]) {
             logger.throwError(
-                `linklistId, Received: "${note.linklistId}" Expected: "${expectedArgs[1]}`
+                `contentUri, Received: "${note.contentUri}" Expected: "${expectedArgs[2]}`
             );
         }
-        if (note.linkKey !== expectedArgs[2]) {
-            logger.throwError(`linkKey, Received: "${note.linkKey}" Expected: "${expectedArgs[2]}`);
-        }
-        if (note.contentUri !== expectedArgs[3]) {
+        if (note.linkModule !== expectedArgs[3]) {
             logger.throwError(
-                `contentUri, Received: "${note.contentUri}" Expected: "${expectedArgs[3]}`
+                `linkModule, Received: "${note.linkModule}" Expected: "${expectedArgs[3]}`
             );
         }
-        if (note.linkModule !== expectedArgs[4]) {
+        if (note.mintModule !== expectedArgs[4]) {
             logger.throwError(
-                `linkModule, Received: "${note.linkModule}" Expected: "${expectedArgs[4]}`
+                `mintModule, Received: "${note.mintModule}" Expected: "${expectedArgs[4]}`
             );
         }
-        if (note.mintModule !== expectedArgs[5]) {
-            logger.throwError(
-                `mintModule, Received: "${note.mintModule}" Expected: "${expectedArgs[5]}`
-            );
+        if (note.mintNFT !== expectedArgs[5]) {
+            logger.throwError(`mintNFT, Received: "${note.mintNFT}" Expected: "${expectedArgs[5]}`);
         }
-        if (note.mintNFT !== expectedArgs[6]) {
-            logger.throwError(`mintNFT, Received: "${note.mintNFT}" Expected: "${expectedArgs[6]}`);
+        if (note.deleted !== expectedArgs[6]) {
+            logger.throwError(`deleted, Received: "${note.deleted}" Expected: "${expectedArgs[6]}`);
         }
     }
 }

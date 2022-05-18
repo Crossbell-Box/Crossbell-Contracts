@@ -485,7 +485,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
         uint256 noteId = ++_profileById[vars.profileId].noteCount;
 
-        PostLogic.postNote4Link(vars, noteId, 0, 0, 0, _noteByIdByProfile);
+        PostLogic.postNote4Link(vars, noteId, 0, 0, _noteByIdByProfile);
         return noteId;
     }
 
@@ -502,20 +502,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        uint256 linklistId = _attachedLinklists[linkData.fromProfileId][linkData.linkType];
         bytes32 linkItemType = Constants.LinkItemTypeProfile;
         bytes32 linkKey = bytes32(linkData.toProfileId);
 
         uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
 
-        PostLogic.postNote4Link(
-            noteData,
-            noteId,
-            linklistId,
-            linkItemType,
-            linkKey,
-            _noteByIdByProfile
-        );
+        PostLogic.postNote4Link(noteData, noteId, linkItemType, linkKey, _noteByIdByProfile);
 
         return noteId;
     }
@@ -526,20 +518,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        uint256 linklistId = _attachedLinklists[linkData.fromProfileId][linkData.linkType];
         bytes32 linkItemType = Constants.LinkItemTypeAddress;
         bytes32 linkKey = bytes32(uint256(uint160(linkData.ethAddress)));
 
         uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
 
-        PostLogic.postNote4Link(
-            noteData,
-            noteId,
-            linklistId,
-            linkItemType,
-            linkKey,
-            _noteByIdByProfile
-        );
+        PostLogic.postNote4Link(noteData, noteId, linkItemType, linkKey, _noteByIdByProfile);
 
         return noteId;
     }
@@ -550,20 +534,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        uint256 linklistId = _attachedLinklists[linkData.fromProfileId][linkData.linkType];
         bytes32 linkItemType = Constants.LinkItemTypeList;
         bytes32 linkKey = bytes32(linkData.toLinkListId);
 
         uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
 
-        PostLogic.postNote4Link(
-            noteData,
-            noteId,
-            linklistId,
-            linkItemType,
-            linkKey,
-            _noteByIdByProfile
-        );
+        PostLogic.postNote4Link(noteData, noteId, linkItemType, linkKey, _noteByIdByProfile);
 
         return noteId;
     }
@@ -574,20 +550,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        uint256 linklistId = _attachedLinklists[linkData.fromProfileId][linkData.linkType];
         bytes32 linkItemType = Constants.LinkItemTypeNote;
         bytes32 linkKey = keccak256(abi.encodePacked(linkData.toProfileId, linkData.toNoteId));
 
         uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
 
-        PostLogic.postNote4Link(
-            noteData,
-            noteId,
-            linklistId,
-            linkItemType,
-            linkKey,
-            _noteByIdByProfile
-        );
+        PostLogic.postNote4Link(noteData, noteId, linkItemType, linkKey, _noteByIdByProfile);
 
         return noteId;
     }
@@ -599,20 +567,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(noteData.profileId);
         _validateERC721Exists(linkData.tokenAddress, linkData.tokenId);
 
-        uint256 linklistId = _attachedLinklists[linkData.fromProfileId][linkData.linkType];
         bytes32 linkItemType = Constants.LinkItemTypeERC721;
         bytes32 linkKey = keccak256(abi.encodePacked(linkData.tokenAddress, linkData.tokenId));
 
         uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
 
-        PostLogic.postNote4Link(
-            noteData,
-            noteId,
-            linklistId,
-            linkItemType,
-            linkKey,
-            _noteByIdByProfile
-        );
+        PostLogic.postNote4Link(noteData, noteId, linkItemType, linkKey, _noteByIdByProfile);
 
         return noteId;
     }
@@ -623,20 +583,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        uint256 linklistId = _attachedLinklists[linkData.fromProfileId][linkData.linkType];
         bytes32 linkItemType = Constants.LinkItemTypeAny;
         bytes32 linkKey = keccak256(abi.encodePacked("LinkAny", linkData.toUri));
 
         uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
 
-        PostLogic.postNote4Link(
-            noteData,
-            noteId,
-            linklistId,
-            linkItemType,
-            linkKey,
-            _noteByIdByProfile
-        );
+        PostLogic.postNote4Link(noteData, noteId, linkItemType, linkKey, _noteByIdByProfile);
 
         return noteId;
     }

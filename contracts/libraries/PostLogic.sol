@@ -16,7 +16,6 @@ library PostLogic {
     function postNote4Link(
         DataTypes.PostNoteData calldata vars,
         uint256 noteId,
-        uint256 linklistId,
         bytes32 linkItemType,
         bytes32 linkKey,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile
@@ -25,7 +24,6 @@ library PostLogic {
         // save note
         if (linkItemType != bytes32(0)) {
             _noteByIdByProfile[profileId][noteId].linkItemType = linkItemType;
-            _noteByIdByProfile[profileId][noteId].linklistId = linklistId;
             _noteByIdByProfile[profileId][noteId].linkKey = linkKey;
         }
         _noteByIdByProfile[profileId][noteId].contentUri = vars.contentUri;
