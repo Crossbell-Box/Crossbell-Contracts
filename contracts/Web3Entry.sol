@@ -435,7 +435,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        bytes32 linkItemType = Constants.LinkItemTypeProfile;
+        bytes32 linkItemType = Constants.NoteLinkTypeProfileLink;
         bytes32 linkKey = bytes32(linkData.toProfileId);
 
         uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
@@ -451,7 +451,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        bytes32 linkItemType = Constants.LinkItemTypeAddress;
+        bytes32 linkItemType = Constants.NoteLinkTypeAddressLink;
         bytes32 linkKey = bytes32(uint256(uint160(linkData.ethAddress)));
 
         uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
@@ -467,7 +467,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        bytes32 linkItemType = Constants.LinkItemTypeList;
+        bytes32 linkItemType = Constants.NoteLinkTypeListLink;
         bytes32 linkKey = bytes32(linkData.toLinkListId);
 
         uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
@@ -483,7 +483,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        bytes32 linkItemType = Constants.LinkItemTypeNote;
+        bytes32 linkItemType = Constants.NoteLinkTypeNoteLink;
         bytes32 linkKey = keccak256(abi.encodePacked(linkData.toProfileId, linkData.toNoteId));
 
         uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
@@ -500,7 +500,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(noteData.profileId);
         _validateERC721Exists(linkData.tokenAddress, linkData.tokenId);
 
-        bytes32 linkItemType = Constants.LinkItemTypeERC721;
+        bytes32 linkItemType = Constants.NoteLinkTypeERC721Link;
         bytes32 linkKey = keccak256(abi.encodePacked(linkData.tokenAddress, linkData.tokenId));
 
         uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
@@ -516,7 +516,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external returns (uint256) {
         _validateCallerIsProfileOwner(noteData.profileId);
 
-        bytes32 linkItemType = Constants.LinkItemTypeAny;
+        bytes32 linkItemType = Constants.NoteLinkTypeAnyLink;
         bytes32 linkKey = keccak256(abi.encodePacked("LinkAny", linkData.toUri));
 
         uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;

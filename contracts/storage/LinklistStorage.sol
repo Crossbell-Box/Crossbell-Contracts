@@ -36,4 +36,8 @@ contract LinklistStorage {
     // tokenId => profileId
     mapping(uint256 => uint256) internal currentTakeOver;
     mapping(uint256 => string) internal _uris; // tokenId => tokenURI
+
+    // link key type
+    // linkKey => linkKeyType
+    mapping(bytes32 => bytes32) internal linkKeyType;
 }

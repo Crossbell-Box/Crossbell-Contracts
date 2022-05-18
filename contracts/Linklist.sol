@@ -6,6 +6,7 @@ import "./interfaces/ILinklist.sol";
 import "./base/NFTBase.sol";
 import "./libraries/Events.sol";
 import "./libraries/DataTypes.sol";
+import "./libraries/Constants.sol";
 import "./storage/LinklistStorage.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
@@ -88,7 +89,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
 
         bytes32 linkKey = keccak256(abi.encodePacked("Note", toProfileId, toNoteId));
         linkKeysList[tokenId].add(linkKey);
-
+        linkKeyType[linkKey] = Constants.LinklistKeyTypeNote;
         linkNoteList[linkKey] = DataTypes.NoteStruct({profileId: toProfileId, noteId: toNoteId});
     }
 
@@ -139,6 +140,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
             )
         );
         linkKeysList[tokenId].add(linkKey);
+        linkKeyType[linkKey] = Constants.LinklistKeyTypeProfileLink;
         linkingProfileLinkList[linkKey] = linkData;
     }
 
@@ -192,7 +194,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
 
         bytes32 linkKey = keccak256(abi.encodePacked("ERC721", tokenAddress, erc721TokenId));
         linkKeysList[tokenId].add(linkKey);
-
+        linkKeyType[linkKey] = Constants.LinklistKeyTypeERC721;
         linkingERC721List[linkKey] = DataTypes.ERC721Struct({
             tokenAddress: tokenAddress,
             erc721TokenId: erc721TokenId
@@ -260,7 +262,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
 
         bytes32 linkKey = keccak256(abi.encodePacked("Any", toUri));
         linkKeysList[tokenId].add(linkKey);
-
+        linkKeyType[linkKey] = Constants.LinklistKeyTypeAny;
         linkingAnylist[linkKey] = toUri;
     }
 
