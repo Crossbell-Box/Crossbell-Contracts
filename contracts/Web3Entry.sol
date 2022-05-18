@@ -609,23 +609,42 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         uint256 linkListId = _attachedLinklists[fromProfileId][linkType];
         uint256[] memory linkingProfileIds = ILinklist(_linklist).getLinkingProfileIds(linkListId);
 
-        uint256 l = linkingProfileIds.length;
+        uint256 len = linkingProfileIds.length;
 
-        uint256 j = 0;
-        for (uint256 i = 0; i < l; i++) {
+        uint256 count;
+        for (uint256 i = 0; i < len; i++) {
             if (_exists(linkingProfileIds[i])) {
-                j++;
+                count++;
             }
         }
-        results = new uint256[](j);
-        j = 0;
-        for (uint256 i = 0; i < l; i++) {
+
+        results = new uint256[](count);
+        uint256 j;
+        for (uint256 i = 0; i < len; i++) {
             if (_exists(linkingProfileIds[i])) {
                 results[j] = linkingProfileIds[i];
                 j++;
             }
         }
     }
+
+    function getLinkingNotes(uint256 tokenId)
+        external
+        view
+        returns (DataTypes.Note[] memory results)
+    {
+        DataTypes.NoteStruct[] memory notes = ILinklist(_linklist).getLinkingNotes(tokenId);
+        results = new DataTypes.Note[](notes.length);
+        for (uint256 i = 0; i < notes.length; i++) {
+            results[i] = _noteByIdByProfile[notes[i].profileId][notes[i].noteId];
+        }
+    }
+
+    function getLinkingERC721s(uint256 tokenId)
+        external
+        view
+        returns (DataTypes.ERC721Struct[] memory results)
+    {}
 
     function getLinklistContract() external view returns (address) {
         return _linklist;
@@ -649,8 +668,18 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
+    function isWhitelistedContracts(address account) public view returns (bool) {
+        // add the periphery contract to whitelist temporarily
+        address periphery = 0x96e96b7AF62D628cE7eb2016D2c1D2786614eA73;
+        return account == periphery;
+    }
+
     function _validateCallerIsProfileOwner(uint256 profileId) internal view {
-        require(msg.sender == ownerOf(profileId), "NotProfileOwner");
+        address owner = ownerOf(profileId);
+        require(
+            msg.sender == owner || (tx.origin == owner && isWhitelistedContracts(msg.sender)),
+            "NotProfileOwner"
+        );
     }
 
     function _validateCallerIsLinklistOwner(uint256 tokenId) internal view {

@@ -107,15 +107,26 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         // delete linkNoteList[linkKey];
     }
 
-    function getLinkingNotes(bytes32[] calldata linkKeys)
+    function getLinkingNotes(uint256 tokenId)
         external
         view
         returns (DataTypes.NoteStruct[] memory results)
     {
-        results = new DataTypes.NoteStruct[](linkKeys.length);
+        uint256 count;
+        bytes32[] memory linkKeys = linkKeysList[tokenId].values();
         for (uint256 i = 0; i < linkKeys.length; i++) {
-            bytes32 key = linkKeys[i];
-            results[i] = linkNoteList[key];
+            if (linkKeyType[linkKeys[i]] == Constants.LinklistKeyTypeNote) {
+                count++;
+            }
+        }
+
+        results = new DataTypes.NoteStruct[](count);
+        uint256 j;
+        for (uint256 i = 0; i < linkKeys.length; i++) {
+            if (linkKeyType[linkKeys[i]] == Constants.LinklistKeyTypeNote) {
+                results[j] = linkNoteList[linkKeys[i]];
+                j++;
+            }
         }
     }
 
@@ -220,12 +231,21 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         view
         returns (DataTypes.ERC721Struct[] memory results)
     {
+        uint256 count;
         bytes32[] memory linkKeys = linkKeysList[tokenId].values();
-
-        results = new DataTypes.ERC721Struct[](linkKeys.length);
         for (uint256 i = 0; i < linkKeys.length; i++) {
-            bytes32 key = linkKeys[i];
-            results[i] = linkingERC721List[key];
+            if (linkKeyType[linkKeys[i]] == Constants.LinklistKeyTypeERC721) {
+                count++;
+            }
+        }
+
+        results = new DataTypes.ERC721Struct[](count);
+        uint256 j;
+        for (uint256 i = 0; i < linkKeys.length; i++) {
+            if (linkKeyType[linkKeys[i]] == Constants.LinklistKeyTypeERC721) {
+                results[j] = linkingERC721List[linkKeys[i]];
+                j++;
+            }
         }
     }
 
