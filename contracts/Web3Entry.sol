@@ -14,12 +14,11 @@ import "./libraries/Events.sol";
 import "./libraries/ProfileLogic.sol";
 import "./libraries/PostLogic.sol";
 import "./libraries/LinkModuleLogic.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "./libraries/LinkLogic.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
-    using SafeMath for uint256;
     using Strings for uint256;
 
     uint256 internal constant REVISION = 3;
@@ -38,7 +37,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function createProfile(DataTypes.CreateProfileData calldata vars) external {
-        _profileCounter = _profileCounter.add(1);
+        _profileCounter = _profileCounter + 1;
 
         // mint profile nft
         _mint(vars.to, _profileCounter);
@@ -111,35 +110,20 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         ILinklist(_linklist).setUri(linklistId, uri);
     }
 
-    function _linkProfile(
-        uint256 fromProfileId,
-        uint256 toProfileId,
-        bytes32 linkType,
-        bytes memory data
-    ) internal {
-        uint256 linklistId = _mintLinklist(fromProfileId, linkType, msg.sender);
-
-        // add to link list
-        ILinklist(_linklist).addLinkingProfileId(linklistId, toProfileId);
-
-        // process link module
-        if (_profileById[toProfileId].linkModule != address(0)) {
-            address linker = ownerOf(fromProfileId);
-            ILinkModule4Profile(_profileById[toProfileId].linkModule).processLink(
-                linker,
-                toProfileId,
-                data
-            );
-        }
-
-        emit Events.LinkProfile(msg.sender, fromProfileId, toProfileId, linkType, linklistId);
-    }
-
     function linkProfile(DataTypes.linkProfileData calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
         _validateProfileExists(vars.toProfileId);
 
-        _linkProfile(vars.fromProfileId, vars.toProfileId, vars.linkType, vars.data);
+        LinkLogic.linkProfile(
+            vars.fromProfileId,
+            vars.toProfileId,
+            vars.linkType,
+            vars.data,
+            IERC721Enumerable(this).ownerOf(vars.fromProfileId),
+            _linklist,
+            _profileById,
+            _attachedLinklists
+        );
     }
 
     function unlinkProfile(DataTypes.unlinkProfileData calldata vars) external {
@@ -190,36 +174,23 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _primaryProfileByAddress[to] = profileId;
 
         // link profile
-        _linkProfile(fromProfileId, profileId, linkType, data);
+        LinkLogic.linkProfile(
+            fromProfileId,
+            profileId,
+            linkType,
+            data,
+            IERC721Enumerable(this).ownerOf(fromProfileId),
+            _linklist,
+            _profileById,
+            _attachedLinklists
+        );
     }
 
     function linkNote(DataTypes.linkNoteData calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
         _validateProfileExists(vars.toProfileId);
 
-        uint256 linklistId = _mintLinklist(vars.fromProfileId, vars.linkType, msg.sender);
-
-        // add to link list
-        ILinklist(_linklist).addLinkingNote(linklistId, vars.toProfileId, vars.toNoteId);
-
-        // process link
-        address linkModule = _noteByIdByProfile[vars.toProfileId][vars.toNoteId].linkModule;
-        if (linkModule != address(0)) {
-            ILinkModule4Note(linkModule).processLink(
-                msg.sender,
-                vars.toProfileId,
-                vars.toNoteId,
-                vars.data
-            );
-        }
-
-        emit Events.LinkNote(
-            vars.fromProfileId,
-            vars.toProfileId,
-            vars.toNoteId,
-            vars.linkType,
-            linklistId
-        );
+        LinkLogic.linkNote(vars, _linklist, _noteByIdByProfile, _attachedLinklists);
     }
 
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external {
@@ -246,18 +217,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(vars.fromProfileId);
         _validateERC721Exists(vars.tokenAddress, vars.tokenId);
 
-        uint256 linklistId = _mintLinklist(vars.fromProfileId, vars.linkType, msg.sender);
-
-        // add to link list
-        ILinklist(_linklist).addLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId);
-
-        emit Events.LinkERC721(
-            vars.fromProfileId,
-            vars.tokenAddress,
-            vars.tokenId,
-            vars.linkType,
-            linklistId
-        );
+        LinkLogic.linkERC721(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external {
@@ -281,12 +241,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function linkAddress(DataTypes.linkAddressData calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
 
-        uint256 linklistId = _mintLinklist(vars.fromProfileId, vars.linkType, msg.sender);
-
-        // add to link list
-        ILinklist(_linklist).addLinkingAddress(linklistId, vars.ethAddress);
-
-        emit Events.LinkAddress(vars.fromProfileId, vars.ethAddress, vars.linkType, linklistId);
+        LinkLogic.linkAddress(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkAddress(DataTypes.linkAddressData calldata vars) external {
@@ -304,12 +259,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function linkAny(DataTypes.linkAnyData calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
 
-        uint256 linklistId = _mintLinklist(vars.fromProfileId, vars.linkType, msg.sender);
-
-        // add to link list
-        ILinklist(_linklist).addLinkingAny(linklistId, vars.toUri);
-
-        emit Events.LinkAny(vars.fromProfileId, vars.toUri, vars.linkType, linklistId);
+        LinkLogic.linkAny(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkAny(DataTypes.unlinkAnyData calldata vars) external {
@@ -331,19 +281,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external {
         _validateCallerIsProfileOwner(fromProfileId);
 
-        uint256 linklistId = _mintLinklist(fromProfileId, linkType, msg.sender);
-
-        // add to link list
-        ILinklist(_linklist).addLinkingProfileLink(linklistId, linkData);
-
-        // event
-        emit Events.LinkProfileLink(
-            fromProfileId,
-            linkType,
-            linkData.fromProfileId,
-            linkData.toProfileId,
-            linkData.linkType
-        );
+        LinkLogic.linkProfileLink(fromProfileId, linkData, linkType, _linklist, _attachedLinklists);
     }
 
     function unlinkProfileLink(
@@ -372,12 +310,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
 
-        uint256 linklistId = _mintLinklist(vars.fromProfileId, vars.linkType, msg.sender);
-
-        // add to link list
-        ILinklist(_linklist).addLinkingLinklistId(linklistId, vars.toLinkListId);
-
-        emit Events.LinkLinklist(vars.fromProfileId, vars.toLinkListId, vars.linkType, linklistId);
+        LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkLinklist(DataTypes.linkLinklistData calldata vars) external {
@@ -702,21 +635,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         _validateCallerIsProfileOwner(profileId);
 
         ILinklist(_linklist).setTakeOver(tokenId, msg.sender, profileId);
-    }
-
-    function _mintLinklist(
-        uint256 profileId,
-        bytes32 linkType,
-        address to
-    ) internal returns (uint256 linklistId) {
-        linklistId = _attachedLinklists[profileId][linkType];
-        if (linklistId == 0) {
-            linklistId = IERC721Enumerable(_linklist).totalSupply().add(1);
-            // mint linkList nft
-            ILinklist(_linklist).mint(to, linkType, linklistId);
-            // set primary linkList
-            attachLinklist(linklistId, profileId);
-        }
     }
 
     function _beforeTokenTransfer(

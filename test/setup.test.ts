@@ -124,6 +124,9 @@ beforeEach(async () => {
     const PostLogic = await ethers.getContractFactory("PostLogic");
     const postLogic = await PostLogic.deploy();
 
+    const LinkLogic = await ethers.getContractFactory("LinkLogic");
+    const linkLogic = await LinkLogic.deploy();
+
     const MintNFT = await ethers.getContractFactory("MintNFT");
     const mintNFT = await MintNFT.deploy();
 
@@ -135,6 +138,7 @@ beforeEach(async () => {
             LinkModuleLogic: linkModuleLogic.address,
             ProfileLogic: profileLogic.address,
             PostLogic: postLogic.address,
+            LinkLogic: linkLogic.address,
         },
     });
     web3EntryImpl = await Web3Entry.deploy();
