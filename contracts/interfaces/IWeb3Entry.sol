@@ -145,10 +145,11 @@ interface IWeb3Entry {
         view
         returns (address);
 
-    function getLinklistUri(uint256 profileId, bytes32 linkType)
-        external
-        view
-        returns (string memory);
+    function getLinklistUri(uint256 tokenId) external view returns (string memory);
+
+    function getLinklistId(uint256 profileId, bytes32 linkType) external view returns (uint256);
+
+    function getLinklistType(uint256 linkListId) external view returns (bytes32);
 
     function getLinkingProfileIds(uint256 fromProfileId, bytes32 linkType)
         external
@@ -160,15 +161,24 @@ interface IWeb3Entry {
         view
         returns (DataTypes.Note[] memory results);
 
+    function getLinkingNote(bytes32 linkKey) external view returns (DataTypes.NoteStruct memory);
+
     function getLinkingERC721s(uint256 fromProfileId, bytes32 linkType)
         external
         view
         returns (DataTypes.ERC721Struct[] memory results);
 
+    function getLinkingERC721(bytes32 linkKey)
+        external
+        view
+        returns (DataTypes.ERC721Struct memory);
+
     function getLinkingAnys(uint256 fromProfileId, bytes32 linkType)
         external
         view
         returns (string[] memory results);
+
+    function getLinkingAny(bytes32 linkKey) external view returns (string memory);
 
     function getLinklistContract() external view returns (address);
 

@@ -594,13 +594,16 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         return _profileById[profileId].uri;
     }
 
-    function getLinklistUri(uint256 profileId, bytes32 linkType)
-        external
-        view
-        returns (string memory)
-    {
-        uint256 tokenId = _attachedLinklists[profileId][linkType];
+    function getLinklistUri(uint256 tokenId) external view returns (string memory) {
         return ILinklist(_linklist).Uri(tokenId);
+    }
+
+    function getLinklistId(uint256 profileId, bytes32 linkType) external view returns (uint256) {
+        return _attachedLinklists[profileId][linkType];
+    }
+
+    function getLinklistType(uint256 linkListId) external view returns (bytes32) {
+        return ILinklist(_linklist).getLinkType(linkListId);
     }
 
     function getLinkingProfileIds(uint256 fromProfileId, bytes32 linkType)
@@ -643,6 +646,10 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         }
     }
 
+    function getLinkingNote(bytes32 linkKey) external view returns (DataTypes.NoteStruct memory) {
+        return ILinklist(_linklist).getLinkingNote(linkKey);
+    }
+
     function getLinkingERC721s(uint256 fromProfileId, bytes32 linkType)
         external
         view
@@ -652,6 +659,14 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         return ILinklist(_linklist).getLinkingERC721s(linkListId);
     }
 
+    function getLinkingERC721(bytes32 linkKey)
+        external
+        view
+        returns (DataTypes.ERC721Struct memory)
+    {
+        return ILinklist(_linklist).getLinkingERC721(linkKey);
+    }
+
     function getLinkingAnys(uint256 fromProfileId, bytes32 linkType)
         external
         view
@@ -659,6 +674,10 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     {
         uint256 linkListId = _attachedLinklists[fromProfileId][linkType];
         return ILinklist(_linklist).getLinkingAnys(linkListId);
+    }
+
+    function getLinkingAny(bytes32 linkKey) external view returns (string memory) {
+        return ILinklist(_linklist).getLinkingAny(linkKey);
     }
 
     function getLinklistContract() external view returns (address) {
