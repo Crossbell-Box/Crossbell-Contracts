@@ -118,6 +118,10 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         }
     }
 
+    function getLinkingNote(bytes32 linkKey) external view returns (DataTypes.NoteStruct memory) {
+        return linkNoteList[linkKey];
+    }
+
     function getLinkingNoteListLength(uint256 tokenId) external view returns (uint256) {
         return linkNoteKeys[tokenId].length();
     }
@@ -175,7 +179,15 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         }
     }
 
-    function getlinkingProfileLinkListLength(uint256 tokenId) external view returns (uint256) {
+    function getLinkingProfileLink(bytes32 linkKey)
+        external
+        view
+        returns (DataTypes.ProfileLinkStruct memory)
+    {
+        return linkingProfileLinkList[linkKey];
+    }
+
+    function getLinkingProfileLinkListLength(uint256 tokenId) external view returns (uint256) {
         return linkingProfileLinkKeys[tokenId].length();
     }
 
@@ -223,7 +235,15 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         }
     }
 
-    function getlinkingERC721ListLength(uint256 tokenId) external view returns (uint256) {
+    function getLinkingERC721(bytes32 linkKey)
+        external
+        view
+        returns (DataTypes.ERC721Struct memory)
+    {
+        return linkingERC721List[linkKey];
+    }
+
+    function getLinkingERC721ListLength(uint256 tokenId) external view returns (uint256) {
         return linkingERC721Keys[tokenId].length();
     }
 
@@ -276,6 +296,10 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
             bytes32 key = linkKeys[i];
             results[i] = linkingAnylist[key];
         }
+    }
+
+    function getLinkingAny(bytes32 linkKey) external view returns (string memory) {
+        return linkingAnylist[linkKey];
     }
 
     function getLinkingAnyListLength(uint256 tokenId) external view returns (uint256) {

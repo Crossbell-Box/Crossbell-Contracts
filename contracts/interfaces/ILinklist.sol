@@ -50,6 +50,8 @@ interface ILinklist {
         view
         returns (DataTypes.NoteStruct[] memory results);
 
+    function getLinkingNote(bytes32 linkKey) external view returns (DataTypes.NoteStruct memory);
+
     function getLinkingNoteListLength(uint256 tokenId) external view returns (uint256);
 
     /////////////////////////////////
@@ -68,7 +70,12 @@ interface ILinklist {
         view
         returns (DataTypes.ProfileLinkStruct[] memory results);
 
-    function getlinkingProfileLinkListLength(uint256 tokenId) external view returns (uint256);
+    function getLinkingProfileLink(bytes32 linkKey)
+        external
+        view
+        returns (DataTypes.ProfileLinkStruct memory);
+
+    function getLinkingProfileLinkListLength(uint256 tokenId) external view returns (uint256);
 
     /////////////////////////////////
     // linking ERC721
@@ -90,7 +97,12 @@ interface ILinklist {
         view
         returns (DataTypes.ERC721Struct[] memory results);
 
-    function getlinkingERC721ListLength(uint256 tokenId) external view returns (uint256);
+    function getLinkingERC721(bytes32 linkKey)
+        external
+        view
+        returns (DataTypes.ERC721Struct memory);
+
+    function getLinkingERC721ListLength(uint256 tokenId) external view returns (uint256);
 
     /////////////////////////////////
     // linking Address
@@ -111,6 +123,8 @@ interface ILinklist {
     function removeLinkingAny(uint256 tokenId, string memory toUri) external;
 
     function getLinkingAnys(uint256 tokenId) external view returns (string[] memory results);
+
+    function getLinkingAny(bytes32 linkKey) external view returns (string memory);
 
     function getLinkingAnyListLength(uint256 tokenId) external view returns (uint256);
 
