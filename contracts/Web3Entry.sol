@@ -644,7 +644,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         external
         view
         returns (DataTypes.ERC721Struct[] memory results)
-    {}
+    {
+        return ILinklist(_linklist).getLinkingERC721s(tokenId);
+    }
+
+    function getLinkingAnys(uint256 tokenId) external view returns (string[] memory results) {
+        return ILinklist(_linklist).getLinkingAnys(tokenId);
+    }
 
     function getLinklistContract() external view returns (address) {
         return _linklist;

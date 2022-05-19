@@ -162,6 +162,8 @@ interface IWeb3Entry {
         view
         returns (DataTypes.ERC721Struct[] memory);
 
+    function getLinkingAnys(uint256 tokenId) external view returns (string[] memory results);
+
     function getLinklistContract() external view returns (address);
 
     function getRevision() external pure returns (uint256);
