@@ -45,13 +45,12 @@ library LinkLogic {
 
     function unlinkProfile(
         DataTypes.unlinkProfileData calldata vars,
-        address _linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        address linklist,
+        uint256 linklistId
     ) external {
-        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
-
+        _validateLinklistAttached(linklist, linklistId, vars.fromProfileId);
         // remove from link list
-        ILinklist(_linklist).removeLinkingProfileId(linklistId, vars.toProfileId);
+        ILinklist(linklist).removeLinkingProfileId(linklistId, vars.toProfileId);
 
         emit Events.UnlinkProfile(msg.sender, vars.fromProfileId, vars.toProfileId, vars.linkType);
     }
@@ -102,6 +101,8 @@ library LinkLogic {
         // _validateNoteExists(vars.toProfileId, vars.toNoteId);
 
         uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
+        _validateLinklistAttached(linklist, linklistId, vars.fromProfileId);
+
         // remove from link list
         ILinklist(linklist).removeLinkingNote(linklistId, vars.toProfileId, vars.toNoteId);
 
@@ -147,9 +148,9 @@ library LinkLogic {
         DataTypes.ProfileLinkStruct calldata linkData,
         bytes32 linkType,
         address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        uint256 linklistId
     ) external {
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
+        _validateLinklistAttached(linklist, linklistId, fromProfileId);
         // remove from link list
         ILinklist(linklist).removeLinkingProfileLink(linklistId, linkData);
 
@@ -185,9 +186,9 @@ library LinkLogic {
     function unlinkLinklist(
         DataTypes.linkLinklistData calldata vars,
         address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        uint256 linklistId
     ) external {
-        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
+        _validateLinklistAttached(linklist, linklistId, vars.fromProfileId);
         // add to link list
         ILinklist(linklist).removeLinkingLinklistId(linklistId, vars.toLinkListId);
 
@@ -226,13 +227,12 @@ library LinkLogic {
 
     function unlinkERC721(
         DataTypes.unlinkERC721Data calldata vars,
-        address _linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        address linklist,
+        uint256 linklistId
     ) external {
-        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
-
+        _validateLinklistAttached(linklist, linklistId, vars.fromProfileId);
         // remove from link list
-        ILinklist(_linklist).removeLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId);
+        ILinklist(linklist).removeLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId);
 
         emit Events.UnlinkERC721(
             vars.fromProfileId,
@@ -264,13 +264,12 @@ library LinkLogic {
 
     function unlinkAddress(
         DataTypes.linkAddressData calldata vars,
-        address _linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        address linklist,
+        uint256 linklistId
     ) external {
-        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
-
+        _validateLinklistAttached(linklist, linklistId, vars.fromProfileId);
         // remove from link list
-        ILinklist(_linklist).removeLinkingAddress(linklistId, vars.ethAddress);
+        ILinklist(linklist).removeLinkingAddress(linklistId, vars.ethAddress);
 
         emit Events.UnlinkAddress(vars.fromProfileId, vars.ethAddress, vars.linkType);
     }
@@ -296,12 +295,12 @@ library LinkLogic {
 
     function unlinkAny(
         DataTypes.unlinkAnyData calldata vars,
-        address _linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        address linklist,
+        uint256 linklistId
     ) external {
-        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
+        _validateLinklistAttached(linklist, linklistId, vars.fromProfileId);
         // remove from link list
-        ILinklist(_linklist).removeLinkingAny(linklistId, vars.toUri);
+        ILinklist(linklist).removeLinkingAny(linklistId, vars.toUri);
 
         emit Events.UnlinkAny(vars.fromProfileId, vars.toUri, vars.linkType);
     }
@@ -324,5 +323,16 @@ library LinkLogic {
             _attachedLinklists[profileId][linkType] = linklistId;
             emit Events.AttachLinklist(linklistId, profileId, linkType);
         }
+    }
+
+    function _validateLinklistAttached(
+        address linklist,
+        uint256 linklistId,
+        uint256 profileId
+    ) internal view {
+        require(
+            profileId == ILinklist(linklist).getCurrentTakeOver(linklistId),
+            "UnattachedLinklist"
+        );
     }
 }

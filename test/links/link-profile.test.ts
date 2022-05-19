@@ -73,7 +73,7 @@ makeSuiteCleanRoom("Link", function () {
                     })
                 ).to.be.revertedWith(ERRORS.PROFILE_NOT_EXISTED);
             });
-            it("User should fail to unlink a profile with an unattached type.", async function () {
+            it("User should fail to unlink a profile with an unattached type", async function () {
                 await expect(
                     web3Entry.unlinkProfile({
                         fromProfileId: FIRST_PROFILE_ID,
@@ -82,7 +82,7 @@ makeSuiteCleanRoom("Link", function () {
                     })
                 ).to.be.revertedWith(ERRORS.UNATTACHED_LINKLIST);
             });
-            it("UserTwo should fail to unlink a profile that ", async function () {
+            it("UserTwo should fail to unlink a profile which does not exists", async function () {
                 await expect(
                     web3Entry.connect(userTwo).unlinkProfile({
                         fromProfileId: FIRST_PROFILE_ID,
