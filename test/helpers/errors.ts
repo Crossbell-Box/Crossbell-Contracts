@@ -6,4 +6,6 @@ export const ERRORS = {
     HANDLE_CONTAINS_INVALID_CHARS: "HandleContainsInvalidCharacters",
     UNATTACHED_LINKLIST: "UnattachedLinklist",
     NOT_APROVED: "NotApproved",
+    NOTE_DELETED: "NoteIsDeleted",
+    NOTE_NOT_EXISTs: "NoteNotExists",
 };

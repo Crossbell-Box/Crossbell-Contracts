@@ -78,6 +78,114 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                         })
                 ).to.be.revertedWith(ERRORS.NOT_PROFILE_OWNER);
             });
+
+            it("User should fail to link a non-existent note", async function () {
+                await expect(
+                    web3Entry.linkNote({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: FIRST_PROFILE_ID,
+                        toNoteId: FIRST_NOTE_ID,
+                        linkType: FollowLinkType,
+                        data: [],
+                    })
+                ).to.be.revertedWith(ERRORS.NOTE_NOT_EXISTs);
+            });
+
+            it("User should fail to link a deleted note", async function () {
+                // post note
+                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
+
+                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                ]);
+
+                // delete note
+                await expect(
+                    web3Entry.deleteNote(noteData.profileId, FIRST_NOTE_ID)
+                ).to.not.be.reverted;
+                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    true,
+                ]);
+
+                await expect(
+                    web3Entry.linkNote({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: FIRST_PROFILE_ID,
+                        toNoteId: FIRST_NOTE_ID,
+                        linkType: FollowLinkType,
+                        data: [],
+                    })
+                ).to.be.revertedWith(ERRORS.NOTE_DELETED);
+            });
+
+            it("User should fail to mint a deleted note", async function () {
+                // post note
+                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
+
+                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                ]);
+
+                // delete note
+                await expect(
+                    web3Entry.deleteNote(noteData.profileId, FIRST_NOTE_ID)
+                ).to.not.be.reverted;
+                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    true,
+                ]);
+
+                // mint note
+                await expect(
+                    web3Entry.connect(userThree).mintNote({
+                        profileId: FIRST_PROFILE_ID,
+                        noteId: FIRST_NOTE_ID,
+                        to: userTwoAddress,
+                        mintModuleData: [],
+                    })
+                ).to.be.revertedWith(ERRORS.NOTE_DELETED);
+            });
+
+            it("User should fail to mint a non-existent note", async function () {
+                // mint note
+                await expect(
+                    web3Entry.connect(userThree).mintNote({
+                        profileId: FIRST_PROFILE_ID,
+                        noteId: FIRST_NOTE_ID,
+                        to: userTwoAddress,
+                        mintModuleData: [],
+                    })
+                ).to.be.revertedWith(ERRORS.NOTE_NOT_EXISTs);
+            });
         });
 
         context("Scenarios", function () {
@@ -148,6 +256,34 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     true,
                 ]);
+            });
+
+            it("User should link note", async function () {
+                // post note
+                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
+
+                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                ]);
+
+                // delete note
+                await expect(
+                    web3Entry.linkNote({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: FIRST_PROFILE_ID,
+                        toNoteId: FIRST_NOTE_ID,
+                        linkType: FollowLinkType,
+                        data: [],
+                    })
+                ).to.not.be.reverted;
             });
 
             it("User should post note with profile link", async function () {

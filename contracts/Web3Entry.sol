@@ -188,15 +188,15 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function linkNote(DataTypes.linkNoteData calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
-        _validateProfileExists(vars.toProfileId);
+        _validateNoteExists(vars.toProfileId, vars.toNoteId);
 
         LinkLogic.linkNote(vars, _linklist, _noteByIdByProfile, _attachedLinklists);
     }
 
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
-        _validateProfileExists(vars.toProfileId);
-        _validateNoteExists(vars.toProfileId, vars.toNoteId);
+        // do note check note
+        // _validateNoteExists(vars.toProfileId, vars.toNoteId);
 
         uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
         _validateLinklistAttached(linklistId, vars.fromProfileId);
@@ -388,6 +388,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function mintNote(DataTypes.MintNoteData calldata vars) external returns (uint256) {
+        _validateNoteExists(vars.profileId, vars.noteId);
+
         return
             PostLogic.mintNote(
                 vars.profileId,
@@ -705,6 +707,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function _validateNoteExists(uint256 profileId, uint256 noteId) internal view {
+        require(!_noteByIdByProfile[profileId][noteId].deleted, "NoteIsDeleted");
         require(noteId <= _profileById[profileId].noteCount, "NoteNotExists");
     }
 
