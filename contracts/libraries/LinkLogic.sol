@@ -17,7 +17,7 @@ library LinkLogic {
         bytes memory data,
         address linker,
         address linklist,
-        mapping(uint256 => DataTypes.Profile) storage _profileById,
+        address linkModule,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         uint256 linklistId = _mintLinklist(
@@ -32,12 +32,8 @@ library LinkLogic {
         ILinklist(linklist).addLinkingProfileId(linklistId, toProfileId);
 
         // process link module
-        if (_profileById[toProfileId].linkModule != address(0)) {
-            ILinkModule4Profile(_profileById[toProfileId].linkModule).processLink(
-                linker,
-                toProfileId,
-                data
-            );
+        if (linkModule != address(0)) {
+            ILinkModule4Profile(linkModule).processLink(linker, toProfileId, data);
         }
 
         emit Events.LinkProfile(msg.sender, fromProfileId, toProfileId, linkType, linklistId);

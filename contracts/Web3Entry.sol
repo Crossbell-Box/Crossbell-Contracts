@@ -121,7 +121,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
             vars.data,
             IERC721Enumerable(this).ownerOf(vars.fromProfileId),
             _linklist,
-            _profileById,
+            _profileById[vars.toProfileId].linkModule,
             _attachedLinklists
         );
     }
@@ -178,7 +178,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
             data,
             IERC721Enumerable(this).ownerOf(fromProfileId),
             _linklist,
-            _profileById,
+            address(0),
             _attachedLinklists
         );
     }
