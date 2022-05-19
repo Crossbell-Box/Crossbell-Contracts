@@ -128,15 +128,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function unlinkProfile(DataTypes.unlinkProfileData calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
-        _validateProfileExists(vars.toProfileId);
 
-        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
-        _validateLinklistAttached(linklistId, vars.fromProfileId);
-
-        // remove from link list
-        ILinklist(_linklist).removeLinkingProfileId(linklistId, vars.toProfileId);
-
-        emit Events.UnlinkProfile(msg.sender, vars.fromProfileId, vars.toProfileId, vars.linkType);
+        LinkLogic.unlinkProfile(vars, _linklist, _attachedLinklists);
     }
 
     function createThenLinkProfile(DataTypes.createThenLinkProfileData calldata vars) external {
@@ -195,22 +188,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
-        // do note check note
-        // _validateNoteExists(vars.toProfileId, vars.toNoteId);
 
-        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
-        _validateLinklistAttached(linklistId, vars.fromProfileId);
-
-        // remove from link list
-        ILinklist(_linklist).removeLinkingNote(linklistId, vars.toProfileId, vars.toNoteId);
-
-        emit Events.UnlinkNote(
-            vars.fromProfileId,
-            vars.toProfileId,
-            vars.toNoteId,
-            vars.linkType,
-            linklistId
-        );
+        LinkLogic.unlinkNote(vars, _linklist, _attachedLinklists);
     }
 
     function linkERC721(DataTypes.linkERC721Data calldata vars) external {
@@ -223,19 +202,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
 
-        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
-        _validateLinklistAttached(linklistId, vars.fromProfileId);
-
-        // remove from link list
-        ILinklist(_linklist).removeLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId);
-
-        emit Events.UnlinkERC721(
-            vars.fromProfileId,
-            vars.tokenAddress,
-            vars.tokenId,
-            vars.linkType,
-            linklistId
-        );
+        LinkLogic.unlinkERC721(vars, _linklist, _attachedLinklists);
     }
 
     function linkAddress(DataTypes.linkAddressData calldata vars) external {
@@ -247,13 +214,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function unlinkAddress(DataTypes.linkAddressData calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
 
-        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
-        _validateLinklistAttached(linklistId, vars.fromProfileId);
-
-        // remove from link list
-        ILinklist(_linklist).removeLinkingAddress(linklistId, vars.ethAddress);
-
-        emit Events.UnlinkAddress(vars.fromProfileId, vars.ethAddress, vars.linkType);
+        LinkLogic.unlinkAddress(vars, _linklist, _attachedLinklists);
     }
 
     function linkAny(DataTypes.linkAnyData calldata vars) external {
@@ -265,13 +226,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function unlinkAny(DataTypes.unlinkAnyData calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
 
-        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
-        _validateLinklistAttached(linklistId, vars.fromProfileId);
-
-        // remove from link list
-        ILinklist(_linklist).removeLinkingAny(linklistId, vars.toUri);
-
-        emit Events.UnlinkAny(vars.fromProfileId, vars.toUri, vars.linkType);
+        LinkLogic.unlinkAny(vars, _linklist, _attachedLinklists);
     }
 
     function linkProfileLink(
@@ -291,19 +246,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     ) external {
         _validateCallerIsProfileOwner(fromProfileId);
 
-        uint256 linklistId = _attachedLinklists[fromProfileId][linkType];
-        _validateLinklistAttached(linklistId, fromProfileId);
-
-        // remove from link list
-        ILinklist(_linklist).removeLinkingProfileLink(linklistId, linkData);
-
-        // event
-        emit Events.UnlinkProfileLink(
+        LinkLogic.unlinkProfileLink(
             fromProfileId,
+            linkData,
             linkType,
-            linkData.fromProfileId,
-            linkData.toProfileId,
-            linkData.linkType
+            _linklist,
+            _attachedLinklists
         );
     }
 
@@ -316,18 +264,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function unlinkLinklist(DataTypes.linkLinklistData calldata vars) external {
         _validateCallerIsProfileOwner(vars.fromProfileId);
 
-        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
-        _validateLinklistAttached(linklistId, vars.fromProfileId);
-
-        // add to link list
-        ILinklist(_linklist).removeLinkingLinklistId(linklistId, vars.toLinkListId);
-
-        emit Events.UnlinkLinklist(
-            vars.fromProfileId,
-            vars.toLinkListId,
-            vars.linkType,
-            linklistId
-        );
+        LinkLogic.unlinkLinklist(vars, _linklist, _attachedLinklists);
     }
 
     // set link module for his profile
