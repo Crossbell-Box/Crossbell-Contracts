@@ -40,13 +40,35 @@ makeSuiteCleanRoom("Profile Creation", function () {
                 ).to.be.revertedWith("HandleLengthInvalid");
             });
 
+            it("User should fail to create profile with handle too short", async function () {
+                await expect(
+                    web3Entry.createProfile({
+                        to: userAddress,
+                        handle: "a",
+                        uri: MOCK_PROFILE_URI,
+                        linkModule: ethers.constants.AddressZero,
+                        linkModuleInitData: [],
+                    })
+                ).to.be.revertedWith("HandleLengthInvalid");
+
+                await expect(
+                    web3Entry.createProfile({
+                        to: userAddress,
+                        handle: "ab",
+                        uri: MOCK_PROFILE_URI,
+                        linkModule: ethers.constants.AddressZero,
+                        linkModuleInitData: [],
+                    })
+                ).to.be.revertedWith("HandleLengthInvalid");
+            });
+
             it("User should fail to create profile with invalid handle", async function () {
                 const arr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()+|[]:",'.split("");
                 for (const c of arr) {
                     await expect(
                         web3Entry.createProfile({
                             to: userAddress,
-                            handle: c,
+                            handle: c + "ab",
                             uri: MOCK_PROFILE_URI,
                             linkModule: ethers.constants.AddressZero,
                             linkModuleInitData: [],

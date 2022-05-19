@@ -99,7 +99,8 @@ library ProfileLogic {
     function _validateHandle(string calldata handle) private pure {
         bytes memory byteHandle = bytes(handle);
         require(
-            byteHandle.length != 0 && byteHandle.length <= Constants.MAX_HANDLE_LENGTH,
+            byteHandle.length >= Constants.MIN_HANDLE_LENGTH &&
+                byteHandle.length <= Constants.MAX_HANDLE_LENGTH,
             "HandleLengthInvalid"
         );
 

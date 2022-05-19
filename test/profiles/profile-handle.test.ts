@@ -61,15 +61,15 @@ makeSuiteCleanRoom("Profile handle Functionality ", function () {
                 const arr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()+|[]:",'.split("");
                 for (const c of arr) {
                     // create profile
-                    const profileData = makeProfileData(c);
+                    const profileData = makeProfileData(c + "ab");
                     await expect(web3Entry.createProfile(profileData)).to.be.revertedWith(
                         ERRORS.HANDLE_CONTAINS_INVALID_CHARS
                     );
 
                     // set handle
-                    await expect(web3Entry.setHandle(FIRST_PROFILE_ID, c)).to.be.revertedWith(
-                        ERRORS.HANDLE_CONTAINS_INVALID_CHARS
-                    );
+                    await expect(
+                        web3Entry.setHandle(FIRST_PROFILE_ID, c + "ab")
+                    ).to.be.revertedWith(ERRORS.HANDLE_CONTAINS_INVALID_CHARS);
                 }
             });
 
