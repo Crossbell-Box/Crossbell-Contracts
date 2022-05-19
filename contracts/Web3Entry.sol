@@ -630,28 +630,35 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         }
     }
 
-    function getLinkingNotes(uint256 tokenId)
+    function getLinkingNotes(uint256 fromProfileId, bytes32 linkType)
         external
         view
         returns (DataTypes.Note[] memory results)
     {
-        DataTypes.NoteStruct[] memory notes = ILinklist(_linklist).getLinkingNotes(tokenId);
+        uint256 linkListId = _attachedLinklists[fromProfileId][linkType];
+        DataTypes.NoteStruct[] memory notes = ILinklist(_linklist).getLinkingNotes(linkListId);
         results = new DataTypes.Note[](notes.length);
         for (uint256 i = 0; i < notes.length; i++) {
             results[i] = _noteByIdByProfile[notes[i].profileId][notes[i].noteId];
         }
     }
 
-    function getLinkingERC721s(uint256 tokenId)
+    function getLinkingERC721s(uint256 fromProfileId, bytes32 linkType)
         external
         view
         returns (DataTypes.ERC721Struct[] memory results)
     {
-        return ILinklist(_linklist).getLinkingERC721s(tokenId);
+        uint256 linkListId = _attachedLinklists[fromProfileId][linkType];
+        return ILinklist(_linklist).getLinkingERC721s(linkListId);
     }
 
-    function getLinkingAnys(uint256 tokenId) external view returns (string[] memory results) {
-        return ILinklist(_linklist).getLinkingAnys(tokenId);
+    function getLinkingAnys(uint256 fromProfileId, bytes32 linkType)
+        external
+        view
+        returns (string[] memory results)
+    {
+        uint256 linkListId = _attachedLinklists[fromProfileId][linkType];
+        return ILinklist(_linklist).getLinkingAnys(linkListId);
     }
 
     function getLinklistContract() external view returns (address) {
