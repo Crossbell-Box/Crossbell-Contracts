@@ -37,4 +37,32 @@ contract Periphery is Initializable {
             );
         }
     }
+
+    function createProfileThenPostNote(DataTypes.createProfileThenPostNoteData calldata vars)
+        external
+    {
+        // create profile
+        web3Entry.createProfile(
+            DataTypes.CreateProfileData({
+                to: msg.sender,
+                handle: vars.handle,
+                uri: vars.uri,
+                linkModule: vars.profileLinkModule,
+                linkModuleInitData: vars.profileLinkModuleInitData
+            })
+        );
+
+        // post note
+        uint256 primaryProfileId = web3Entry.getPrimaryProfileId(msg.sender);
+        web3Entry.postNote(
+            DataTypes.PostNoteData({
+                profileId: primaryProfileId,
+                contentUri: vars.contentUri,
+                linkModule: vars.noteLinkModule,
+                linkModuleInitData: vars.noteLinkModuleInitData,
+                mintModule: vars.mintModule,
+                mintModuleInitData: vars.mintModuleInitData
+            })
+        );
+    }
 }

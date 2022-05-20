@@ -11,6 +11,7 @@ import {
     Events,
     Linklist,
     Web3Entry,
+    Periphery,
     Currency,
     FeeMintModule,
     Linklist__factory,
@@ -63,6 +64,7 @@ export const LinkItemTypeAny = "0x416e794c696e6b00000000000000000000000000000000
 export let eventsLib: Events;
 export let linklist: Linklist;
 export let web3Entry: Web3Entry;
+export let periphery: Periphery;
 export let currency: Currency;
 export let approvalLinkModule4Profile: ApprovalLinkModule4Profile;
 export let feeMintModule: FeeMintModule;
@@ -143,6 +145,9 @@ beforeEach(async () => {
     });
     web3EntryImpl = await Web3Entry.deploy();
 
+    const Periphery = await ethers.getContractFactory("Periphery");
+    periphery = await Periphery.deploy();
+
     const TransparentUpgradeableProxy = await ethers.getContractFactory(
         "TransparentUpgradeableProxy"
     );
@@ -171,6 +176,7 @@ beforeEach(async () => {
         linklist.address,
         mintNFT.address
     );
+    await periphery.initialize(web3Entry.address);
 
     // Currency
     const Currency = await ethers.getContractFactory("Currency");
@@ -194,6 +200,7 @@ beforeEach(async () => {
     expect(currency).to.not.be.undefined;
     expect(web3Entry).to.not.be.undefined;
     expect(linklist).to.not.be.undefined;
+    expect(periphery).to.not.be.undefined;
 
     eventsLib = await new Events__factory(deployer).deploy();
 });

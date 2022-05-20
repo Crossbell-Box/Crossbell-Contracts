@@ -142,6 +142,18 @@ library DataTypes {
         bytes32 linkType;
     }
 
+    struct createProfileThenPostNoteData {
+        string handle;
+        string uri;
+        address profileLinkModule;
+        bytes profileLinkModuleInitData;
+        string contentUri;
+        address noteLinkModule;
+        bytes noteLinkModuleInitData;
+        address mintModule;
+        bytes mintModuleInitData;
+    }
+
     struct LinkData {
         uint256 linklistId;
         uint256 linkItemType;

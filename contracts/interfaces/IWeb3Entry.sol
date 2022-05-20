@@ -159,7 +159,7 @@ interface IWeb3Entry {
     function getLinkingNotes(uint256 fromProfileId, bytes32 linkType)
         external
         view
-        returns (DataTypes.Note[] memory results);
+        returns (DataTypes.Note[] memory);
 
     function getLinkingNote(bytes32 linkKey) external view returns (DataTypes.NoteStruct memory);
 
