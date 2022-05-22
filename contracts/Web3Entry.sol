@@ -17,6 +17,7 @@ import "./libraries/LinkModuleLogic.sol";
 import "./libraries/LinkLogic.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
 contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     using Strings for uint256;
@@ -78,26 +79,24 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function setPrimaryProfileId(uint256 profileId) external {
         _validateCallerIsProfileOwner(profileId);
-
         _primaryProfileByAddress[msg.sender] = profileId;
 
         emit Events.SetPrimaryProfileId(msg.sender, profileId);
     }
 
     function attachLinklist(uint256 linklistId, uint256 profileId) public {
-        bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
-        require(
-            _attachedLinklists[profileId][linkType] == 0,
-            "Same type linklist already existed."
-        );
+        _validateCallerIsProfileOwner(profileId);
 
-        _takeOverLinkList(linklistId, profileId);
+        bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
+        ILinklist(_linklist).setTakeOver(linklistId, msg.sender, profileId);
         _attachedLinklists[profileId][linkType] = linklistId;
 
         emit Events.AttachLinklist(linklistId, profileId, linkType);
     }
 
     function detachLinklist(uint256 linklistId, uint256 profileId) public {
+        _validateCallerIsProfileOwner(profileId);
+
         bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
         _attachedLinklists[profileId][linkType] = 0;
 
@@ -527,6 +526,22 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         return _noteByIdByProfile[profileId][noteId];
     }
 
+    function getNotesByProfileId(
+        uint256 profileId,
+        uint256 offset,
+        uint256 limit
+    ) external view returns (DataTypes.Note[] memory results) {
+        uint256 count = _profileById[profileId].noteCount;
+        limit = Math.min(limit, count - offset);
+
+        results = new DataTypes.Note[](limit);
+        if (offset >= count) return results;
+
+        for (uint256 i = offset; i < limit; i++) {
+            results[i] = _noteByIdByProfile[profileId][i];
+        }
+    }
+
     function getLinkModule4Address(address account) external view returns (address) {
         return _linkModules4Address[account];
     }
@@ -559,88 +574,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         return ILinklist(_linklist).getLinkType(linkListId);
     }
 
-    function getLinkingProfileIds(uint256 fromProfileId, bytes32 linkType)
-        external
-        view
-        returns (uint256[] memory results)
-    {
-        uint256 linkListId = _attachedLinklists[fromProfileId][linkType];
-        uint256[] memory linkingProfileIds = ILinklist(_linklist).getLinkingProfileIds(linkListId);
-
-        uint256 len = linkingProfileIds.length;
-
-        uint256 count;
-        for (uint256 i = 0; i < len; i++) {
-            if (_exists(linkingProfileIds[i])) {
-                count++;
-            }
-        }
-
-        results = new uint256[](count);
-        uint256 j;
-        for (uint256 i = 0; i < len; i++) {
-            if (_exists(linkingProfileIds[i])) {
-                results[j] = linkingProfileIds[i];
-                j++;
-            }
-        }
-    }
-
-    function getLinkingNotes(uint256 fromProfileId, bytes32 linkType)
-        external
-        view
-        returns (DataTypes.Note[] memory results)
-    {
-        uint256 linkListId = _attachedLinklists[fromProfileId][linkType];
-        DataTypes.NoteStruct[] memory notes = ILinklist(_linklist).getLinkingNotes(linkListId);
-        results = new DataTypes.Note[](notes.length);
-        for (uint256 i = 0; i < notes.length; i++) {
-            results[i] = _noteByIdByProfile[notes[i].profileId][notes[i].noteId];
-        }
-    }
-
-    function getLinkingNote(bytes32 linkKey) external view returns (DataTypes.NoteStruct memory) {
-        return ILinklist(_linklist).getLinkingNote(linkKey);
-    }
-
-    function getLinkingERC721s(uint256 fromProfileId, bytes32 linkType)
-        external
-        view
-        returns (DataTypes.ERC721Struct[] memory results)
-    {
-        uint256 linkListId = _attachedLinklists[fromProfileId][linkType];
-        return ILinklist(_linklist).getLinkingERC721s(linkListId);
-    }
-
-    function getLinkingERC721(bytes32 linkKey)
-        external
-        view
-        returns (DataTypes.ERC721Struct memory)
-    {
-        return ILinklist(_linklist).getLinkingERC721(linkKey);
-    }
-
-    function getLinkingAnys(uint256 fromProfileId, bytes32 linkType)
-        external
-        view
-        returns (string[] memory results)
-    {
-        uint256 linkListId = _attachedLinklists[fromProfileId][linkType];
-        return ILinklist(_linklist).getLinkingAnys(linkListId);
-    }
-
-    function getLinkingAny(bytes32 linkKey) external view returns (string memory) {
-        return ILinklist(_linklist).getLinkingAny(linkKey);
-    }
-
     function getLinklistContract() external view returns (address) {
         return _linklist;
-    }
-
-    function _takeOverLinkList(uint256 tokenId, uint256 profileId) internal {
-        _validateCallerIsProfileOwner(profileId);
-
-        ILinklist(_linklist).setTakeOver(tokenId, msg.sender, profileId);
     }
 
     function _beforeTokenTransfer(
