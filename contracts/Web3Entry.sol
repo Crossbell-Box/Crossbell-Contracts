@@ -483,8 +483,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function burn(uint256 tokenId) public override {
         super.burn(tokenId);
 
+        // clear handle
         bytes32 handleHash = keccak256(bytes(_profileById[tokenId].handle));
         _profileIdByHandleHash[handleHash] = 0;
+
+        // clear profile
+        delete _profileById[tokenId];
     }
 
     function getPrimaryProfileId(address account) external view returns (uint256) {
