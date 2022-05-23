@@ -10,6 +10,8 @@ import {
     makeSuiteCleanRoom,
     linklist,
     ARBITRARY_LINKTYPE,
+    userThree,
+    userThreeAddress,
 } from "../setup.test";
 import { makeProfileData, matchLinkingProfileIds } from "../helpers/utils";
 import { FOLLOW_LINKTYPE, userTwo } from "../setup.test";
@@ -133,6 +135,20 @@ makeSuiteCleanRoom("Link", function () {
                 expect(linklistUri).to.eq("");
                 expect(total).to.eq(1);
             });
+
+            it("User should set a dispatcher and the dispatcher should unlink a profile", async function () {
+                await web3Entry.setDispatcher(FIRST_PROFILE_ID, userThreeAddress);
+
+                await expect(
+                    web3Entry.connect(userThree).unlinkProfile({
+                        fromProfileId: FIRST_PROFILE_ID,
+                        toProfileId: SECOND_PROFILE_ID,
+                        linkType: FOLLOW_LINKTYPE,
+                    })
+                ).to.not.be.reverted;
+                await matchLinkingProfileIds(FIRST_PROFILE_ID, FOLLOW_LINKTYPE, []);
+            });
+
             it("User could link a profile twice, and get correct linking profile ids.", async function () {
                 await expect(
                     web3Entry.linkProfile({

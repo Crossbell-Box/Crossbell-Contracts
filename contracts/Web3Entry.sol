@@ -58,19 +58,19 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function setHandle(uint256 profileId, string calldata newHandle) external {
-        _validateCallerIsProfileOwner(profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(profileId);
 
         ProfileLogic.setHandle(profileId, newHandle, _profileIdByHandleHash, _profileById);
     }
 
     function setSocialToken(uint256 profileId, address tokenAddress) external {
-        _validateCallerIsProfileOwner(profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(profileId);
 
         ProfileLogic.setSocialToken(profileId, tokenAddress, _profileById);
     }
 
     function setProfileUri(uint256 profileId, string calldata newUri) external {
-        _validateCallerIsProfileOwner(profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(profileId);
 
         _profileById[profileId].uri = newUri;
 
@@ -78,14 +78,19 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function setPrimaryProfileId(uint256 profileId) external {
-        _validateCallerIsProfileOwner(profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(profileId);
         _primaryProfileByAddress[msg.sender] = profileId;
 
         emit Events.SetPrimaryProfileId(msg.sender, profileId);
     }
 
-    function attachLinklist(uint256 linklistId, uint256 profileId) public {
+    function setDispatcher(uint256 profileId, address dispatcher) external {
         _validateCallerIsProfileOwner(profileId);
+        _setDispatcher(profileId, dispatcher);
+    }
+
+    function attachLinklist(uint256 linklistId, uint256 profileId) public {
+        _validateCallerIsProfileOwnerOrDispatcher(profileId);
 
         bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
         ILinklist(_linklist).setTakeOver(linklistId, msg.sender, profileId);
@@ -95,7 +100,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function detachLinklist(uint256 linklistId, uint256 profileId) public {
-        _validateCallerIsProfileOwner(profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(profileId);
 
         bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
         _attachedLinklists[profileId][linkType] = 0;
@@ -110,7 +115,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function linkProfile(DataTypes.linkProfileData calldata vars) external {
-        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
         _validateProfileExists(vars.toProfileId);
 
         LinkLogic.linkProfile(
@@ -126,7 +131,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function unlinkProfile(DataTypes.unlinkProfileData calldata vars) external {
-        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
 
         LinkLogic.unlinkProfile(
             vars,
@@ -145,7 +150,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         bytes32 linkType,
         bytes memory data
     ) internal {
-        _validateCallerIsProfileOwner(fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(fromProfileId);
         require(_primaryProfileByAddress[to] == 0, "Target address already has primary profile.");
 
         uint256 profileId = ++_profileCounter;
@@ -183,27 +188,27 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function linkNote(DataTypes.linkNoteData calldata vars) external {
-        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
         _validateNoteExists(vars.toProfileId, vars.toNoteId);
 
         LinkLogic.linkNote(vars, _linklist, _noteByIdByProfile, _attachedLinklists);
     }
 
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external {
-        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
 
         LinkLogic.unlinkNote(vars, _linklist, _attachedLinklists);
     }
 
     function linkERC721(DataTypes.linkERC721Data calldata vars) external {
-        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
         _validateERC721Exists(vars.tokenAddress, vars.tokenId);
 
         LinkLogic.linkERC721(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external {
-        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
 
         LinkLogic.unlinkERC721(
             vars,
@@ -213,13 +218,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function linkAddress(DataTypes.linkAddressData calldata vars) external {
-        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
 
         LinkLogic.linkAddress(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkAddress(DataTypes.linkAddressData calldata vars) external {
-        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
 
         LinkLogic.unlinkAddress(
             vars,
@@ -229,13 +234,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function linkAny(DataTypes.linkAnyData calldata vars) external {
-        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
 
         LinkLogic.linkAny(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkAny(DataTypes.unlinkAnyData calldata vars) external {
-        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
 
         LinkLogic.unlinkAny(vars, _linklist, _attachedLinklists[vars.fromProfileId][vars.linkType]);
     }
@@ -245,7 +250,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         DataTypes.ProfileLinkStruct calldata linkData,
         bytes32 linkType
     ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(fromProfileId);
 
         LinkLogic.linkProfileLink(fromProfileId, linkData, linkType, _linklist, _attachedLinklists);
     }
@@ -255,7 +260,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         DataTypes.ProfileLinkStruct calldata linkData,
         bytes32 linkType
     ) external {
-        _validateCallerIsProfileOwner(fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(fromProfileId);
 
         LinkLogic.unlinkProfileLink(
             fromProfileId,
@@ -267,13 +272,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
-        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
 
         LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkLinklist(DataTypes.linkLinklistData calldata vars) external {
-        _validateCallerIsProfileOwner(vars.fromProfileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
 
         LinkLogic.unlinkLinklist(
             vars,
@@ -284,7 +289,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     // set link module for his profile
     function setLinkModule4Profile(DataTypes.setLinkModule4ProfileData calldata vars) external {
-        _validateCallerIsProfileOwner(vars.profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.profileId);
 
         ProfileLogic.setProfileLinkModule(
             vars.profileId,
@@ -295,7 +300,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external {
-        _validateCallerIsProfileOwner(vars.profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.profileId);
         _validateNoteExists(vars.profileId, vars.noteId);
 
         LinkModuleLogic.setLinkModule4Note(
@@ -355,7 +360,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external {
-        _validateCallerIsProfileOwner(vars.profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.profileId);
         _validateNoteExists(vars.profileId, vars.noteId);
 
         LinkModuleLogic.setMintModule4Note(
@@ -368,7 +373,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256) {
-        _validateCallerIsProfileOwner(vars.profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(vars.profileId);
 
         uint256 noteId = ++_profileById[vars.profileId].noteCount;
 
@@ -377,7 +382,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function deleteNote(uint256 profileId, uint256 noteId) external {
-        _validateCallerIsProfileOwner(profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(profileId);
         _validateNoteExists(profileId, noteId);
 
         _noteByIdByProfile[profileId][noteId].deleted = true;
@@ -387,7 +392,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         DataTypes.PostNoteData calldata noteData,
         DataTypes.linkProfileData calldata linkData
     ) external returns (uint256) {
-        _validateCallerIsProfileOwner(noteData.profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeProfileLink;
         bytes32 linkKey = bytes32(linkData.toProfileId);
@@ -403,7 +408,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         DataTypes.PostNoteData calldata noteData,
         DataTypes.linkAddressData calldata linkData
     ) external returns (uint256) {
-        _validateCallerIsProfileOwner(noteData.profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeAddressLink;
         bytes32 linkKey = bytes32(uint256(uint160(linkData.ethAddress)));
@@ -419,7 +424,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         DataTypes.PostNoteData calldata noteData,
         DataTypes.linkLinklistData calldata linkData
     ) external returns (uint256) {
-        _validateCallerIsProfileOwner(noteData.profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeListLink;
         bytes32 linkKey = bytes32(linkData.toLinkListId);
@@ -435,7 +440,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         DataTypes.PostNoteData calldata noteData,
         DataTypes.linkNoteData calldata linkData
     ) external returns (uint256) {
-        _validateCallerIsProfileOwner(noteData.profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeNoteLink;
         bytes32 linkKey = keccak256(abi.encodePacked(linkData.toProfileId, linkData.toNoteId));
@@ -451,7 +456,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         DataTypes.PostNoteData calldata noteData,
         DataTypes.linkERC721Data calldata linkData
     ) external returns (uint256) {
-        _validateCallerIsProfileOwner(noteData.profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
         _validateERC721Exists(linkData.tokenAddress, linkData.tokenId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeERC721Link;
@@ -468,7 +473,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         DataTypes.PostNoteData calldata noteData,
         DataTypes.linkAnyData calldata linkData
     ) external returns (uint256) {
-        _validateCallerIsProfileOwner(noteData.profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeAnyLink;
         bytes32 linkKey = keccak256(abi.encodePacked("LinkAny", linkData.toUri));
@@ -520,6 +525,10 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function getProfileUri(uint256 profileId) external view returns (string memory) {
         return tokenURI(profileId);
+    }
+
+    function getDispatcher(uint256 profileId) external view returns (address) {
+        return _dispatcherByProfile[profileId];
     }
 
     function getNote(uint256 profileId, uint256 noteId)
@@ -587,6 +596,10 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         address to,
         uint256 tokenId
     ) internal override {
+        if (_dispatcherByProfile[tokenId] != address(0)) {
+            _setDispatcher(tokenId, address(0));
+        }
+
         if (_primaryProfileByAddress[from] != 0) {
             _primaryProfileByAddress[from] = 0;
         }
@@ -595,9 +608,26 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     }
 
     function isWhitelistedContracts(address account) public view returns (bool) {
+        return true;
+
         // add the periphery contract to whitelist temporarily
         address periphery = 0x96e96b7AF62D628cE7eb2016D2c1D2786614eA73;
         return account == periphery;
+    }
+
+    function _setDispatcher(uint256 profileId, address dispatcher) internal {
+        _dispatcherByProfile[profileId] = dispatcher;
+        emit Events.SetDispatcher(profileId, dispatcher, block.timestamp);
+    }
+
+    function _validateCallerIsProfileOwnerOrDispatcher(uint256 profileId) internal view {
+        address owner = ownerOf(profileId);
+        require(
+            msg.sender == owner ||
+                msg.sender == _dispatcherByProfile[profileId] ||
+                (tx.origin == owner && isWhitelistedContracts(msg.sender)),
+            "NotProfileOwner"
+        );
     }
 
     function _validateCallerIsProfileOwner(uint256 profileId) internal view {
