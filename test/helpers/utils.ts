@@ -8,6 +8,7 @@ import {
     MOCK_NOTE_URI,
     MOCK_PROFILE_HANDLE,
     MOCK_PROFILE_URI,
+    periphery,
     userAddress,
     web3Entry,
 } from "../setup.test";
@@ -207,11 +208,11 @@ export async function matchLinkingProfileIds(
     linkType: BytesLike,
     expectedArgs: number[]
 ) {
-    const linklist = await web3Entry.getLinkingProfileIds(fromProfileId, linkType);
-    if (linklist.length !== expectedArgs.length) {
-        logger.throwError(`Linklist mismatched. Expected args are of invalid length`);
+    const linkingProfileIds = await periphery.getLinkingProfileIds(fromProfileId, linkType);
+    if (linkingProfileIds.length !== expectedArgs.length) {
+        logger.throwError(`linkingProfileIds mismatched. Expected args are of invalid length`);
     }
-    for (let i = 0; i < linklist.length; i++) {
-        expect(linklist[i]).to.eq(expectedArgs[i]);
+    for (let i = 0; i < linkingProfileIds.length; i++) {
+        expect(linkingProfileIds[i]).to.eq(expectedArgs[i]);
     }
 }

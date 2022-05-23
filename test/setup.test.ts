@@ -177,6 +177,7 @@ beforeEach(async () => {
         mintNFT.address
     );
     await periphery.initialize(web3Entry.address);
+    await periphery.initLinklist(linklist.address);
 
     // Currency
     const Currency = await ethers.getContractFactory("Currency");
