@@ -12,6 +12,7 @@ import {
     Linklist,
     Web3Entry,
     Periphery,
+    Resolver,
     Currency,
     FeeMintModule,
     Linklist__factory,
@@ -65,6 +66,7 @@ export let eventsLib: Events;
 export let linklist: Linklist;
 export let web3Entry: Web3Entry;
 export let periphery: Periphery;
+export let resolver: Resolver;
 export let currency: Currency;
 export let approvalLinkModule4Profile: ApprovalLinkModule4Profile;
 export let feeMintModule: FeeMintModule;
@@ -133,7 +135,7 @@ beforeEach(async () => {
     const mintNFT = await MintNFT.deploy();
 
     const Resolver = await ethers.getContractFactory("Resolver");
-    const resolver = await Resolver.deploy();
+    resolver = await Resolver.deploy();
 
     const Linklist = await ethers.getContractFactory("Linklist");
     linklistImpl = await Linklist.deploy();
