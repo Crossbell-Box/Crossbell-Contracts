@@ -14,14 +14,8 @@ contract Periphery is Initializable {
     bool private linklistInitialized;
     address public linklist;
 
-    function initialize(address _web3Entry) external initializer {
+    function initialize(address _web3Entry, address _linklist) external initializer {
         web3Entry = _web3Entry;
-    }
-
-    function initLinklist(address _linklist) external {
-        require(!linklistInitialized, "linklist has already been initialized");
-
-        linklistInitialized = true;
         linklist = _linklist;
     }
 

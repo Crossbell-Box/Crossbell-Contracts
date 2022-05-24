@@ -34,7 +34,7 @@ makeSuiteCleanRoom("Upgradeability", function () {
         );
 
         let prevStorage: string[] = [];
-        for (let i = 0; i < 23; i++) {
+        for (let i = 0; i < 24; i++) {
             const valueAt = await ethers.provider.getStorageAt(proxyWeb3Entry.address, i);
             // console.log(i, valueAt.toString());
             prevStorage.push(valueAt);
@@ -45,8 +45,11 @@ makeSuiteCleanRoom("Upgradeability", function () {
         //
         // const linklist = await web3Entry.getLinklistContract();
         // console.log("linklist:", linklist.toString());
+        //
+        // const resolver = await web3Entry.resolver();
+        // console.log("resolver:", resolver.toString());
 
-        let prevNextSlot = await ethers.provider.getStorageAt(proxyWeb3Entry.address, 23);
+        let prevNextSlot = await ethers.provider.getStorageAt(proxyWeb3Entry.address, 24);
         const formattedZero = abiCoder.encode(["uint256"], [0]);
         expect(prevNextSlot).to.eq(formattedZero);
 
@@ -57,13 +60,13 @@ makeSuiteCleanRoom("Upgradeability", function () {
             )
         ).to.not.be.reverted;
 
-        for (let i = 0; i < 23; i++) {
+        for (let i = 0; i < 24; i++) {
             const valueAt = await ethers.provider.getStorageAt(proxyWeb3Entry.address, i);
             // console.log(i, valueAt.toString());
             expect(valueAt).to.eq(prevStorage[i]);
         }
 
-        const newNextSlot = await ethers.provider.getStorageAt(proxyWeb3Entry.address, 23);
+        const newNextSlot = await ethers.provider.getStorageAt(proxyWeb3Entry.address, 24);
         const formattedValue = abiCoder.encode(["uint256"], [valueToSet]);
 
         expect(newNextSlot).to.eq(formattedValue);

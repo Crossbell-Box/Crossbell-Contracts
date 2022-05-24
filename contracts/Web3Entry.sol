@@ -7,6 +7,7 @@ import "./base/NFTBase.sol";
 import "./interfaces/IWeb3Entry.sol";
 import "./interfaces/ILinklist.sol";
 import "./interfaces/ILinkModule4Note.sol";
+import "./interfaces/IResolver.sol";
 import "./storage/Web3EntryStorage.sol";
 import "./storage/Web3EntryExtendStorage.sol";
 import "./libraries/DataTypes.sol";
@@ -30,17 +31,35 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         string calldata _symbol,
         address _linklistContract,
         address _mintNFTImpl,
-        address _periphery
+        address _periphery,
+        address _resolver
     ) external initializer {
         super._initialize(_name, _symbol);
         _linklist = _linklistContract;
         MINT_NFT_IMPL = _mintNFTImpl;
         periphery = _periphery;
+        resolver = _resolver;
 
         emit Events.Web3EntryInitialized(block.timestamp);
     }
 
+    function canCreate(string calldata handle, address account) public view returns (bool) {
+        address ensOwner = IResolver(resolver).getENSRecord(handle);
+        address rnsOwner = IResolver(resolver).getRNSRecord(handle);
+        if (ensOwner == account || rnsOwner == account) {
+            return true;
+        }
+
+        if (ensOwner == address(0) && ensOwner == address(0)) {
+            return true;
+        }
+
+        return false;
+    }
+
     function createProfile(DataTypes.CreateProfileData calldata vars) external {
+        require(canCreate(vars.handle, vars.to), "HandleNotEligible");
+
         _profileCounter = _profileCounter + 1;
 
         // mint profile nft
@@ -62,6 +81,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
     function setHandle(uint256 profileId, string calldata newHandle) external {
         _validateCallerIsProfileOwnerOrDispatcher(profileId);
+        require(canCreate(newHandle, ownerOf(profileId)), "HandleNotEligible");
 
         ProfileLogic.setHandle(profileId, newHandle, _profileIdByHandleHash, _profileById);
     }

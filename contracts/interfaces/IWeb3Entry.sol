@@ -10,7 +10,8 @@ interface IWeb3Entry {
         string calldata _symbol,
         address _linklistContract,
         address _mintNFTImpl,
-        address _periphery
+        address _periphery,
+        address resolver
     ) external;
 
     // createProfile creates a profile, and mint a profile NFT

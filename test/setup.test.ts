@@ -132,6 +132,9 @@ beforeEach(async () => {
     const MintNFT = await ethers.getContractFactory("MintNFT");
     const mintNFT = await MintNFT.deploy();
 
+    const Resolver = await ethers.getContractFactory("Resolver");
+    const resolver = await Resolver.deploy();
+
     const Linklist = await ethers.getContractFactory("Linklist");
     linklistImpl = await Linklist.deploy();
 
@@ -175,10 +178,10 @@ beforeEach(async () => {
         WEB3_ENTRY_NFT_SYMBOL,
         linklist.address,
         mintNFT.address,
-        periphery.address
+        periphery.address,
+        resolver.address
     );
-    await periphery.initialize(web3Entry.address);
-    await periphery.initLinklist(linklist.address);
+    await periphery.initialize(web3Entry.address, linklist.address);
 
     // Currency
     const Currency = await ethers.getContractFactory("Currency");
@@ -203,6 +206,7 @@ beforeEach(async () => {
     expect(web3Entry).to.not.be.undefined;
     expect(linklist).to.not.be.undefined;
     expect(periphery).to.not.be.undefined;
+    expect(resolver).to.not.be.undefined;
 
     eventsLib = await new Events__factory(deployer).deploy();
 });

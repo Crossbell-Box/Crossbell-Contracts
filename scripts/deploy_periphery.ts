@@ -17,6 +17,7 @@ async function main() {
     const admin = owner.address;
 
     const web3EntryProxyAddress = "0xa6f969045641Cf486a747A2688F3a5A6d43cd0D8";
+    const linklistProxyAddress = "0xFc8C75bD5c26F50798758f387B698f207a016b6A";
 
     const Periphery = await ethers.getContractFactory("Periphery");
     const periphery = await Periphery.deploy();
@@ -27,7 +28,10 @@ async function main() {
     await periphery.deployed();
     await proxyPeriphery.deployed();
 
-    await periphery.attach(proxyPeriphery.address).connect(addr1).initialize(web3EntryProxyAddress);
+    await periphery
+        .attach(proxyPeriphery.address)
+        .connect(addr1)
+        .initialize(web3EntryProxyAddress, linklistProxyAddress);
 
     console.log("periphery deployed to:", periphery.address);
     console.log("proxyPeriphery deployed to:", proxyPeriphery.address);
