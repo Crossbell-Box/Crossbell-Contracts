@@ -174,7 +174,8 @@ beforeEach(async () => {
         WEB3_ENTRY_NFT_NAME,
         WEB3_ENTRY_NFT_SYMBOL,
         linklist.address,
-        mintNFT.address
+        mintNFT.address,
+        periphery.address
     );
     await periphery.initialize(web3Entry.address);
     await periphery.initLinklist(linklist.address);

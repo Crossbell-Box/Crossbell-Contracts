@@ -35,6 +35,4 @@ contract Web3EntryStorage {
     // LinkList NFT token contract
     address internal _linklist;
     address internal MINT_NFT_IMPL;
-
-    mapping(uint256 => address) internal _dispatcherByProfile;
 }

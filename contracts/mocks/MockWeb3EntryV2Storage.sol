@@ -12,10 +12,6 @@ contract MockWeb3EntryV2Storage {
     // address => profileId
     mapping(address => uint256) internal _primaryProfileByAddress;
 
-    uint256 internal _profileCounter;
-
-    // LinkList NFT token contract
-    address internal linklist;
     // profileId =>  (linkType => linklistId)
     mapping(uint256 => mapping(bytes32 => uint256)) internal _attachedLinklists;
 
@@ -35,6 +31,8 @@ contract MockWeb3EntryV2Storage {
     // address => linkModule4Address
     mapping(address => address) internal _linkModules4Address;
 
+    uint256 internal _profileCounter;
+    // LinkList NFT token contract
+    address internal _linklist;
     address internal MINT_NFT_IMPL;
-    uint256 internal _additionalValue;
 }

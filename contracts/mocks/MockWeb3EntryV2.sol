@@ -6,8 +6,15 @@ import "../base/NFTBase.sol";
 import "../libraries/DataTypes.sol";
 import "../libraries/Constants.sol";
 import "./MockWeb3EntryV2Storage.sol";
+import "./MockWeb3EntryExtendStorage.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-contract MockWeb3EntryV2 is NFTBase, MockWeb3EntryV2Storage {
+contract MockWeb3EntryV2 is
+    NFTBase,
+    MockWeb3EntryV2Storage,
+    Initializable,
+    MockWeb3EntryExtendStorage
+{
     uint256 internal constant REVISION = 2;
 
     function setAdditionalValue(uint256 newValue) external {

@@ -8,6 +8,7 @@ import "./interfaces/IWeb3Entry.sol";
 import "./interfaces/ILinklist.sol";
 import "./interfaces/ILinkModule4Note.sol";
 import "./storage/Web3EntryStorage.sol";
+import "./storage/Web3EntryExtendStorage.sol";
 import "./libraries/DataTypes.sol";
 import "./libraries/Constants.sol";
 import "./libraries/Events.sol";
@@ -19,7 +20,7 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
-contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
+contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3EntryExtendStorage {
     using Strings for uint256;
 
     uint256 internal constant REVISION = 3;
@@ -28,11 +29,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         string calldata _name,
         string calldata _symbol,
         address _linklistContract,
-        address _mintNFTImpl
+        address _mintNFTImpl,
+        address _periphery
     ) external initializer {
         super._initialize(_name, _symbol);
         _linklist = _linklistContract;
         MINT_NFT_IMPL = _mintNFTImpl;
+        periphery = _periphery;
 
         emit Events.Web3EntryInitialized(block.timestamp);
     }
@@ -607,14 +610,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
-    function isWhitelistedContracts(address account) public view returns (bool) {
-        return true;
-
-        // add the periphery contract to whitelist temporarily
-        address periphery = 0x96e96b7AF62D628cE7eb2016D2c1D2786614eA73;
-        return account == periphery;
-    }
-
     function _setDispatcher(uint256 profileId, address dispatcher) internal {
         _dispatcherByProfile[profileId] = dispatcher;
         emit Events.SetDispatcher(profileId, dispatcher, block.timestamp);
@@ -625,7 +620,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
         require(
             msg.sender == owner ||
                 msg.sender == _dispatcherByProfile[profileId] ||
-                (tx.origin == owner && isWhitelistedContracts(msg.sender)),
+                (tx.origin == owner && msg.sender == periphery),
             "NotProfileOwner"
         );
     }
@@ -633,7 +628,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
     function _validateCallerIsProfileOwner(uint256 profileId) internal view {
         address owner = ownerOf(profileId);
         require(
-            msg.sender == owner || (tx.origin == owner && isWhitelistedContracts(msg.sender)),
+            msg.sender == owner || (tx.origin == owner && msg.sender == periphery),
             "NotProfileOwner"
         );
     }
@@ -661,5 +656,9 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable {
 
     function getRevision() external pure returns (uint256) {
         return REVISION;
+    }
+
+    function getPeriphery() external view returns (address) {
+        return periphery;
     }
 }

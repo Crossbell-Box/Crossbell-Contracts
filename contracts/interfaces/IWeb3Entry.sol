@@ -8,8 +8,9 @@ interface IWeb3Entry {
     function initialize(
         string calldata _name,
         string calldata _symbol,
-        address _linkListContract,
-        address _mintNFTImpl
+        address _linklistContract,
+        address _mintNFTImpl,
+        address _periphery
     ) external;
 
     // createProfile creates a profile, and mint a profile NFT
