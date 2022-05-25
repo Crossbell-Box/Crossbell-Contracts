@@ -36,7 +36,8 @@ library Events {
     event PostNote(
         uint256 indexed profileId,
         uint256 indexed noteId,
-        bytes32 indexed linkItemType,
+        bytes32 indexed linkKey,
+        bytes32 linkItemType,
         bytes data
     );
 

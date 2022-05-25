@@ -59,7 +59,7 @@ library PostLogic {
             );
         }
 
-        emit Events.PostNote(profileId, noteId, linkItemType, data);
+        emit Events.PostNote(profileId, noteId, linkKey, linkItemType, data);
     }
 
     function mintNote(
