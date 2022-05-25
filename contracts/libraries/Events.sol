@@ -36,8 +36,8 @@ library Events {
     event PostNote(
         uint256 indexed profileId,
         uint256 indexed noteId,
-        bool noteWithlink,
-        uint256 timestamp
+        bytes32 indexed linkItemType,
+        bytes data
     );
 
     event LinkProfile(

@@ -70,12 +70,10 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 await expect(
                     web3Entry
                         .connect(userTwo)
-                        .postNote4ProfileLink(makePostNoteData(FIRST_PROFILE_ID.toString()), {
-                            fromProfileId: FIRST_PROFILE_ID,
-                            toProfileId: SECOND_PROFILE_ID,
-                            linkType: FollowLinkType,
-                            data: [],
-                        })
+                        .postNote4ProfileLink(
+                            makePostNoteData(FIRST_PROFILE_ID.toString()),
+                            SECOND_PROFILE_ID
+                        )
                 ).to.be.revertedWith(ERRORS.NOT_PROFILE_OWNER);
             });
 
@@ -317,12 +315,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 // post note
                 const noteData = makePostNoteData("1");
                 await expect(
-                    web3Entry.postNote4ProfileLink(noteData, {
-                        fromProfileId: FIRST_PROFILE_ID,
-                        toProfileId: SECOND_PROFILE_ID,
-                        linkType: FollowLinkType,
-                        data: [],
-                    })
+                    web3Entry.postNote4ProfileLink(noteData, SECOND_PROFILE_ID)
                 ).to.not.be.reverted;
 
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
@@ -362,12 +355,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 // post note
                 const noteData = makePostNoteData();
                 await expect(
-                    web3Entry.postNote4ProfileLink(noteData, {
-                        fromProfileId: FIRST_PROFILE_ID,
-                        toProfileId: userThreeAddress,
-                        linkType: FollowLinkType,
-                        data: [],
-                    })
+                    web3Entry.postNote4ProfileLink(noteData, userThreeAddress)
                 ).to.not.be.reverted;
 
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
@@ -415,12 +403,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 // post note
                 const noteData = makePostNoteData();
                 await expect(
-                    web3Entry.postNote4LinklistLink(noteData, {
-                        fromProfileId: FIRST_PROFILE_ID,
-                        toLinkListId: SECOND_LINKLIST_ID,
-                        linkType: LikeLinkType,
-                        data: [],
-                    })
+                    web3Entry.postNote4LinklistLink(noteData, SECOND_LINKLIST_ID)
                 ).to.not.be.reverted;
 
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);

@@ -403,7 +403,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         uint256 noteId = ++_profileById[vars.profileId].noteCount;
 
-        PostLogic.postNote4Link(vars, noteId, 0, 0, _noteByIdByProfile);
+        PostLogic.postNote4Link(vars, noteId, 0, 0, "", _noteByIdByProfile);
         return noteId;
     }
 
@@ -414,99 +414,146 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         _noteByIdByProfile[profileId][noteId].deleted = true;
     }
 
-    function postNote4ProfileLink(
-        DataTypes.PostNoteData calldata noteData,
-        DataTypes.linkProfileData calldata linkData
-    ) external returns (uint256) {
-        _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
+    function postNote4ProfileLink(DataTypes.PostNoteData calldata postNoteData, uint256 toProfileId)
+        external
+        returns (uint256)
+    {
+        _validateCallerIsProfileOwnerOrDispatcher(postNoteData.profileId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeProfileLink;
-        bytes32 linkKey = bytes32(linkData.toProfileId);
+        bytes32 linkKey = bytes32(toProfileId);
 
-        uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
+        uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
 
-        PostLogic.postNote4Link(noteData, noteId, linkItemType, linkKey, _noteByIdByProfile);
+        PostLogic.postNote4Link(
+            postNoteData,
+            noteId,
+            linkItemType,
+            linkKey,
+            abi.encode(toProfileId),
+            _noteByIdByProfile
+        );
 
         return noteId;
     }
 
-    function postNote4AddressLink(
-        DataTypes.PostNoteData calldata noteData,
-        DataTypes.linkAddressData calldata linkData
-    ) external returns (uint256) {
+    function postNote4AddressLink(DataTypes.PostNoteData calldata noteData, address ethAddress)
+        external
+        returns (uint256)
+    {
         _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeAddressLink;
-        bytes32 linkKey = bytes32(uint256(uint160(linkData.ethAddress)));
+        bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
 
-        uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
+        uint256 noteId = ++_profileById[noteData.profileId].noteCount;
 
-        PostLogic.postNote4Link(noteData, noteId, linkItemType, linkKey, _noteByIdByProfile);
+        PostLogic.postNote4Link(
+            noteData,
+            noteId,
+            linkItemType,
+            linkKey,
+            abi.encode(ethAddress),
+            _noteByIdByProfile
+        );
 
         return noteId;
     }
 
-    function postNote4LinklistLink(
-        DataTypes.PostNoteData calldata noteData,
-        DataTypes.linkLinklistData calldata linkData
-    ) external returns (uint256) {
+    function postNote4LinklistLink(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
+        external
+        returns (uint256)
+    {
         _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeListLink;
-        bytes32 linkKey = bytes32(linkData.toLinkListId);
+        bytes32 linkKey = bytes32(toLinklistId);
 
-        uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
+        uint256 noteId = ++_profileById[noteData.profileId].noteCount;
 
-        PostLogic.postNote4Link(noteData, noteId, linkItemType, linkKey, _noteByIdByProfile);
+        PostLogic.postNote4Link(
+            noteData,
+            noteId,
+            linkItemType,
+            linkKey,
+            abi.encode(toLinklistId),
+            _noteByIdByProfile
+        );
 
         return noteId;
     }
 
     function postNote4NoteLink(
-        DataTypes.PostNoteData calldata noteData,
-        DataTypes.linkNoteData calldata linkData
+        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.NoteStruct calldata note
     ) external returns (uint256) {
-        _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
+        _validateCallerIsProfileOwnerOrDispatcher(postNoteData.profileId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeNoteLink;
-        bytes32 linkKey = keccak256(abi.encodePacked(linkData.toProfileId, linkData.toNoteId));
+        bytes32 linkKey = keccak256(abi.encodePacked("Note", note.profileId, note.noteId));
+        ILinklist(_linklist).addLinkingNote(0, note.profileId, note.noteId);
 
-        uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
+        uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
 
-        PostLogic.postNote4Link(noteData, noteId, linkItemType, linkKey, _noteByIdByProfile);
+        PostLogic.postNote4Link(
+            postNoteData,
+            noteId,
+            linkItemType,
+            linkKey,
+            abi.encode(note.profileId, note.noteId),
+            _noteByIdByProfile
+        );
 
         return noteId;
     }
 
     function postNote4ERC721Link(
-        DataTypes.PostNoteData calldata noteData,
-        DataTypes.linkERC721Data calldata linkData
+        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.ERC721Struct calldata erc721
     ) external returns (uint256) {
-        _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
-        _validateERC721Exists(linkData.tokenAddress, linkData.tokenId);
+        _validateCallerIsProfileOwnerOrDispatcher(postNoteData.profileId);
+        _validateERC721Exists(erc721.tokenAddress, erc721.erc721TokenId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeERC721Link;
-        bytes32 linkKey = keccak256(abi.encodePacked(linkData.tokenAddress, linkData.tokenId));
+        bytes32 linkKey = keccak256(
+            abi.encodePacked("ERC721", erc721.tokenAddress, erc721.erc721TokenId)
+        );
+        ILinklist(_linklist).addLinkingERC721(0, erc721.tokenAddress, erc721.erc721TokenId);
 
-        uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
+        uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
 
-        PostLogic.postNote4Link(noteData, noteId, linkItemType, linkKey, _noteByIdByProfile);
+        PostLogic.postNote4Link(
+            postNoteData,
+            noteId,
+            linkItemType,
+            linkKey,
+            abi.encode(erc721.tokenAddress, erc721.erc721TokenId),
+            _noteByIdByProfile
+        );
 
         return noteId;
     }
 
-    function postNote4AnyLink(
-        DataTypes.PostNoteData calldata noteData,
-        DataTypes.linkAnyData calldata linkData
-    ) external returns (uint256) {
-        _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
+    function postNote4AnyUri(DataTypes.PostNoteData calldata postNoteData, string calldata uri)
+        external
+        returns (uint256)
+    {
+        _validateCallerIsProfileOwnerOrDispatcher(postNoteData.profileId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeAnyLink;
-        bytes32 linkKey = keccak256(abi.encodePacked("LinkAny", linkData.toUri));
+        bytes32 linkKey = keccak256(abi.encodePacked("Any", uri));
+        ILinklist(_linklist).addLinkingAny(0, uri);
 
-        uint256 noteId = ++_profileById[linkData.fromProfileId].noteCount;
+        uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
 
-        PostLogic.postNote4Link(noteData, noteId, linkItemType, linkKey, _noteByIdByProfile);
+        PostLogic.postNote4Link(
+            postNoteData,
+            noteId,
+            linkItemType,
+            linkKey,
+            abi.encode(uri),
+            _noteByIdByProfile
+        );
 
         return noteId;
     }
@@ -685,8 +732,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         return periphery;
     }
 
-    function setResolver(address _resolver) external {
-        resolver = _resolver;
+    function setResolver() external {
+        resolver = 0xa5fa5302Be191fA9f8e7C35Cf5758D8bfDF4C90f;
     }
 
     function getResolver() external view returns (address) {

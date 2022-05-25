@@ -90,35 +90,31 @@ interface IWeb3Entry {
 
     function deleteNote(uint256 profileId, uint256 noteId) external;
 
-    function postNote4ProfileLink(
-        DataTypes.PostNoteData calldata noteData,
-        DataTypes.linkProfileData calldata linkData
-    ) external returns (uint256);
+    function postNote4ProfileLink(DataTypes.PostNoteData calldata postNoteData, uint256 toProfileId)
+        external
+        returns (uint256);
 
-    function postNote4AddressLink(
-        DataTypes.PostNoteData calldata noteData,
-        DataTypes.linkAddressData calldata linkData
-    ) external returns (uint256);
+    function postNote4AddressLink(DataTypes.PostNoteData calldata noteData, address ethAddress)
+        external
+        returns (uint256);
 
-    function postNote4LinklistLink(
-        DataTypes.PostNoteData calldata noteData,
-        DataTypes.linkLinklistData calldata linkData
-    ) external returns (uint256);
+    function postNote4LinklistLink(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
+        external
+        returns (uint256);
 
     function postNote4NoteLink(
-        DataTypes.PostNoteData calldata noteData,
-        DataTypes.linkNoteData calldata linkData
+        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.NoteStruct calldata note
     ) external returns (uint256);
 
     function postNote4ERC721Link(
-        DataTypes.PostNoteData calldata noteData,
-        DataTypes.linkERC721Data calldata linkData
+        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.ERC721Struct calldata erc721
     ) external returns (uint256);
 
-    function postNote4AnyLink(
-        DataTypes.PostNoteData calldata noteData,
-        DataTypes.linkAnyData calldata linkData
-    ) external returns (uint256);
+    function postNote4AnyUri(DataTypes.PostNoteData calldata postNoteData, string calldata uri)
+        external
+        returns (uint256);
 
     function getPrimaryProfileId(address account) external view returns (uint256);
 

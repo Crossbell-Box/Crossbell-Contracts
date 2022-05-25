@@ -18,6 +18,7 @@ library PostLogic {
         uint256 noteId,
         bytes32 linkItemType,
         bytes32 linkKey,
+        bytes calldata data,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile
     ) external {
         uint256 profileId = vars.profileId;
@@ -58,12 +59,7 @@ library PostLogic {
             );
         }
 
-        emit Events.PostNote(
-            profileId,
-            noteId,
-            linkItemType != bytes32(0) ? true : false,
-            block.timestamp
-        );
+        emit Events.PostNote(profileId, noteId, linkItemType, data);
     }
 
     function mintNote(

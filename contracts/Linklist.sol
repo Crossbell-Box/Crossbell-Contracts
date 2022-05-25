@@ -88,7 +88,9 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("Note", toProfileId, toNoteId));
-        linkNoteKeys[tokenId].add(linkKey);
+        if (tokenId != 0) {
+            linkNoteKeys[tokenId].add(linkKey);
+        }
         linkNoteList[linkKey] = DataTypes.NoteStruct({profileId: toProfileId, noteId: toNoteId});
     }
 
@@ -142,7 +144,9 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
                 linkData.linkType
             )
         );
-        linkingProfileLinkKeys[tokenId].add(linkKey);
+        if (tokenId != 0) {
+            linkingProfileLinkKeys[tokenId].add(linkKey);
+        }
         linkingProfileLinkList[linkKey] = linkData;
     }
 
@@ -202,7 +206,9 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("ERC721", tokenAddress, erc721TokenId));
-        linkingERC721Keys[tokenId].add(linkKey);
+        if (tokenId != 0) {
+            linkingERC721Keys[tokenId].add(linkKey);
+        }
         linkingERC721List[linkKey] = DataTypes.ERC721Struct({
             tokenAddress: tokenAddress,
             erc721TokenId: erc721TokenId
@@ -275,7 +281,9 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("Any", toUri));
-        linkingAnyKeys[tokenId].add(linkKey);
+        if (tokenId != 0) {
+            linkingAnyKeys[tokenId].add(linkKey);
+        }
         linkingAnylist[linkKey] = toUri;
     }
 
