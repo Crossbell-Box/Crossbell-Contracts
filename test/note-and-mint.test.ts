@@ -33,6 +33,9 @@ import {
     SECOND_LINKLIST_ID,
     feeMintModule,
     approvalMintModule,
+    THIRD_PROFILE_ID,
+    periphery,
+    SECOND_NOTE_ID,
 } from "./setup.test";
 import { makePostNoteData, makeProfileData, matchEvent, matchNote } from "./helpers/utils";
 import { ERRORS } from "./helpers/errors";
@@ -40,6 +43,7 @@ import { formatBytes32String } from "@ethersproject/strings/src.ts/bytes32";
 // eslint-disable-next-line node/no-missing-import,camelcase
 import { ApprovalMintModule__factory, MintNFT__factory } from "../typechain";
 import { BigNumber } from "ethers";
+import { soliditySha3 } from "web3-utils";
 
 makeSuiteCleanRoom("Note and mint functionality ", function () {
     context("Generic", function () {
@@ -429,6 +433,113 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 expect(await MintNFT__factory.connect(note.mintNFT, deployer).ownerOf(1)).to.equal(
                     userTwoAddress
                 );
+            });
+
+            it("User should post note on ERC721", async function () {
+                // post note
+                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
+
+                // mint note to get an NFT
+                await web3Entry.connect(userThree).mintNote({
+                    profileId: FIRST_PROFILE_ID,
+                    noteId: FIRST_NOTE_ID,
+                    to: userTwoAddress,
+                    mintModuleData: [],
+                });
+                let note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+
+                const erc721TokenAddress = note.mintNFT;
+                const erc721TokenId = 1;
+
+                // user post note 4 note
+                await web3Entry.postNote4ERC721Link(makePostNoteData(FIRST_PROFILE_ID.toString()), {
+                    tokenAddress: erc721TokenAddress,
+                    erc721TokenId: erc721TokenId,
+                });
+
+                note = await web3Entry.getNote(FIRST_PROFILE_ID, SECOND_NOTE_ID);
+                const linkKey = soliditySha3("ERC721", erc721TokenAddress, erc721TokenId);
+                matchNote(note, [
+                    LinkItemTypeERC721,
+                    linkKey,
+                    MOCK_NOTE_URI,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                ]);
+
+                const erc721 = await periphery.getLinkingERC721(linkKey as string);
+                expect(erc721.tokenAddress).to.be.equal(erc721TokenAddress);
+                expect(erc721.erc721TokenId).to.be.equal(erc721TokenId);
+            });
+
+            it("User should post note on any uri", async function () {
+                const uri = "ipfs://QmadFPhP7n5rJkACMY6QqhtLtKgX1ixoySmxQNrU4Wo5JW";
+
+                // user post note 4 uri
+                await web3Entry.postNote4AnyUri(makePostNoteData(FIRST_PROFILE_ID.toString()), uri);
+
+                let note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+                const linkKey = soliditySha3("Any", uri);
+                matchNote(note, [
+                    LinkItemTypeAny,
+                    linkKey,
+                    MOCK_NOTE_URI,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                ]);
+
+                const linkingUri = await periphery.getLinkingAny(linkKey as string);
+                expect(linkingUri).to.be.equal(uri);
+            });
+
+            it("User should post note on note posted by userTwo", async function () {
+                // create profile for userTwo
+                // profile id is 3
+                await web3Entry.createProfile(
+                    makeProfileData("b2423cea4f1047556e7a14", userTwoAddress)
+                );
+                // post note
+                const noteData = makePostNoteData(THIRD_PROFILE_ID.toString());
+                // await expect(web3Entry.connect(userTwo).postNote(noteData)).to.not.be.reverted;
+                await web3Entry.connect(userTwo).postNote(noteData);
+
+                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                ]);
+
+                // user post note 4 note
+                await web3Entry.postNote4NoteLink(makePostNoteData(FIRST_PROFILE_ID.toString()), {
+                    profileId: THIRD_PROFILE_ID,
+                    noteId: FIRST_NOTE_ID,
+                });
+
+                note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+                const linkKey = soliditySha3("Note", THIRD_PROFILE_ID, FIRST_NOTE_ID);
+                matchNote(note, [
+                    LinkItemTypeNote,
+                    linkKey,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                ]);
+
+                const linkingNote = await periphery.getLinkingNote(linkKey as string);
+                expect(linkingNote.profileId).to.be.equal(THIRD_PROFILE_ID);
+                expect(linkingNote.noteId).to.be.equal(FIRST_NOTE_ID);
             });
         });
 

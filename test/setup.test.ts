@@ -25,12 +25,13 @@ import { revertToSnapshot, takeSnapshot } from "./helpers/utils";
 
 export const FIRST_PROFILE_ID = 1;
 export const SECOND_PROFILE_ID = 2;
+export const THIRD_PROFILE_ID = 3;
 
 export const FIRST_LINKLIST_ID = 1;
 export const SECOND_LINKLIST_ID = 2;
 
 export const FIRST_NOTE_ID = 1;
-export const SECOND_NOTE_ID = 1;
+export const SECOND_NOTE_ID = 2;
 
 export const WEB3_ENTRY_NFT_NAME = "Web3 Entry Profile";
 export const WEB3_ENTRY_NFT_SYMBOL = "WEP";
