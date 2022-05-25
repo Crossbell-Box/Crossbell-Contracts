@@ -54,10 +54,12 @@ contract Resolver is IResolver, Ownable {
         for (uint256 i = 0; i < labels.length; i++) {
             bytes32 hash = keccak256(bytes(labels[i]));
             if (ens) {
+                // add ens record
                 require(ensRecords[hash] == address(0), "RecordExists");
                 ensRecords[hash] = owners[i];
                 totalENSCount++;
             } else {
+                // add rns record
                 require(rnsRecords[hash] == address(0), "RecordExists");
                 rnsRecords[hash] = owners[i];
                 totalRNSCount++;

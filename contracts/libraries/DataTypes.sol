@@ -191,7 +191,7 @@ library DataTypes {
 
     // note struct
     struct Note {
-        bytes32 linkItemType;
+        bytes32 linkItemType; // type of note with link
         bytes32 linkKey; // if linkKey is not empty, it is a note with link
         string contentUri;
         address linkModule;

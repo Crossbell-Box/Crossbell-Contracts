@@ -81,8 +81,8 @@ makeSuiteCleanRoom("Profile Creation", function () {
         context("Scenarios", function () {
             it("User should create profile with handle length == 31", async function () {
                 await expect(
-                    web3Entry.createProfile(makeProfileData("_ab2423cea4f1047556e7a14-f1.eth"))
-                ).to.not.be.revertedWith("HandleLengthInvalid");
+                    web3Entry.createProfile(makeProfileData("_b2423cea4f1047556e7a14-f1-eth"))
+                ).to.not.be.reverted;
             });
             it(`User should be able to create a profile with a handle, uri,
                 receive an NFT, and the handle should resolve to the NFT ID,

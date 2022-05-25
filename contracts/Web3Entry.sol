@@ -44,13 +44,16 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function canCreate(string calldata handle, address account) public view returns (bool) {
+        if (resolver == address(0)) {
+            return true;
+        }
         address ensOwner = IResolver(resolver).getENSRecord(handle);
         address rnsOwner = IResolver(resolver).getRNSRecord(handle);
         if (ensOwner == account || rnsOwner == account) {
             return true;
         }
 
-        if (ensOwner == address(0) && ensOwner == address(0)) {
+        if (ensOwner == address(0) && rnsOwner == address(0)) {
             return true;
         }
 
@@ -680,5 +683,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
     function getPeriphery() external view returns (address) {
         return periphery;
+    }
+
+    function setResolver(address _resolver) external {
+        resolver = _resolver;
+    }
+
+    function getResolver() external view returns (address) {
+        return resolver;
     }
 }
