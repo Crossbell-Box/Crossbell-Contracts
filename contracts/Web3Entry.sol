@@ -424,7 +424,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     {
         _validateCallerIsProfileOwnerOrDispatcher(postNoteData.profileId);
 
-        bytes32 linkItemType = Constants.NoteLinkTypeProfileLink;
+        bytes32 linkItemType = Constants.NoteLinkTypeProfile;
         bytes32 linkKey = bytes32(toProfileId);
 
         uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
@@ -434,7 +434,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             noteId,
             linkItemType,
             linkKey,
-            abi.encode(toProfileId),
+            abi.encodePacked(toProfileId),
             _noteByIdByProfile
         );
 
@@ -447,7 +447,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     {
         _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
 
-        bytes32 linkItemType = Constants.NoteLinkTypeAddressLink;
+        bytes32 linkItemType = Constants.NoteLinkTypeAddress;
         bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
 
         uint256 noteId = ++_profileById[noteData.profileId].noteCount;
@@ -457,7 +457,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             noteId,
             linkItemType,
             linkKey,
-            abi.encode(ethAddress),
+            abi.encodePacked(ethAddress),
             _noteByIdByProfile
         );
 
@@ -470,7 +470,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     {
         _validateCallerIsProfileOwnerOrDispatcher(noteData.profileId);
 
-        bytes32 linkItemType = Constants.NoteLinkTypeListLink;
+        bytes32 linkItemType = Constants.NoteLinkTypeLinklist;
         bytes32 linkKey = bytes32(toLinklistId);
 
         uint256 noteId = ++_profileById[noteData.profileId].noteCount;
@@ -480,7 +480,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             noteId,
             linkItemType,
             linkKey,
-            abi.encode(toLinklistId),
+            abi.encodePacked(toLinklistId),
             _noteByIdByProfile
         );
 
@@ -493,7 +493,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     ) external returns (uint256) {
         _validateCallerIsProfileOwnerOrDispatcher(postNoteData.profileId);
 
-        bytes32 linkItemType = Constants.NoteLinkTypeNoteLink;
+        bytes32 linkItemType = Constants.NoteLinkTypeNote;
         bytes32 linkKey = keccak256(abi.encodePacked("Note", note.profileId, note.noteId));
         ILinklist(_linklist).addLinkingNote(0, note.profileId, note.noteId);
 
@@ -504,7 +504,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             noteId,
             linkItemType,
             linkKey,
-            abi.encode(note.profileId, note.noteId),
+            abi.encodePacked(note.profileId, note.noteId),
             _noteByIdByProfile
         );
 
@@ -518,7 +518,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         _validateCallerIsProfileOwnerOrDispatcher(postNoteData.profileId);
         _validateERC721Exists(erc721.tokenAddress, erc721.erc721TokenId);
 
-        bytes32 linkItemType = Constants.NoteLinkTypeERC721Link;
+        bytes32 linkItemType = Constants.NoteLinkTypeERC721;
         bytes32 linkKey = keccak256(
             abi.encodePacked("ERC721", erc721.tokenAddress, erc721.erc721TokenId)
         );
@@ -531,7 +531,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             noteId,
             linkItemType,
             linkKey,
-            abi.encode(erc721.tokenAddress, erc721.erc721TokenId),
+            abi.encodePacked(erc721.tokenAddress, erc721.erc721TokenId),
             _noteByIdByProfile
         );
 
@@ -544,8 +544,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     {
         _validateCallerIsProfileOwnerOrDispatcher(postNoteData.profileId);
 
-        bytes32 linkItemType = Constants.NoteLinkTypeAnyLink;
-        bytes32 linkKey = keccak256(abi.encodePacked("Any", uri));
+        bytes32 linkItemType = Constants.NoteLinkTypeAnyUri;
+        bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", uri));
         ILinklist(_linklist).addLinkingAnyUri(0, uri);
 
         uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
@@ -555,7 +555,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             noteId,
             linkItemType,
             linkKey,
-            abi.encode(uri),
+            abi.encodePacked(uri),
             _noteByIdByProfile
         );
 

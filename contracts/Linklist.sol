@@ -280,7 +280,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
     function addLinkingAnyUri(uint256 tokenId, string memory toUri) external {
         _validateCallerIsWeb3Entry();
 
-        bytes32 linkKey = keccak256(abi.encodePacked("Any", toUri));
+        bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", toUri));
         if (tokenId != 0) {
             linkingAnyKeys[tokenId].add(linkKey);
         }
@@ -290,7 +290,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
     function removeLinkingAnyUri(uint256 tokenId, string memory toUri) external {
         _validateCallerIsWeb3Entry();
 
-        bytes32 linkKey = keccak256(abi.encodePacked("Any", toUri));
+        bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", toUri));
         linkingAnyKeys[tokenId].remove(linkKey);
 
         // do note delete

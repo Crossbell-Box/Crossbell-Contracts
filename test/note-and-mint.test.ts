@@ -17,8 +17,8 @@ import {
     LinkItemTypeAddress,
     LinkItemTypeNote,
     LinkItemTypeERC721,
-    LinkItemTypeList,
-    LinkItemTypeAny,
+    LinkItemTypeLinklist,
+    LinkItemTypeAnyUri,
     user,
     userAddress,
     userTwo,
@@ -412,7 +412,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
 
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
                 matchNote(note, [
-                    LinkItemTypeList,
+                    LinkItemTypeLinklist,
                     ethers.utils.hexZeroPad(ethers.utils.hexlify(SECOND_LINKLIST_ID), 32),
                     noteData.contentUri,
                     ethers.constants.AddressZero,
@@ -459,7 +459,9 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 });
 
                 note = await web3Entry.getNote(FIRST_PROFILE_ID, SECOND_NOTE_ID);
+                console.log(erc721TokenAddress, erc721TokenId);
                 const linkKey = soliditySha3("ERC721", erc721TokenAddress, erc721TokenId);
+                console.log(linkKey);
                 matchNote(note, [
                     LinkItemTypeERC721,
                     linkKey,
@@ -482,9 +484,9 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 await web3Entry.postNote4AnyUri(makePostNoteData(FIRST_PROFILE_ID.toString()), uri);
 
                 let note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
-                const linkKey = soliditySha3("Any", uri);
+                const linkKey = soliditySha3("AnyUri", uri);
                 matchNote(note, [
-                    LinkItemTypeAny,
+                    LinkItemTypeAnyUri,
                     linkKey,
                     MOCK_NOTE_URI,
                     ethers.constants.AddressZero,

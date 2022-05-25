@@ -6,23 +6,23 @@ library Constants {
     uint8 internal constant MAX_HANDLE_LENGTH = 31;
     uint8 internal constant MIN_HANDLE_LENGTH = 3;
 
-    // note link type
-    // "ProfileLink"
-    bytes32 constant NoteLinkTypeProfileLink =
-        0x50726f66696c654c696e6b000000000000000000000000000000000000000000;
-    // "AddressLink"
-    bytes32 constant NoteLinkTypeAddressLink =
-        0x416464726573734c696e6b000000000000000000000000000000000000000000;
-    // "NoteLink"
-    bytes32 constant NoteLinkTypeNoteLink =
-        0x4e6f74654c696e6b000000000000000000000000000000000000000000000000;
-    // "ERC721Link"
-    bytes32 constant NoteLinkTypeERC721Link =
-        0x4552433732314c696e6b00000000000000000000000000000000000000000000;
-    // "ListLink"
-    bytes32 constant NoteLinkTypeListLink =
-        0x4c6973744c696e6b000000000000000000000000000000000000000000000000;
-    // "AnyLink"
-    bytes32 constant NoteLinkTypeAnyLink =
-        0x416e794c696e6b00000000000000000000000000000000000000000000000000;
+    // note link item type
+    // "Profile"
+    bytes32 constant NoteLinkTypeProfile =
+        0x50726f66696c6500000000000000000000000000000000000000000000000000;
+    // "Address"
+    bytes32 constant NoteLinkTypeAddress =
+        0x4164647265737300000000000000000000000000000000000000000000000000;
+    // "Linklist"
+    bytes32 constant NoteLinkTypeLinklist =
+        0x4c696e6b6c697374000000000000000000000000000000000000000000000000;
+    // "Note"
+    bytes32 constant NoteLinkTypeNote =
+        0x4e6f746500000000000000000000000000000000000000000000000000000000;
+    // "ERC721"
+    bytes32 constant NoteLinkTypeERC721 =
+        0x4552433732310000000000000000000000000000000000000000000000000000;
+    // "AnyUri"
+    bytes32 constant NoteLinkTypeAnyUri =
+        0x416e795572690000000000000000000000000000000000000000000000000000;
 }
