@@ -118,13 +118,13 @@ interface ILinklist {
     /////////////////////////////////
     // linking Any
     /////////////////////////////////
-    function addLinkingAny(uint256 tokenId, string memory toUri) external;
+    function addLinkingAnyUri(uint256 tokenId, string memory toUri) external;
 
-    function removeLinkingAny(uint256 tokenId, string memory toUri) external;
+    function removeLinkingAnyUri(uint256 tokenId, string memory toUri) external;
 
-    function getLinkingAnys(uint256 tokenId) external view returns (string[] memory results);
+    function getLinkingAnyUris(uint256 tokenId) external view returns (string[] memory results);
 
-    function getLinkingAny(bytes32 linkKey) external view returns (string memory);
+    function getLinkingAnyUri(bytes32 linkKey) external view returns (string memory);
 
     function getLinkingAnyListLength(uint256 tokenId) external view returns (uint256);
 

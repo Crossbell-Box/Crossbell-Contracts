@@ -270,8 +270,8 @@ library LinkLogic {
         emit Events.UnlinkAddress(vars.fromProfileId, vars.ethAddress, vars.linkType);
     }
 
-    function linkAny(
-        DataTypes.linkAnyData calldata vars,
+    function linkAnyUri(
+        DataTypes.linkAnyUriData calldata vars,
         address linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
@@ -284,21 +284,21 @@ library LinkLogic {
         );
 
         // add to link list
-        ILinklist(linklist).addLinkingAny(linklistId, vars.toUri);
+        ILinklist(linklist).addLinkingAnyUri(linklistId, vars.toUri);
 
-        emit Events.LinkAny(vars.fromProfileId, vars.toUri, vars.linkType, linklistId);
+        emit Events.LinkAnyUri(vars.fromProfileId, vars.toUri, vars.linkType, linklistId);
     }
 
-    function unlinkAny(
-        DataTypes.unlinkAnyData calldata vars,
+    function unlinkAnyUri(
+        DataTypes.unlinkAnyUriData calldata vars,
         address linklist,
         uint256 linklistId
     ) external {
         _validateLinklistAttached(linklist, linklistId, vars.fromProfileId);
         // remove from link list
-        ILinklist(linklist).removeLinkingAny(linklistId, vars.toUri);
+        ILinklist(linklist).removeLinkingAnyUri(linklistId, vars.toUri);
 
-        emit Events.UnlinkAny(vars.fromProfileId, vars.toUri, vars.linkType);
+        emit Events.UnlinkAnyUri(vars.fromProfileId, vars.toUri, vars.linkType);
     }
 
     function _mintLinklist(

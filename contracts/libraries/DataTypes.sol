@@ -75,14 +75,14 @@ library DataTypes {
         bytes data;
     }
 
-    struct linkAnyData {
+    struct linkAnyUriData {
         uint256 fromProfileId;
         string toUri;
         bytes32 linkType;
         bytes data;
     }
 
-    struct unlinkAnyData {
+    struct unlinkAnyUriData {
         uint256 fromProfileId;
         string toUri;
         bytes32 linkType;

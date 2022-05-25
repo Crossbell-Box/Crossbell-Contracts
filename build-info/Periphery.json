@@ -95,7 +95,7 @@
                     "type": "bytes32"
                 }
             ],
-            "name": "getLinkingAnys",
+            "name": "getLinkingAnyUris",
             "outputs": [
                 {
                     "internalType": "string[]",

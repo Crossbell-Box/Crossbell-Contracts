@@ -80,17 +80,17 @@ contract Periphery is Initializable {
         return ILinklist(linklist).getLinkingERC721(linkKey);
     }
 
-    function getLinkingAnys(uint256 fromProfileId, bytes32 linkType)
+    function getLinkingAnyUris(uint256 fromProfileId, bytes32 linkType)
         external
         view
         returns (string[] memory results)
     {
         uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromProfileId, linkType);
-        return ILinklist(linklist).getLinkingAnys(linklistId);
+        return ILinklist(linklist).getLinkingAnyUris(linklistId);
     }
 
-    function getLinkingAny(bytes32 linkKey) external view returns (string memory) {
-        return ILinklist(linklist).getLinkingAny(linkKey);
+    function getLinkingAnyUri(bytes32 linkKey) external view returns (string memory) {
+        return ILinklist(linklist).getLinkingAnyUri(linkKey);
     }
 
     function profileExists(uint256 profileId) internal view returns (bool) {

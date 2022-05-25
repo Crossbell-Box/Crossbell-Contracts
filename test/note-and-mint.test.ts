@@ -493,7 +493,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     false,
                 ]);
 
-                const linkingUri = await periphery.getLinkingAny(linkKey as string);
+                const linkingUri = await periphery.getLinkingAnyUri(linkKey as string);
                 expect(linkingUri).to.be.equal(uri);
             });
 

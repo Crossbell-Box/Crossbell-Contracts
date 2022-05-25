@@ -259,16 +259,20 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         );
     }
 
-    function linkAny(DataTypes.linkAnyData calldata vars) external {
+    function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external {
         _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
 
-        LinkLogic.linkAny(vars, _linklist, _attachedLinklists);
+        LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists);
     }
 
-    function unlinkAny(DataTypes.unlinkAnyData calldata vars) external {
+    function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external {
         _validateCallerIsProfileOwnerOrDispatcher(vars.fromProfileId);
 
-        LinkLogic.unlinkAny(vars, _linklist, _attachedLinklists[vars.fromProfileId][vars.linkType]);
+        LinkLogic.unlinkAnyUri(
+            vars,
+            _linklist,
+            _attachedLinklists[vars.fromProfileId][vars.linkType]
+        );
     }
 
     function linkProfileLink(
@@ -542,7 +546,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         bytes32 linkItemType = Constants.NoteLinkTypeAnyLink;
         bytes32 linkKey = keccak256(abi.encodePacked("Any", uri));
-        ILinklist(_linklist).addLinkingAny(0, uri);
+        ILinklist(_linklist).addLinkingAnyUri(0, uri);
 
         uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
 

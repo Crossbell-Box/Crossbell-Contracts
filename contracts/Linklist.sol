@@ -275,9 +275,9 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
     }
 
     /////////////////////////////////
-    // linking Any
+    // linking Any Uri
     /////////////////////////////////
-    function addLinkingAny(uint256 tokenId, string memory toUri) external {
+    function addLinkingAnyUri(uint256 tokenId, string memory toUri) external {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("Any", toUri));
@@ -287,7 +287,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         linkingAnylist[linkKey] = toUri;
     }
 
-    function removeLinkingAny(uint256 tokenId, string memory toUri) external {
+    function removeLinkingAnyUri(uint256 tokenId, string memory toUri) external {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("Any", toUri));
@@ -297,7 +297,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         // delete linkingAnylist[linkKey];
     }
 
-    function getLinkingAnys(uint256 tokenId) external view returns (string[] memory results) {
+    function getLinkingAnyUris(uint256 tokenId) external view returns (string[] memory results) {
         bytes32[] memory linkKeys = linkingAnyKeys[tokenId].values();
         results = new string[](linkKeys.length);
         for (uint256 i = 0; i < linkKeys.length; i++) {
@@ -306,7 +306,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         }
     }
 
-    function getLinkingAny(bytes32 linkKey) external view returns (string memory) {
+    function getLinkingAnyUri(bytes32 linkKey) external view returns (string memory) {
         return linkingAnylist[linkKey];
     }
 

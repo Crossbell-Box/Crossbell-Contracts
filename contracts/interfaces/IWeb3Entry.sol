@@ -52,9 +52,9 @@ interface IWeb3Entry {
 
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external;
 
-    function linkAny(DataTypes.linkAnyData calldata vars) external;
+    function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external;
 
-    function unlinkAny(DataTypes.unlinkAnyData calldata vars) external;
+    function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external;
 
     function linkProfileLink(
         uint256 fromProfileId,
