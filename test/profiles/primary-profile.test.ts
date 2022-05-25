@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import {
+    bytes32Zero,
     deployerAddress,
     FIRST_LINKLIST_ID,
     FIRST_PROFILE_ID,
@@ -87,6 +88,20 @@ makeSuiteCleanRoom("Primary Profile", function () {
                 await expect(
                     web3Entry.connect(userTwo).setHandle(FIRST_PROFILE_ID, MOCK_PROFILE_HANDLE2)
                 ).to.be.revertedWith(ERRORS.NOT_PROFILE_OWNER);
+            });
+
+            it("UserTwo should burn primary profile", async function () {
+                expect(await web3Entry.getPrimaryProfileId(userAddress)).to.eq(FIRST_PROFILE_ID);
+
+                await web3Entry.burn(FIRST_PROFILE_ID);
+                expect(await web3Entry.getPrimaryProfileId(userAddress)).to.eq(0);
+                expect(await web3Entry.getHandle(FIRST_PROFILE_ID)).to.eq("");
+                expect(await web3Entry.getDispatcher(FIRST_PROFILE_ID)).to.eq(
+                    ethers.constants.AddressZero
+                );
+                const profile = await web3Entry.getProfile(FIRST_PROFILE_ID);
+                expect(profile.noteCount).to.be.equal(0);
+                expect(profile.profileId).to.be.equal(0);
             });
         });
     });

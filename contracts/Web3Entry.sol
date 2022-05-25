@@ -563,14 +563,15 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function burn(uint256 tokenId) public override {
-        super.burn(tokenId);
-
         // clear handle
         bytes32 handleHash = keccak256(bytes(_profileById[tokenId].handle));
         _profileIdByHandleHash[handleHash] = 0;
 
         // clear profile
         delete _profileById[tokenId];
+
+        // burn token
+        super.burn(tokenId);
     }
 
     function getPrimaryProfileId(address account) external view returns (uint256) {
@@ -734,10 +735,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
     function getPeriphery() external view returns (address) {
         return periphery;
-    }
-
-    function setResolver() external {
-        resolver = 0xa5fa5302Be191fA9f8e7C35Cf5758D8bfDF4C90f;
     }
 
     function getResolver() external view returns (address) {
