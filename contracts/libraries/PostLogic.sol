@@ -13,7 +13,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 library PostLogic {
     using Strings for uint256;
 
-    function postNote4Link(
+    function postNoteWithLink(
         DataTypes.PostNoteData calldata vars,
         uint256 noteId,
         bytes32 linkItemType,

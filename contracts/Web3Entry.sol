@@ -407,7 +407,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         uint256 noteId = ++_profileById[vars.profileId].noteCount;
 
-        PostLogic.postNote4Link(vars, noteId, 0, 0, "", _noteByIdByProfile);
+        PostLogic.postNoteWithLink(vars, noteId, 0, 0, "", _noteByIdByProfile);
         return noteId;
     }
 
@@ -418,7 +418,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         _noteByIdByProfile[profileId][noteId].deleted = true;
     }
 
-    function postNote4ProfileLink(DataTypes.PostNoteData calldata postNoteData, uint256 toProfileId)
+    function postNote4Profile(DataTypes.PostNoteData calldata postNoteData, uint256 toProfileId)
         external
         returns (uint256)
     {
@@ -429,7 +429,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
 
-        PostLogic.postNote4Link(
+        PostLogic.postNoteWithLink(
             postNoteData,
             noteId,
             linkItemType,
@@ -441,7 +441,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         return noteId;
     }
 
-    function postNote4AddressLink(DataTypes.PostNoteData calldata noteData, address ethAddress)
+    function postNote4Address(DataTypes.PostNoteData calldata noteData, address ethAddress)
         external
         returns (uint256)
     {
@@ -452,7 +452,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         uint256 noteId = ++_profileById[noteData.profileId].noteCount;
 
-        PostLogic.postNote4Link(
+        PostLogic.postNoteWithLink(
             noteData,
             noteId,
             linkItemType,
@@ -464,7 +464,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         return noteId;
     }
 
-    function postNote4LinklistLink(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
+    function postNote4Linklist(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
         external
         returns (uint256)
     {
@@ -475,7 +475,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         uint256 noteId = ++_profileById[noteData.profileId].noteCount;
 
-        PostLogic.postNote4Link(
+        PostLogic.postNoteWithLink(
             noteData,
             noteId,
             linkItemType,
@@ -487,7 +487,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         return noteId;
     }
 
-    function postNote4NoteLink(
+    function postNote4Note(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.NoteStruct calldata note
     ) external returns (uint256) {
@@ -499,7 +499,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
 
-        PostLogic.postNote4Link(
+        PostLogic.postNoteWithLink(
             postNoteData,
             noteId,
             linkItemType,
@@ -511,7 +511,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         return noteId;
     }
 
-    function postNote4ERC721Link(
+    function postNote4ERC721(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.ERC721Struct calldata erc721
     ) external returns (uint256) {
@@ -526,7 +526,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
 
-        PostLogic.postNote4Link(
+        PostLogic.postNoteWithLink(
             postNoteData,
             noteId,
             linkItemType,
@@ -550,7 +550,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
 
-        PostLogic.postNote4Link(
+        PostLogic.postNoteWithLink(
             postNoteData,
             noteId,
             linkItemType,

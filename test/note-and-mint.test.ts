@@ -74,7 +74,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 await expect(
                     web3Entry
                         .connect(userTwo)
-                        .postNote4ProfileLink(
+                        .postNote4Profile(
                             makePostNoteData(FIRST_PROFILE_ID.toString()),
                             SECOND_PROFILE_ID
                         )
@@ -319,7 +319,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 // post note
                 const noteData = makePostNoteData("1");
                 await expect(
-                    web3Entry.postNote4ProfileLink(noteData, SECOND_PROFILE_ID)
+                    web3Entry.postNote4Profile(noteData, SECOND_PROFILE_ID)
                 ).to.not.be.reverted;
 
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
@@ -359,7 +359,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 // post note
                 const noteData = makePostNoteData();
                 await expect(
-                    web3Entry.postNote4ProfileLink(noteData, userThreeAddress)
+                    web3Entry.postNote4Profile(noteData, userThreeAddress)
                 ).to.not.be.reverted;
 
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
@@ -407,7 +407,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 // post note
                 const noteData = makePostNoteData();
                 await expect(
-                    web3Entry.postNote4LinklistLink(noteData, SECOND_LINKLIST_ID)
+                    web3Entry.postNote4Linklist(noteData, SECOND_LINKLIST_ID)
                 ).to.not.be.reverted;
 
                 let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
@@ -453,7 +453,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 const erc721TokenId = 1;
 
                 // user post note 4 note
-                await web3Entry.postNote4ERC721Link(makePostNoteData(FIRST_PROFILE_ID.toString()), {
+                await web3Entry.postNote4ERC721(makePostNoteData(FIRST_PROFILE_ID.toString()), {
                     tokenAddress: erc721TokenAddress,
                     erc721TokenId: erc721TokenId,
                 });
@@ -520,7 +520,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 ]);
 
                 // user post note 4 note
-                await web3Entry.postNote4NoteLink(makePostNoteData(FIRST_PROFILE_ID.toString()), {
+                await web3Entry.postNote4Note(makePostNoteData(FIRST_PROFILE_ID.toString()), {
                     profileId: THIRD_PROFILE_ID,
                     noteId: FIRST_NOTE_ID,
                 });

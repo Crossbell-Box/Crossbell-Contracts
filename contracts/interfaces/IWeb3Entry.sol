@@ -90,24 +90,24 @@ interface IWeb3Entry {
 
     function deleteNote(uint256 profileId, uint256 noteId) external;
 
-    function postNote4ProfileLink(DataTypes.PostNoteData calldata postNoteData, uint256 toProfileId)
+    function postNote4Profile(DataTypes.PostNoteData calldata postNoteData, uint256 toProfileId)
         external
         returns (uint256);
 
-    function postNote4AddressLink(DataTypes.PostNoteData calldata noteData, address ethAddress)
+    function postNote4Address(DataTypes.PostNoteData calldata noteData, address ethAddress)
         external
         returns (uint256);
 
-    function postNote4LinklistLink(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
+    function postNote4Linklist(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
         external
         returns (uint256);
 
-    function postNote4NoteLink(
+    function postNote4Note(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.NoteStruct calldata note
     ) external returns (uint256);
 
-    function postNote4ERC721Link(
+    function postNote4ERC721(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.ERC721Struct calldata erc721
     ) external returns (uint256);
