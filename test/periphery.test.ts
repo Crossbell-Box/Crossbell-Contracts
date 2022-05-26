@@ -29,6 +29,7 @@ describe("Periphery", function () {
             noteLinkModuleInitData: [],
             mintModule: ethers.constants.AddressZero,
             mintModuleInitData: [],
+            freeze: false,
         });
     });
 });

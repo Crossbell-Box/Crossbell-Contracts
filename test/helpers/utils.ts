@@ -38,6 +38,7 @@ export const makePostNoteData = (num: string = "1") => {
         linkModuleInitData: [],
         mintModule: ethers.constants.AddressZero,
         mintModuleInitData: [],
+        freeze: false,
     } as PostNoteData;
 };
 
@@ -168,7 +169,7 @@ export async function getTimestamp(): Promise<any> {
 
 export function matchNote(note: NoteStruct, expectedArgs?: any[]) {
     if (expectedArgs) {
-        if (expectedArgs.length != 7) {
+        if (expectedArgs.length != 8) {
             logger.throwError(`Note expected args are of invalid length`);
         }
         if (note.linkItemType !== expectedArgs[0]) {
@@ -199,6 +200,9 @@ export function matchNote(note: NoteStruct, expectedArgs?: any[]) {
         }
         if (note.deleted !== expectedArgs[6]) {
             logger.throwError(`deleted, Received: "${note.deleted}" Expected: "${expectedArgs[6]}`);
+        }
+        if (note.frozen !== expectedArgs[7]) {
+            logger.throwError(`frozen, Received: "${note.frozen}" Expected: "${expectedArgs[7]}`);
         }
     }
 }

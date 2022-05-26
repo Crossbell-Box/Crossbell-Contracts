@@ -16,7 +16,7 @@ contract Web3EntryStorage {
     mapping(uint256 => mapping(bytes32 => uint256)) internal _attachedLinklists;
 
     // profileId => noteId => Note
-    mapping(uint256 => mapping(uint256 => DataTypes.Note)) internal _noteByIdByProfile;
+    mapping(uint256 => mapping(uint256 => DataTypes.Note)) internal _noteByIdByProfile; // slot 14
 
     /////////////////////////////////
     // link modules

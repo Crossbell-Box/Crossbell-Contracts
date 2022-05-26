@@ -84,7 +84,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         uint256 tokenId,
         uint256 toProfileId,
         uint256 toNoteId
-    ) external {
+    ) external returns (bytes32) {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("Note", toProfileId, toNoteId));
@@ -92,6 +92,8 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
             linkNoteKeys[tokenId].add(linkKey);
         }
         linkNoteList[linkKey] = DataTypes.NoteStruct({profileId: toProfileId, noteId: toNoteId});
+
+        return linkKey;
     }
 
     function removeLinkingNote(
@@ -202,7 +204,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         uint256 tokenId,
         address tokenAddress,
         uint256 erc721TokenId
-    ) external {
+    ) external returns (bytes32) {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("ERC721", tokenAddress, erc721TokenId));
@@ -213,6 +215,8 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
             tokenAddress: tokenAddress,
             erc721TokenId: erc721TokenId
         });
+
+        return linkKey;
     }
 
     function removeLinkingERC721(
@@ -277,7 +281,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
     /////////////////////////////////
     // linking Any Uri
     /////////////////////////////////
-    function addLinkingAnyUri(uint256 tokenId, string memory toUri) external {
+    function addLinkingAnyUri(uint256 tokenId, string memory toUri) external returns (bytes32) {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", toUri));
@@ -285,6 +289,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
             linkingAnyKeys[tokenId].add(linkKey);
         }
         linkingAnylist[linkKey] = toUri;
+        return linkKey;
     }
 
     function removeLinkingAnyUri(uint256 tokenId, string memory toUri) external {
@@ -308,6 +313,10 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
 
     function getLinkingAnyUri(bytes32 linkKey) external view returns (string memory) {
         return linkingAnylist[linkKey];
+    }
+
+    function getLinkingAnyUriKeys(uint256 tokenId) external view returns (bytes32[] memory) {
+        return linkingAnyKeys[tokenId].values();
     }
 
     function getLinkingAnyListLength(uint256 tokenId) external view returns (uint256) {

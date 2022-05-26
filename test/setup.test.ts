@@ -46,6 +46,8 @@ export const MOCK_URI = "ipfs://QmadFPhP7n5rJkACMY6QqhtLtKgX1ixoySmxQNrU4Wo5JW";
 export const MOCK_CONTENT_URI = "ipfs://QmfHKajYAGcaWaBXGsEWory9ensGsesN2GwWedVEuzk5Gg";
 export const MOCK_NOTE_URI =
     "https://github.com/Crossbell-Box/Crossbell-Contracts/blob/main/examples/sampleContent.json";
+export const MOCK_NEW_NOTE_URI =
+    "https://github.com/Crossbell-Box/Crossbell-Contracts/blob/main/examples/sampleContent-new.json";
 export const bytes32Zero = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 export const FollowLinkType = ethers.utils.formatBytes32String("follow");

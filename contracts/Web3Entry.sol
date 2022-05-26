@@ -105,6 +105,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
     function setPrimaryProfileId(uint256 profileId) external {
         _validateCallerIsProfileOwnerOrDispatcher(profileId);
+
         _primaryProfileByAddress[msg.sender] = profileId;
 
         emit Events.SetPrimaryProfileId(msg.sender, profileId);
@@ -411,6 +412,29 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         return noteId;
     }
 
+    function setNoteUri(
+        uint256 profileId,
+        uint256 noteId,
+        string calldata newUri
+    ) external {
+        _validateCallerIsProfileOwnerOrDispatcher(profileId);
+        _validateNoteExists(profileId, noteId);
+        require(!_noteByIdByProfile[profileId][noteId].frozen, "NoteFrozen");
+
+        _noteByIdByProfile[profileId][noteId].contentUri = newUri;
+
+        emit Events.SetNoteUri(profileId, noteId, newUri);
+    }
+
+    function freezeNote(uint256 profileId, uint256 noteId) external {
+        _validateCallerIsProfileOwnerOrDispatcher(profileId);
+        _validateNoteExists(profileId, noteId);
+
+        _noteByIdByProfile[profileId][noteId].frozen = true;
+
+        emit Events.FreezeNote(profileId, noteId);
+    }
+
     function deleteNote(uint256 profileId, uint256 noteId) external {
         _validateCallerIsProfileOwnerOrDispatcher(profileId);
         _validateNoteExists(profileId, noteId);
@@ -426,7 +450,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         bytes32 linkItemType = Constants.NoteLinkTypeProfile;
         bytes32 linkKey = bytes32(toProfileId);
-
         uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
 
         PostLogic.postNoteWithLink(
@@ -449,7 +472,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         bytes32 linkItemType = Constants.NoteLinkTypeAddress;
         bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
-
         uint256 noteId = ++_profileById[noteData.profileId].noteCount;
 
         PostLogic.postNoteWithLink(
@@ -472,7 +494,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         bytes32 linkItemType = Constants.NoteLinkTypeLinklist;
         bytes32 linkKey = bytes32(toLinklistId);
-
         uint256 noteId = ++_profileById[noteData.profileId].noteCount;
 
         PostLogic.postNoteWithLink(
@@ -494,9 +515,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         _validateCallerIsProfileOwnerOrDispatcher(postNoteData.profileId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeNote;
-        bytes32 linkKey = keccak256(abi.encodePacked("Note", note.profileId, note.noteId));
-        ILinklist(_linklist).addLinkingNote(0, note.profileId, note.noteId);
-
+        bytes32 linkKey = ILinklist(_linklist).addLinkingNote(0, note.profileId, note.noteId);
         uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
 
         PostLogic.postNoteWithLink(
@@ -519,11 +538,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         _validateERC721Exists(erc721.tokenAddress, erc721.erc721TokenId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeERC721;
-        bytes32 linkKey = keccak256(
-            abi.encodePacked("ERC721", erc721.tokenAddress, erc721.erc721TokenId)
+        bytes32 linkKey = ILinklist(_linklist).addLinkingERC721(
+            0,
+            erc721.tokenAddress,
+            erc721.erc721TokenId
         );
-        ILinklist(_linklist).addLinkingERC721(0, erc721.tokenAddress, erc721.erc721TokenId);
-
         uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
 
         PostLogic.postNoteWithLink(
@@ -545,9 +564,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         _validateCallerIsProfileOwnerOrDispatcher(postNoteData.profileId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeAnyUri;
-        bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", uri));
-        ILinklist(_linklist).addLinkingAnyUri(0, uri);
-
+        bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
         uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
 
         PostLogic.postNoteWithLink(

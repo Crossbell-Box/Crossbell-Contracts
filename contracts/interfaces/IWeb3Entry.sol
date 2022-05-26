@@ -88,6 +88,14 @@ interface IWeb3Entry {
 
     function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256);
 
+    function setNoteUri(
+        uint256 profileId,
+        uint256 noteId,
+        string calldata newUri
+    ) external;
+
+    function freezeNote(uint256 profileId, uint256 noteId) external;
+
     function deleteNote(uint256 profileId, uint256 noteId) external;
 
     function postNote4Profile(DataTypes.PostNoteData calldata postNoteData, uint256 toProfileId)

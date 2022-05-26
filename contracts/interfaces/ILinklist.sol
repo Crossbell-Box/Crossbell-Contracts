@@ -37,7 +37,7 @@ interface ILinklist {
         uint256 tokenId,
         uint256 toProfileId,
         uint256 toNoteId
-    ) external;
+    ) external returns (bytes32);
 
     function removeLinkingNote(
         uint256 tokenId,
@@ -84,7 +84,7 @@ interface ILinklist {
         uint256 tokenId,
         address tokenAddress,
         uint256 erc721TokenId
-    ) external;
+    ) external returns (bytes32);
 
     function removeLinkingERC721(
         uint256 tokenId,
@@ -118,7 +118,7 @@ interface ILinklist {
     /////////////////////////////////
     // linking Any
     /////////////////////////////////
-    function addLinkingAnyUri(uint256 tokenId, string memory toUri) external;
+    function addLinkingAnyUri(uint256 tokenId, string memory toUri) external returns (bytes32);
 
     function removeLinkingAnyUri(uint256 tokenId, string memory toUri) external;
 

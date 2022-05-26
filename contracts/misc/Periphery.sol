@@ -145,7 +145,8 @@ contract Periphery is Initializable {
                 linkModule: vars.noteLinkModule,
                 linkModuleInitData: vars.noteLinkModuleInitData,
                 mintModule: vars.mintModule,
-                mintModuleInitData: vars.mintModuleInitData
+                mintModuleInitData: vars.mintModuleInitData,
+                freeze: vars.freeze
             })
         );
     }

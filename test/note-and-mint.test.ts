@@ -36,6 +36,7 @@ import {
     THIRD_PROFILE_ID,
     periphery,
     SECOND_NOTE_ID,
+    MOCK_NEW_NOTE_URI,
 } from "./setup.test";
 import { makePostNoteData, makeProfileData, matchEvent, matchNote } from "./helpers/utils";
 import { ERRORS } from "./helpers/errors";
@@ -45,7 +46,7 @@ import { ApprovalMintModule__factory, MintNFT__factory } from "../typechain";
 import { BigNumber } from "ethers";
 import { soliditySha3 } from "web3-utils";
 
-makeSuiteCleanRoom("Note and mint functionality ", function () {
+makeSuiteCleanRoom("Note and mint functionality", function () {
     context("Generic", function () {
         beforeEach(async function () {
             await web3Entry.createProfile(makeProfileData(MOCK_PROFILE_HANDLE));
@@ -107,6 +108,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     false,
+                    false,
                 ]);
 
                 // delete note
@@ -122,6 +124,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     true,
+                    false,
                 ]);
 
                 await expect(
@@ -149,6 +152,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     false,
+                    false,
                 ]);
 
                 // delete note
@@ -164,6 +168,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     true,
+                    false,
                 ]);
 
                 // mint note
@@ -205,6 +210,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     false,
+                    false,
                 ]);
 
                 // mint note
@@ -244,6 +250,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     false,
+                    false,
                 ]);
             });
 
@@ -261,6 +268,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     false,
+                    false,
                 ]);
 
                 // delete note
@@ -275,6 +283,165 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
+                    true,
+                    false,
+                ]);
+            });
+
+            it("User should post note and then set note uri", async function () {
+                // post note
+                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
+
+                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                    false,
+                ]);
+
+                // set note uri
+                await web3Entry.setNoteUri(noteData.profileId, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
+                // await expect(
+                //     web3Entry.setNoteUri(noteData.profileId, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI)
+                // ).to.not.be.reverted;
+                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    MOCK_NEW_NOTE_URI,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                    false,
+                ]);
+            });
+
+            it("User should post note and then freeze note", async function () {
+                // post note
+                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
+
+                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                    false,
+                ]);
+
+                // freeze note
+                await expect(
+                    web3Entry.freezeNote(noteData.profileId, FIRST_NOTE_ID)
+                ).to.not.be.reverted;
+                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                    true,
+                ]);
+            });
+
+            it("User should failed to set note uri after freezing", async function () {
+                // post note
+                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
+
+                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                    false,
+                ]);
+
+                // freeze note
+                await expect(
+                    web3Entry.freezeNote(noteData.profileId, FIRST_NOTE_ID)
+                ).to.not.be.reverted;
+                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                    true,
+                ]);
+
+                // set note uri should fail
+                await expect(
+                    web3Entry.setNoteUri(noteData.profileId, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI)
+                ).to.be.revertedWith("NoteFrozen");
+            });
+
+            it("User should delete note after freezing", async function () {
+                // post note
+                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
+
+                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                    false,
+                ]);
+
+                // freeze note
+                await expect(
+                    web3Entry.freezeNote(noteData.profileId, FIRST_NOTE_ID)
+                ).to.not.be.reverted;
+                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    false,
+                    true,
+                ]);
+
+                // delete note
+                await expect(
+                    web3Entry.deleteNote(noteData.profileId, FIRST_NOTE_ID)
+                ).to.not.be.reverted;
+                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                matchNote(note, [
+                    bytes32Zero,
+                    bytes32Zero,
+                    noteData.contentUri,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    true,
                     true,
                 ]);
             });
@@ -292,6 +459,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
+                    false,
                     false,
                 ]);
 
@@ -330,6 +498,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
+                    false,
                     false,
                 ]);
 
@@ -370,6 +539,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
+                    false,
                     false,
                 ]);
 
@@ -419,6 +589,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     false,
+                    false,
                 ]);
 
                 // mint note
@@ -459,9 +630,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                 });
 
                 note = await web3Entry.getNote(FIRST_PROFILE_ID, SECOND_NOTE_ID);
-                console.log(erc721TokenAddress, erc721TokenId);
                 const linkKey = soliditySha3("ERC721", erc721TokenAddress, erc721TokenId);
-                console.log(linkKey);
                 matchNote(note, [
                     LinkItemTypeERC721,
                     linkKey,
@@ -469,6 +638,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
+                    false,
                     false,
                 ]);
 
@@ -492,6 +662,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
+                    false,
                     false,
                 ]);
 
@@ -519,6 +690,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     false,
+                    false,
                 ]);
 
                 // user post note 4 note
@@ -536,6 +708,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
+                    false,
                     false,
                 ]);
 
@@ -558,6 +731,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                         linkModuleInitData: [],
                         mintModule: approvalMintModule.address,
                         mintModuleInitData: abiCoder.encode(["address[]"], [[userTwoAddress]]),
+                        freeze: false,
                     })
                 ).to.not.be.reverted;
 
@@ -569,6 +743,7 @@ makeSuiteCleanRoom("Note and mint functionality ", function () {
                     ethers.constants.AddressZero,
                     approvalMintModule.address,
                     ethers.constants.AddressZero,
+                    false,
                     false,
                 ]);
 

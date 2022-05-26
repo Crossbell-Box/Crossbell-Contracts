@@ -152,6 +152,7 @@ library DataTypes {
         bytes noteLinkModuleInitData;
         address mintModule;
         bytes mintModuleInitData;
+        bool freeze;
     }
 
     struct LinkData {
@@ -170,6 +171,14 @@ library DataTypes {
         bytes linkModuleInitData;
         address mintModule;
         bytes mintModuleInitData;
+        bool freeze;
+    }
+
+    struct UpdateNoteData {
+        uint256 profileId;
+        uint256 noteId;
+        string contentUri;
+        bool frozen;
     }
 
     struct MintNoteData {
@@ -198,6 +207,7 @@ library DataTypes {
         address mintModule;
         address mintNFT;
         bool deleted;
+        bool frozen;
     }
 
     struct ProfileLinkStruct {
