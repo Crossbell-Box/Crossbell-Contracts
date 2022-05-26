@@ -148,9 +148,8 @@ library Events {
         address indexed to,
         uint256 indexed profileId,
         uint256 indexed noteId,
-        uint256 tokenId,
-        bytes data,
-        uint256 timestamp
+        address tokenAddress,
+        uint256 tokenId
     );
 
     event SetLinkModule4Profile(

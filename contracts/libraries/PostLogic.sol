@@ -90,7 +90,7 @@ library PostLogic {
             IMintModule4Note(mintModule).processMint(to, profileId, noteId, mintModuleData);
         }
 
-        emit Events.MintNote(to, profileId, noteId, tokenId, mintModuleData, block.timestamp);
+        emit Events.MintNote(to, profileId, noteId, mintNFT, tokenId);
     }
 
     function _deployMintNFT(
