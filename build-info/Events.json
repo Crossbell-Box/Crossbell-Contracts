@@ -84,6 +84,25 @@
                 {
                     "indexed": true,
                     "internalType": "uint256",
+                    "name": "profileId",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "noteId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "FreezeNote",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
                     "name": "fromProfileId",
                     "type": "uint256"
                 },
@@ -380,20 +399,14 @@
                 },
                 {
                     "indexed": false,
+                    "internalType": "address",
+                    "name": "tokenAddress",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
                     "internalType": "uint256",
                     "name": "tokenId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes",
-                    "name": "data",
-                    "type": "bytes"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
                     "type": "uint256"
                 }
             ],
@@ -733,6 +746,31 @@
             "inputs": [
                 {
                     "indexed": true,
+                    "internalType": "uint256",
+                    "name": "profileId",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "noteId",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "string",
+                    "name": "newUri",
+                    "type": "string"
+                }
+            ],
+            "name": "SetNoteUri",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
                     "internalType": "address",
                     "name": "account",
                     "type": "address"
@@ -1028,8 +1066,8 @@
             "type": "event"
         }
     ],
-    "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220df851dc9e34708eb5aea20c167a2fee41a9d83d8ac3848b370c2ccfe1e44af7f64736f6c634300080a0033",
-    "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220df851dc9e34708eb5aea20c167a2fee41a9d83d8ac3848b370c2ccfe1e44af7f64736f6c634300080a0033",
+    "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212203a57633f4a201beb2c5121211cc1afd47f79c77b8403f39d744c75c1b34e8bbb64736f6c634300080a0033",
+    "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212203a57633f4a201beb2c5121211cc1afd47f79c77b8403f39d744c75c1b34e8bbb64736f6c634300080a0033",
     "linkReferences": {},
     "deployedLinkReferences": {}
 }
