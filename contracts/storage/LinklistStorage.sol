@@ -10,7 +10,7 @@ contract LinklistStorage {
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    address public Web3Entry;
+    address public Web3Entry; // slot 10
 
     // tokenId => linkType
     mapping(uint256 => bytes32) internal linkTypes;

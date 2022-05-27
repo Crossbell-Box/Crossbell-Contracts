@@ -84,25 +84,6 @@
                 {
                     "indexed": true,
                     "internalType": "uint256",
-                    "name": "profileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "noteId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "FreezeNote",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "uint256",
                     "name": "fromProfileId",
                     "type": "uint256"
                 },
@@ -349,6 +330,25 @@
                 }
             ],
             "name": "LinklistNFTInitialized",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "profileId",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "noteId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "LockNote",
             "type": "event"
         },
         {
@@ -1066,8 +1066,8 @@
             "type": "event"
         }
     ],
-    "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212203a57633f4a201beb2c5121211cc1afd47f79c77b8403f39d744c75c1b34e8bbb64736f6c634300080a0033",
-    "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212203a57633f4a201beb2c5121211cc1afd47f79c77b8403f39d744c75c1b34e8bbb64736f6c634300080a0033",
+    "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220cf5e22adb73678c5f7618312757f16d84d0952fb2071a1d1fdad1adc50997c5a64736f6c634300080a0033",
+    "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220cf5e22adb73678c5f7618312757f16d84d0952fb2071a1d1fdad1adc50997c5a64736f6c634300080a0033",
     "linkReferences": {},
     "deployedLinkReferences": {}
 }

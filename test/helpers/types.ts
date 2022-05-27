@@ -24,7 +24,7 @@ export interface PostNoteData {
     linkModuleInitData: BytesLike;
     mintModule: string;
     mintModuleInitData: BytesLike;
-    freeze: boolean;
+    locked: boolean;
 }
 
 export interface NoteStruct {
@@ -35,5 +35,5 @@ export interface NoteStruct {
     mintModule: string;
     mintNFT: string;
     deleted: boolean;
-    frozen: boolean;
+    locked: boolean;
 }

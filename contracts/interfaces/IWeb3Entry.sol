@@ -94,7 +94,7 @@ interface IWeb3Entry {
         string calldata newUri
     ) external;
 
-    function freezeNote(uint256 profileId, uint256 noteId) external;
+    function lockNote(uint256 profileId, uint256 noteId) external;
 
     function deleteNote(uint256 profileId, uint256 noteId) external;
 

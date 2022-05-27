@@ -38,7 +38,7 @@ export const makePostNoteData = (num: string = "1") => {
         linkModuleInitData: [],
         mintModule: ethers.constants.AddressZero,
         mintModuleInitData: [],
-        freeze: false,
+        locked: false,
     } as PostNoteData;
 };
 
@@ -201,8 +201,8 @@ export function matchNote(note: NoteStruct, expectedArgs?: any[]) {
         if (note.deleted !== expectedArgs[6]) {
             logger.throwError(`deleted, Received: "${note.deleted}" Expected: "${expectedArgs[6]}`);
         }
-        if (note.frozen !== expectedArgs[7]) {
-            logger.throwError(`frozen, Received: "${note.frozen}" Expected: "${expectedArgs[7]}`);
+        if (note.locked !== expectedArgs[7]) {
+            logger.throwError(`locked, Received: "${note.locked}" Expected: "${expectedArgs[7]}`);
         }
     }
 }

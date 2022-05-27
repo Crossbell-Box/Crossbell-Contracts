@@ -342,7 +342,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // freeze note
                 await expect(
-                    web3Entry.freezeNote(noteData.profileId, FIRST_NOTE_ID)
+                    web3Entry.lockNote(noteData.profileId, FIRST_NOTE_ID)
                 ).to.not.be.reverted;
                 note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
                 matchNote(note, [
@@ -376,7 +376,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // freeze note
                 await expect(
-                    web3Entry.freezeNote(noteData.profileId, FIRST_NOTE_ID)
+                    web3Entry.lockNote(noteData.profileId, FIRST_NOTE_ID)
                 ).to.not.be.reverted;
                 note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
                 matchNote(note, [
@@ -393,7 +393,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 // set note uri should fail
                 await expect(
                     web3Entry.setNoteUri(noteData.profileId, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI)
-                ).to.be.revertedWith("NoteFrozen");
+                ).to.be.revertedWith("NoteLocked");
             });
 
             it("User should delete note after freezing", async function () {
@@ -415,7 +415,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // freeze note
                 await expect(
-                    web3Entry.freezeNote(noteData.profileId, FIRST_NOTE_ID)
+                    web3Entry.lockNote(noteData.profileId, FIRST_NOTE_ID)
                 ).to.not.be.reverted;
                 note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
                 matchNote(note, [
@@ -731,7 +731,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                         linkModuleInitData: [],
                         mintModule: approvalMintModule.address,
                         mintModuleInitData: abiCoder.encode(["address[]"], [[userTwoAddress]]),
-                        freeze: false,
+                        locked: false,
                     })
                 ).to.not.be.reverted;
 

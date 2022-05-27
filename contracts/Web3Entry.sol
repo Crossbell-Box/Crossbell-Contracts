@@ -419,20 +419,20 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     ) external {
         _validateCallerIsProfileOwnerOrDispatcher(profileId);
         _validateNoteExists(profileId, noteId);
-        require(!_noteByIdByProfile[profileId][noteId].frozen, "NoteFrozen");
+        require(!_noteByIdByProfile[profileId][noteId].locked, "NoteLocked");
 
         _noteByIdByProfile[profileId][noteId].contentUri = newUri;
 
         emit Events.SetNoteUri(profileId, noteId, newUri);
     }
 
-    function freezeNote(uint256 profileId, uint256 noteId) external {
+    function lockNote(uint256 profileId, uint256 noteId) external {
         _validateCallerIsProfileOwnerOrDispatcher(profileId);
         _validateNoteExists(profileId, noteId);
 
-        _noteByIdByProfile[profileId][noteId].frozen = true;
+        _noteByIdByProfile[profileId][noteId].locked = true;
 
-        emit Events.FreezeNote(profileId, noteId);
+        emit Events.LockNote(profileId, noteId);
     }
 
     function deleteNote(uint256 profileId, uint256 noteId) external {

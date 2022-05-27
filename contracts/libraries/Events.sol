@@ -43,7 +43,7 @@ library Events {
 
     event SetNoteUri(uint256 indexed profileId, uint256 noteId, string newUri);
 
-    event FreezeNote(uint256 indexed profileId, uint256 noteId);
+    event LockNote(uint256 indexed profileId, uint256 noteId);
 
     event LinkProfile(
         address indexed account,
