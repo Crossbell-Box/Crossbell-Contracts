@@ -104,10 +104,10 @@ library PostLogic {
         bytes4 firstBytes = bytes4(bytes(handle));
 
         string memory NFTName = string(
-            abi.encodePacked(handle, "-Mint-", profileId.toString(), "-", noteId.toString())
+            abi.encodePacked(handle, "-Note-", profileId.toString(), "-", noteId.toString())
         );
         string memory NFTSymbol = string(
-            abi.encodePacked(firstBytes, "-Mint-", profileId.toString(), "-", noteId.toString())
+            abi.encodePacked(firstBytes, "-Note-", profileId.toString(), "-", noteId.toString())
         );
 
         IMintNFT(mintNFT).initialize(profileId, noteId, address(this), NFTName, NFTSymbol);

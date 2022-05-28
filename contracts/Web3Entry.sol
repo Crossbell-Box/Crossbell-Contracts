@@ -106,9 +106,10 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     function setPrimaryProfileId(uint256 profileId) external {
         _validateCallerIsProfileOwnerOrDispatcher(profileId);
 
+        uint256 oldProfileId = _primaryProfileByAddress[msg.sender];
         _primaryProfileByAddress[msg.sender] = profileId;
 
-        emit Events.SetPrimaryProfileId(msg.sender, profileId);
+        emit Events.SetPrimaryProfileId(msg.sender, profileId, oldProfileId);
     }
 
     function setDispatcher(uint256 profileId, address dispatcher) external {
