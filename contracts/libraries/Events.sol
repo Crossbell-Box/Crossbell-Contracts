@@ -33,7 +33,7 @@ library Events {
         address indexed tokenAddress
     );
 
-    event SetDispatcher(uint256 indexed profileId, address indexed dispatcher, uint256 timestamp);
+    event SetOperator(uint256 indexed profileId, address indexed operator, uint256 timestamp);
 
     event SetProfileUri(uint256 indexed profileId, string newUri);
 

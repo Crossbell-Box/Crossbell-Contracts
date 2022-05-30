@@ -96,7 +96,7 @@ makeSuiteCleanRoom("Primary Profile", function () {
                 await web3Entry.burn(FIRST_PROFILE_ID);
                 expect(await web3Entry.getPrimaryProfileId(userAddress)).to.eq(0);
                 expect(await web3Entry.getHandle(FIRST_PROFILE_ID)).to.eq("");
-                expect(await web3Entry.getDispatcher(FIRST_PROFILE_ID)).to.eq(
+                expect(await web3Entry.getOperator(FIRST_PROFILE_ID)).to.eq(
                     ethers.constants.AddressZero
                 );
                 const profile = await web3Entry.getProfile(FIRST_PROFILE_ID);

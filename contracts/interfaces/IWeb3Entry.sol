@@ -25,7 +25,7 @@ interface IWeb3Entry {
 
     function setPrimaryProfileId(uint256 profileId) external;
 
-    function setDispatcher(uint256 profileId, address dispatcher) external;
+    function setOperator(uint256 profileId, address operator) external;
 
     function attachLinklist(uint256 linkListId, uint256 profileId) external;
 
@@ -139,7 +139,7 @@ interface IWeb3Entry {
 
     function getProfileUri(uint256 profileId) external view returns (string memory);
 
-    function getDispatcher(uint256 profileId) external view returns (address);
+    function getOperator(uint256 profileId) external view returns (address);
 
     function getNote(uint256 profileId, uint256 noteId)
         external

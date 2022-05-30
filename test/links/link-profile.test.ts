@@ -113,6 +113,25 @@ makeSuiteCleanRoom("Link", function () {
                 expect(linklistUri).to.eq("");
                 expect(total).to.eq(1);
             });
+            it("User should get and transfer linklist nft", async function () {
+                const id = await linklist.tokenOfOwnerByIndex(userAddress, 0);
+                const owner = await linklist.ownerOf(id);
+                const linklistUri = await linklist.tokenURI(id);
+                const total = await linklist.totalSupply();
+
+                expect(id).to.eq(FIRST_LINKLIST_ID);
+                expect(owner).to.eq(userAddress);
+                expect(linklistUri).to.eq("");
+                expect(total).to.eq(1);
+
+                // transfer and  check owner
+                await linklist.transferFrom(userAddress, userTwoAddress, FIRST_LINKLIST_ID);
+                expect(await linklist.ownerOf(FIRST_LINKLIST_ID)).to.eq(userTwoAddress);
+
+                // check linklist id
+                const linklistId = await web3Entry.getLinklistId(FIRST_PROFILE_ID, FOLLOW_LINKTYPE);
+                expect(linklistId).to.be.equal(0);
+            });
             it("User should get correct linking profile ids after unlink, and linklist nft still exist.", async function () {
                 await expect(
                     web3Entry.unlinkProfile({
@@ -137,7 +156,7 @@ makeSuiteCleanRoom("Link", function () {
             });
 
             it("User should set a dispatcher and the dispatcher should unlink a profile", async function () {
-                await web3Entry.setDispatcher(FIRST_PROFILE_ID, userThreeAddress);
+                await web3Entry.setOperator(FIRST_PROFILE_ID, userThreeAddress);
 
                 await expect(
                     web3Entry.connect(userThree).unlinkProfile({

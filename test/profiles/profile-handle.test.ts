@@ -84,11 +84,11 @@ makeSuiteCleanRoom("Profile handle Functionality ", function () {
                 ).to.not.be.reverted;
             });
 
-            it("User should set a dispatcher and set handle with handle length == 31", async function () {
+            it("User should set a operator and set handle with handle length == 31", async function () {
                 const profileData = makeProfileData("_ab2423cea4f1047556e7a14-f1-eth");
                 await expect(web3Entry.createProfile(profileData)).to.not.be.reverted;
 
-                await web3Entry.setDispatcher(FIRST_PROFILE_ID, userThreeAddress);
+                await web3Entry.setOperator(FIRST_PROFILE_ID, userThreeAddress);
 
                 await expect(
                     web3Entry

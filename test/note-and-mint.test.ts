@@ -234,8 +234,8 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 expect(await mintNFT.ownerOf(2)).to.equal(userThreeAddress);
             });
 
-            it("User should set a dispatcher and post note", async function () {
-                await web3Entry.setDispatcher(FIRST_PROFILE_ID, userThreeAddress);
+            it("User should set a operator and post note", async function () {
+                await web3Entry.setOperator(FIRST_PROFILE_ID, userThreeAddress);
 
                 // post note
                 const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());

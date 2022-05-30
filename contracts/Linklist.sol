@@ -3,6 +3,7 @@
 pragma solidity 0.8.10;
 
 import "./interfaces/ILinklist.sol";
+import "./interfaces/IWeb3Entry.sol";
 import "./base/NFTBase.sol";
 import "./libraries/Events.sol";
 import "./libraries/DataTypes.sol";
@@ -368,7 +369,11 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         address to,
         uint256 tokenId
     ) internal override {
-        currentTakeOver[tokenId] = 0;
+        if (currentTakeOver[tokenId] != 0) {
+            IWeb3Entry(Web3Entry).detachLinklist(tokenId, currentTakeOver[tokenId]);
+
+            currentTakeOver[tokenId] = 0;
+        }
 
         super._beforeTokenTransfer(from, to, tokenId);
     }
