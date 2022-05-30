@@ -760,12 +760,4 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     function getRevision() external pure returns (uint256) {
         return REVISION;
     }
-
-    //    function getPeriphery() external view returns (address) {
-    //        return periphery;
-    //    }
-    //
-    //    function getResolver() external view returns (address) {
-    //        return resolver;
-    //    }
 }
