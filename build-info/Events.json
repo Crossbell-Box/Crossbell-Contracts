@@ -492,31 +492,6 @@
             "inputs": [
                 {
                     "indexed": true,
-                    "internalType": "uint256",
-                    "name": "profileId",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "dispatcher",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "timestamp",
-                    "type": "uint256"
-                }
-            ],
-            "name": "SetDispatcher",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
                     "internalType": "address",
                     "name": "account",
                     "type": "address"
@@ -764,6 +739,31 @@
                 }
             ],
             "name": "SetNoteUri",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "profileId",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "operator",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "timestamp",
+                    "type": "uint256"
+                }
+            ],
+            "name": "SetOperator",
             "type": "event"
         },
         {
@@ -1072,8 +1072,8 @@
             "type": "event"
         }
     ],
-    "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212204c4f7986c91d0dbea408fe98590315502deba30b9ff408a3bfe2fc25dbd9aa7264736f6c634300080a0033",
-    "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212204c4f7986c91d0dbea408fe98590315502deba30b9ff408a3bfe2fc25dbd9aa7264736f6c634300080a0033",
+    "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220db3992c8bd9960de4856345266b80a75744b3c60a267268416dae11b015a6ef664736f6c634300080a0033",
+    "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220db3992c8bd9960de4856345266b80a75744b3c60a267268416dae11b015a6ef664736f6c634300080a0033",
     "linkReferences": {},
     "deployedLinkReferences": {}
 }
