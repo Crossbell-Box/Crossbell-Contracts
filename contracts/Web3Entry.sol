@@ -441,6 +441,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         _validateNoteExists(profileId, noteId);
 
         _noteByIdByProfile[profileId][noteId].deleted = true;
+
+        emit Events.DeleteNote(profileId, noteId);
     }
 
     function postNote4Profile(DataTypes.PostNoteData calldata postNoteData, uint256 toProfileId)
