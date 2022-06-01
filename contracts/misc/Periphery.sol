@@ -46,6 +46,10 @@ contract Periphery is Initializable {
         }
     }
 
+    function getLinkingProfileId(bytes32 linkKey) external view returns (uint256 profileId) {
+        profileId = uint256(linkKey);
+    }
+
     function getLinkingNotes(uint256 fromProfileId, bytes32 linkType)
         external
         view
@@ -91,6 +95,32 @@ contract Periphery is Initializable {
 
     function getLinkingAnyUri(bytes32 linkKey) external view returns (string memory) {
         return ILinklist(linklist).getLinkingAnyUri(linkKey);
+    }
+
+    function getLinkingAddresses(uint256 fromProfileId, bytes32 linkType)
+        external
+        view
+        returns (address[] memory)
+    {
+        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromProfileId, linkType);
+        return ILinklist(linklist).getLinkingAddresses(linklistId);
+    }
+
+    function getLinkingAddress(bytes32 linkKey) external view returns (address) {
+        return address(uint160(uint256(linkKey)));
+    }
+
+    function getLinkingLinklistIds(uint256 fromProfileId, bytes32 linkType)
+        external
+        view
+        returns (uint256[] memory linklistIds)
+    {
+        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromProfileId, linkType);
+        return ILinklist(linklist).getLinkingLinklistIds(linklistId);
+    }
+
+    function getLinkingLinklistId(bytes32 linkKey) external view returns (uint256 linklistId) {
+        linklistId = uint256(linkKey);
     }
 
     function profileExists(uint256 profileId) internal view returns (bool) {
