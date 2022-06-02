@@ -93,6 +93,19 @@ library PostLogic {
         emit Events.MintNote(to, profileId, noteId, mintNFT, tokenId);
     }
 
+    function setNoteUri(
+        uint256 profileId,
+        uint256 noteId,
+        string calldata newUri,
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile
+    ) external {
+        require(!_noteByIdByProfile[profileId][noteId].locked, "NoteLocked");
+
+        _noteByIdByProfile[profileId][noteId].contentUri = newUri;
+
+        emit Events.SetNoteUri(profileId, noteId, newUri);
+    }
+
     function _deployMintNFT(
         uint256 profileId,
         uint256 noteId,

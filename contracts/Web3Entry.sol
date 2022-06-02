@@ -420,11 +420,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     ) external {
         _validateCallerIsProfileOwnerOrOperator(profileId);
         _validateNoteExists(profileId, noteId);
-        require(!_noteByIdByProfile[profileId][noteId].locked, "NoteLocked");
 
-        _noteByIdByProfile[profileId][noteId].contentUri = newUri;
-
-        emit Events.SetNoteUri(profileId, noteId, newUri);
+        PostLogic.setNoteUri(profileId, noteId, newUri, _noteByIdByProfile);
     }
 
     function lockNote(uint256 profileId, uint256 noteId) external {
