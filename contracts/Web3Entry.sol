@@ -19,7 +19,6 @@ import "./libraries/LinkModuleLogic.sol";
 import "./libraries/LinkLogic.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
-import "@openzeppelin/contracts/utils/math/Math.sol";
 
 contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3EntryExtendStorage {
     using Strings for uint256;
@@ -632,22 +631,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         returns (DataTypes.Note memory)
     {
         return _noteByIdByProfile[profileId][noteId];
-    }
-
-    function getNotesByProfileId(
-        uint256 profileId,
-        uint256 offset,
-        uint256 limit
-    ) external view returns (DataTypes.Note[] memory results) {
-        uint256 count = _profileById[profileId].noteCount;
-        limit = Math.min(limit, count - offset);
-
-        results = new DataTypes.Note[](limit);
-        if (offset >= count) return results;
-
-        for (uint256 i = offset; i < limit; i++) {
-            results[i] = _noteByIdByProfile[profileId][i];
-        }
     }
 
     function getLinkModule4Address(address account) external view returns (address) {

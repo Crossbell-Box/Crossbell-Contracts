@@ -7,6 +7,7 @@ import "../interfaces/ILinklist.sol";
 import "../libraries/DataTypes.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
 contract Periphery is Initializable {
     address public web3Entry;
@@ -17,6 +18,22 @@ contract Periphery is Initializable {
     function initialize(address _web3Entry, address _linklist) external initializer {
         web3Entry = _web3Entry;
         linklist = _linklist;
+    }
+
+    function getNotesByProfileId(
+        uint256 profileId,
+        uint256 offset,
+        uint256 limit
+    ) external view returns (DataTypes.Note[] memory results) {
+        uint256 count = IWeb3Entry(web3Entry).getProfile(profileId).noteCount;
+        limit = Math.min(limit, count - offset);
+
+        results = new DataTypes.Note[](limit);
+        if (offset >= count) return results;
+
+        for (uint256 i = offset; i < limit; i++) {
+            results[i] = IWeb3Entry(web3Entry).getNote(profileId, i);
+        }
     }
 
     function getLinkingProfileIds(uint256 fromProfileId, bytes32 linkType)

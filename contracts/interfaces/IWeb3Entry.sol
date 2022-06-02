@@ -146,12 +146,6 @@ interface IWeb3Entry {
         view
         returns (DataTypes.Note memory);
 
-    function getNotesByProfileId(
-        uint256 profileId,
-        uint256 offset,
-        uint256 limit
-    ) external view returns (DataTypes.Note[] memory);
-
     function getLinkModule4Address(address account) external view returns (address);
 
     function getLinkModule4Linklist(uint256 tokenId) external view returns (address);
