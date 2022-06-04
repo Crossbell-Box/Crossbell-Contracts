@@ -31,8 +31,8 @@ contract Periphery is Initializable {
         results = new DataTypes.Note[](limit);
         if (offset >= count) return results;
 
-        for (uint256 i = offset; i < limit; i++) {
-            results[i] = IWeb3Entry(web3Entry).getNote(profileId, i);
+        for (uint256 i = offset; i < offset + limit; i++) {
+            results[i - offset] = IWeb3Entry(web3Entry).getNote(profileId, i);
         }
     }
 
