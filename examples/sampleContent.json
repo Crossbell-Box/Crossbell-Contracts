@@ -1,5 +1,7 @@
 {
     "tags": ["Misc"],
     "title": "Start From Here",
-    "summary": "So boring the story is.\n\nSo boring that I don’t want to know the next."
+    "content": "So boring the story is.\n\nSo boring that I don’t want to know the next.",
+    "appId": "CrossSync",
+    "appVersion": "1.0.0"
 }

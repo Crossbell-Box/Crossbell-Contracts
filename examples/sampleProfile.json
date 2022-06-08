@@ -2,16 +2,13 @@
     "name": "Atlas",
     "avatars": ["ipfs://QmNks3cJWDXzG5WSBzTVv1regkhXhzChK6LhJYu1HiBLS2"],
     "bio": "We shall meet in the place with no darkness.",
-    "attachments": [
+    "websites": ["https://rss3.io", "https://atlasoin.xyz"],
+    "banner": ["https://images.pexels.com/photos/933054/pexels-photo-933054.jpeg"],
+    "connected_accounts": ["csb://account:Atlasoin@twitter", "csb://account:0xc560eb6fd0c2eb80Df50E5e06715295AE1205049@ethereum"],
+    "connected_avatars": [
         {
-            "type": "websites",
-            "content": "https://rss3.io\nhttps://atlasoin.xyz",
-            "mime_type": "text/uri-list"
+            "uri": "rss3://asset:0x5452c7fb99d99fab3cc1875e9da9829cb50f7a13-753@ethereum",
+            "cached_resource": "ipfs://QmSX9QiwjTGBk5m22UscTg3vrbMwUfFsmxVzMH57hkPD5U/753.png"
         }
-    ],
-
-    "connected_accounts": [
-        "rss3://account:Atlasoin@twitter",
-        "rss3://account:0xc560eb6fd0c2eb80Df50E5e06715295AE1205049@ethereum"
     ]
 }

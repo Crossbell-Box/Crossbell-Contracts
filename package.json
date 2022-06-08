@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
+        "test": "hardhat test",
         "format": "prettier --write ."
     },
     "repository": "git@github.com:Crossbell-Box/Crossbell-Contracts.git",
