@@ -5,6 +5,7 @@ import {
     deployerAddress,
     FIRST_LINKLIST_ID,
     FIRST_PROFILE_ID,
+    FOLLOW_LINKTYPE,
     makeSuiteCleanRoom,
     MOCK_PROFILE_HANDLE,
     MOCK_PROFILE_HANDLE2,
@@ -12,6 +13,8 @@ import {
     SECOND_PROFILE_ID,
     user,
     userAddress,
+    userThree,
+    userThreeAddress,
     userTwo,
     userTwoAddress,
     web3Entry,
@@ -66,6 +69,41 @@ makeSuiteCleanRoom("Primary Profile", function () {
                     web3Entry.transferFrom(userAddress, userTwoAddress, FIRST_PROFILE_ID)
                 ).to.not.be.reverted;
                 expect(await web3Entry.getPrimaryProfileId(userAddress)).to.eq(0);
+            });
+
+            it("User should transfer the primary profile, and the operator should be unset", async function () {
+                expect(await web3Entry.getPrimaryProfileId(userAddress)).to.eq(FIRST_PROFILE_ID);
+
+                // set operator
+                await web3Entry.setOperator(FIRST_PROFILE_ID, userThreeAddress);
+
+                await expect(
+                    web3Entry.transferFrom(userAddress, userTwoAddress, FIRST_PROFILE_ID)
+                ).to.not.be.reverted;
+                expect(await web3Entry.getPrimaryProfileId(userAddress)).to.eq(0);
+                expect(await web3Entry.getOperator(FIRST_PROFILE_ID)).to.eq(
+                    ethers.constants.AddressZero
+                );
+            });
+
+            it("User should transfer the primary profile, and the linklist should be unset", async function () {
+                expect(await web3Entry.getPrimaryProfileId(userAddress)).to.eq(FIRST_PROFILE_ID);
+
+                // link profile
+                await web3Entry.connect(userThree).createProfile(makeProfileData("handle3"));
+                await web3Entry.linkProfile({
+                    fromProfileId: FIRST_PROFILE_ID,
+                    toProfileId: SECOND_PROFILE_ID,
+                    linkType: FOLLOW_LINKTYPE,
+                    data: [],
+                });
+                expect(await web3Entry.getLinklistId(FIRST_PROFILE_ID, FOLLOW_LINKTYPE)).to.eq(1);
+
+                await expect(
+                    web3Entry.transferFrom(userAddress, userTwoAddress, FIRST_PROFILE_ID)
+                ).to.not.be.reverted;
+                expect(await web3Entry.getPrimaryProfileId(userAddress)).to.eq(0);
+                expect(await web3Entry.getLinklistId(FIRST_PROFILE_ID, FOLLOW_LINKTYPE)).to.eq(0);
             });
 
             it("User without a profile, and then receives a profile, it should be unset", async function () {

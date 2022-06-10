@@ -7,8 +7,12 @@ import "./DataTypes.sol";
 import "./Events.sol";
 import "./Constants.sol";
 import "../interfaces/ILinkModule4Profile.sol";
+import "../interfaces/ILinklist.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 library ProfileLogic {
+    using EnumerableSet for EnumerableSet.Bytes32Set;
+
     function createProfile(
         DataTypes.CreateProfileData calldata vars,
         bool validateHandle,
@@ -40,6 +44,37 @@ library ProfileLogic {
         }
 
         emit Events.ProfileCreated(profileId, msg.sender, vars.to, vars.handle, block.timestamp);
+    }
+
+    function attachLinklist(
+        uint256 linklistId,
+        uint256 profileId,
+        address account,
+        address _linklist,
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
+    ) external {
+        bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
+        ILinklist(_linklist).setTakeOver(linklistId, account, profileId);
+        _attachedLinklists[profileId][linkType] = linklistId;
+        _linkTypesByProfile[profileId].add(linkType);
+
+        emit Events.AttachLinklist(linklistId, profileId, linkType);
+    }
+
+    function detachLinklist(
+        uint256 linklistId,
+        uint256 profileId,
+        address account,
+        address _linklist,
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
+    ) external {
+        bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
+        _attachedLinklists[profileId][linkType] = 0;
+        _linkTypesByProfile[profileId].remove(linkType);
+
+        emit Events.DetachLinklist(linklistId, profileId, linkType);
     }
 
     function setSocialToken(

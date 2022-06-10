@@ -8,8 +8,11 @@ import "../interfaces/ILinklist.sol";
 import "../interfaces/ILinkModule4Profile.sol";
 import "../interfaces/ILinkModule4Note.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 library LinkLogic {
+    using EnumerableSet for EnumerableSet.Bytes32Set;
+
     function linkProfile(
         uint256 fromProfileId,
         uint256 toProfileId,
@@ -18,7 +21,8 @@ library LinkLogic {
         address linker,
         address linklist,
         address linkModule,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
     ) external {
         uint256 linklistId = _mintLinklist(
             fromProfileId,
@@ -27,6 +31,8 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
+
+        _linkTypesByProfile[fromProfileId].add(linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingProfileId(linklistId, toProfileId);
@@ -55,7 +61,8 @@ library LinkLogic {
         DataTypes.linkNoteData calldata vars,
         address linklist,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromProfileId,
@@ -64,6 +71,8 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
+
+        _linkTypesByProfile[vars.fromProfileId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingNote(linklistId, vars.toProfileId, vars.toNoteId);
@@ -116,7 +125,8 @@ library LinkLogic {
         DataTypes.ProfileLinkStruct calldata linkData,
         bytes32 linkType,
         address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
     ) external {
         uint256 linklistId = _mintLinklist(
             fromProfileId,
@@ -125,6 +135,8 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
+
+        _linkTypesByProfile[fromProfileId].add(linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingProfileLink(linklistId, linkData);
@@ -163,7 +175,8 @@ library LinkLogic {
     function linkLinklist(
         DataTypes.linkLinklistData calldata vars,
         address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromProfileId,
@@ -172,6 +185,8 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
+
+        _linkTypesByProfile[vars.fromProfileId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingLinklistId(linklistId, vars.toLinkListId);
@@ -199,7 +214,8 @@ library LinkLogic {
     function linkERC721(
         DataTypes.linkERC721Data calldata vars,
         address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromProfileId,
@@ -208,6 +224,8 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
+
+        _linkTypesByProfile[vars.fromProfileId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId);
@@ -242,7 +260,8 @@ library LinkLogic {
     function linkAddress(
         DataTypes.linkAddressData calldata vars,
         address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromProfileId,
@@ -251,6 +270,8 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
+
+        _linkTypesByProfile[vars.fromProfileId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingAddress(linklistId, vars.ethAddress);
@@ -273,7 +294,8 @@ library LinkLogic {
     function linkAnyUri(
         DataTypes.linkAnyUriData calldata vars,
         address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromProfileId,
@@ -282,6 +304,8 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
+
+        _linkTypesByProfile[vars.fromProfileId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingAnyUri(linklistId, vars.toUri);
@@ -314,7 +338,7 @@ library LinkLogic {
             // mint linkList nft
             ILinklist(linklist).mint(to, linkType, linklistId);
 
-            // set primary linkList
+            // attach linkList
             ILinklist(linklist).setTakeOver(linklistId, to, profileId);
             _attachedLinklists[profileId][linkType] = linklistId;
             emit Events.AttachLinklist(linklistId, profileId, linkType);

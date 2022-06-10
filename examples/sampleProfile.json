@@ -4,7 +4,10 @@
     "bio": "We shall meet in the place with no darkness.",
     "websites": ["https://rss3.io", "https://atlasoin.xyz"],
     "banner": ["https://images.pexels.com/photos/933054/pexels-photo-933054.jpeg"],
-    "connected_accounts": ["csb://account:Atlasoin@twitter", "csb://account:0xc560eb6fd0c2eb80Df50E5e06715295AE1205049@ethereum"],
+    "connected_accounts": [
+        "csb://account:Atlasoin@twitter",
+        "csb://account:0xc560eb6fd0c2eb80Df50E5e06715295AE1205049@ethereum"
+    ],
     "connected_avatars": [
         {
             "uri": "rss3://asset:0x5452c7fb99d99fab3cc1875e9da9829cb50f7a13-753@ethereum",

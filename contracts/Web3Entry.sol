@@ -19,11 +19,13 @@ import "./libraries/LinkModuleLogic.sol";
 import "./libraries/LinkLogic.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3EntryExtendStorage {
     using Strings for uint256;
+    using EnumerableSet for EnumerableSet.Bytes32Set;
 
-    uint256 internal constant REVISION = 3;
+    uint256 internal constant REVISION = 4;
 
     function initialize(
         string calldata _name,
@@ -119,20 +121,27 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     function attachLinklist(uint256 linklistId, uint256 profileId) external {
         _validateCallerIsProfileOwnerOrOperator(profileId);
 
-        bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
-        ILinklist(_linklist).setTakeOver(linklistId, msg.sender, profileId);
-        _attachedLinklists[profileId][linkType] = linklistId;
-
-        emit Events.AttachLinklist(linklistId, profileId, linkType);
+        ProfileLogic.attachLinklist(
+            linklistId,
+            profileId,
+            msg.sender,
+            _linklist,
+            _attachedLinklists,
+            _linkTypesByProfile
+        );
     }
 
     function detachLinklist(uint256 linklistId, uint256 profileId) external {
         _validateCallerIsProfileOwnerOrOperatorOrLinklist(profileId);
 
-        bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
-        _attachedLinklists[profileId][linkType] = 0;
-
-        emit Events.DetachLinklist(linklistId, profileId, linkType);
+        ProfileLogic.detachLinklist(
+            linklistId,
+            profileId,
+            msg.sender,
+            _linklist,
+            _attachedLinklists,
+            _linkTypesByProfile
+        );
     }
 
     function setLinklistUri(uint256 linklistId, string calldata uri) external {
@@ -153,7 +162,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             IERC721Enumerable(this).ownerOf(vars.fromProfileId),
             _linklist,
             _profileById[vars.toProfileId].linkModule,
-            _attachedLinklists
+            _attachedLinklists,
+            _linkTypesByProfile
         );
     }
 
@@ -210,7 +220,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             IERC721Enumerable(this).ownerOf(fromProfileId),
             _linklist,
             address(0),
-            _attachedLinklists
+            _attachedLinklists,
+            _linkTypesByProfile
         );
     }
 
@@ -218,7 +229,13 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
         _validateNoteExists(vars.toProfileId, vars.toNoteId);
 
-        LinkLogic.linkNote(vars, _linklist, _noteByIdByProfile, _attachedLinklists);
+        LinkLogic.linkNote(
+            vars,
+            _linklist,
+            _noteByIdByProfile,
+            _attachedLinklists,
+            _linkTypesByProfile
+        );
     }
 
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external {
@@ -231,7 +248,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
         _validateERC721Exists(vars.tokenAddress, vars.tokenId);
 
-        LinkLogic.linkERC721(vars, _linklist, _attachedLinklists);
+        LinkLogic.linkERC721(vars, _linklist, _attachedLinklists, _linkTypesByProfile);
     }
 
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external {
@@ -247,7 +264,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     function linkAddress(DataTypes.linkAddressData calldata vars) external {
         _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
 
-        LinkLogic.linkAddress(vars, _linklist, _attachedLinklists);
+        LinkLogic.linkAddress(vars, _linklist, _attachedLinklists, _linkTypesByProfile);
     }
 
     function unlinkAddress(DataTypes.linkAddressData calldata vars) external {
@@ -263,7 +280,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external {
         _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
 
-        LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists);
+        LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists, _linkTypesByProfile);
     }
 
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external {
@@ -283,7 +300,14 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     ) external {
         _validateCallerIsProfileOwnerOrOperator(fromProfileId);
 
-        LinkLogic.linkProfileLink(fromProfileId, linkData, linkType, _linklist, _attachedLinklists);
+        LinkLogic.linkProfileLink(
+            fromProfileId,
+            linkData,
+            linkType,
+            _linklist,
+            _attachedLinklists,
+            _linkTypesByProfile
+        );
     }
 
     function unlinkProfileLink(
@@ -305,7 +329,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
         _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
 
-        LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists);
+        LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists, _linkTypesByProfile);
     }
 
     function unlinkLinklist(DataTypes.linkLinklistData calldata vars) external {
@@ -680,6 +704,22 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         if (_primaryProfileByAddress[from] != 0) {
             _primaryProfileByAddress[from] = 0;
+        }
+
+        // detach linklist
+        bytes32[] memory linkTypes = _linkTypesByProfile[tokenId].values();
+        for (uint256 i = 0; i < linkTypes.length; i++) {
+            uint256 linklistId = _attachedLinklists[tokenId][linkTypes[i]];
+            if (linklistId != 0) {
+                ProfileLogic.detachLinklist(
+                    linklistId,
+                    tokenId,
+                    from,
+                    _linklist,
+                    _attachedLinklists,
+                    _linkTypesByProfile
+                );
+            }
         }
 
         super._beforeTokenTransfer(from, to, tokenId);
