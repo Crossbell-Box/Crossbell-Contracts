@@ -195,7 +195,7 @@ library LinkLogic {
     }
 
     function unlinkLinklist(
-        DataTypes.linkLinklistData calldata vars,
+        DataTypes.unlinkLinklistData calldata vars,
         address linklist,
         uint256 linklistId
     ) external {
@@ -280,7 +280,7 @@ library LinkLogic {
     }
 
     function unlinkAddress(
-        DataTypes.linkAddressData calldata vars,
+        DataTypes.unlinkAddressData calldata vars,
         address linklist,
         uint256 linklistId
     ) external {

@@ -36,7 +36,7 @@ interface IWeb3Entry {
     // emit a link from a profile
     function linkAddress(DataTypes.linkAddressData calldata vars) external;
 
-    function unlinkAddress(DataTypes.linkAddressData calldata vars) external;
+    function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external;
 
     function linkProfile(DataTypes.linkProfileData calldata vars) external;
 
@@ -70,7 +70,7 @@ interface IWeb3Entry {
 
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external;
 
-    function unlinkLinklist(DataTypes.linkLinklistData calldata vars) external;
+    function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external;
 
     function setLinkModule4Profile(DataTypes.setLinkModule4ProfileData calldata vars) external;
 

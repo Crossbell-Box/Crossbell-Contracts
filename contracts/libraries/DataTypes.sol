@@ -75,6 +75,12 @@ library DataTypes {
         bytes data;
     }
 
+    struct unlinkAddressData {
+        uint256 fromProfileId;
+        address ethAddress;
+        bytes32 linkType;
+    }
+
     struct linkAnyUriData {
         uint256 fromProfileId;
         string toUri;
@@ -93,6 +99,12 @@ library DataTypes {
         uint256 toLinkListId;
         bytes32 linkType;
         bytes data;
+    }
+
+    struct unlinkLinklistData {
+        uint256 fromProfileId;
+        uint256 toLinkListId;
+        bytes32 linkType;
     }
 
     struct setLinkModule4ProfileData {

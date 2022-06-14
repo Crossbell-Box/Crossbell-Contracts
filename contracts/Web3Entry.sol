@@ -61,6 +61,16 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         return false;
     }
 
+    /**
+     * This method creates a profile with the given parameters to the given address.
+     *
+     * @param vars The CreateProfileData struct containing the following parameters:<br>
+     *      * to: The address receiving the profile.<br>
+     *      * handle: The handle to set for the profile.<br>
+     *      * uri: The URI to set for the profile metadata.<br>
+     *      * linkModule: The link module to use, can be the zero address.<br>
+     *      * linkModuleInitData: The link module initialization data, if any.
+     */
     function createProfile(DataTypes.CreateProfileData calldata vars) external {
         require(canCreate(vars.handle, vars.to), "HandleNotEligible");
 
@@ -137,7 +147,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         ProfileLogic.detachLinklist(
             linklistId,
             profileId,
-            msg.sender,
             _linklist,
             _attachedLinklists,
             _linkTypesByProfile
@@ -267,7 +276,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         LinkLogic.linkAddress(vars, _linklist, _attachedLinklists, _linkTypesByProfile);
     }
 
-    function unlinkAddress(DataTypes.linkAddressData calldata vars) external {
+    function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external {
         _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
 
         LinkLogic.unlinkAddress(
@@ -332,7 +341,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists, _linkTypesByProfile);
     }
 
-    function unlinkLinklist(DataTypes.linkLinklistData calldata vars) external {
+    function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external {
         _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
 
         LinkLogic.unlinkLinklist(
@@ -714,7 +723,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
                 ProfileLogic.detachLinklist(
                     linklistId,
                     tokenId,
-                    from,
                     _linklist,
                     _attachedLinklists,
                     _linkTypesByProfile

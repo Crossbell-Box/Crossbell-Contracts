@@ -65,7 +65,6 @@ library ProfileLogic {
     function detachLinklist(
         uint256 linklistId,
         uint256 profileId,
-        address account,
         address _linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
         mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
