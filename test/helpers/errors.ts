@@ -5,7 +5,7 @@ export const ERRORS = {
     HANDLE_LENGTH_INVALID: "HandleLengthInvalid",
     HANDLE_CONTAINS_INVALID_CHARS: "HandleContainsInvalidCharacters",
     UNATTACHED_LINKLIST: "UnattachedLinklist",
-    NOT_APROVED: "NotApproved",
+    NOT_APPROVED: "NotApproved",
     NOTE_DELETED: "NoteIsDeleted",
     NOTE_NOT_EXISTs: "NoteNotExists",
 };

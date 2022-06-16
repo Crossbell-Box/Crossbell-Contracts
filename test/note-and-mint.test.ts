@@ -774,7 +774,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                         to: userThreeAddress,
                         mintModuleData: [],
                     })
-                ).to.be.revertedWith(ERRORS.NOT_APROVED);
+                ).to.be.revertedWith(ERRORS.NOT_APPROVED);
 
                 note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
                 expect(note.mintNFT).to.not.equal(ethers.constants.AddressZero);
