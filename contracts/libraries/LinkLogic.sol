@@ -39,7 +39,7 @@ library LinkLogic {
 
         // process link module
         if (linkModule != address(0)) {
-            ILinkModule4Profile(linkModule).processLink(linker, toProfileId, data);
+            try ILinkModule4Profile(linkModule).processLink(linker, toProfileId, data) {} catch {}
         }
 
         emit Events.LinkProfile(msg.sender, fromProfileId, toProfileId, linkType, linklistId);
@@ -80,12 +80,14 @@ library LinkLogic {
         // process link
         address linkModule = _noteByIdByProfile[vars.toProfileId][vars.toNoteId].linkModule;
         if (linkModule != address(0)) {
-            ILinkModule4Note(linkModule).processLink(
-                msg.sender,
-                vars.toProfileId,
-                vars.toNoteId,
-                vars.data
-            );
+            try
+                ILinkModule4Note(linkModule).processLink(
+                    msg.sender,
+                    vars.toProfileId,
+                    vars.toNoteId,
+                    vars.data
+                )
+            {} catch {}
         }
 
         emit Events.LinkNote(
