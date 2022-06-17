@@ -357,7 +357,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 ]);
             });
 
-            it("User should failed to set note uri after freezing", async function () {
+            it("User should failed to set note uri or set link module or set mint module after freezing", async function () {
                 // post note
                 const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
                 await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
@@ -393,6 +393,24 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 // set note uri should fail
                 await expect(
                     web3Entry.setNoteUri(noteData.profileId, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI)
+                ).to.be.revertedWith("NoteLocked");
+
+                await expect(
+                    web3Entry.setLinkModule4Note({
+                        profileId: noteData.profileId,
+                        noteId: FIRST_NOTE_ID,
+                        linkModule: ethers.constants.AddressZero,
+                        linkModuleInitData: [],
+                    })
+                ).to.be.revertedWith("NoteLocked");
+
+                await expect(
+                    web3Entry.setMintModule4Note({
+                        profileId: noteData.profileId,
+                        noteId: FIRST_NOTE_ID,
+                        mintModule: ethers.constants.AddressZero,
+                        mintModuleInitData: [],
+                    })
                 ).to.be.revertedWith("NoteLocked");
             });
 

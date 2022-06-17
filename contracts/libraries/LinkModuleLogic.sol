@@ -19,6 +19,8 @@ library LinkModuleLogic {
         bytes calldata linkModuleInitData,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile
     ) external {
+        require(!_noteByIdByProfile[profileId][noteId].locked, "NoteLocked");
+
         if (linkModule != address(0)) {
             _noteByIdByProfile[profileId][noteId].linkModule = linkModule;
 
@@ -67,6 +69,8 @@ library LinkModuleLogic {
         bytes calldata mintModuleInitData,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile
     ) external {
+        require(!_noteByIdByProfile[profileId][noteId].locked, "NoteLocked");
+
         if (mintModule != address(0)) {
             _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
 
