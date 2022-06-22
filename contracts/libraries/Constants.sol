@@ -7,9 +7,9 @@ library Constants {
     uint8 internal constant MIN_HANDLE_LENGTH = 3;
 
     // note link item type
-    // "Profile"
-    bytes32 constant NoteLinkTypeProfile =
-        0x50726f66696c6500000000000000000000000000000000000000000000000000;
+    // "Character"
+    bytes32 constant NoteLinkTypeCharacter =
+        0x4368617261637465720000000000000000000000000000000000000000000000;
     // "Address"
     bytes32 constant NoteLinkTypeAddress =
         0x4164647265737300000000000000000000000000000000000000000000000000;

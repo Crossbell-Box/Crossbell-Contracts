@@ -13,7 +13,7 @@ import {
     SECOND_CHARACTER_ID,
     MOCK_NOTE_URI,
     bytes32Zero,
-    LinkItemTypeProfile,
+    LinkItemTypeCharacter,
     LinkItemTypeAddress,
     LinkItemTypeNote,
     LinkItemTypeERC721,
@@ -508,7 +508,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
-                    LinkItemTypeProfile,
+                    LinkItemTypeCharacter,
                     ethers.utils.hexZeroPad(ethers.utils.hexlify(SECOND_CHARACTER_ID), 32),
                     noteData.contentUri,
                     ethers.constants.AddressZero,
@@ -549,7 +549,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
-                    LinkItemTypeProfile,
+                    LinkItemTypeCharacter,
                     ethers.utils.hexZeroPad(ethers.utils.hexlify(userThreeAddress), 32),
                     noteData.contentUri,
                     ethers.constants.AddressZero,

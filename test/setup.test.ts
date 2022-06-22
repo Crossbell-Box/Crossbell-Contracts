@@ -53,8 +53,8 @@ export const bytes32Zero = "0x00000000000000000000000000000000000000000000000000
 export const FollowLinkType = ethers.utils.formatBytes32String("follow");
 export const LikeLinkType = ethers.utils.formatBytes32String("like");
 
-export const LinkItemTypeProfile =
-    "0x50726f66696c6500000000000000000000000000000000000000000000000000";
+export const LinkItemTypeCharacter =
+    "0x4368617261637465720000000000000000000000000000000000000000000000";
 export const LinkItemTypeAddress =
     "0x4164647265737300000000000000000000000000000000000000000000000000";
 export const LinkItemTypeNote =
