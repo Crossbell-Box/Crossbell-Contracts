@@ -5,7 +5,7 @@ pragma solidity 0.8.10;
 import "./Events.sol";
 import "./DataTypes.sol";
 import "../interfaces/ILinklist.sol";
-import "../interfaces/ILinkModule4Profile.sol";
+import "../interfaces/ILinkModule4Character.sol";
 import "../interfaces/ILinkModule4Note.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
@@ -13,77 +13,86 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 library LinkLogic {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
-    function linkProfile(
-        uint256 fromProfileId,
-        uint256 toProfileId,
+    function linkCharacter(
+        uint256 fromCharacterId,
+        uint256 toCharacterId,
         bytes32 linkType,
         bytes memory data,
         address linker,
         address linklist,
         address linkModule,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
     ) external {
         uint256 linklistId = _mintLinklist(
-            fromProfileId,
+            fromCharacterId,
             linkType,
-            msg.sender,
+            linker,
             linklist,
             _attachedLinklists
         );
 
-        _linkTypesByProfile[fromProfileId].add(linkType);
+        _linkTypesByCharacter[fromCharacterId].add(linkType);
 
         // add to link list
-        ILinklist(linklist).addLinkingProfileId(linklistId, toProfileId);
+        ILinklist(linklist).addLinkingCharacterId(linklistId, toCharacterId);
 
         // process link module
         if (linkModule != address(0)) {
-            try ILinkModule4Profile(linkModule).processLink(linker, toProfileId, data) {} catch {}
+            try
+                ILinkModule4Character(linkModule).processLink(linker, toCharacterId, data)
+            {} catch {}
         }
 
-        emit Events.LinkProfile(msg.sender, fromProfileId, toProfileId, linkType, linklistId);
+        emit Events.LinkCharacter(linker, fromCharacterId, toCharacterId, linkType, linklistId);
     }
 
-    function unlinkProfile(
-        DataTypes.unlinkProfileData calldata vars,
+    function unlinkCharacter(
+        DataTypes.unlinkCharacterData calldata vars,
+        address linker,
         address linklist,
         uint256 linklistId
     ) external {
-        _validateLinklistAttached(linklist, linklistId, vars.fromProfileId);
+        _validateLinklistAttached(linklist, linklistId, vars.fromCharacterId);
         // remove from link list
-        ILinklist(linklist).removeLinkingProfileId(linklistId, vars.toProfileId);
+        ILinklist(linklist).removeLinkingCharacterId(linklistId, vars.toCharacterId);
 
-        emit Events.UnlinkProfile(msg.sender, vars.fromProfileId, vars.toProfileId, vars.linkType);
+        emit Events.UnlinkCharacter(
+            linker,
+            vars.fromCharacterId,
+            vars.toCharacterId,
+            vars.linkType
+        );
     }
 
     function linkNote(
         DataTypes.linkNoteData calldata vars,
+        address linker,
         address linklist,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile,
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
     ) external {
         uint256 linklistId = _mintLinklist(
-            vars.fromProfileId,
+            vars.fromCharacterId,
             vars.linkType,
-            msg.sender,
+            linker,
             linklist,
             _attachedLinklists
         );
 
-        _linkTypesByProfile[vars.fromProfileId].add(vars.linkType);
+        _linkTypesByCharacter[vars.fromCharacterId].add(vars.linkType);
 
         // add to link list
-        ILinklist(linklist).addLinkingNote(linklistId, vars.toProfileId, vars.toNoteId);
+        ILinklist(linklist).addLinkingNote(linklistId, vars.toCharacterId, vars.toNoteId);
 
         // process link
-        address linkModule = _noteByIdByProfile[vars.toProfileId][vars.toNoteId].linkModule;
+        address linkModule = _noteByIdByCharacter[vars.toCharacterId][vars.toNoteId].linkModule;
         if (linkModule != address(0)) {
             try
                 ILinkModule4Note(linkModule).processLink(
-                    msg.sender,
-                    vars.toProfileId,
+                    linker,
+                    vars.toCharacterId,
                     vars.toNoteId,
                     vars.data
                 )
@@ -91,8 +100,8 @@ library LinkLogic {
         }
 
         emit Events.LinkNote(
-            vars.fromProfileId,
-            vars.toProfileId,
+            vars.fromCharacterId,
+            vars.toCharacterId,
             vars.toNoteId,
             vars.linkType,
             linklistId
@@ -105,95 +114,102 @@ library LinkLogic {
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         // do note check note
-        // _validateNoteExists(vars.toProfileId, vars.toNoteId);
+        // _validateNoteExists(vars.toCharacterId, vars.toNoteId);
 
-        uint256 linklistId = _attachedLinklists[vars.fromProfileId][vars.linkType];
-        _validateLinklistAttached(linklist, linklistId, vars.fromProfileId);
+        uint256 linklistId = _attachedLinklists[vars.fromCharacterId][vars.linkType];
+        _validateLinklistAttached(linklist, linklistId, vars.fromCharacterId);
 
         // remove from link list
-        ILinklist(linklist).removeLinkingNote(linklistId, vars.toProfileId, vars.toNoteId);
+        ILinklist(linklist).removeLinkingNote(linklistId, vars.toCharacterId, vars.toNoteId);
 
         emit Events.UnlinkNote(
-            vars.fromProfileId,
-            vars.toProfileId,
+            vars.fromCharacterId,
+            vars.toCharacterId,
             vars.toNoteId,
             vars.linkType,
             linklistId
         );
     }
 
-    function linkProfileLink(
-        uint256 fromProfileId,
-        DataTypes.ProfileLinkStruct calldata linkData,
+    function linkCharacterLink(
+        uint256 fromCharacterId,
+        DataTypes.CharacterLinkStruct calldata linkData,
+        address linker,
         bytes32 linkType,
         address linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
     ) external {
         uint256 linklistId = _mintLinklist(
-            fromProfileId,
+            fromCharacterId,
             linkType,
-            msg.sender,
+            linker,
             linklist,
             _attachedLinklists
         );
 
-        _linkTypesByProfile[fromProfileId].add(linkType);
+        _linkTypesByCharacter[fromCharacterId].add(linkType);
 
         // add to link list
-        ILinklist(linklist).addLinkingProfileLink(linklistId, linkData);
+        ILinklist(linklist).addLinkingCharacterLink(linklistId, linkData);
 
         // event
-        emit Events.LinkProfileLink(
-            fromProfileId,
+        emit Events.LinkCharacterLink(
+            fromCharacterId,
             linkType,
-            linkData.fromProfileId,
-            linkData.toProfileId,
+            linkData.fromCharacterId,
+            linkData.toCharacterId,
             linkData.linkType
         );
     }
 
-    function unlinkProfileLink(
-        uint256 fromProfileId,
-        DataTypes.ProfileLinkStruct calldata linkData,
+    function unlinkCharacterLink(
+        uint256 fromCharacterId,
+        DataTypes.CharacterLinkStruct calldata linkData,
         bytes32 linkType,
         address linklist,
         uint256 linklistId
     ) external {
-        _validateLinklistAttached(linklist, linklistId, fromProfileId);
+        _validateLinklistAttached(linklist, linklistId, fromCharacterId);
         // remove from link list
-        ILinklist(linklist).removeLinkingProfileLink(linklistId, linkData);
+        ILinklist(linklist).removeLinkingCharacterLink(linklistId, linkData);
 
         // event
-        emit Events.UnlinkProfileLink(
-            fromProfileId,
+        emit Events.UnlinkCharacterLink(
+            fromCharacterId,
             linkType,
-            linkData.fromProfileId,
-            linkData.toProfileId,
+            linkData.fromCharacterId,
+            linkData.toCharacterId,
             linkData.linkType
         );
     }
 
     function linkLinklist(
         DataTypes.linkLinklistData calldata vars,
+        address linker,
         address linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
     ) external {
         uint256 linklistId = _mintLinklist(
-            vars.fromProfileId,
+            vars.fromCharacterId,
             vars.linkType,
-            msg.sender,
+            linker,
             linklist,
             _attachedLinklists
         );
 
-        _linkTypesByProfile[vars.fromProfileId].add(vars.linkType);
+        _linkTypesByCharacter[vars.fromCharacterId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingLinklistId(linklistId, vars.toLinkListId);
 
-        emit Events.LinkLinklist(vars.fromProfileId, vars.toLinkListId, vars.linkType, linklistId);
+        emit Events.LinkLinklist(
+            vars.fromCharacterId,
+            vars.toLinkListId,
+            vars.linkType,
+            linklistId
+        );
     }
 
     function unlinkLinklist(
@@ -201,12 +217,12 @@ library LinkLogic {
         address linklist,
         uint256 linklistId
     ) external {
-        _validateLinklistAttached(linklist, linklistId, vars.fromProfileId);
+        _validateLinklistAttached(linklist, linklistId, vars.fromCharacterId);
         // add to link list
         ILinklist(linklist).removeLinkingLinklistId(linklistId, vars.toLinkListId);
 
         emit Events.UnlinkLinklist(
-            vars.fromProfileId,
+            vars.fromCharacterId,
             vars.toLinkListId,
             vars.linkType,
             linklistId
@@ -215,25 +231,26 @@ library LinkLogic {
 
     function linkERC721(
         DataTypes.linkERC721Data calldata vars,
+        address linker,
         address linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
     ) external {
         uint256 linklistId = _mintLinklist(
-            vars.fromProfileId,
+            vars.fromCharacterId,
             vars.linkType,
-            msg.sender,
+            linker,
             linklist,
             _attachedLinklists
         );
 
-        _linkTypesByProfile[vars.fromProfileId].add(vars.linkType);
+        _linkTypesByCharacter[vars.fromCharacterId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId);
 
         emit Events.LinkERC721(
-            vars.fromProfileId,
+            vars.fromCharacterId,
             vars.tokenAddress,
             vars.tokenId,
             vars.linkType,
@@ -246,12 +263,12 @@ library LinkLogic {
         address linklist,
         uint256 linklistId
     ) external {
-        _validateLinklistAttached(linklist, linklistId, vars.fromProfileId);
+        _validateLinklistAttached(linklist, linklistId, vars.fromCharacterId);
         // remove from link list
         ILinklist(linklist).removeLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId);
 
         emit Events.UnlinkERC721(
-            vars.fromProfileId,
+            vars.fromCharacterId,
             vars.tokenAddress,
             vars.tokenId,
             vars.linkType,
@@ -261,24 +278,25 @@ library LinkLogic {
 
     function linkAddress(
         DataTypes.linkAddressData calldata vars,
+        address linker,
         address linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
     ) external {
         uint256 linklistId = _mintLinklist(
-            vars.fromProfileId,
+            vars.fromCharacterId,
             vars.linkType,
-            msg.sender,
+            linker,
             linklist,
             _attachedLinklists
         );
 
-        _linkTypesByProfile[vars.fromProfileId].add(vars.linkType);
+        _linkTypesByCharacter[vars.fromCharacterId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingAddress(linklistId, vars.ethAddress);
 
-        emit Events.LinkAddress(vars.fromProfileId, vars.ethAddress, vars.linkType, linklistId);
+        emit Events.LinkAddress(vars.fromCharacterId, vars.ethAddress, vars.linkType, linklistId);
     }
 
     function unlinkAddress(
@@ -286,33 +304,34 @@ library LinkLogic {
         address linklist,
         uint256 linklistId
     ) external {
-        _validateLinklistAttached(linklist, linklistId, vars.fromProfileId);
+        _validateLinklistAttached(linklist, linklistId, vars.fromCharacterId);
         // remove from link list
         ILinklist(linklist).removeLinkingAddress(linklistId, vars.ethAddress);
 
-        emit Events.UnlinkAddress(vars.fromProfileId, vars.ethAddress, vars.linkType);
+        emit Events.UnlinkAddress(vars.fromCharacterId, vars.ethAddress, vars.linkType);
     }
 
     function linkAnyUri(
         DataTypes.linkAnyUriData calldata vars,
+        address linker,
         address linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByProfile
+        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
     ) external {
         uint256 linklistId = _mintLinklist(
-            vars.fromProfileId,
+            vars.fromCharacterId,
             vars.linkType,
-            msg.sender,
+            linker,
             linklist,
             _attachedLinklists
         );
 
-        _linkTypesByProfile[vars.fromProfileId].add(vars.linkType);
+        _linkTypesByCharacter[vars.fromCharacterId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingAnyUri(linklistId, vars.toUri);
 
-        emit Events.LinkAnyUri(vars.fromProfileId, vars.toUri, vars.linkType, linklistId);
+        emit Events.LinkAnyUri(vars.fromCharacterId, vars.toUri, vars.linkType, linklistId);
     }
 
     function unlinkAnyUri(
@@ -320,40 +339,40 @@ library LinkLogic {
         address linklist,
         uint256 linklistId
     ) external {
-        _validateLinklistAttached(linklist, linklistId, vars.fromProfileId);
+        _validateLinklistAttached(linklist, linklistId, vars.fromCharacterId);
         // remove from link list
         ILinklist(linklist).removeLinkingAnyUri(linklistId, vars.toUri);
 
-        emit Events.UnlinkAnyUri(vars.fromProfileId, vars.toUri, vars.linkType);
+        emit Events.UnlinkAnyUri(vars.fromCharacterId, vars.toUri, vars.linkType);
     }
 
     function _mintLinklist(
-        uint256 profileId,
+        uint256 fromCharacterId,
         bytes32 linkType,
         address to,
         address linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) internal returns (uint256 linklistId) {
-        linklistId = _attachedLinklists[profileId][linkType];
+        linklistId = _attachedLinklists[fromCharacterId][linkType];
         if (linklistId == 0) {
             linklistId = IERC721Enumerable(linklist).totalSupply() + 1;
             // mint linkList nft
             ILinklist(linklist).mint(to, linkType, linklistId);
 
             // attach linkList
-            ILinklist(linklist).setTakeOver(linklistId, to, profileId);
-            _attachedLinklists[profileId][linkType] = linklistId;
-            emit Events.AttachLinklist(linklistId, profileId, linkType);
+            ILinklist(linklist).setTakeOver(linklistId, to, fromCharacterId);
+            _attachedLinklists[fromCharacterId][linkType] = linklistId;
+            emit Events.AttachLinklist(linklistId, fromCharacterId, linkType);
         }
     }
 
     function _validateLinklistAttached(
         address linklist,
         uint256 linklistId,
-        uint256 profileId
+        uint256 characterId
     ) internal view {
         require(
-            profileId == ILinklist(linklist).getCurrentTakeOver(linklistId),
+            characterId == ILinklist(linklist).getCurrentTakeOver(linklistId),
             "UnattachedLinklist"
         );
     }

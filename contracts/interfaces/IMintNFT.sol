@@ -4,7 +4,7 @@ pragma solidity 0.8.10;
 
 interface IMintNFT {
     function initialize(
-        uint256 profileId,
+        uint256 characterId,
         uint256 noteId,
         address web3Entry,
         string calldata name,

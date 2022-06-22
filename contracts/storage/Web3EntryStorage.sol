@@ -5,18 +5,18 @@ pragma solidity 0.8.10;
 import "../libraries/DataTypes.sol";
 
 contract Web3EntryStorage {
-    // profileId => Profile
-    mapping(uint256 => DataTypes.Profile) internal _profileById;
-    // handleHash => profileId
-    mapping(bytes32 => uint256) internal _profileIdByHandleHash;
-    // address => profileId
-    mapping(address => uint256) internal _primaryProfileByAddress;
+    // characterId => Character
+    mapping(uint256 => DataTypes.Character) internal _characterById;
+    // handleHash => characterId
+    mapping(bytes32 => uint256) internal _characterIdByHandleHash;
+    // address => characterId
+    mapping(address => uint256) internal _primaryCharacterByAddress;
 
-    // profileId =>  (linkType => linklistId)
+    // characterId =>  (linkType => linklistId)
     mapping(uint256 => mapping(bytes32 => uint256)) internal _attachedLinklists;
 
-    // profileId => noteId => Note
-    mapping(uint256 => mapping(uint256 => DataTypes.Note)) internal _noteByIdByProfile; // slot 14
+    // characterId => noteId => Note
+    mapping(uint256 => mapping(uint256 => DataTypes.Note)) internal _noteByIdByCharacter; // slot 14
 
     /////////////////////////////////
     // link modules
@@ -31,7 +31,7 @@ contract Web3EntryStorage {
     // address => linkModule4Address
     mapping(address => address) internal _linkModules4Address;
 
-    uint256 internal _profileCounter;
+    uint256 internal _characterCounter;
     // LinkList NFT token contract
     address internal _linklist;
     address internal MINT_NFT_IMPL;

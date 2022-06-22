@@ -13,25 +13,25 @@ import "../interfaces/ILinkModule4Address.sol";
 
 library LinkModuleLogic {
     function setLinkModule4Note(
-        uint256 profileId,
+        uint256 characterId,
         uint256 noteId,
         address linkModule,
         bytes calldata linkModuleInitData,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external {
-        require(!_noteByIdByProfile[profileId][noteId].locked, "NoteLocked");
+        require(!_noteByIdByCharacter[characterId][noteId].locked, "NoteLocked");
 
         if (linkModule != address(0)) {
-            _noteByIdByProfile[profileId][noteId].linkModule = linkModule;
+            _noteByIdByCharacter[characterId][noteId].linkModule = linkModule;
 
             bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
-                profileId,
+                characterId,
                 noteId,
                 linkModuleInitData
             );
 
             emit Events.SetLinkModule4Note(
-                profileId,
+                characterId,
                 noteId,
                 linkModule,
                 returnData,
@@ -63,25 +63,25 @@ library LinkModuleLogic {
     }
 
     function setMintModule4Note(
-        uint256 profileId,
+        uint256 characterId,
         uint256 noteId,
         address mintModule,
         bytes calldata mintModuleInitData,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external {
-        require(!_noteByIdByProfile[profileId][noteId].locked, "NoteLocked");
+        require(!_noteByIdByCharacter[characterId][noteId].locked, "NoteLocked");
 
         if (mintModule != address(0)) {
-            _noteByIdByProfile[profileId][noteId].mintModule = mintModule;
+            _noteByIdByCharacter[characterId][noteId].mintModule = mintModule;
 
             bytes memory returnData = IMintModule4Note(mintModule).initializeMintModule(
-                profileId,
+                characterId,
                 noteId,
                 mintModuleInitData
             );
 
             emit Events.SetMintModule4Note(
-                profileId,
+                characterId,
                 noteId,
                 mintModule,
                 returnData,

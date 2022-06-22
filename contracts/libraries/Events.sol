@@ -9,81 +9,81 @@ library Events {
 
     event LinklistNFTInitialized(uint256 timestamp);
 
-    event MintNFTInitialized(uint256 profileId, uint256 noteId, uint256 timestamp);
+    event MintNFTInitialized(uint256 characterId, uint256 noteId, uint256 timestamp);
 
-    event ProfileCreated(
-        uint256 indexed profileId,
+    event CharacterCreated(
+        uint256 indexed characterId,
         address indexed creator,
         address indexed to,
         string handle,
         uint256 timestamp
     );
 
-    event SetPrimaryProfileId(
+    event SetPrimaryCharacterId(
         address indexed account,
-        uint256 indexed profileId,
-        uint256 indexed oldProfileId
+        uint256 indexed characterId,
+        uint256 indexed oldCharacterId
     );
 
-    event SetHandle(address indexed account, uint256 indexed profileId, string newHandle);
+    event SetHandle(address indexed account, uint256 indexed characterId, string newHandle);
 
     event SetSocialToken(
         address indexed account,
-        uint256 indexed profileId,
+        uint256 indexed characterId,
         address indexed tokenAddress
     );
 
-    event SetOperator(uint256 indexed profileId, address indexed operator, uint256 timestamp);
+    event SetOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
 
-    event SetProfileUri(uint256 indexed profileId, string newUri);
+    event SetCharacterUri(uint256 indexed characterId, string newUri);
 
     event PostNote(
-        uint256 indexed profileId,
+        uint256 indexed characterId,
         uint256 indexed noteId,
         bytes32 indexed linkKey,
         bytes32 linkItemType,
         bytes data
     );
 
-    event SetNoteUri(uint256 indexed profileId, uint256 noteId, string newUri);
+    event SetNoteUri(uint256 indexed characterId, uint256 noteId, string newUri);
 
-    event DeleteNote(uint256 indexed profileId, uint256 noteId);
+    event DeleteNote(uint256 indexed characterId, uint256 noteId);
 
-    event LockNote(uint256 indexed profileId, uint256 noteId);
+    event LockNote(uint256 indexed characterId, uint256 noteId);
 
-    event LinkProfile(
+    event LinkCharacter(
         address indexed account,
-        uint256 indexed fromProfileId,
-        uint256 indexed toProfileId,
+        uint256 indexed fromCharacterId,
+        uint256 indexed toCharacterId,
         bytes32 linkType,
         uint256 linklistId
     );
 
-    event UnlinkProfile(
+    event UnlinkCharacter(
         address indexed account,
-        uint256 indexed fromProfileId,
-        uint256 indexed toProfileId,
+        uint256 indexed fromCharacterId,
+        uint256 indexed toCharacterId,
         bytes32 linkType
     );
 
     event LinkNote(
-        uint256 indexed fromProfileId,
-        uint256 indexed toProfileId,
+        uint256 indexed fromCharacterId,
+        uint256 indexed toCharacterId,
         uint256 indexed toNoteId,
         bytes32 linkType,
         uint256 linklistId
     );
 
     event UnlinkNote(
-        uint256 indexed fromProfileId,
-        uint256 indexed toProfileId,
+        uint256 indexed fromCharacterId,
+        uint256 indexed toCharacterId,
         uint256 indexed toNoteId,
         bytes32 linkType,
         uint256 linklistId
     );
 
     event LinkERC721(
-        uint256 indexed fromProfileId,
+        uint256 indexed fromCharacterId,
         address indexed tokenAddress,
         uint256 indexed toNoteId,
         bytes32 linkType,
@@ -91,45 +91,45 @@ library Events {
     );
 
     event LinkAddress(
-        uint256 indexed fromProfileId,
+        uint256 indexed fromCharacterId,
         address indexed ethAddress,
         bytes32 linkType,
         uint256 linklistId
     );
 
     event UnlinkAddress(
-        uint256 indexed fromProfileId,
+        uint256 indexed fromCharacterId,
         address indexed ethAddress,
         bytes32 linkType
     );
 
     event LinkAnyUri(
-        uint256 indexed fromProfileId,
+        uint256 indexed fromCharacterId,
         string toUri,
         bytes32 linkType,
         uint256 linklistId
     );
 
-    event UnlinkAnyUri(uint256 indexed fromProfileId, string toUri, bytes32 linkType);
+    event UnlinkAnyUri(uint256 indexed fromCharacterId, string toUri, bytes32 linkType);
 
-    event LinkProfileLink(
-        uint256 indexed fromProfileId,
+    event LinkCharacterLink(
+        uint256 indexed fromCharacterId,
         bytes32 indexed linkType,
-        uint256 plFromProfileId,
-        uint256 plToProfileId,
-        bytes32 plLinkType
+        uint256 clFromCharacterId,
+        uint256 clToCharacterId,
+        bytes32 clLinkType
     );
 
-    event UnlinkProfileLink(
-        uint256 indexed fromProfileId,
+    event UnlinkCharacterLink(
+        uint256 indexed fromCharacterId,
         bytes32 indexed linkType,
-        uint256 plFromProfileId,
-        uint256 plToProfileId,
-        bytes32 plLinkType
+        uint256 clFromCharactereId,
+        uint256 clToCharacterId,
+        bytes32 clLinkType
     );
 
     event UnlinkERC721(
-        uint256 indexed fromProfileId,
+        uint256 indexed fromCharacterId,
         address indexed tokenAddress,
         uint256 indexed toNoteId,
         bytes32 linkType,
@@ -137,14 +137,14 @@ library Events {
     );
 
     event LinkLinklist(
-        uint256 indexed fromProfileId,
+        uint256 indexed fromCharacterId,
         uint256 indexed toLinklistId,
         bytes32 linkType,
         uint256 indexed linklistId
     );
 
     event UnlinkLinklist(
-        uint256 indexed fromProfileId,
+        uint256 indexed fromCharacterId,
         uint256 indexed toLinklistId,
         bytes32 linkType,
         uint256 indexed linklistId
@@ -152,21 +152,21 @@ library Events {
 
     event MintNote(
         address indexed to,
-        uint256 indexed profileId,
+        uint256 indexed characterId,
         uint256 indexed noteId,
         address tokenAddress,
         uint256 tokenId
     );
 
-    event SetLinkModule4Profile(
-        uint256 indexed profileId,
+    event SetLinkModule4Character(
+        uint256 indexed characterId,
         address indexed linkModule,
         bytes returnData,
         uint256 timestamp
     );
 
     event SetLinkModule4Note(
-        uint256 indexed profileId,
+        uint256 indexed characterId,
         uint256 indexed noteId,
         address indexed linkModule,
         bytes returnData,
@@ -196,7 +196,7 @@ library Events {
     );
 
     event SetMintModule4Note(
-        uint256 indexed profileId,
+        uint256 indexed characterId,
         uint256 indexed noteId,
         address indexed mintModule,
         bytes returnData,
@@ -205,13 +205,13 @@ library Events {
 
     event AttachLinklist(
         uint256 indexed linklistId,
-        uint256 indexed profileId,
+        uint256 indexed characterId,
         bytes32 indexed linkType
     );
 
     event DetachLinklist(
         uint256 indexed linklistId,
-        uint256 indexed profileId,
+        uint256 indexed characterId,
         bytes32 indexed linkType
     );
 }

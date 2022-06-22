@@ -13,7 +13,7 @@ import "./storage/Web3EntryExtendStorage.sol";
 import "./libraries/DataTypes.sol";
 import "./libraries/Constants.sol";
 import "./libraries/Events.sol";
-import "./libraries/ProfileLogic.sol";
+import "./libraries/CharacterLogic.sol";
 import "./libraries/PostLogic.sol";
 import "./libraries/LinkModuleLogic.sol";
 import "./libraries/LinkLogic.sol";
@@ -62,95 +62,70 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     /**
-     * This method creates a profile with the given parameters to the given address.
+     * This method creates a character with the given parameters to the given address.
      *
-     * @param vars The CreateProfileData struct containing the following parameters:<br>
-     *      * to: The address receiving the profile.<br>
-     *      * handle: The handle to set for the profile.<br>
-     *      * uri: The URI to set for the profile metadata.<br>
-     *      * linkModule: The link module to use, can be the zero address.<br>
+     * @param vars The CreateCharacterData struct containing the following parameters:
+     *      * to: The address receiving the character.
+     *      * handle: The handle to set for the character.
+     *      * uri: The URI to set for the character metadata.
+     *      * linkModule: The link module to use, can be the zero address.
      *      * linkModuleInitData: The link module initialization data, if any.
      */
-    function createProfile(DataTypes.CreateProfileData calldata vars) external {
+    function createCharacter(DataTypes.CreateCharacterData calldata vars) external {
         require(canCreate(vars.handle, vars.to), "HandleNotEligible");
 
-        _profileCounter = _profileCounter + 1;
+        _characterCounter = _characterCounter + 1;
 
-        // mint profile nft
-        _mint(vars.to, _profileCounter);
+        // mint character nft
+        _mint(vars.to, _characterCounter);
 
-        ProfileLogic.createProfile(
+        CharacterLogic.createCharacter(
             vars,
             true,
-            _profileCounter,
-            _profileIdByHandleHash,
-            _profileById
+            _characterCounter,
+            _characterIdByHandleHash,
+            _characterById
         );
 
-        // set primary profile
-        if (_primaryProfileByAddress[vars.to] == 0) {
-            _primaryProfileByAddress[vars.to] = _profileCounter;
+        // set primary character
+        if (_primaryCharacterByAddress[vars.to] == 0) {
+            _primaryCharacterByAddress[vars.to] = _characterCounter;
         }
     }
 
-    function setHandle(uint256 profileId, string calldata newHandle) external {
-        _validateCallerIsProfileOwnerOrOperator(profileId);
-        require(canCreate(newHandle, ownerOf(profileId)), "HandleNotEligible");
+    function setHandle(uint256 characterId, string calldata newHandle) external {
+        _validateCallerIsCharacterOwnerOrOperator(characterId);
+        require(canCreate(newHandle, ownerOf(characterId)), "HandleNotEligible");
 
-        ProfileLogic.setHandle(profileId, newHandle, _profileIdByHandleHash, _profileById);
+        CharacterLogic.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
     }
 
-    function setSocialToken(uint256 profileId, address tokenAddress) external {
-        _validateCallerIsProfileOwnerOrOperator(profileId);
+    function setSocialToken(uint256 characterId, address tokenAddress) external {
+        _validateCallerIsCharacterOwnerOrOperator(characterId);
 
-        ProfileLogic.setSocialToken(profileId, tokenAddress, _profileById);
+        CharacterLogic.setSocialToken(characterId, tokenAddress, _characterById);
     }
 
-    function setProfileUri(uint256 profileId, string calldata newUri) external {
-        _validateCallerIsProfileOwnerOrOperator(profileId);
+    function setCharacterUri(uint256 characterId, string calldata newUri) external {
+        _validateCallerIsCharacterOwnerOrOperator(characterId);
 
-        _profileById[profileId].uri = newUri;
+        _characterById[characterId].uri = newUri;
 
-        emit Events.SetProfileUri(profileId, newUri);
+        emit Events.SetCharacterUri(characterId, newUri);
     }
 
-    function setPrimaryProfileId(uint256 profileId) external {
-        _validateCallerIsProfileOwnerOrOperator(profileId);
+    function setPrimaryCharacterId(uint256 characterId) external {
+        _validateCallerIsCharacterOwnerOrOperator(characterId);
 
-        uint256 oldProfileId = _primaryProfileByAddress[msg.sender];
-        _primaryProfileByAddress[msg.sender] = profileId;
+        uint256 oldCharacterId = _primaryCharacterByAddress[msg.sender];
+        _primaryCharacterByAddress[msg.sender] = characterId;
 
-        emit Events.SetPrimaryProfileId(msg.sender, profileId, oldProfileId);
+        emit Events.SetPrimaryCharacterId(msg.sender, characterId, oldCharacterId);
     }
 
-    function setOperator(uint256 profileId, address operator) external {
-        _validateCallerIsProfileOwner(profileId);
-        _setOperator(profileId, operator);
-    }
-
-    function attachLinklist(uint256 linklistId, uint256 profileId) external {
-        _validateCallerIsProfileOwnerOrOperator(profileId);
-
-        ProfileLogic.attachLinklist(
-            linklistId,
-            profileId,
-            msg.sender,
-            _linklist,
-            _attachedLinklists,
-            _linkTypesByProfile
-        );
-    }
-
-    function detachLinklist(uint256 linklistId, uint256 profileId) external {
-        _validateCallerIsProfileOwnerOrOperatorOrLinklist(profileId);
-
-        ProfileLogic.detachLinklist(
-            linklistId,
-            profileId,
-            _linklist,
-            _attachedLinklists,
-            _linkTypesByProfile
-        );
+    function setOperator(uint256 characterId, address operator) external {
+        _validateCallerIsCharacterOwner(characterId);
+        _setOperator(characterId, operator);
     }
 
     function setLinklistUri(uint256 linklistId, string calldata uri) external {
@@ -159,52 +134,56 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         ILinklist(_linklist).setUri(linklistId, uri);
     }
 
-    function linkProfile(DataTypes.linkProfileData calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
-        _validateProfileExists(vars.toProfileId);
+    function linkCharacter(DataTypes.linkCharacterData calldata vars) external {
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
+        _validateCharacterExists(vars.toCharacterId);
 
-        LinkLogic.linkProfile(
-            vars.fromProfileId,
-            vars.toProfileId,
+        LinkLogic.linkCharacter(
+            vars.fromCharacterId,
+            vars.toCharacterId,
             vars.linkType,
             vars.data,
-            IERC721Enumerable(this).ownerOf(vars.fromProfileId),
+            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
             _linklist,
-            _profileById[vars.toProfileId].linkModule,
+            _characterById[vars.toCharacterId].linkModule,
             _attachedLinklists,
-            _linkTypesByProfile
+            _linkTypesByCharacter
         );
     }
 
-    function unlinkProfile(DataTypes.unlinkProfileData calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
+    function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external {
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
-        LinkLogic.unlinkProfile(
+        LinkLogic.unlinkCharacter(
             vars,
+            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
             _linklist,
-            _attachedLinklists[vars.fromProfileId][vars.linkType]
+            _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
     }
 
-    function createThenLinkProfile(DataTypes.createThenLinkProfileData calldata vars) external {
-        _createThenLinkProfile(vars.fromProfileId, vars.to, vars.linkType, "0x");
+    function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars) external {
+        _createThenLinkCharacter(vars.fromCharacterId, vars.to, vars.linkType, "0x");
     }
 
-    function _createThenLinkProfile(
-        uint256 fromProfileId,
+    function _createThenLinkCharacter(
+        uint256 fromCharacterId,
         address to,
         bytes32 linkType,
         bytes memory data
     ) internal {
-        _validateCallerIsProfileOwnerOrOperator(fromProfileId);
-        require(_primaryProfileByAddress[to] == 0, "Target address already has primary profile.");
+        _validateCallerIsCharacterOwnerOrOperator(fromCharacterId);
+        require(
+            _primaryCharacterByAddress[to] == 0,
+            "Target address already has primary character."
+        );
 
-        uint256 profileId = ++_profileCounter;
-        // mint profile nft
-        _mint(to, profileId);
+        uint256 characterId = ++_characterCounter;
+        // mint character nft
+        _mint(to, characterId);
 
-        ProfileLogic.createProfile(
-            DataTypes.CreateProfileData({
+        CharacterLogic.createCharacter(
+            DataTypes.CreateCharacterData({
                 to: to,
                 handle: Strings.toHexString(uint160(to), 20),
                 uri: "",
@@ -212,167 +191,193 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
                 linkModuleInitData: ""
             }),
             false,
-            profileId,
-            _profileIdByHandleHash,
-            _profileById
+            characterId,
+            _characterIdByHandleHash,
+            _characterById
         );
 
-        // set primary profile
-        _primaryProfileByAddress[to] = profileId;
+        // set primary character
+        _primaryCharacterByAddress[to] = characterId;
 
-        // link profile
-        LinkLogic.linkProfile(
-            fromProfileId,
-            profileId,
+        // link character
+        LinkLogic.linkCharacter(
+            fromCharacterId,
+            characterId,
             linkType,
             data,
-            IERC721Enumerable(this).ownerOf(fromProfileId),
+            IERC721Enumerable(this).ownerOf(fromCharacterId),
             _linklist,
             address(0),
             _attachedLinklists,
-            _linkTypesByProfile
+            _linkTypesByCharacter
         );
     }
 
     function linkNote(DataTypes.linkNoteData calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
-        _validateNoteExists(vars.toProfileId, vars.toNoteId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
+        _validateNoteExists(vars.toCharacterId, vars.toNoteId);
 
         LinkLogic.linkNote(
             vars,
+            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
             _linklist,
-            _noteByIdByProfile,
+            _noteByIdByCharacter,
             _attachedLinklists,
-            _linkTypesByProfile
+            _linkTypesByCharacter
         );
     }
 
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkNote(vars, _linklist, _attachedLinklists);
     }
 
     function linkERC721(DataTypes.linkERC721Data calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
         _validateERC721Exists(vars.tokenAddress, vars.tokenId);
 
-        LinkLogic.linkERC721(vars, _linklist, _attachedLinklists, _linkTypesByProfile);
+        LinkLogic.linkERC721(
+            vars,
+            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
+            _linklist,
+            _attachedLinklists,
+            _linkTypesByCharacter
+        );
     }
 
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkERC721(
             vars,
             _linklist,
-            _attachedLinklists[vars.fromProfileId][vars.linkType]
+            _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
     }
 
     function linkAddress(DataTypes.linkAddressData calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
-        LinkLogic.linkAddress(vars, _linklist, _attachedLinklists, _linkTypesByProfile);
+        LinkLogic.linkAddress(
+            vars,
+            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
+            _linklist,
+            _attachedLinklists,
+            _linkTypesByCharacter
+        );
     }
 
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkAddress(
             vars,
             _linklist,
-            _attachedLinklists[vars.fromProfileId][vars.linkType]
+            _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
     }
 
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
-        LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists, _linkTypesByProfile);
+        LinkLogic.linkAnyUri(
+            vars,
+            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
+            _linklist,
+            _attachedLinklists,
+            _linkTypesByCharacter
+        );
     }
 
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkAnyUri(
             vars,
             _linklist,
-            _attachedLinklists[vars.fromProfileId][vars.linkType]
+            _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
     }
 
-    function linkProfileLink(
-        uint256 fromProfileId,
-        DataTypes.ProfileLinkStruct calldata linkData,
+    function linkCharacterLink(
+        uint256 fromCharacterId,
+        DataTypes.CharacterLinkStruct calldata linkData,
         bytes32 linkType
     ) external {
-        _validateCallerIsProfileOwnerOrOperator(fromProfileId);
+        _validateCallerIsCharacterOwnerOrOperator(fromCharacterId);
 
-        LinkLogic.linkProfileLink(
-            fromProfileId,
+        LinkLogic.linkCharacterLink(
+            fromCharacterId,
             linkData,
+            msg.sender,
             linkType,
             _linklist,
             _attachedLinklists,
-            _linkTypesByProfile
+            _linkTypesByCharacter
         );
     }
 
-    function unlinkProfileLink(
-        uint256 fromProfileId,
-        DataTypes.ProfileLinkStruct calldata linkData,
+    function unlinkCharacterLink(
+        uint256 fromCharacterId,
+        DataTypes.CharacterLinkStruct calldata linkData,
         bytes32 linkType
     ) external {
-        _validateCallerIsProfileOwnerOrOperator(fromProfileId);
+        _validateCallerIsCharacterOwnerOrOperator(fromCharacterId);
 
-        LinkLogic.unlinkProfileLink(
-            fromProfileId,
+        LinkLogic.unlinkCharacterLink(
+            fromCharacterId,
             linkData,
             linkType,
             _linklist,
-            _attachedLinklists[linkData.fromProfileId][linkData.linkType]
+            _attachedLinklists[linkData.fromCharacterId][linkData.linkType]
         );
     }
 
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
-        LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists, _linkTypesByProfile);
+        LinkLogic.linkLinklist(
+            vars,
+            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
+            _linklist,
+            _attachedLinklists,
+            _linkTypesByCharacter
+        );
     }
 
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.fromProfileId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkLinklist(
             vars,
             _linklist,
-            _attachedLinklists[vars.fromProfileId][vars.linkType]
+            _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
     }
 
-    // set link module for his profile
-    function setLinkModule4Profile(DataTypes.setLinkModule4ProfileData calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.profileId);
+    // set link module for his character
+    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external {
+        _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
 
-        ProfileLogic.setProfileLinkModule(
-            vars.profileId,
+        CharacterLogic.setCharacterLinkModule(
+            vars.characterId,
             vars.linkModule,
             vars.linkModuleInitData,
-            _profileById[vars.profileId]
+            _characterById[vars.characterId]
         );
     }
 
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.profileId);
-        _validateNoteExists(vars.profileId, vars.noteId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
+        _validateNoteExists(vars.characterId, vars.noteId);
 
         LinkModuleLogic.setLinkModule4Note(
-            vars.profileId,
+            vars.characterId,
             vars.noteId,
             vars.linkModule,
             vars.linkModuleInitData,
-            _noteByIdByProfile
+            _noteByIdByCharacter
         );
     }
 
@@ -409,88 +414,88 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function mintNote(DataTypes.MintNoteData calldata vars) external returns (uint256) {
-        _validateNoteExists(vars.profileId, vars.noteId);
+        _validateNoteExists(vars.characterId, vars.noteId);
 
         return
             PostLogic.mintNote(
-                vars.profileId,
+                vars.characterId,
                 vars.noteId,
                 vars.to,
                 vars.mintModuleData,
                 MINT_NFT_IMPL,
-                _profileById,
-                _noteByIdByProfile
+                _characterById,
+                _noteByIdByCharacter
             );
     }
 
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external {
-        _validateCallerIsProfileOwnerOrOperator(vars.profileId);
-        _validateNoteExists(vars.profileId, vars.noteId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
+        _validateNoteExists(vars.characterId, vars.noteId);
 
         LinkModuleLogic.setMintModule4Note(
-            vars.profileId,
+            vars.characterId,
             vars.noteId,
             vars.mintModule,
             vars.mintModuleInitData,
-            _noteByIdByProfile
+            _noteByIdByCharacter
         );
     }
 
     function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256) {
-        _validateCallerIsProfileOwnerOrOperator(vars.profileId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
 
-        uint256 noteId = ++_profileById[vars.profileId].noteCount;
+        uint256 noteId = ++_characterById[vars.characterId].noteCount;
 
-        PostLogic.postNoteWithLink(vars, noteId, 0, 0, "", _noteByIdByProfile);
+        PostLogic.postNoteWithLink(vars, noteId, 0, 0, "", _noteByIdByCharacter);
         return noteId;
     }
 
     function setNoteUri(
-        uint256 profileId,
+        uint256 characterId,
         uint256 noteId,
         string calldata newUri
     ) external {
-        _validateCallerIsProfileOwnerOrOperator(profileId);
-        _validateNoteExists(profileId, noteId);
+        _validateCallerIsCharacterOwnerOrOperator(characterId);
+        _validateNoteExists(characterId, noteId);
 
-        PostLogic.setNoteUri(profileId, noteId, newUri, _noteByIdByProfile);
+        PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
     }
 
-    function lockNote(uint256 profileId, uint256 noteId) external {
-        _validateCallerIsProfileOwnerOrOperator(profileId);
-        _validateNoteExists(profileId, noteId);
+    function lockNote(uint256 characterId, uint256 noteId) external {
+        _validateCallerIsCharacterOwnerOrOperator(characterId);
+        _validateNoteExists(characterId, noteId);
 
-        _noteByIdByProfile[profileId][noteId].locked = true;
+        _noteByIdByCharacter[characterId][noteId].locked = true;
 
-        emit Events.LockNote(profileId, noteId);
+        emit Events.LockNote(characterId, noteId);
     }
 
-    function deleteNote(uint256 profileId, uint256 noteId) external {
-        _validateCallerIsProfileOwnerOrOperator(profileId);
-        _validateNoteExists(profileId, noteId);
+    function deleteNote(uint256 characterId, uint256 noteId) external {
+        _validateCallerIsCharacterOwnerOrOperator(characterId);
+        _validateNoteExists(characterId, noteId);
 
-        _noteByIdByProfile[profileId][noteId].deleted = true;
+        _noteByIdByCharacter[characterId][noteId].deleted = true;
 
-        emit Events.DeleteNote(profileId, noteId);
+        emit Events.DeleteNote(characterId, noteId);
     }
 
-    function postNote4Profile(DataTypes.PostNoteData calldata postNoteData, uint256 toProfileId)
+    function postNote4Character(DataTypes.PostNoteData calldata postNoteData, uint256 toCharacterId)
         external
         returns (uint256)
     {
-        _validateCallerIsProfileOwnerOrOperator(postNoteData.profileId);
+        _validateCallerIsCharacterOwnerOrOperator(postNoteData.characterId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeProfile;
-        bytes32 linkKey = bytes32(toProfileId);
-        uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
+        bytes32 linkKey = bytes32(toCharacterId);
+        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
 
         PostLogic.postNoteWithLink(
             postNoteData,
             noteId,
             linkItemType,
             linkKey,
-            abi.encodePacked(toProfileId),
-            _noteByIdByProfile
+            abi.encodePacked(toCharacterId),
+            _noteByIdByCharacter
         );
 
         return noteId;
@@ -500,11 +505,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         external
         returns (uint256)
     {
-        _validateCallerIsProfileOwnerOrOperator(noteData.profileId);
+        _validateCallerIsCharacterOwnerOrOperator(noteData.characterId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeAddress;
         bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
-        uint256 noteId = ++_profileById[noteData.profileId].noteCount;
+        uint256 noteId = ++_characterById[noteData.characterId].noteCount;
 
         PostLogic.postNoteWithLink(
             noteData,
@@ -512,7 +517,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             linkItemType,
             linkKey,
             abi.encodePacked(ethAddress),
-            _noteByIdByProfile
+            _noteByIdByCharacter
         );
 
         return noteId;
@@ -522,11 +527,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         external
         returns (uint256)
     {
-        _validateCallerIsProfileOwnerOrOperator(noteData.profileId);
+        _validateCallerIsCharacterOwnerOrOperator(noteData.characterId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeLinklist;
         bytes32 linkKey = bytes32(toLinklistId);
-        uint256 noteId = ++_profileById[noteData.profileId].noteCount;
+        uint256 noteId = ++_characterById[noteData.characterId].noteCount;
 
         PostLogic.postNoteWithLink(
             noteData,
@@ -534,7 +539,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             linkItemType,
             linkKey,
             abi.encodePacked(toLinklistId),
-            _noteByIdByProfile
+            _noteByIdByCharacter
         );
 
         return noteId;
@@ -544,19 +549,19 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.NoteStruct calldata note
     ) external returns (uint256) {
-        _validateCallerIsProfileOwnerOrOperator(postNoteData.profileId);
+        _validateCallerIsCharacterOwnerOrOperator(postNoteData.characterId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeNote;
-        bytes32 linkKey = ILinklist(_linklist).addLinkingNote(0, note.profileId, note.noteId);
-        uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
+        bytes32 linkKey = ILinklist(_linklist).addLinkingNote(0, note.characterId, note.noteId);
+        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
 
         PostLogic.postNoteWithLink(
             postNoteData,
             noteId,
             linkItemType,
             linkKey,
-            abi.encodePacked(note.profileId, note.noteId),
-            _noteByIdByProfile
+            abi.encodePacked(note.characterId, note.noteId),
+            _noteByIdByCharacter
         );
 
         return noteId;
@@ -566,7 +571,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.ERC721Struct calldata erc721
     ) external returns (uint256) {
-        _validateCallerIsProfileOwnerOrOperator(postNoteData.profileId);
+        _validateCallerIsCharacterOwnerOrOperator(postNoteData.characterId);
         _validateERC721Exists(erc721.tokenAddress, erc721.erc721TokenId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeERC721;
@@ -575,7 +580,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             erc721.tokenAddress,
             erc721.erc721TokenId
         );
-        uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
+        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
 
         PostLogic.postNoteWithLink(
             postNoteData,
@@ -583,7 +588,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             linkItemType,
             linkKey,
             abi.encodePacked(erc721.tokenAddress, erc721.erc721TokenId),
-            _noteByIdByProfile
+            _noteByIdByCharacter
         );
 
         return noteId;
@@ -593,11 +598,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         external
         returns (uint256)
     {
-        _validateCallerIsProfileOwnerOrOperator(postNoteData.profileId);
+        _validateCallerIsCharacterOwnerOrOperator(postNoteData.characterId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeAnyUri;
         bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
-        uint256 noteId = ++_profileById[postNoteData.profileId].noteCount;
+        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
 
         PostLogic.postNoteWithLink(
             postNoteData,
@@ -605,7 +610,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             linkItemType,
             linkKey,
             abi.encodePacked(uri),
-            _noteByIdByProfile
+            _noteByIdByCharacter
         );
 
         return noteId;
@@ -613,57 +618,57 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
     function burn(uint256 tokenId) public override {
         // clear handle
-        bytes32 handleHash = keccak256(bytes(_profileById[tokenId].handle));
-        _profileIdByHandleHash[handleHash] = 0;
+        bytes32 handleHash = keccak256(bytes(_characterById[tokenId].handle));
+        _characterIdByHandleHash[handleHash] = 0;
 
-        // clear profile
-        delete _profileById[tokenId];
+        // clear character
+        delete _characterById[tokenId];
 
         // burn token
         super.burn(tokenId);
     }
 
-    function getPrimaryProfileId(address account) external view returns (uint256) {
-        return _primaryProfileByAddress[account];
+    function getPrimaryCharacterId(address account) external view returns (uint256) {
+        return _primaryCharacterByAddress[account];
     }
 
-    function isPrimaryProfile(uint256 profileId) external view returns (bool) {
-        address account = ownerOf(profileId);
-        return profileId == _primaryProfileByAddress[account];
+    function isPrimaryCharacter(uint256 characterId) external view returns (bool) {
+        address account = ownerOf(characterId);
+        return characterId == _primaryCharacterByAddress[account];
     }
 
-    function getProfile(uint256 profileId) external view returns (DataTypes.Profile memory) {
-        return _profileById[profileId];
+    function getCharacter(uint256 characterId) external view returns (DataTypes.Character memory) {
+        return _characterById[characterId];
     }
 
-    function getProfileByHandle(string calldata handle)
+    function getCharacterByHandle(string calldata handle)
         external
         view
-        returns (DataTypes.Profile memory)
+        returns (DataTypes.Character memory)
     {
         bytes32 handleHash = keccak256(bytes(handle));
-        uint256 profileId = _profileIdByHandleHash[handleHash];
-        return _profileById[profileId];
+        uint256 characterId = _characterIdByHandleHash[handleHash];
+        return _characterById[characterId];
     }
 
-    function getHandle(uint256 profileId) external view returns (string memory) {
-        return _profileById[profileId].handle;
+    function getHandle(uint256 characterId) external view returns (string memory) {
+        return _characterById[characterId].handle;
     }
 
-    function getProfileUri(uint256 profileId) external view returns (string memory) {
-        return tokenURI(profileId);
+    function getCharacterUri(uint256 characterId) external view returns (string memory) {
+        return tokenURI(characterId);
     }
 
-    function getOperator(uint256 profileId) external view returns (address) {
-        return _operatorByProfile[profileId];
+    function getOperator(uint256 characterId) external view returns (address) {
+        return _operatorByCharacter[characterId];
     }
 
-    function getNote(uint256 profileId, uint256 noteId)
+    function getNote(uint256 characterId, uint256 noteId)
         external
         view
         returns (DataTypes.Note memory)
     {
-        return _noteByIdByProfile[profileId][noteId];
+        return _noteByIdByCharacter[characterId][noteId];
     }
 
     function getLinkModule4Address(address account) external view returns (address) {
@@ -682,16 +687,16 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         return _linkModules4ERC721[tokenAddress][tokenId];
     }
 
-    function tokenURI(uint256 profileId) public view override returns (string memory) {
-        return _profileById[profileId].uri;
+    function tokenURI(uint256 characterId) public view override returns (string memory) {
+        return _characterById[characterId].uri;
     }
 
     function getLinklistUri(uint256 tokenId) external view returns (string memory) {
         return ILinklist(_linklist).Uri(tokenId);
     }
 
-    function getLinklistId(uint256 profileId, bytes32 linkType) external view returns (uint256) {
-        return _attachedLinklists[profileId][linkType];
+    function getLinklistId(uint256 characterId, bytes32 linkType) external view returns (uint256) {
+        return _attachedLinklists[characterId][linkType];
     }
 
     function getLinklistType(uint256 linkListId) external view returns (bytes32) {
@@ -707,62 +712,50 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         address to,
         uint256 tokenId
     ) internal override {
-        if (_operatorByProfile[tokenId] != address(0)) {
+        if (_operatorByCharacter[tokenId] != address(0)) {
             _setOperator(tokenId, address(0));
         }
 
-        if (_primaryProfileByAddress[from] != 0) {
-            _primaryProfileByAddress[from] = 0;
-        }
-
-        // detach linklist
-        bytes32[] memory linkTypes = _linkTypesByProfile[tokenId].values();
-        for (uint256 i = 0; i < linkTypes.length; i++) {
-            uint256 linklistId = _attachedLinklists[tokenId][linkTypes[i]];
-            if (linklistId != 0) {
-                ProfileLogic.detachLinklist(
-                    linklistId,
-                    tokenId,
-                    _linklist,
-                    _attachedLinklists,
-                    _linkTypesByProfile
-                );
-            }
+        if (_primaryCharacterByAddress[from] != 0) {
+            _primaryCharacterByAddress[from] = 0;
         }
 
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
-    function _setOperator(uint256 profileId, address operator) internal {
-        _operatorByProfile[profileId] = operator;
-        emit Events.SetOperator(profileId, operator, block.timestamp);
+    function _setOperator(uint256 characterId, address operator) internal {
+        _operatorByCharacter[characterId] = operator;
+        emit Events.SetOperator(characterId, operator, block.timestamp);
     }
 
-    function _validateCallerIsProfileOwnerOrOperatorOrLinklist(uint256 profileId) internal view {
-        address owner = ownerOf(profileId);
+    function _validateCallerIsCharacterOwnerOrOperatorOrLinklist(uint256 characterId)
+        internal
+        view
+    {
+        address owner = ownerOf(characterId);
         require(
             msg.sender == owner ||
-                msg.sender == _operatorByProfile[profileId] ||
+                msg.sender == _operatorByCharacter[characterId] ||
                 (tx.origin == owner && msg.sender == _linklist),
-            "NotProfileOwner"
+            "NotCharacterOwner"
         );
     }
 
-    function _validateCallerIsProfileOwnerOrOperator(uint256 profileId) internal view {
-        address owner = ownerOf(profileId);
+    function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view {
+        address owner = ownerOf(characterId);
         require(
             msg.sender == owner ||
-                msg.sender == _operatorByProfile[profileId] ||
+                msg.sender == _operatorByCharacter[characterId] ||
                 (tx.origin == owner && msg.sender == periphery),
-            "NotProfileOwner"
+            "NotCharacterOwner"
         );
     }
 
-    function _validateCallerIsProfileOwner(uint256 profileId) internal view {
-        address owner = ownerOf(profileId);
+    function _validateCallerIsCharacterOwner(uint256 characterId) internal view {
+        address owner = ownerOf(characterId);
         require(
             msg.sender == owner || (tx.origin == owner && msg.sender == periphery),
-            "NotProfileOwner"
+            "NotCharacterOwner"
         );
     }
 
@@ -770,8 +763,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         require(msg.sender == IERC721(_linklist).ownerOf(tokenId), "NotLinkListOwner");
     }
 
-    function _validateProfileExists(uint256 profileId) internal view {
-        require(_exists(profileId), "ProfileNotExists");
+    function _validateCharacterExists(uint256 characterId) internal view {
+        require(_exists(characterId), "CharacterNotExists");
     }
 
     function _validateCallerIsERC721Owner(address tokenAddress, uint256 tokenId) internal view {
@@ -782,9 +775,9 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         require(address(0) != IERC721(tokenAddress).ownerOf(tokenId), "REC721NotExists");
     }
 
-    function _validateNoteExists(uint256 profileId, uint256 noteId) internal view {
-        require(!_noteByIdByProfile[profileId][noteId].deleted, "NoteIsDeleted");
-        require(noteId <= _profileById[profileId].noteCount, "NoteNotExists");
+    function _validateNoteExists(uint256 characterId, uint256 noteId) internal view {
+        require(!_noteByIdByCharacter[characterId][noteId].deleted, "NoteIsDeleted");
+        require(noteId <= _characterById[characterId].noteCount, "NoteNotExists");
     }
 
     function getRevision() external pure returns (uint256) {

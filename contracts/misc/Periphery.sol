@@ -20,35 +20,37 @@ contract Periphery is Initializable {
         linklist = _linklist;
     }
 
-    function getNotesByProfileId(
-        uint256 profileId,
+    function getNotesByCharacterId(
+        uint256 characterId,
         uint256 offset,
         uint256 limit
     ) external view returns (DataTypes.Note[] memory results) {
-        uint256 count = IWeb3Entry(web3Entry).getProfile(profileId).noteCount;
+        uint256 count = IWeb3Entry(web3Entry).getCharacter(characterId).noteCount;
         limit = Math.min(limit, count - offset);
 
         results = new DataTypes.Note[](limit);
         if (offset >= count) return results;
 
         for (uint256 i = offset; i < offset + limit; i++) {
-            results[i - offset] = IWeb3Entry(web3Entry).getNote(profileId, i);
+            results[i - offset] = IWeb3Entry(web3Entry).getNote(characterId, i);
         }
     }
 
-    function getLinkingProfileIds(uint256 fromProfileId, bytes32 linkType)
+    function getLinkingCharacterIds(uint256 fromCharacterId, bytes32 linkType)
         external
         view
         returns (uint256[] memory results)
     {
-        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromProfileId, linkType);
-        uint256[] memory linkingProfileIds = ILinklist(linklist).getLinkingProfileIds(linklistId);
+        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromCharacterId, linkType);
+        uint256[] memory linkingCharacterIds = ILinklist(linklist).getLinkingCharacterIds(
+            linklistId
+        );
 
-        uint256 len = linkingProfileIds.length;
+        uint256 len = linkingCharacterIds.length;
 
         uint256 count;
         for (uint256 i = 0; i < len; i++) {
-            if (profileExists(linkingProfileIds[i])) {
+            if (characterExists(linkingCharacterIds[i])) {
                 count++;
             }
         }
@@ -56,27 +58,27 @@ contract Periphery is Initializable {
         results = new uint256[](count);
         uint256 j;
         for (uint256 i = 0; i < len; i++) {
-            if (profileExists(linkingProfileIds[i])) {
-                results[j] = linkingProfileIds[i];
+            if (characterExists(linkingCharacterIds[i])) {
+                results[j] = linkingCharacterIds[i];
                 j++;
             }
         }
     }
 
-    function getLinkingProfileId(bytes32 linkKey) external view returns (uint256 profileId) {
-        profileId = uint256(linkKey);
+    function getLinkingCharacterId(bytes32 linkKey) external view returns (uint256 characterId) {
+        characterId = uint256(linkKey);
     }
 
-    function getLinkingNotes(uint256 fromProfileId, bytes32 linkType)
+    function getLinkingNotes(uint256 fromCharacterId, bytes32 linkType)
         external
         view
         returns (DataTypes.Note[] memory results)
     {
-        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromProfileId, linkType);
+        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromCharacterId, linkType);
         DataTypes.NoteStruct[] memory notes = ILinklist(linklist).getLinkingNotes(linklistId);
         results = new DataTypes.Note[](notes.length);
         for (uint256 i = 0; i < notes.length; i++) {
-            results[i] = IWeb3Entry(web3Entry).getNote(notes[i].profileId, notes[i].noteId);
+            results[i] = IWeb3Entry(web3Entry).getNote(notes[i].characterId, notes[i].noteId);
         }
     }
 
@@ -84,12 +86,12 @@ contract Periphery is Initializable {
         return ILinklist(linklist).getLinkingNote(linkKey);
     }
 
-    function getLinkingERC721s(uint256 fromProfileId, bytes32 linkType)
+    function getLinkingERC721s(uint256 fromCharacterId, bytes32 linkType)
         external
         view
         returns (DataTypes.ERC721Struct[] memory results)
     {
-        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromProfileId, linkType);
+        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromCharacterId, linkType);
         return ILinklist(linklist).getLinkingERC721s(linklistId);
     }
 
@@ -101,12 +103,12 @@ contract Periphery is Initializable {
         return ILinklist(linklist).getLinkingERC721(linkKey);
     }
 
-    function getLinkingAnyUris(uint256 fromProfileId, bytes32 linkType)
+    function getLinkingAnyUris(uint256 fromCharacterId, bytes32 linkType)
         external
         view
         returns (string[] memory results)
     {
-        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromProfileId, linkType);
+        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromCharacterId, linkType);
         return ILinklist(linklist).getLinkingAnyUris(linklistId);
     }
 
@@ -114,12 +116,12 @@ contract Periphery is Initializable {
         return ILinklist(linklist).getLinkingAnyUri(linkKey);
     }
 
-    function getLinkingAddresses(uint256 fromProfileId, bytes32 linkType)
+    function getLinkingAddresses(uint256 fromCharacterId, bytes32 linkType)
         external
         view
         returns (address[] memory)
     {
-        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromProfileId, linkType);
+        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromCharacterId, linkType);
         return ILinklist(linklist).getLinkingAddresses(linklistId);
     }
 
@@ -127,12 +129,12 @@ contract Periphery is Initializable {
         return address(uint160(uint256(linkKey)));
     }
 
-    function getLinkingLinklistIds(uint256 fromProfileId, bytes32 linkType)
+    function getLinkingLinklistIds(uint256 fromCharacterId, bytes32 linkType)
         external
         view
         returns (uint256[] memory linklistIds)
     {
-        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromProfileId, linkType);
+        uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromCharacterId, linkType);
         return ILinklist(linklist).getLinkingLinklistIds(linklistId);
     }
 
@@ -140,18 +142,18 @@ contract Periphery is Initializable {
         linklistId = uint256(linkKey);
     }
 
-    function profileExists(uint256 profileId) internal view returns (bool) {
-        return IWeb3Entry(web3Entry).getProfile(profileId).profileId != 0;
+    function characterExists(uint256 characterId) internal view returns (bool) {
+        return IWeb3Entry(web3Entry).getCharacter(characterId).characterId != 0;
     }
 
-    function linkProfilesInBatch(DataTypes.linkProfilesInBatchData calldata vars) external {
-        require(vars.toProfileIds.length == vars.data.length, "ArrayLengthMismatch");
+    function linkCharactersInBatch(DataTypes.linkCharactersInBatchData calldata vars) external {
+        require(vars.toCharacterIds.length == vars.data.length, "ArrayLengthMismatch");
 
-        for (uint256 i = 0; i < vars.toProfileIds.length; i++) {
-            IWeb3Entry(web3Entry).linkProfile(
-                DataTypes.linkProfileData({
-                    fromProfileId: vars.fromProfileId,
-                    toProfileId: vars.toProfileIds[i],
+        for (uint256 i = 0; i < vars.toCharacterIds.length; i++) {
+            IWeb3Entry(web3Entry).linkCharacter(
+                DataTypes.linkCharacterData({
+                    fromCharacterId: vars.fromCharacterId,
+                    toCharacterId: vars.toCharacterIds[i],
                     linkType: vars.linkType,
                     data: vars.data[i]
                 })
@@ -159,42 +161,13 @@ contract Periphery is Initializable {
         }
 
         for (uint256 i = 0; i < vars.toAddresses.length; i++) {
-            IWeb3Entry(web3Entry).createThenLinkProfile(
-                DataTypes.createThenLinkProfileData({
-                    fromProfileId: vars.fromProfileId,
+            IWeb3Entry(web3Entry).createThenLinkCharacter(
+                DataTypes.createThenLinkCharacterData({
+                    fromCharacterId: vars.fromCharacterId,
                     to: vars.toAddresses[i],
                     linkType: vars.linkType
                 })
             );
         }
-    }
-
-    function createProfileThenPostNote(DataTypes.createProfileThenPostNoteData calldata vars)
-        external
-    {
-        // create profile
-        IWeb3Entry(web3Entry).createProfile(
-            DataTypes.CreateProfileData({
-                to: msg.sender,
-                handle: vars.handle,
-                uri: vars.uri,
-                linkModule: vars.profileLinkModule,
-                linkModuleInitData: vars.profileLinkModuleInitData
-            })
-        );
-
-        // post note
-        uint256 primaryProfileId = IWeb3Entry(web3Entry).getPrimaryProfileId(msg.sender);
-        IWeb3Entry(web3Entry).postNote(
-            DataTypes.PostNoteData({
-                profileId: primaryProfileId,
-                contentUri: vars.contentUri,
-                linkModule: vars.noteLinkModule,
-                linkModuleInitData: vars.noteLinkModuleInitData,
-                mintModule: vars.mintModule,
-                mintModuleInitData: vars.mintModuleInitData,
-                locked: vars.locked
-            })
-        );
     }
 }

@@ -14,35 +14,29 @@ interface IWeb3Entry {
         address resolver
     ) external;
 
-    // createProfile creates a profile, and mint a profile NFT
-    function createProfile(DataTypes.CreateProfileData calldata vars) external;
+    function createCharacter(DataTypes.CreateCharacterData calldata vars) external;
 
-    function setHandle(uint256 profileId, string calldata newHandle) external;
+    function setHandle(uint256 characterId, string calldata newHandle) external;
 
-    function setSocialToken(uint256 profileId, address tokenAddress) external;
+    function setSocialToken(uint256 characterId, address tokenAddress) external;
 
-    function setProfileUri(uint256 profileId, string calldata newUri) external;
+    function setCharacterUri(uint256 characterId, string calldata newUri) external;
 
-    function setPrimaryProfileId(uint256 profileId) external;
+    function setPrimaryCharacterId(uint256 characterId) external;
 
-    function setOperator(uint256 profileId, address operator) external;
-
-    function attachLinklist(uint256 linkListId, uint256 profileId) external;
-
-    function detachLinklist(uint256 linkListId, uint256 profileId) external;
+    function setOperator(uint256 characterId, address operator) external;
 
     function setLinklistUri(uint256 linkListId, string calldata uri) external;
 
-    // emit a link from a profile
     function linkAddress(DataTypes.linkAddressData calldata vars) external;
 
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external;
 
-    function linkProfile(DataTypes.linkProfileData calldata vars) external;
+    function linkCharacter(DataTypes.linkCharacterData calldata vars) external;
 
-    function unlinkProfile(DataTypes.unlinkProfileData calldata vars) external;
+    function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external;
 
-    function createThenLinkProfile(DataTypes.createThenLinkProfileData calldata vars) external;
+    function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars) external;
 
     function linkNote(DataTypes.linkNoteData calldata vars) external;
 
@@ -56,15 +50,15 @@ interface IWeb3Entry {
 
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external;
 
-    function linkProfileLink(
-        uint256 fromProfileId,
-        DataTypes.ProfileLinkStruct calldata linkData,
+    function linkCharacterLink(
+        uint256 fromCharacterId,
+        DataTypes.CharacterLinkStruct calldata linkData,
         bytes32 linkType
     ) external;
 
-    function unlinkProfileLink(
-        uint256 fromProfileId,
-        DataTypes.ProfileLinkStruct calldata linkData,
+    function unlinkCharacterLink(
+        uint256 fromCharacterId,
+        DataTypes.CharacterLinkStruct calldata linkData,
         bytes32 linkType
     ) external;
 
@@ -72,7 +66,7 @@ interface IWeb3Entry {
 
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external;
 
-    function setLinkModule4Profile(DataTypes.setLinkModule4ProfileData calldata vars) external;
+    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external;
 
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external;
 
@@ -89,16 +83,16 @@ interface IWeb3Entry {
     function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256);
 
     function setNoteUri(
-        uint256 profileId,
+        uint256 characterId,
         uint256 noteId,
         string calldata newUri
     ) external;
 
-    function lockNote(uint256 profileId, uint256 noteId) external;
+    function lockNote(uint256 characterId, uint256 noteId) external;
 
-    function deleteNote(uint256 profileId, uint256 noteId) external;
+    function deleteNote(uint256 characterId, uint256 noteId) external;
 
-    function postNote4Profile(DataTypes.PostNoteData calldata postNoteData, uint256 toProfileId)
+    function postNote4Character(DataTypes.PostNoteData calldata postNoteData, uint256 toCharacterId)
         external
         returns (uint256);
 
@@ -124,24 +118,24 @@ interface IWeb3Entry {
         external
         returns (uint256);
 
-    function getPrimaryProfileId(address account) external view returns (uint256);
+    function getPrimaryCharacterId(address account) external view returns (uint256);
 
-    function isPrimaryProfile(uint256 profileId) external view returns (bool);
+    function isPrimaryCharacter(uint256 characterId) external view returns (bool);
 
-    function getProfile(uint256 profileId) external view returns (DataTypes.Profile memory);
+    function getCharacter(uint256 characterId) external view returns (DataTypes.Character memory);
 
-    function getProfileByHandle(string calldata handle)
+    function getCharacterByHandle(string calldata handle)
         external
         view
-        returns (DataTypes.Profile memory);
+        returns (DataTypes.Character memory);
 
-    function getHandle(uint256 profileId) external view returns (string memory);
+    function getHandle(uint256 characterId) external view returns (string memory);
 
-    function getProfileUri(uint256 profileId) external view returns (string memory);
+    function getCharacterUri(uint256 characterId) external view returns (string memory);
 
-    function getOperator(uint256 profileId) external view returns (address);
+    function getOperator(uint256 characterId) external view returns (address);
 
-    function getNote(uint256 profileId, uint256 noteId)
+    function getNote(uint256 characterId, uint256 noteId)
         external
         view
         returns (DataTypes.Note memory);
@@ -157,7 +151,7 @@ interface IWeb3Entry {
 
     function getLinklistUri(uint256 tokenId) external view returns (string memory);
 
-    function getLinklistId(uint256 profileId, bytes32 linkType) external view returns (uint256);
+    function getLinklistId(uint256 characterId, bytes32 linkType) external view returns (uint256);
 
     function getLinklistType(uint256 linkListId) external view returns (bytes32);
 

@@ -2,70 +2,70 @@ import {
     deployer,
     deployerAddress,
     FIRST_LINKLIST_ID,
-    FIRST_PROFILE_ID,
+    FIRST_CHARACTER_ID,
     FOLLOW_LINKTYPE,
-    MOCK_PROFILE_HANDLE,
-    SECOND_PROFILE_ID,
+    MOCK_CHARACTER_HANDLE,
+    SECOND_CHARACTER_ID,
     user,
     userAddress,
     web3Entry,
 } from "./setup.test";
-import { getTimestamp, makeProfileData, matchEvent } from "./helpers/utils";
+import { getTimestamp, makeCharacterData, matchEvent } from "./helpers/utils";
 
-describe("Profile Events", function () {
-    it("Should emit the new created profile data once it's created", async function () {
-        const profileData = makeProfileData();
+describe("Character Events", function () {
+    it("Should emit the new created character data once it's created", async function () {
+        const characterData = makeCharacterData();
 
-        const receipt = await (await web3Entry.createProfile(profileData)).wait();
+        const receipt = await (await web3Entry.createCharacter(characterData)).wait();
 
-        matchEvent(receipt, "ProfileCreated", [
-            FIRST_PROFILE_ID,
+        matchEvent(receipt, "CharacterCreated", [
+            FIRST_CHARACTER_ID,
             userAddress,
             userAddress,
-            MOCK_PROFILE_HANDLE,
+            MOCK_CHARACTER_HANDLE,
             await getTimestamp(),
         ]);
     });
 
     it("Should emit the follow data once it's linked or unlinked", async function () {
-        await web3Entry.createProfile(makeProfileData("handle1"));
-        await web3Entry.createProfile(makeProfileData("handle2"));
+        await web3Entry.createCharacter(makeCharacterData("handle1"));
+        await web3Entry.createCharacter(makeCharacterData("handle2"));
 
         let receipt = await (
-            await web3Entry.linkProfile({
-                fromProfileId: FIRST_PROFILE_ID,
-                toProfileId: SECOND_PROFILE_ID,
+            await web3Entry.linkCharacter({
+                fromCharacterId: FIRST_CHARACTER_ID,
+                toCharacterId: SECOND_CHARACTER_ID,
                 linkType: FOLLOW_LINKTYPE,
                 data: [],
             })
         ).wait();
 
-        matchEvent(receipt, "LinkProfile", [
+        matchEvent(receipt, "LinkCharacter", [
             userAddress,
-            FIRST_PROFILE_ID,
-            SECOND_PROFILE_ID,
+            FIRST_CHARACTER_ID,
+            SECOND_CHARACTER_ID,
             FOLLOW_LINKTYPE,
             FIRST_LINKLIST_ID,
         ]);
 
         receipt = await (
-            await web3Entry.unlinkProfile({
-                fromProfileId: FIRST_PROFILE_ID,
-                toProfileId: SECOND_PROFILE_ID,
+            await web3Entry.unlinkCharacter({
+                fromCharacterId: FIRST_CHARACTER_ID,
+                toCharacterId: SECOND_CHARACTER_ID,
                 linkType: FOLLOW_LINKTYPE,
             })
         ).wait();
 
-        await web3Entry.unlinkProfile({
-            fromProfileId: FIRST_PROFILE_ID,
-            toProfileId: SECOND_PROFILE_ID,
+        await web3Entry.unlinkCharacter({
+            fromCharacterId: FIRST_CHARACTER_ID,
+            toCharacterId: SECOND_CHARACTER_ID,
             linkType: FOLLOW_LINKTYPE,
         });
 
-        matchEvent(receipt, "UnlinkProfile", [
+        matchEvent(receipt, "UnlinkCharacter", [
             userAddress,
-            FIRST_PROFILE_ID,
-            SECOND_PROFILE_ID,
+            FIRST_CHARACTER_ID,
+            SECOND_CHARACTER_ID,
             FOLLOW_LINKTYPE,
         ]);
     });

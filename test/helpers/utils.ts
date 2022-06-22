@@ -4,10 +4,10 @@ import { BigNumberish, Bytes, logger, utils, BigNumber, Contract } from "ethers"
 // eslint-disable-next-line node/no-missing-import
 import {
     eventsLib,
-    FIRST_PROFILE_ID,
+    FIRST_CHARACTER_ID,
     MOCK_NOTE_URI,
-    MOCK_PROFILE_HANDLE,
-    MOCK_PROFILE_URI,
+    MOCK_CHARACTER_HANDLE,
+    MOCK_CHARACTER_URI,
     periphery,
     userAddress,
     web3Entry,
@@ -19,20 +19,23 @@ import { BytesLike, hexlify, keccak256, RLP, toUtf8Bytes } from "ethers/lib/util
 import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import hre, { ethers } from "hardhat";
 // eslint-disable-next-line node/no-missing-import
-import { CreateProfileData, PostNoteData, NoteStruct } from "./types";
-export const makeProfileData = (handle: string = MOCK_PROFILE_HANDLE, to: string = userAddress) => {
+import { CreateCharacterData, PostNoteData, NoteStruct } from "./types";
+export const makeCharacterData = (
+    handle: string = MOCK_CHARACTER_HANDLE,
+    to: string = userAddress
+) => {
     return {
         to,
         handle,
-        uri: MOCK_PROFILE_URI,
+        uri: MOCK_CHARACTER_URI,
         linkModule: ethers.constants.AddressZero,
         linkModuleInitData: [],
-    } as CreateProfileData;
+    } as CreateCharacterData;
 };
 
 export const makePostNoteData = (num: string = "1") => {
     return {
-        profileId: BigNumber.from(num),
+        characterId: BigNumber.from(num),
         contentUri: MOCK_NOTE_URI,
         linkModule: ethers.constants.AddressZero,
         linkModuleInitData: [],
@@ -207,16 +210,16 @@ export function matchNote(note: NoteStruct, expectedArgs?: any[]) {
     }
 }
 
-export async function matchLinkingProfileIds(
-    fromProfileId: BigNumberish,
+export async function matchLinkingCharacterIds(
+    fromCharacterId: BigNumberish,
     linkType: BytesLike,
     expectedArgs: number[]
 ) {
-    const linkingProfileIds = await periphery.getLinkingProfileIds(fromProfileId, linkType);
-    if (linkingProfileIds.length !== expectedArgs.length) {
-        logger.throwError(`linkingProfileIds mismatched. Expected args are of invalid length`);
+    const linkingCharacterIds = await periphery.getLinkingCharacterIds(fromCharacterId, linkType);
+    if (linkingCharacterIds.length !== expectedArgs.length) {
+        logger.throwError(`linkingCharacterIds mismatched. Expected args are of invalid length`);
     }
-    for (let i = 0; i < linkingProfileIds.length; i++) {
-        expect(linkingProfileIds[i]).to.eq(expectedArgs[i]);
+    for (let i = 0; i < linkingCharacterIds.length; i++) {
+        expect(linkingCharacterIds[i]).to.eq(expectedArgs[i]);
     }
 }

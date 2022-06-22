@@ -18,14 +18,14 @@ import {
     Linklist__factory,
     Web3Entry__factory,
     ApprovalMintModule,
-    ApprovalLinkModule4Profile,
+    ApprovalLinkModule4Character,
     // eslint-disable-next-line node/no-missing-import
 } from "../typechain";
 import { revertToSnapshot, takeSnapshot } from "./helpers/utils";
 
-export const FIRST_PROFILE_ID = 1;
-export const SECOND_PROFILE_ID = 2;
-export const THIRD_PROFILE_ID = 3;
+export const FIRST_CHARACTER_ID = 1;
+export const SECOND_CHARACTER_ID = 2;
+export const THIRD_CHARACTER_ID = 3;
 
 export const FIRST_LINKLIST_ID = 1;
 export const SECOND_LINKLIST_ID = 2;
@@ -33,14 +33,14 @@ export const SECOND_LINKLIST_ID = 2;
 export const FIRST_NOTE_ID = 1;
 export const SECOND_NOTE_ID = 2;
 
-export const WEB3_ENTRY_NFT_NAME = "Web3 Entry Profile";
-export const WEB3_ENTRY_NFT_SYMBOL = "WEP";
+export const WEB3_ENTRY_NFT_NAME = "Web3 Entry Character";
+export const WEB3_ENTRY_NFT_SYMBOL = "WEC";
 export const LINK_LIST_NFT_NAME = "Link List Token";
 export const LINK_LIST_NFT_SYMBOL = "LLT";
 
-export const MOCK_PROFILE_HANDLE = "0xcrossbell-eth";
-export const MOCK_PROFILE_HANDLE2 = "0xcrossbell-2-eth";
-export const MOCK_PROFILE_URI =
+export const MOCK_CHARACTER_HANDLE = "0xcrossbell-eth";
+export const MOCK_CHARACTER_HANDLE2 = "0xcrossbell-2-eth";
+export const MOCK_CHARACTER_URI =
     "https://raw.githubusercontent.com/Crossbell-Box/Crossbell-Contracts/main/examples/sampleProfile.json";
 export const MOCK_URI = "ipfs://QmadFPhP7n5rJkACMY6QqhtLtKgX1ixoySmxQNrU4Wo5JW";
 export const MOCK_CONTENT_URI = "ipfs://QmfHKajYAGcaWaBXGsEWory9ensGsesN2GwWedVEuzk5Gg";
@@ -72,7 +72,7 @@ export let web3Entry: Web3Entry;
 export let periphery: Periphery;
 export let resolver: Resolver;
 export let currency: Currency;
-export let approvalLinkModule4Profile: ApprovalLinkModule4Profile;
+export let approvalLinkModule4Character: ApprovalLinkModule4Character;
 export let feeMintModule: FeeMintModule;
 export let approvalMintModule: ApprovalMintModule;
 
@@ -126,8 +126,8 @@ beforeEach(async () => {
     const LinkModuleLogic = await ethers.getContractFactory("LinkModuleLogic");
     const linkModuleLogic = await LinkModuleLogic.deploy();
 
-    const ProfileLogic = await ethers.getContractFactory("ProfileLogic");
-    const profileLogic = await ProfileLogic.deploy();
+    const CharacterLogic = await ethers.getContractFactory("CharacterLogic");
+    const characterLogic = await CharacterLogic.deploy();
 
     const PostLogic = await ethers.getContractFactory("PostLogic");
     const postLogic = await PostLogic.deploy();
@@ -147,7 +147,7 @@ beforeEach(async () => {
     const Web3Entry = await ethers.getContractFactory("Web3Entry", {
         libraries: {
             LinkModuleLogic: linkModuleLogic.address,
-            ProfileLogic: profileLogic.address,
+            CharacterLogic: characterLogic.address,
             PostLogic: postLogic.address,
             LinkLogic: linkLogic.address,
         },
@@ -194,10 +194,10 @@ beforeEach(async () => {
     currency = await Currency.deploy();
 
     // Modules
-    const ApprovalLinkModule4Profile = await ethers.getContractFactory(
-        "ApprovalLinkModule4Profile"
+    const ApprovalLinkModule4Character = await ethers.getContractFactory(
+        "ApprovalLinkModule4Character"
     );
-    approvalLinkModule4Profile = await ApprovalLinkModule4Profile.deploy(web3Entry.address);
+    approvalLinkModule4Character = await ApprovalLinkModule4Character.deploy(web3Entry.address);
 
     const FeeMintModule = await ethers.getContractFactory("FeeMintModule");
     feeMintModule = await FeeMintModule.deploy(web3Entry.address);
@@ -205,7 +205,7 @@ beforeEach(async () => {
     const ApprovalMintModule = await ethers.getContractFactory("ApprovalMintModule");
     approvalMintModule = await ApprovalMintModule.deploy(web3Entry.address);
 
-    expect(approvalLinkModule4Profile).to.not.be.undefined;
+    expect(approvalLinkModule4Character).to.not.be.undefined;
     expect(feeMintModule).to.not.be.undefined;
     expect(approvalMintModule).to.not.be.undefined;
     expect(currency).to.not.be.undefined;

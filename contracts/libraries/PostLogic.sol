@@ -19,25 +19,25 @@ library PostLogic {
         bytes32 linkItemType,
         bytes32 linkKey,
         bytes calldata data,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external {
-        uint256 profileId = vars.profileId;
+        uint256 characterId = vars.characterId;
         // save note
         if (linkItemType != bytes32(0)) {
-            _noteByIdByProfile[profileId][noteId].linkItemType = linkItemType;
-            _noteByIdByProfile[profileId][noteId].linkKey = linkKey;
+            _noteByIdByCharacter[characterId][noteId].linkItemType = linkItemType;
+            _noteByIdByCharacter[characterId][noteId].linkKey = linkKey;
         }
-        _noteByIdByProfile[profileId][noteId].contentUri = vars.contentUri;
-        _noteByIdByProfile[profileId][noteId].linkModule = vars.linkModule;
-        _noteByIdByProfile[profileId][noteId].mintModule = vars.mintModule;
+        _noteByIdByCharacter[characterId][noteId].contentUri = vars.contentUri;
+        _noteByIdByCharacter[characterId][noteId].linkModule = vars.linkModule;
+        _noteByIdByCharacter[characterId][noteId].mintModule = vars.mintModule;
 
         // init link module
         if (vars.linkModule != address(0)) {
             bytes memory linkModuleReturnData = ILinkModule4Note(vars.linkModule)
-                .initializeLinkModule(profileId, noteId, vars.linkModuleInitData);
+                .initializeLinkModule(characterId, noteId, vars.linkModuleInitData);
 
             emit Events.SetLinkModule4Note(
-                profileId,
+                characterId,
                 noteId,
                 vars.linkModule,
                 linkModuleReturnData,
@@ -48,10 +48,10 @@ library PostLogic {
         // init mint module
         if (vars.mintModule != address(0)) {
             bytes memory mintModuleReturnData = IMintModule4Note(vars.mintModule)
-                .initializeMintModule(profileId, noteId, vars.mintModuleInitData);
+                .initializeMintModule(characterId, noteId, vars.mintModuleInitData);
 
             emit Events.SetMintModule4Note(
-                profileId,
+                characterId,
                 noteId,
                 vars.mintModule,
                 mintModuleReturnData,
@@ -59,55 +59,55 @@ library PostLogic {
             );
         }
 
-        emit Events.PostNote(profileId, noteId, linkKey, linkItemType, data);
+        emit Events.PostNote(characterId, noteId, linkKey, linkItemType, data);
     }
 
     function mintNote(
-        uint256 profileId,
+        uint256 characterId,
         uint256 noteId,
         address to,
         bytes calldata mintModuleData,
         address mintNFTImpl,
-        mapping(uint256 => DataTypes.Profile) storage _profileById,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile
+        mapping(uint256 => DataTypes.Character) storage _characterById,
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external returns (uint256 tokenId) {
-        address mintNFT = _noteByIdByProfile[profileId][noteId].mintNFT;
+        address mintNFT = _noteByIdByCharacter[characterId][noteId].mintNFT;
         if (mintNFT == address(0)) {
             mintNFT = _deployMintNFT(
-                profileId,
+                characterId,
                 noteId,
-                _profileById[profileId].handle,
+                _characterById[characterId].handle,
                 mintNFTImpl
             );
-            _noteByIdByProfile[profileId][noteId].mintNFT = mintNFT;
+            _noteByIdByCharacter[characterId][noteId].mintNFT = mintNFT;
         }
 
         // mint nft
         tokenId = IMintNFT(mintNFT).mint(to);
 
-        address mintModule = _noteByIdByProfile[profileId][noteId].mintModule;
+        address mintModule = _noteByIdByCharacter[characterId][noteId].mintModule;
         if (mintModule != address(0)) {
-            IMintModule4Note(mintModule).processMint(to, profileId, noteId, mintModuleData);
+            IMintModule4Note(mintModule).processMint(to, characterId, noteId, mintModuleData);
         }
 
-        emit Events.MintNote(to, profileId, noteId, mintNFT, tokenId);
+        emit Events.MintNote(to, characterId, noteId, mintNFT, tokenId);
     }
 
     function setNoteUri(
-        uint256 profileId,
+        uint256 characterId,
         uint256 noteId,
         string calldata newUri,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByProfile
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external {
-        require(!_noteByIdByProfile[profileId][noteId].locked, "NoteLocked");
+        require(!_noteByIdByCharacter[characterId][noteId].locked, "NoteLocked");
 
-        _noteByIdByProfile[profileId][noteId].contentUri = newUri;
+        _noteByIdByCharacter[characterId][noteId].contentUri = newUri;
 
-        emit Events.SetNoteUri(profileId, noteId, newUri);
+        emit Events.SetNoteUri(characterId, noteId, newUri);
     }
 
     function _deployMintNFT(
-        uint256 profileId,
+        uint256 characterId,
         uint256 noteId,
         string memory handle,
         address mintNFTImpl
@@ -117,13 +117,13 @@ library PostLogic {
         bytes4 firstBytes = bytes4(bytes(handle));
 
         string memory NFTName = string(
-            abi.encodePacked(handle, "-Note-", profileId.toString(), "-", noteId.toString())
+            abi.encodePacked(handle, "-Note-", characterId.toString(), "-", noteId.toString())
         );
         string memory NFTSymbol = string(
-            abi.encodePacked(firstBytes, "-Note-", profileId.toString(), "-", noteId.toString())
+            abi.encodePacked(firstBytes, "-Note-", characterId.toString(), "-", noteId.toString())
         );
 
-        IMintNFT(mintNFT).initialize(profileId, noteId, address(this), NFTName, NFTSymbol);
+        IMintNFT(mintNFT).initialize(characterId, noteId, address(this), NFTName, NFTSymbol);
         return mintNFT;
     }
 }

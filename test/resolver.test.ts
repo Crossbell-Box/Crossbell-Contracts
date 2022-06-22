@@ -2,14 +2,14 @@ import {
     deployer,
     deployerAddress,
     FIRST_LINKLIST_ID,
-    FIRST_PROFILE_ID,
+    FIRST_CHARACTER_ID,
     FOLLOW_LINKTYPE,
     MOCK_NOTE_URI,
-    MOCK_PROFILE_HANDLE,
-    MOCK_PROFILE_URI,
+    MOCK_CHARACTER_HANDLE,
+    MOCK_CHARACTER_URI,
     periphery,
     resolver,
-    SECOND_PROFILE_ID,
+    SECOND_CHARACTER_ID,
     user,
     userAddress,
     userThree,
@@ -18,7 +18,7 @@ import {
     userTwoAddress,
     web3Entry,
 } from "./setup.test";
-import { getTimestamp, makeProfileData, matchEvent } from "./helpers/utils";
+import { getTimestamp, makeCharacterData, matchEvent } from "./helpers/utils";
 import { ethers } from "hardhat";
 import { BytesLike } from "@ethersproject/bytes";
 import { expect } from "chai";
@@ -72,41 +72,41 @@ describe("Resolver", function () {
         expect(await resolver.getTotalRNSCount()).to.be.equal(2);
     });
 
-    it("User should failed to create profile reserved for ENS", async function () {
+    it("User should failed to create character reserved for ENS", async function () {
         await resolver.addENSRecords(
             ["vitalik", "atlas", "albert"],
             [userTwoAddress, userThreeAddress, userThreeAddress]
         );
 
         await expect(
-            web3Entry.connect(user).createProfile(makeProfileData("vitalik"))
+            web3Entry.connect(user).createCharacter(makeCharacterData("vitalik"))
         ).to.be.revertedWith("HandleNotEligible");
         await expect(
-            web3Entry.connect(user).createProfile(makeProfileData("atlas"))
+            web3Entry.connect(user).createCharacter(makeCharacterData("atlas"))
         ).to.be.revertedWith("HandleNotEligible");
         await expect(
-            web3Entry.connect(user).createProfile(makeProfileData("albert"))
+            web3Entry.connect(user).createCharacter(makeCharacterData("albert"))
         ).to.be.revertedWith("HandleNotEligible");
     });
 
-    it("User should failed to create profile reserved for RNS", async function () {
+    it("User should failed to create character reserved for RNS", async function () {
         await resolver.addRNSRecords(
             ["vitalik", "atlas", "albert"],
             [userTwoAddress, userThreeAddress, userThreeAddress]
         );
 
         await expect(
-            web3Entry.connect(user).createProfile(makeProfileData("vitalik"))
+            web3Entry.connect(user).createCharacter(makeCharacterData("vitalik"))
         ).to.be.revertedWith("HandleNotEligible");
         await expect(
-            web3Entry.connect(user).createProfile(makeProfileData("atlas"))
+            web3Entry.connect(user).createCharacter(makeCharacterData("atlas"))
         ).to.be.revertedWith("HandleNotEligible");
         await expect(
-            web3Entry.connect(user).createProfile(makeProfileData("albert"))
+            web3Entry.connect(user).createCharacter(makeCharacterData("albert"))
         ).to.be.revertedWith("HandleNotEligible");
     });
 
-    it("User should create profile reserved for ENS or RNS", async function () {
+    it("User should create character reserved for ENS or RNS", async function () {
         await resolver.addRNSRecords(
             ["vitalik", "atlas", "albert"],
             [userTwoAddress, userTwoAddress, userThreeAddress]
@@ -117,9 +117,9 @@ describe("Resolver", function () {
             [userThreeAddress, userTwoAddress, userTwoAddress]
         );
 
-        await expect(web3Entry.createProfile(makeProfileData("albert", userThreeAddress))).to.not.be
-            .reverted;
-        await expect(web3Entry.createProfile(makeProfileData("vitalik", userThreeAddress))).to.not
-            .be.reverted;
+        await expect(web3Entry.createCharacter(makeCharacterData("albert", userThreeAddress))).to
+            .not.be.reverted;
+        await expect(web3Entry.createCharacter(makeCharacterData("vitalik", userThreeAddress))).to
+            .not.be.reverted;
     });
 });

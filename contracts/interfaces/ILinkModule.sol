@@ -4,7 +4,7 @@ pragma solidity 0.8.10;
 
 interface ILinkModule {
     function initializeLinkModule(
-        uint256 profileId,
+        uint256 characterId,
         uint256 noteId,
         string calldata name,
         string calldata symbol
@@ -12,7 +12,7 @@ interface ILinkModule {
 
     function processLink(
         address to,
-        uint256 profileId,
+        uint256 characterId,
         uint256 noteId,
         bytes calldata data
     ) external;

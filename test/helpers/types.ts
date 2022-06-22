@@ -1,6 +1,6 @@
 import { BigNumber, BytesLike } from "ethers";
 
-export interface CreateProfileData {
+export interface CreateCharacterData {
     to: string;
     handle: string;
     uri: string;
@@ -8,8 +8,8 @@ export interface CreateProfileData {
     linkModuleInitData: BytesLike;
 }
 
-export interface ProfileData {
-    profileId: BigNumber;
+export interface CharacterData {
+    characterId: BigNumber;
     handle: string;
     uri: string;
     noteCount: BigNumber;
@@ -18,7 +18,7 @@ export interface ProfileData {
 }
 
 export interface PostNoteData {
-    profileId: BigNumber;
+    characterId: BigNumber;
     contentUri: string;
     linkModule: string;
     linkModuleInitData: BytesLike;

@@ -6,7 +6,7 @@ import "../../interfaces/IMintModule4Note.sol";
 import "../ModuleBase.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-struct ProfileNoteData {
+struct CharacterNoteData {
     uint256 amount;
     address currency;
     address recipient;
@@ -15,12 +15,12 @@ struct ProfileNoteData {
 contract FeeMintModule is IMintModule4Note, ModuleBase {
     using SafeERC20 for IERC20;
 
-    mapping(uint256 => mapping(uint256 => ProfileNoteData)) internal _dataByNoteByProfile;
+    mapping(uint256 => mapping(uint256 => CharacterNoteData)) internal _dataByNoteByCharacter;
 
     constructor(address web3Entry) ModuleBase(web3Entry) {}
 
     function initializeMintModule(
-        uint256 profileId,
+        uint256 characterId,
         uint256 noteId,
         bytes calldata data
     ) external override onlyWeb3Entry returns (bytes memory) {
@@ -30,21 +30,21 @@ contract FeeMintModule is IMintModule4Note, ModuleBase {
         );
         require(recipient != address(0) && amount > 0, "FeeMintModule: InvalidParams");
 
-        _dataByNoteByProfile[profileId][noteId].amount = amount;
-        _dataByNoteByProfile[profileId][noteId].currency = currency;
-        _dataByNoteByProfile[profileId][noteId].recipient = recipient;
+        _dataByNoteByCharacter[characterId][noteId].amount = amount;
+        _dataByNoteByCharacter[characterId][noteId].currency = currency;
+        _dataByNoteByCharacter[characterId][noteId].recipient = recipient;
 
         return data;
     }
 
     function processMint(
         address to,
-        uint256 profileId,
+        uint256 characterId,
         uint256 noteId,
         bytes calldata data
     ) external {
-        uint256 amount = _dataByNoteByProfile[profileId][noteId].amount;
-        address currency = _dataByNoteByProfile[profileId][noteId].currency;
+        uint256 amount = _dataByNoteByCharacter[characterId][noteId].amount;
+        address currency = _dataByNoteByCharacter[characterId][noteId].currency;
 
         (address decodedCurrency, uint256 decodedAmount) = abi.decode(data, (address, uint256));
         require(
@@ -52,15 +52,15 @@ contract FeeMintModule is IMintModule4Note, ModuleBase {
             "FeeMintModule: ModuleDataMismatch"
         );
 
-        address recipient = _dataByNoteByProfile[profileId][noteId].recipient;
+        address recipient = _dataByNoteByCharacter[characterId][noteId].recipient;
         IERC20(currency).safeTransferFrom(to, recipient, amount);
     }
 
-    function getNoteData(uint256 profileId, uint256 noteId)
+    function getNoteData(uint256 characterId, uint256 noteId)
         external
         view
-        returns (ProfileNoteData memory)
+        returns (CharacterNoteData memory)
     {
-        return _dataByNoteByProfile[profileId][noteId];
+        return _dataByNoteByCharacter[characterId][noteId];
     }
 }

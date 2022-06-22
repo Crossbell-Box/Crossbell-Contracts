@@ -2,14 +2,14 @@
 
 pragma solidity 0.8.10;
 
-interface ILinkModule4Profile {
-    function initializeLinkModule(uint256 profileId, bytes calldata data)
+interface ILinkModule4Character {
+    function initializeLinkModule(uint256 characterId, bytes calldata data)
         external
         returns (bytes memory);
 
     function processLink(
         address caller,
-        uint256 profileId,
+        uint256 characterId,
         bytes calldata data
     ) external;
 }

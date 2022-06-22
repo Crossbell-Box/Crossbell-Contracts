@@ -14,34 +14,34 @@ interface ILinklist {
     function setTakeOver(
         uint256 tokenId,
         address to,
-        uint256 profileId
+        uint256 characterId
     ) external;
 
     function setUri(uint256 tokenId, string memory uri) external;
 
     /////////////////////////////////
-    // linking Profile
+    // linking Character
     /////////////////////////////////
-    function addLinkingProfileId(uint256 tokenId, uint256 toProfileId) external;
+    function addLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external;
 
-    function removeLinkingProfileId(uint256 tokenId, uint256 toProfileId) external;
+    function removeLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external;
 
-    function getLinkingProfileIds(uint256 tokenId) external view returns (uint256[] memory);
+    function getLinkingCharacterIds(uint256 tokenId) external view returns (uint256[] memory);
 
-    function getLinkingProfileListLength(uint256 tokenId) external view returns (uint256);
+    function getLinkingCharacterListLength(uint256 tokenId) external view returns (uint256);
 
     /////////////////////////////////
     // linking Note
     /////////////////////////////////
     function addLinkingNote(
         uint256 tokenId,
-        uint256 toProfileId,
+        uint256 toCharacterId,
         uint256 toNoteId
     ) external returns (bytes32);
 
     function removeLinkingNote(
         uint256 tokenId,
-        uint256 toProfileId,
+        uint256 toCharacterId,
         uint256 toNoteId
     ) external;
 
@@ -54,28 +54,27 @@ interface ILinklist {
 
     function getLinkingNoteListLength(uint256 tokenId) external view returns (uint256);
 
-    /////////////////////////////////
-    // linking ProfileLink
-    /////////////////////////////////
-    function addLinkingProfileLink(uint256 tokenId, DataTypes.ProfileLinkStruct calldata linkData)
-        external;
-
-    function removeLinkingProfileLink(
+    function addLinkingCharacterLink(
         uint256 tokenId,
-        DataTypes.ProfileLinkStruct calldata linkData
+        DataTypes.CharacterLinkStruct calldata linkData
     ) external;
 
-    function getLinkingProfileLinks(uint256 tokenId)
+    function removeLinkingCharacterLink(
+        uint256 tokenId,
+        DataTypes.CharacterLinkStruct calldata linkData
+    ) external;
+
+    function getLinkingCharacterLinks(uint256 tokenId)
         external
         view
-        returns (DataTypes.ProfileLinkStruct[] memory results);
+        returns (DataTypes.CharacterLinkStruct[] memory results);
 
-    function getLinkingProfileLink(bytes32 linkKey)
+    function getLinkingCharacterLink(bytes32 linkKey)
         external
         view
-        returns (DataTypes.ProfileLinkStruct memory);
+        returns (DataTypes.CharacterLinkStruct memory);
 
-    function getLinkingProfileLinkListLength(uint256 tokenId) external view returns (uint256);
+    function getLinkingCharacterLinkListLength(uint256 tokenId) external view returns (uint256);
 
     /////////////////////////////////
     // linking ERC721

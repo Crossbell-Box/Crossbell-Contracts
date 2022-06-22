@@ -4,13 +4,13 @@ import {
     abiCoder,
     deployerAddress,
     FIRST_LINKLIST_ID,
-    FIRST_PROFILE_ID,
+    FIRST_CHARACTER_ID,
     makeSuiteCleanRoom,
-    MOCK_PROFILE_HANDLE,
-    MOCK_PROFILE_HANDLE2,
-    MOCK_PROFILE_URI,
+    MOCK_CHARACTER_HANDLE,
+    MOCK_CHARACTER_HANDLE2,
+    MOCK_CHARACTER_URI,
     FIRST_NOTE_ID,
-    SECOND_PROFILE_ID,
+    SECOND_CHARACTER_ID,
     MOCK_NOTE_URI,
     bytes32Zero,
     LinkItemTypeProfile,
@@ -33,12 +33,12 @@ import {
     SECOND_LINKLIST_ID,
     feeMintModule,
     approvalMintModule,
-    THIRD_PROFILE_ID,
+    THIRD_CHARACTER_ID,
     periphery,
     SECOND_NOTE_ID,
     MOCK_NEW_NOTE_URI,
 } from "./setup.test";
-import { makePostNoteData, makeProfileData, matchEvent, matchNote } from "./helpers/utils";
+import { makePostNoteData, makeCharacterData, matchEvent, matchNote } from "./helpers/utils";
 import { ERRORS } from "./helpers/errors";
 import { formatBytes32String } from "@ethersproject/strings/src.ts/bytes32";
 // eslint-disable-next-line node/no-missing-import,camelcase
@@ -49,44 +49,44 @@ import { soliditySha3 } from "web3-utils";
 makeSuiteCleanRoom("Note and mint functionality", function () {
     context("Generic", function () {
         beforeEach(async function () {
-            await web3Entry.createProfile(makeProfileData(MOCK_PROFILE_HANDLE));
-            await web3Entry.createProfile(makeProfileData(MOCK_PROFILE_HANDLE2));
+            await web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE));
+            await web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2));
         });
 
         context("Negatives", function () {
-            it("UserTwo should fail to post note at a profile owned by user 1", async function () {
+            it("UserTwo should fail to post note at a character owned by user 1", async function () {
                 await expect(
                     web3Entry
                         .connect(userTwo)
-                        .postNote(makePostNoteData(FIRST_PROFILE_ID.toString()))
-                ).to.be.revertedWith(ERRORS.NOT_PROFILE_OWNER);
+                        .postNote(makePostNoteData(FIRST_CHARACTER_ID.toString()))
+                ).to.be.revertedWith(ERRORS.NOT_CHARACTER_OWNER);
             });
 
-            it("UserTwo should fail to post note for profile link at a profile owned by user 1", async function () {
-                // link profile
-                await web3Entry.linkProfile({
-                    fromProfileId: SECOND_PROFILE_ID,
-                    toProfileId: FIRST_PROFILE_ID,
+            it("UserTwo should fail to post note for character link at a character owned by user 1", async function () {
+                // link character
+                await web3Entry.linkCharacter({
+                    fromCharacterId: SECOND_CHARACTER_ID,
+                    toCharacterId: FIRST_CHARACTER_ID,
                     linkType: FollowLinkType,
                     data: [],
                 });
 
-                // post note for profile link
+                // post note for character link
                 await expect(
                     web3Entry
                         .connect(userTwo)
-                        .postNote4Profile(
-                            makePostNoteData(FIRST_PROFILE_ID.toString()),
-                            SECOND_PROFILE_ID
+                        .postNote4Character(
+                            makePostNoteData(FIRST_CHARACTER_ID.toString()),
+                            SECOND_CHARACTER_ID
                         )
-                ).to.be.revertedWith(ERRORS.NOT_PROFILE_OWNER);
+                ).to.be.revertedWith(ERRORS.NOT_CHARACTER_OWNER);
             });
 
             it("User should fail to link a non-existent note", async function () {
                 await expect(
                     web3Entry.linkNote({
-                        fromProfileId: FIRST_PROFILE_ID,
-                        toProfileId: FIRST_PROFILE_ID,
+                        fromCharacterId: FIRST_CHARACTER_ID,
+                        toCharacterId: FIRST_CHARACTER_ID,
                         toNoteId: FIRST_NOTE_ID,
                         linkType: FollowLinkType,
                         data: [],
@@ -96,10 +96,10 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
             it("User should fail to link a deleted note", async function () {
                 // post note
-                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                const noteData = makePostNoteData(FIRST_CHARACTER_ID.toString());
                 await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -113,9 +113,9 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // delete note
                 await expect(
-                    web3Entry.deleteNote(noteData.profileId, FIRST_NOTE_ID)
+                    web3Entry.deleteNote(noteData.characterId, FIRST_NOTE_ID)
                 ).to.not.be.reverted;
-                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -129,8 +129,8 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 await expect(
                     web3Entry.linkNote({
-                        fromProfileId: FIRST_PROFILE_ID,
-                        toProfileId: FIRST_PROFILE_ID,
+                        fromCharacterId: FIRST_CHARACTER_ID,
+                        toCharacterId: FIRST_CHARACTER_ID,
                         toNoteId: FIRST_NOTE_ID,
                         linkType: FollowLinkType,
                         data: [],
@@ -140,10 +140,10 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
             it("User should fail to mint a deleted note", async function () {
                 // post note
-                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                const noteData = makePostNoteData(FIRST_CHARACTER_ID.toString());
                 await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -157,9 +157,9 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // delete note
                 await expect(
-                    web3Entry.deleteNote(noteData.profileId, FIRST_NOTE_ID)
+                    web3Entry.deleteNote(noteData.characterId, FIRST_NOTE_ID)
                 ).to.not.be.reverted;
-                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -174,7 +174,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 // mint note
                 await expect(
                     web3Entry.connect(userThree).mintNote({
-                        profileId: FIRST_PROFILE_ID,
+                        characterId: FIRST_CHARACTER_ID,
                         noteId: FIRST_NOTE_ID,
                         to: userTwoAddress,
                         mintModuleData: [],
@@ -186,7 +186,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 // mint note
                 await expect(
                     web3Entry.connect(userThree).mintNote({
-                        profileId: FIRST_PROFILE_ID,
+                        characterId: FIRST_CHARACTER_ID,
                         noteId: FIRST_NOTE_ID,
                         to: userTwoAddress,
                         mintModuleData: [],
@@ -198,10 +198,10 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
         context("Scenarios", function () {
             it("User should post note", async function () {
                 // post note
-                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                const noteData = makePostNoteData(FIRST_CHARACTER_ID.toString());
                 await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -215,19 +215,19 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // mint note
                 await web3Entry.connect(userThree).mintNote({
-                    profileId: FIRST_PROFILE_ID,
+                    characterId: FIRST_CHARACTER_ID,
                     noteId: FIRST_NOTE_ID,
                     to: userTwoAddress,
                     mintModuleData: [],
                 });
                 await web3Entry.connect(userThree).mintNote({
-                    profileId: FIRST_PROFILE_ID,
+                    characterId: FIRST_CHARACTER_ID,
                     noteId: FIRST_NOTE_ID,
                     to: userThreeAddress,
                     mintModuleData: [],
                 });
 
-                note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+                note = await web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
                 expect(note.mintNFT).to.not.equal(ethers.constants.AddressZero);
                 const mintNFT = MintNFT__factory.connect(note.mintNFT, deployer);
                 expect(await mintNFT.ownerOf(1)).to.equal(userTwoAddress);
@@ -235,13 +235,13 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
             });
 
             it("User should set a operator and post note", async function () {
-                await web3Entry.setOperator(FIRST_PROFILE_ID, userThreeAddress);
+                await web3Entry.setOperator(FIRST_CHARACTER_ID, userThreeAddress);
 
                 // post note
-                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                const noteData = makePostNoteData(FIRST_CHARACTER_ID.toString());
                 await expect(web3Entry.connect(userThree).postNote(noteData)).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -256,10 +256,10 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
             it("User should post and delete note", async function () {
                 // post note
-                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                const noteData = makePostNoteData(FIRST_CHARACTER_ID.toString());
                 await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -273,9 +273,9 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // delete note
                 await expect(
-                    web3Entry.deleteNote(noteData.profileId, FIRST_NOTE_ID)
+                    web3Entry.deleteNote(noteData.characterId, FIRST_NOTE_ID)
                 ).to.not.be.reverted;
-                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -290,10 +290,10 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
             it("User should post note and then set note uri", async function () {
                 // post note
-                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                const noteData = makePostNoteData(FIRST_CHARACTER_ID.toString());
                 await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -306,11 +306,9 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 ]);
 
                 // set note uri
-                await web3Entry.setNoteUri(noteData.profileId, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
-                // await expect(
-                //     web3Entry.setNoteUri(noteData.profileId, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI)
-                // ).to.not.be.reverted;
-                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                await web3Entry.setNoteUri(noteData.characterId, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
+
+                note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -325,10 +323,10 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
             it("User should post note and then freeze note", async function () {
                 // post note
-                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                const noteData = makePostNoteData(FIRST_CHARACTER_ID.toString());
                 await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -342,9 +340,9 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // freeze note
                 await expect(
-                    web3Entry.lockNote(noteData.profileId, FIRST_NOTE_ID)
+                    web3Entry.lockNote(noteData.characterId, FIRST_NOTE_ID)
                 ).to.not.be.reverted;
-                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -359,10 +357,10 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
             it("User should failed to set note uri or set link module or set mint module after freezing", async function () {
                 // post note
-                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                const noteData = makePostNoteData(FIRST_CHARACTER_ID.toString());
                 await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -376,9 +374,9 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // freeze note
                 await expect(
-                    web3Entry.lockNote(noteData.profileId, FIRST_NOTE_ID)
+                    web3Entry.lockNote(noteData.characterId, FIRST_NOTE_ID)
                 ).to.not.be.reverted;
-                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -392,12 +390,12 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // set note uri should fail
                 await expect(
-                    web3Entry.setNoteUri(noteData.profileId, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI)
+                    web3Entry.setNoteUri(noteData.characterId, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI)
                 ).to.be.revertedWith("NoteLocked");
 
                 await expect(
                     web3Entry.setLinkModule4Note({
-                        profileId: noteData.profileId,
+                        characterId: noteData.characterId,
                         noteId: FIRST_NOTE_ID,
                         linkModule: ethers.constants.AddressZero,
                         linkModuleInitData: [],
@@ -406,7 +404,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 await expect(
                     web3Entry.setMintModule4Note({
-                        profileId: noteData.profileId,
+                        characterId: noteData.characterId,
                         noteId: FIRST_NOTE_ID,
                         mintModule: ethers.constants.AddressZero,
                         mintModuleInitData: [],
@@ -416,10 +414,10 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
             it("User should delete note after freezing", async function () {
                 // post note
-                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                const noteData = makePostNoteData(FIRST_CHARACTER_ID.toString());
                 await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -433,9 +431,9 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // freeze note
                 await expect(
-                    web3Entry.lockNote(noteData.profileId, FIRST_NOTE_ID)
+                    web3Entry.lockNote(noteData.characterId, FIRST_NOTE_ID)
                 ).to.not.be.reverted;
-                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -449,9 +447,9 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // delete note
                 await expect(
-                    web3Entry.deleteNote(noteData.profileId, FIRST_NOTE_ID)
+                    web3Entry.deleteNote(noteData.characterId, FIRST_NOTE_ID)
                 ).to.not.be.reverted;
-                note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -466,10 +464,10 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
             it("User should link note", async function () {
                 // post note
-                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                const noteData = makePostNoteData(FIRST_CHARACTER_ID.toString());
                 await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -484,8 +482,8 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 // delete note
                 await expect(
                     web3Entry.linkNote({
-                        fromProfileId: FIRST_PROFILE_ID,
-                        toProfileId: FIRST_PROFILE_ID,
+                        fromCharacterId: FIRST_CHARACTER_ID,
+                        toCharacterId: FIRST_CHARACTER_ID,
                         toNoteId: FIRST_NOTE_ID,
                         linkType: FollowLinkType,
                         data: [],
@@ -493,11 +491,11 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 ).to.not.be.reverted;
             });
 
-            it("User should post note with profile link", async function () {
-                // link profile
-                await web3Entry.linkProfile({
-                    fromProfileId: FIRST_PROFILE_ID,
-                    toProfileId: SECOND_PROFILE_ID,
+            it("User should post note with character link", async function () {
+                // link character
+                await web3Entry.linkCharacter({
+                    fromCharacterId: FIRST_CHARACTER_ID,
+                    toCharacterId: SECOND_CHARACTER_ID,
                     linkType: FollowLinkType,
                     data: [],
                 });
@@ -505,13 +503,13 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 // post note
                 const noteData = makePostNoteData("1");
                 await expect(
-                    web3Entry.postNote4Profile(noteData, SECOND_PROFILE_ID)
+                    web3Entry.postNote4Character(noteData, SECOND_CHARACTER_ID)
                 ).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     LinkItemTypeProfile,
-                    ethers.utils.hexZeroPad(ethers.utils.hexlify(SECOND_PROFILE_ID), 32),
+                    ethers.utils.hexZeroPad(ethers.utils.hexlify(SECOND_CHARACTER_ID), 32),
                     noteData.contentUri,
                     ethers.constants.AddressZero,
                     ethers.constants.AddressZero,
@@ -522,13 +520,13 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // mint note
                 await web3Entry.connect(userThree).mintNote({
-                    profileId: FIRST_PROFILE_ID,
+                    characterId: FIRST_CHARACTER_ID,
                     noteId: FIRST_NOTE_ID,
                     to: userTwoAddress,
                     mintModuleData: [],
                 });
 
-                note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+                note = await web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
                 expect(await MintNFT__factory.connect(note.mintNFT, deployer).ownerOf(1)).to.equal(
                     userTwoAddress
                 );
@@ -537,7 +535,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
             it("User should post note with address link", async function () {
                 // link address
                 await web3Entry.linkAddress({
-                    fromProfileId: FIRST_PROFILE_ID,
+                    fromCharacterId: FIRST_CHARACTER_ID,
                     ethAddress: userThreeAddress,
                     linkType: FollowLinkType,
                     data: [],
@@ -546,10 +544,10 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 // post note
                 const noteData = makePostNoteData();
                 await expect(
-                    web3Entry.postNote4Profile(noteData, userThreeAddress)
+                    web3Entry.postNote4Character(noteData, userThreeAddress)
                 ).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     LinkItemTypeProfile,
                     ethers.utils.hexZeroPad(ethers.utils.hexlify(userThreeAddress), 32),
@@ -563,30 +561,30 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // mint note
                 await web3Entry.connect(userThree).mintNote({
-                    profileId: FIRST_PROFILE_ID,
+                    characterId: FIRST_CHARACTER_ID,
                     noteId: FIRST_NOTE_ID,
                     to: userTwoAddress,
                     mintModuleData: [],
                 });
 
-                note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+                note = await web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
                 expect(await MintNFT__factory.connect(note.mintNFT, deployer).ownerOf(1)).to.equal(
                     userTwoAddress
                 );
             });
 
             it("User should post note with linklist link", async function () {
-                // link profile
-                await web3Entry.linkProfile({
-                    fromProfileId: SECOND_PROFILE_ID,
-                    toProfileId: FIRST_PROFILE_ID,
+                // link character
+                await web3Entry.linkCharacter({
+                    fromCharacterId: SECOND_CHARACTER_ID,
+                    toCharacterId: FIRST_CHARACTER_ID,
                     linkType: FollowLinkType,
                     data: [],
                 });
 
                 // link linklist
                 await web3Entry.linkLinklist({
-                    fromProfileId: FIRST_PROFILE_ID,
+                    fromCharacterId: FIRST_CHARACTER_ID,
                     toLinkListId: FIRST_LINKLIST_ID,
                     linkType: LikeLinkType,
                     data: [],
@@ -598,7 +596,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                     web3Entry.postNote4Linklist(noteData, SECOND_LINKLIST_ID)
                 ).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     LinkItemTypeLinklist,
                     ethers.utils.hexZeroPad(ethers.utils.hexlify(SECOND_LINKLIST_ID), 32),
@@ -612,13 +610,13 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
                 // mint note
                 await web3Entry.connect(userThree).mintNote({
-                    profileId: FIRST_PROFILE_ID,
+                    characterId: FIRST_CHARACTER_ID,
                     noteId: FIRST_NOTE_ID,
                     to: userTwoAddress,
                     mintModuleData: [],
                 });
 
-                note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+                note = await web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
                 expect(await MintNFT__factory.connect(note.mintNFT, deployer).ownerOf(1)).to.equal(
                     userTwoAddress
                 );
@@ -626,28 +624,28 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
 
             it("User should post note on ERC721", async function () {
                 // post note
-                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                const noteData = makePostNoteData(FIRST_CHARACTER_ID.toString());
                 await expect(web3Entry.postNote(noteData)).to.not.be.reverted;
 
                 // mint note to get an NFT
                 await web3Entry.connect(userThree).mintNote({
-                    profileId: FIRST_PROFILE_ID,
+                    characterId: FIRST_CHARACTER_ID,
                     noteId: FIRST_NOTE_ID,
                     to: userTwoAddress,
                     mintModuleData: [],
                 });
-                let note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
 
                 const erc721TokenAddress = note.mintNFT;
                 const erc721TokenId = 1;
 
                 // user post note 4 note
-                await web3Entry.postNote4ERC721(makePostNoteData(FIRST_PROFILE_ID.toString()), {
+                await web3Entry.postNote4ERC721(makePostNoteData(FIRST_CHARACTER_ID.toString()), {
                     tokenAddress: erc721TokenAddress,
                     erc721TokenId: erc721TokenId,
                 });
 
-                note = await web3Entry.getNote(FIRST_PROFILE_ID, SECOND_NOTE_ID);
+                note = await web3Entry.getNote(FIRST_CHARACTER_ID, SECOND_NOTE_ID);
                 const linkKey = soliditySha3("ERC721", erc721TokenAddress, erc721TokenId);
                 matchNote(note, [
                     LinkItemTypeERC721,
@@ -669,9 +667,12 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 const uri = "ipfs://QmadFPhP7n5rJkACMY6QqhtLtKgX1ixoySmxQNrU4Wo5JW";
 
                 // user post note 4 uri
-                await web3Entry.postNote4AnyUri(makePostNoteData(FIRST_PROFILE_ID.toString()), uri);
+                await web3Entry.postNote4AnyUri(
+                    makePostNoteData(FIRST_CHARACTER_ID.toString()),
+                    uri
+                );
 
-                let note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
                 const linkKey = soliditySha3("AnyUri", uri);
                 matchNote(note, [
                     LinkItemTypeAnyUri,
@@ -689,17 +690,17 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
             });
 
             it("User should post note on note posted by userTwo", async function () {
-                // create profile for userTwo
-                // profile id is 3
-                await web3Entry.createProfile(
-                    makeProfileData("b2423cea4f1047556e7a14", userTwoAddress)
+                // create character for userTwo
+                // character id is 3
+                await web3Entry.createCharacter(
+                    makeCharacterData("b2423cea4f1047556e7a14", userTwoAddress)
                 );
                 // post note
-                const noteData = makePostNoteData(THIRD_PROFILE_ID.toString());
+                const noteData = makePostNoteData(THIRD_CHARACTER_ID.toString());
                 // await expect(web3Entry.connect(userTwo).postNote(noteData)).to.not.be.reverted;
                 await web3Entry.connect(userTwo).postNote(noteData);
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -712,13 +713,13 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 ]);
 
                 // user post note 4 note
-                await web3Entry.postNote4Note(makePostNoteData(FIRST_PROFILE_ID.toString()), {
-                    profileId: THIRD_PROFILE_ID,
+                await web3Entry.postNote4Note(makePostNoteData(FIRST_CHARACTER_ID.toString()), {
+                    characterId: THIRD_CHARACTER_ID,
                     noteId: FIRST_NOTE_ID,
                 });
 
-                note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
-                const linkKey = soliditySha3("Note", THIRD_PROFILE_ID, FIRST_NOTE_ID);
+                note = await web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
+                const linkKey = soliditySha3("Note", THIRD_CHARACTER_ID, FIRST_NOTE_ID);
                 matchNote(note, [
                     LinkItemTypeNote,
                     linkKey,
@@ -731,7 +732,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                 ]);
 
                 const linkingNote = await periphery.getLinkingNote(linkKey as string);
-                expect(linkingNote.profileId).to.be.equal(THIRD_PROFILE_ID);
+                expect(linkingNote.characterId).to.be.equal(THIRD_CHARACTER_ID);
                 expect(linkingNote.noteId).to.be.equal(FIRST_NOTE_ID);
             });
         });
@@ -739,11 +740,11 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
         context("Mint Module", function () {
             it("User should post note with mintModule, and userTwo should mint note", async function () {
                 // post note
-                const noteData = makePostNoteData(FIRST_PROFILE_ID.toString());
+                const noteData = makePostNoteData(FIRST_CHARACTER_ID.toString());
 
                 await expect(
                     web3Entry.postNote({
-                        profileId: FIRST_PROFILE_ID,
+                        characterId: FIRST_CHARACTER_ID,
                         contentUri: MOCK_NOTE_URI,
                         linkModule: ethers.constants.AddressZero,
                         linkModuleInitData: [],
@@ -753,7 +754,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                     })
                 ).to.not.be.reverted;
 
-                let note = await web3Entry.getNote(noteData.profileId, FIRST_NOTE_ID);
+                let note = await web3Entry.getNote(noteData.characterId, FIRST_NOTE_ID);
                 matchNote(note, [
                     bytes32Zero,
                     bytes32Zero,
@@ -770,31 +771,23 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                     deployer
                 );
 
-                // const isApproved = await ApproveMint.isApproved(
-                //     userAddress,
-                //     FIRST_PROFILE_ID,
-                //     FIRST_NOTE_ID,
-                //     userTwoAddress
-                // );
-                // console.log(isApproved);
-
                 // mint note
                 await web3Entry.connect(userThree).mintNote({
-                    profileId: FIRST_PROFILE_ID,
+                    characterId: FIRST_CHARACTER_ID,
                     noteId: FIRST_NOTE_ID,
                     to: userTwoAddress,
                     mintModuleData: [],
                 });
                 await expect(
                     web3Entry.connect(userThree).mintNote({
-                        profileId: FIRST_PROFILE_ID,
+                        characterId: FIRST_CHARACTER_ID,
                         noteId: FIRST_NOTE_ID,
                         to: userThreeAddress,
                         mintModuleData: [],
                     })
                 ).to.be.revertedWith(ERRORS.NOT_APPROVED);
 
-                note = await web3Entry.getNote(FIRST_PROFILE_ID, FIRST_NOTE_ID);
+                note = await web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
                 expect(note.mintNFT).to.not.equal(ethers.constants.AddressZero);
                 const mintNFT = MintNFT__factory.connect(note.mintNFT, deployer);
                 expect(await mintNFT.ownerOf(1)).to.equal(userTwoAddress);
