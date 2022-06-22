@@ -18,6 +18,7 @@ import {
     userTwo,
     userTwoAddress,
     web3Entry,
+    linklist,
     // eslint-disable-next-line node/no-missing-import
 } from "../setup.test";
 // eslint-disable-next-line node/no-missing-import
@@ -100,7 +101,7 @@ makeSuiteCleanRoom("Primary Character", function () {
                 );
             });
 
-            it("User should transfer the primary character, and the linklist should be unset", async function () {
+            it("User should transfer the primary character, and the linklist", async function () {
                 expect(await web3Entry.getPrimaryCharacterId(userAddress)).to.eq(
                     FIRST_CHARACTER_ID
                 );
@@ -113,13 +114,21 @@ makeSuiteCleanRoom("Primary Character", function () {
                     linkType: FOLLOW_LINKTYPE,
                     data: [],
                 });
-                expect(await web3Entry.getLinklistId(FIRST_CHARACTER_ID, FOLLOW_LINKTYPE)).to.eq(1);
+                expect(await web3Entry.getLinklistId(FIRST_CHARACTER_ID, FOLLOW_LINKTYPE)).to.eq(
+                    FIRST_LINKLIST_ID
+                );
 
+                // transfer character to userTwo
                 await expect(
                     web3Entry.transferFrom(userAddress, userTwoAddress, FIRST_CHARACTER_ID)
                 ).to.not.be.reverted;
+
                 expect(await web3Entry.getPrimaryCharacterId(userAddress)).to.eq(0);
-                expect(await web3Entry.getLinklistId(FIRST_CHARACTER_ID, FOLLOW_LINKTYPE)).to.eq(0);
+                expect(await web3Entry.getLinklistId(FIRST_CHARACTER_ID, FOLLOW_LINKTYPE)).to.eq(1);
+
+                // check character and linklist owner
+                expect(await web3Entry.ownerOf(FIRST_CHARACTER_ID)).to.eq(userTwoAddress);
+                expect(await linklist.ownerOf(FIRST_LINKLIST_ID)).to.eq(userTwoAddress);
             });
 
             it("User without a character, and then receives a character, it should be unset", async function () {

@@ -723,6 +723,21 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
+    function _transfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override {
+        // transfer all linklist
+        bytes32[] memory linkTypes = _linkTypesByCharacter[tokenId].values();
+        for (uint256 i = 0; i < linkTypes.length; i++) {
+            uint256 linkListId = _attachedLinklists[tokenId][linkTypes[i]];
+            IERC721(_linklist).safeTransferFrom(from, to, linkListId);
+        }
+
+        super._transfer(from, to, tokenId);
+    }
+
     function _setOperator(uint256 characterId, address operator) internal {
         _operatorByCharacter[characterId] = operator;
         emit Events.SetOperator(characterId, operator, block.timestamp);

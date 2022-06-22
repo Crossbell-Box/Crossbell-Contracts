@@ -7,5 +7,6 @@ export const ERRORS = {
     UNATTACHED_LINKLIST: "UnattachedLinklist",
     NOT_APPROVED: "NotApproved",
     NOTE_DELETED: "NoteIsDeleted",
-    NOTE_NOT_EXISTs: "NoteNotExists",
+    NOTE_NOT_EXISTS: "NoteNotExists",
+    NOT_WEB3_ENTRY: "NotWeb3Entry",
 };

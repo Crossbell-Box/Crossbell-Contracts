@@ -91,7 +91,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                         linkType: FollowLinkType,
                         data: [],
                     })
-                ).to.be.revertedWith(ERRORS.NOTE_NOT_EXISTs);
+                ).to.be.revertedWith(ERRORS.NOTE_NOT_EXISTS);
             });
 
             it("User should fail to link a deleted note", async function () {
@@ -191,7 +191,7 @@ makeSuiteCleanRoom("Note and mint functionality", function () {
                         to: userTwoAddress,
                         mintModuleData: [],
                     })
-                ).to.be.revertedWith(ERRORS.NOTE_NOT_EXISTs);
+                ).to.be.revertedWith(ERRORS.NOTE_NOT_EXISTS);
             });
         });
 

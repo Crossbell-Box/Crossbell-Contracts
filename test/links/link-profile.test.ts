@@ -93,6 +93,29 @@ makeSuiteCleanRoom("Link", function () {
                     })
                 ).to.be.revertedWith(ERRORS.NOT_CHARACTER_OWNER);
             });
+            it("User should fail to transfer linklist nft", async function () {
+                const id = await linklist.tokenOfOwnerByIndex(userAddress, 0);
+                const owner = await linklist.ownerOf(id);
+                const linklistUri = await linklist.tokenURI(id);
+                const total = await linklist.totalSupply();
+
+                expect(id).to.eq(FIRST_LINKLIST_ID);
+                expect(owner).to.eq(userAddress);
+                expect(linklistUri).to.eq("");
+                expect(total).to.eq(1);
+
+                // transfer linklist
+                await expect(
+                    linklist.transferFrom(userAddress, userTwoAddress, FIRST_LINKLIST_ID)
+                ).to.be.revertedWith(ERRORS.NOT_WEB3_ENTRY);
+
+                // check linklist id
+                const linklistId = await web3Entry.getLinklistId(
+                    FIRST_CHARACTER_ID,
+                    FOLLOW_LINKTYPE
+                );
+                expect(linklistId).to.be.equal(FIRST_LINKLIST_ID);
+            });
         });
         context("Scenarios", function () {
             it("User should get correct linking character ids after emit a follow link", async function () {
@@ -113,28 +136,7 @@ makeSuiteCleanRoom("Link", function () {
                 expect(linklistUri).to.eq("");
                 expect(total).to.eq(1);
             });
-            it("User should get and transfer linklist nft", async function () {
-                const id = await linklist.tokenOfOwnerByIndex(userAddress, 0);
-                const owner = await linklist.ownerOf(id);
-                const linklistUri = await linklist.tokenURI(id);
-                const total = await linklist.totalSupply();
 
-                expect(id).to.eq(FIRST_LINKLIST_ID);
-                expect(owner).to.eq(userAddress);
-                expect(linklistUri).to.eq("");
-                expect(total).to.eq(1);
-
-                // transfer and  check owner
-                await linklist.transferFrom(userAddress, userTwoAddress, FIRST_LINKLIST_ID);
-                expect(await linklist.ownerOf(FIRST_LINKLIST_ID)).to.eq(userTwoAddress);
-
-                // check linklist id
-                const linklistId = await web3Entry.getLinklistId(
-                    FIRST_CHARACTER_ID,
-                    FOLLOW_LINKTYPE
-                );
-                expect(linklistId).to.be.equal(0);
-            });
             it("User should get correct linking character ids after unlink, and linklist nft still exist.", async function () {
                 await expect(
                     web3Entry.unlinkCharacter({

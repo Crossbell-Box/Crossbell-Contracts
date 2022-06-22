@@ -368,6 +368,31 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         return _getTokenUri(tokenId);
     }
 
+    function _transfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override {
+        // only web3Entry can transfer linklist token
+        _validateCallerIsWeb3Entry();
+
+        super._transfer(from, to, tokenId);
+    }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) public override {
+        // approve for Web3Entry
+        if (!isApprovedForAll(from, Web3Entry)) {
+            _setApprovalForAll(from, Web3Entry, true);
+        }
+
+        super.safeTransferFrom(from, to, tokenId, _data);
+    }
+
     function _getTokenUri(uint256 tokenId) internal view returns (string memory) {
         require(_exists(tokenId), "Linklist: URI query for nonexistent token");
 
