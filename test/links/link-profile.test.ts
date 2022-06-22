@@ -75,15 +75,7 @@ makeSuiteCleanRoom("Link", function () {
                     })
                 ).to.be.revertedWith(ERRORS.CHARACTER_NOT_EXISTED);
             });
-            it("User should fail to unlink a character with an unattached type", async function () {
-                await expect(
-                    web3Entry.unlinkCharacter({
-                        fromCharacterId: FIRST_CHARACTER_ID,
-                        toCharacterId: SECOND_CHARACTER_ID,
-                        linkType: ARBITRARY_LINKTYPE,
-                    })
-                ).to.be.revertedWith(ERRORS.UNATTACHED_LINKLIST);
-            });
+
             it("UserTwo should fail to unlink a character which does not exists", async function () {
                 await expect(
                     web3Entry.connect(userTwo).unlinkCharacter({
@@ -229,6 +221,15 @@ makeSuiteCleanRoom("Link", function () {
             it("User should get correct linking character ids when the linking character is burned.", async function () {
                 await expect(web3Entry.burn(SECOND_CHARACTER_ID)).to.be.not.reverted;
                 await matchLinkingCharacterIds(FIRST_CHARACTER_ID, FOLLOW_LINKTYPE, []);
+            });
+            it("User should unlink a character with an unattached link type", async function () {
+                await expect(
+                    web3Entry.unlinkCharacter({
+                        fromCharacterId: FIRST_CHARACTER_ID,
+                        toCharacterId: SECOND_CHARACTER_ID,
+                        linkType: ARBITRARY_LINKTYPE,
+                    })
+                ).to.not.be.reverted;
             });
         });
     });

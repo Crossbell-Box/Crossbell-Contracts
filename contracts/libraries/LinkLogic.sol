@@ -53,7 +53,6 @@ library LinkLogic {
         address linklist,
         uint256 linklistId
     ) external {
-        _validateLinklistAttached(linklist, linklistId, vars.fromCharacterId);
         // remove from link list
         ILinklist(linklist).removeLinkingCharacterId(linklistId, vars.toCharacterId);
 
@@ -117,7 +116,6 @@ library LinkLogic {
         // _validateNoteExists(vars.toCharacterId, vars.toNoteId);
 
         uint256 linklistId = _attachedLinklists[vars.fromCharacterId][vars.linkType];
-        _validateLinklistAttached(linklist, linklistId, vars.fromCharacterId);
 
         // remove from link list
         ILinklist(linklist).removeLinkingNote(linklistId, vars.toCharacterId, vars.toNoteId);
@@ -170,7 +168,6 @@ library LinkLogic {
         address linklist,
         uint256 linklistId
     ) external {
-        _validateLinklistAttached(linklist, linklistId, fromCharacterId);
         // remove from link list
         ILinklist(linklist).removeLinkingCharacterLink(linklistId, linkData);
 
@@ -217,7 +214,6 @@ library LinkLogic {
         address linklist,
         uint256 linklistId
     ) external {
-        _validateLinklistAttached(linklist, linklistId, vars.fromCharacterId);
         // add to link list
         ILinklist(linklist).removeLinkingLinklistId(linklistId, vars.toLinkListId);
 
@@ -263,7 +259,6 @@ library LinkLogic {
         address linklist,
         uint256 linklistId
     ) external {
-        _validateLinklistAttached(linklist, linklistId, vars.fromCharacterId);
         // remove from link list
         ILinklist(linklist).removeLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId);
 
@@ -304,7 +299,6 @@ library LinkLogic {
         address linklist,
         uint256 linklistId
     ) external {
-        _validateLinklistAttached(linklist, linklistId, vars.fromCharacterId);
         // remove from link list
         ILinklist(linklist).removeLinkingAddress(linklistId, vars.ethAddress);
 
@@ -339,7 +333,6 @@ library LinkLogic {
         address linklist,
         uint256 linklistId
     ) external {
-        _validateLinklistAttached(linklist, linklistId, vars.fromCharacterId);
         // remove from link list
         ILinklist(linklist).removeLinkingAnyUri(linklistId, vars.toUri);
 
@@ -364,16 +357,5 @@ library LinkLogic {
             _attachedLinklists[fromCharacterId][linkType] = linklistId;
             emit Events.AttachLinklist(linklistId, fromCharacterId, linkType);
         }
-    }
-
-    function _validateLinklistAttached(
-        address linklist,
-        uint256 linklistId,
-        uint256 characterId
-    ) internal view {
-        require(
-            characterId == ILinklist(linklist).getCurrentTakeOver(linklistId),
-            "UnattachedLinklist"
-        );
     }
 }
