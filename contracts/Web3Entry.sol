@@ -485,7 +485,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     {
         _validateCallerIsCharacterOwnerOrOperator(postNoteData.characterId);
 
-        bytes32 linkItemType = Constants.NoteLinkTypeCharacter;
+        bytes32 linkItemType = Constants.NoteLinkTypeProfile;
         bytes32 linkKey = bytes32(toCharacterId);
         uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
 

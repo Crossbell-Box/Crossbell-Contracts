@@ -145,7 +145,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
 
         bytes32 linkKey = keccak256(
             abi.encodePacked(
-                "CharacterLink",
+                "ProfileLink",
                 linkData.fromCharacterId,
                 linkData.toCharacterId,
                 linkData.linkType
@@ -165,7 +165,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
 
         bytes32 linkKey = keccak256(
             abi.encodePacked(
-                "CharacterLink",
+                "ProfileLink",
                 linkData.fromCharacterId,
                 linkData.toCharacterId,
                 linkData.linkType
