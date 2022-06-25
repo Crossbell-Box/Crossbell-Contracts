@@ -44,7 +44,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         emit Events.Web3EntryInitialized(block.timestamp);
     }
 
-    function canCreate(string calldata handle, address account) public view returns (bool) {
+    function canCreate(string memory handle, address account) public view returns (bool) {
         if (resolver == address(0)) {
             return true;
         }
@@ -61,6 +61,22 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         return false;
     }
 
+    function createProfile(DataTypes.CreateCharacterData calldata vars) external {
+        _createCharacter(vars);
+    }
+
+    function setProfileUri(uint256 profileId, string calldata newUri) external {
+        _setCharacterUri(profileId, newUri);
+    }
+
+    function _setCharacterUri(uint256 profileId, string memory newUri) internal {
+        _validateCallerIsCharacterOwnerOrOperator(profileId);
+
+        _characterById[profileId].uri = newUri;
+
+        emit Events.SetCharacterUri(profileId, newUri);
+    }
+
     /**
      * This method creates a character with the given parameters to the given address.
      *
@@ -72,6 +88,10 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
      *      * linkModuleInitData: The link module initialization data, if any.
      */
     function createCharacter(DataTypes.CreateCharacterData calldata vars) external {
+        _createCharacter(vars);
+    }
+
+    function _createCharacter(DataTypes.CreateCharacterData memory vars) internal {
         require(canCreate(vars.handle, vars.to), "HandleNotEligible");
 
         _characterCounter = _characterCounter + 1;
@@ -107,11 +127,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function setCharacterUri(uint256 characterId, string calldata newUri) external {
-        _validateCallerIsCharacterOwnerOrOperator(characterId);
-
-        _characterById[characterId].uri = newUri;
-
-        emit Events.SetCharacterUri(characterId, newUri);
+        _setCharacterUri(characterId, newUri);
     }
 
     function setPrimaryCharacterId(uint256 characterId) external {
@@ -300,6 +316,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         );
     }
 
+    /*
     function linkCharacterLink(
         uint256 fromCharacterId,
         DataTypes.CharacterLinkStruct calldata linkData,
@@ -333,6 +350,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             _attachedLinklists[linkData.fromCharacterId][linkData.linkType]
         );
     }
+    */
 
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
@@ -393,7 +411,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external {
-        _validateCallerIsERC721Owner(vars.tokenAddress, vars.tokenId);
+        require(msg.sender == ERC721(vars.tokenAddress).ownerOf(vars.tokenId), "NotERC721Owner");
 
         LinkModuleLogic.setLinkModule4ERC721(
             vars.tokenAddress,
@@ -429,7 +447,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external {
-        _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
+        _validateCallerIsCharacterOwner(vars.characterId);
         _validateNoteExists(vars.characterId, vars.noteId);
 
         LinkModuleLogic.setMintModule4Note(
@@ -455,7 +473,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         uint256 noteId,
         string calldata newUri
     ) external {
-        _validateCallerIsCharacterOwnerOrOperator(characterId);
+        _validateCallerIsCharacterOwner(characterId);
         _validateNoteExists(characterId, noteId);
 
         PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
@@ -743,19 +761,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         emit Events.SetOperator(characterId, operator, block.timestamp);
     }
 
-    function _validateCallerIsCharacterOwnerOrOperatorOrLinklist(uint256 characterId)
-        internal
-        view
-    {
-        address owner = ownerOf(characterId);
-        require(
-            msg.sender == owner ||
-                msg.sender == _operatorByCharacter[characterId] ||
-                (tx.origin == owner && msg.sender == _linklist),
-            "NotCharacterOwner"
-        );
-    }
-
     function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view {
         address owner = ownerOf(characterId);
         require(
@@ -780,10 +785,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
     function _validateCharacterExists(uint256 characterId) internal view {
         require(_exists(characterId), "CharacterNotExists");
-    }
-
-    function _validateCallerIsERC721Owner(address tokenAddress, uint256 tokenId) internal view {
-        require(msg.sender == ERC721(tokenAddress).ownerOf(tokenId), "NotERC721Owner");
     }
 
     function _validateERC721Exists(address tokenAddress, uint256 tokenId) internal view {
