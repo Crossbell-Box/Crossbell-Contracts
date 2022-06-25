@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 
-import { HardhatUserConfig, task } from "hardhat/config";
+import "hardhat/config";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
@@ -8,46 +8,18 @@ import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
 import "solidity-coverage";
 import "solidity-docgen";
-import { chainConfig } from "@nomiclabs/hardhat-etherscan/dist/src/ChainConfig";
-import { ChainConfig } from "@nomiclabs/hardhat-etherscan/dist/src/types";
 
 dotenv.config();
 
-// hack way to add network support of crossbell
-(chainConfig as any).crossbell = {
-    chainId: 3737,
-    urls: {
-        apiURL: "https://scan.crossbell.io/api",
-        browserURL: "https://scan.crossbell.io",
-    },
-};
-
-type CsbEtherscanApiKeys = {
-    [P in keyof Required<ChainConfig> & {
-        crossbell: string;
-    }]: string;
-};
-
-interface CsbHardhatUserConfig extends HardhatUserConfig {
-    etherscan: CsbEtherscanApiKeys | undefined;
-}
-
-const config: CsbHardhatUserConfig = {
+module.exports = {
     solidity: {
-        compilers: [
-            {
-                version: "0.8.10",
-                settings: {
-                    optimizer: {
-                        enabled: true,
-                        runs: 200,
-                        details: {
-                            yul: true,
-                        },
-                    },
-                },
+        version: "0.8.10",
+        settings: {
+            optimizer: {
+                enabled: true,
+                runs: 200,
             },
-        ],
+        },
     },
     networks: {
         ropsten: {
@@ -59,16 +31,20 @@ const config: CsbHardhatUserConfig = {
             accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY2 as string],
         },
     },
-    gasReporter: {
-        enabled: process.env.REPORT_GAS !== undefined,
-        currency: "USD",
-    },
+
     etherscan: {
         apiKey: {
-            crossbell: "api key",
             ropsten: process.env.ROPSTEN_API_KEY,
         },
+        customChains: [
+            {
+                network: "crossbell",
+                chainId: 3737,
+                urls: {
+                    apiURL: "https://scan.crossbell.io/api",
+                    browserURL: "https://scan.crossbell.io",
+                },
+            },
+        ],
     },
 };
-
-export default config;
