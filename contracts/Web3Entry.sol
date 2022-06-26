@@ -94,20 +94,20 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function setHandle(uint256 characterId, string calldata newHandle) external {
-        _validateCallerIsCharacterOwnerOrOperator(characterId);
+        _validateCallerIsCharacterOwner(characterId);
         require(canCreate(newHandle, ownerOf(characterId)), "HandleNotEligible");
 
         CharacterLogic.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
     }
 
     function setSocialToken(uint256 characterId, address tokenAddress) external {
-        _validateCallerIsCharacterOwnerOrOperator(characterId);
+        _validateCallerIsCharacterOwner(characterId);
 
         CharacterLogic.setSocialToken(characterId, tokenAddress, _characterById);
     }
 
     function setCharacterUri(uint256 characterId, string calldata newUri) external {
-        _validateCallerIsCharacterOwnerOrOperator(characterId);
+        _validateCallerIsCharacterOwner(characterId);
 
         _characterById[characterId].uri = newUri;
 
@@ -115,7 +115,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function setPrimaryCharacterId(uint256 characterId) external {
-        _validateCallerIsCharacterOwnerOrOperator(characterId);
+        _validateCallerIsCharacterOwner(characterId);
 
         uint256 oldCharacterId = _primaryCharacterByAddress[msg.sender];
         _primaryCharacterByAddress[msg.sender] = characterId;
@@ -135,7 +135,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function linkCharacter(DataTypes.linkCharacterData calldata vars) external {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
+        _validateCallerIsCharacterOwner(vars.fromCharacterId);
         _validateCharacterExists(vars.toCharacterId);
 
         LinkLogic.linkCharacter(
@@ -152,7 +152,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
+        _validateCallerIsCharacterOwner(vars.fromCharacterId);
 
         LinkLogic.unlinkCharacter(
             vars,
@@ -172,7 +172,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         bytes32 linkType,
         bytes memory data
     ) internal {
-        _validateCallerIsCharacterOwnerOrOperator(fromCharacterId);
+        _validateCallerIsCharacterOwner(fromCharacterId);
         require(
             _primaryCharacterByAddress[to] == 0,
             "Target address already has primary character."
@@ -234,7 +234,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function linkERC721(DataTypes.linkERC721Data calldata vars) external {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
+        _validateCallerIsCharacterOwner(vars.fromCharacterId);
         _validateERC721Exists(vars.tokenAddress, vars.tokenId);
 
         LinkLogic.linkERC721(
@@ -247,7 +247,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
+        _validateCallerIsCharacterOwner(vars.fromCharacterId);
 
         LinkLogic.unlinkERC721(
             vars,
@@ -257,7 +257,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function linkAddress(DataTypes.linkAddressData calldata vars) external {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
+        _validateCallerIsCharacterOwner(vars.fromCharacterId);
 
         LinkLogic.linkAddress(
             vars,
@@ -269,7 +269,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
+        _validateCallerIsCharacterOwner(vars.fromCharacterId);
 
         LinkLogic.unlinkAddress(
             vars,
@@ -279,7 +279,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
+        _validateCallerIsCharacterOwner(vars.fromCharacterId);
 
         LinkLogic.linkAnyUri(
             vars,
@@ -291,7 +291,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
+        _validateCallerIsCharacterOwner(vars.fromCharacterId);
 
         LinkLogic.unlinkAnyUri(
             vars,
@@ -305,7 +305,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         DataTypes.CharacterLinkStruct calldata linkData,
         bytes32 linkType
     ) external {
-        _validateCallerIsCharacterOwnerOrOperator(fromCharacterId);
+        _validateCallerIsCharacterOwner(fromCharacterId);
 
         LinkLogic.linkCharacterLink(
             fromCharacterId,
@@ -323,7 +323,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         DataTypes.CharacterLinkStruct calldata linkData,
         bytes32 linkType
     ) external {
-        _validateCallerIsCharacterOwnerOrOperator(fromCharacterId);
+        _validateCallerIsCharacterOwner(fromCharacterId);
 
         LinkLogic.unlinkCharacterLink(
             fromCharacterId,
@@ -335,7 +335,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
+        _validateCallerIsCharacterOwner(vars.fromCharacterId);
 
         LinkLogic.linkLinklist(
             vars,
@@ -347,7 +347,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
+        _validateCallerIsCharacterOwner(vars.fromCharacterId);
 
         LinkLogic.unlinkLinklist(
             vars,
@@ -358,7 +358,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
     // set link module for his character
     function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external {
-        _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
+        _validateCallerIsCharacterOwner(vars.characterId);
 
         CharacterLogic.setCharacterLinkModule(
             vars.characterId,
@@ -369,7 +369,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external {
-        _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
+        _validateCallerIsCharacterOwner(vars.characterId);
         _validateNoteExists(vars.characterId, vars.noteId);
 
         LinkModuleLogic.setLinkModule4Note(
