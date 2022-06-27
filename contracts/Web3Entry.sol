@@ -796,6 +796,18 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         require(noteId <= _characterById[characterId].noteCount, "NoteNotExists");
     }
 
+    function migrateNote(uint256 characterId) external {
+        uint256 count = _characterById[characterId].noteCount;
+        for (uint256 i = 0; i < count; i++) {
+            if (
+                _noteByIdByCharacter[characterId][i].linkItemType ==
+                0x50726f66696c6500000000000000000000000000000000000000000000000000
+            ) {
+                _noteByIdByCharacter[characterId][i].linkItemType = Constants.NoteLinkTypeCharacter;
+            }
+        }
+    }
+
     function getRevision() external pure returns (uint256) {
         return REVISION;
     }
