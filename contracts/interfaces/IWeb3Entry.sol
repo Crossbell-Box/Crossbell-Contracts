@@ -50,6 +50,7 @@ interface IWeb3Entry {
 
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external;
 
+    /*
     function linkCharacterLink(
         uint256 fromCharacterId,
         DataTypes.CharacterLinkStruct calldata linkData,
@@ -61,6 +62,7 @@ interface IWeb3Entry {
         DataTypes.CharacterLinkStruct calldata linkData,
         bytes32 linkType
     ) external;
+    */
 
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external;
 

@@ -197,6 +197,46 @@
                 {
                     "components": [
                         {
+                            "internalType": "address",
+                            "name": "to",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "string",
+                            "name": "handle",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "string",
+                            "name": "uri",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "linkModule",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "bytes",
+                            "name": "linkModuleInitData",
+                            "type": "bytes"
+                        }
+                    ],
+                    "internalType": "struct DataTypes.CreateCharacterData",
+                    "name": "vars",
+                    "type": "tuple"
+                }
+            ],
+            "name": "createProfile",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "components": [
+                        {
                             "internalType": "uint256",
                             "name": "fromCharacterId",
                             "type": "uint256"
@@ -842,46 +882,6 @@
         {
             "inputs": [
                 {
-                    "internalType": "uint256",
-                    "name": "fromCharacterId",
-                    "type": "uint256"
-                },
-                {
-                    "components": [
-                        {
-                            "internalType": "uint256",
-                            "name": "fromCharacterId",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "toCharacterId",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "bytes32",
-                            "name": "linkType",
-                            "type": "bytes32"
-                        }
-                    ],
-                    "internalType": "struct DataTypes.CharacterLinkStruct",
-                    "name": "linkData",
-                    "type": "tuple"
-                },
-                {
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "linkCharacterLink",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
                     "components": [
                         {
                             "internalType": "uint256",
@@ -1008,6 +1008,19 @@
                 }
             ],
             "name": "lockNote",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "characterId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "migrateNote",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -1920,6 +1933,24 @@
             "inputs": [
                 {
                     "internalType": "uint256",
+                    "name": "profileId",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "string",
+                    "name": "newUri",
+                    "type": "string"
+                }
+            ],
+            "name": "setProfileUri",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
                     "name": "characterId",
                     "type": "uint256"
                 },
@@ -2150,46 +2181,6 @@
                 }
             ],
             "name": "unlinkCharacter",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "fromCharacterId",
-                    "type": "uint256"
-                },
-                {
-                    "components": [
-                        {
-                            "internalType": "uint256",
-                            "name": "fromCharacterId",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "toCharacterId",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "bytes32",
-                            "name": "linkType",
-                            "type": "bytes32"
-                        }
-                    ],
-                    "internalType": "struct DataTypes.CharacterLinkStruct",
-                    "name": "linkData",
-                    "type": "tuple"
-                },
-                {
-                    "internalType": "bytes32",
-                    "name": "linkType",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "unlinkCharacterLink",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
