@@ -45,20 +45,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function canCreate(string memory handle, address account) public view returns (bool) {
-        if (resolver == address(0)) {
-            return true;
-        }
-        address ensOwner = IResolver(resolver).getENSRecord(handle);
-        address rnsOwner = IResolver(resolver).getRNSRecord(handle);
-        if (ensOwner == account || rnsOwner == account) {
-            return true;
-        }
-
-        if (ensOwner == address(0) && rnsOwner == address(0)) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     function createProfile(DataTypes.CreateCharacterData calldata vars) external {
