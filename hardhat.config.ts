@@ -35,6 +35,7 @@ module.exports = {
     etherscan: {
         apiKey: {
             ropsten: process.env.ROPSTEN_API_KEY,
+            crossbell: "api key",
         },
         customChains: [
             {
