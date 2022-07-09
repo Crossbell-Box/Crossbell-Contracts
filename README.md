@@ -35,3 +35,9 @@ This repository is the implementation of the protocol.
 yarn
 yarn test
 ```
+
+```shell
+# install foge
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+```
