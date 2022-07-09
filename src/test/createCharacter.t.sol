@@ -2,9 +2,8 @@
 pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
-import  "../Web3Entry.sol";
+import "../Web3Entry.sol";
 import "../libraries/DataTypes.sol";
-
 
 contract CreateCharacterTest is Test {
     Web3Entry web3entry;
@@ -13,7 +12,7 @@ contract CreateCharacterTest is Test {
     address public creator = address(this);
     address public to = address(this);
     string public handle = "0xcrossbell-eth";
-    uint public timestamp = block.timestamp;
+    uint256 public timestamp = block.timestamp;
 
     // define a event we're expecting for:
     event CharacterCreated(
@@ -33,9 +32,16 @@ contract CreateCharacterTest is Test {
         address _this = address(this);
         address _zero = address(0);
         string memory _handle = "0xcrossbell-eth";
-        string memory _uri = "https://raw.githubusercontent.com/Crossbell-Box/Crossbell-Contracts/main/examples/sampleProfile.json";
+        string
+            memory _uri = "https://raw.githubusercontent.com/Crossbell-Box/Crossbell-Contracts/main/examples/sampleProfile.json";
         bytes memory bs = new bytes(0);
-        DataTypes.CreateCharacterData memory characterData = DataTypes.CreateCharacterData(_this, _handle, _uri, _zero, bs);
+        DataTypes.CreateCharacterData memory characterData = DataTypes.CreateCharacterData(
+            _this,
+            _handle,
+            _uri,
+            _zero,
+            bs
+        );
         web3entryemitter.createCharacter(characterData);
     }
 }
