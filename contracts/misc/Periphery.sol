@@ -170,4 +170,45 @@ contract Periphery is Initializable {
             );
         }
     }
+
+    function migrate(DataTypes.MigrateData calldata vars) external {
+        uint256 fromProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(vars.account);
+        if (fromProfileId == 0) {
+            // create character first
+            IWeb3Entry(web3Entry).createCharacter(
+                DataTypes.CreateCharacterData({
+                    to: vars.account,
+                    handle: vars.handle,
+                    uri: vars.uri,
+                    linkModule: address(0),
+                    linkModuleInitData: "0x"
+                })
+            );
+            // get primary character id
+            fromProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(vars.account);
+        }
+
+        // link
+        for (uint256 i = 0; i < vars.toAddresses.length; i++) {
+            uint256 toProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(vars.toAddresses[i]);
+            if (toProfileId == 0) {
+                IWeb3Entry(web3Entry).createThenLinkCharacter(
+                    DataTypes.createThenLinkCharacterData({
+                        fromCharacterId: fromProfileId,
+                        to: vars.toAddresses[i],
+                        linkType: vars.linkType
+                    })
+                );
+            } else {
+                IWeb3Entry(web3Entry).linkCharacter(
+                    DataTypes.linkCharacterData({
+                        fromCharacterId: fromProfileId,
+                        toCharacterId: toProfileId,
+                        linkType: vars.linkType,
+                        data: "0x"
+                    })
+                );
+            }
+        }
+    }
 }
