@@ -114,7 +114,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function setCharacterUri(uint256 characterId, string calldata newUri) external {
-
         _setCharacterUri(characterId, newUri);
     }
 

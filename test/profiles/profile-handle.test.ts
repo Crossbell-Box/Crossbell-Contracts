@@ -83,19 +83,6 @@ makeSuiteCleanRoom("Character handle Functionality ", function () {
                     web3Entry.setHandle(FIRST_CHARACTER_ID, "_ab2423cea4f1047556e7a14-f1-btc")
                 ).to.not.be.reverted;
             });
-
-            it("User should set a operator and set handle with handle length == 31", async function () {
-                const characterData = makeCharacterData("_ab2423cea4f1047556e7a14-f1-eth");
-                await expect(web3Entry.createCharacter(characterData)).to.not.be.reverted;
-
-                await web3Entry.setOperator(FIRST_CHARACTER_ID, userThreeAddress);
-
-                await expect(
-                    web3Entry
-                        .connect(userThree)
-                        .setHandle(FIRST_CHARACTER_ID, "_ab2423cea4f1047556e7a14-f1-btc")
-                ).to.not.be.reverted;
-            });
         });
     });
 });

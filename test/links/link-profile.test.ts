@@ -152,19 +152,6 @@ makeSuiteCleanRoom("Link", function () {
                 expect(total).to.eq(1);
             });
 
-            it("User should set a dispatcher and the dispatcher should unlink a character", async function () {
-                await web3Entry.setOperator(FIRST_CHARACTER_ID, userThreeAddress);
-
-                await expect(
-                    web3Entry.connect(userThree).unlinkCharacter({
-                        fromCharacterId: FIRST_CHARACTER_ID,
-                        toCharacterId: SECOND_CHARACTER_ID,
-                        linkType: FOLLOW_LINKTYPE,
-                    })
-                ).to.not.be.reverted;
-                await matchLinkingCharacterIds(FIRST_CHARACTER_ID, FOLLOW_LINKTYPE, []);
-            });
-
             it("User could link a character twice, and get correct linking character ids.", async function () {
                 await expect(
                     web3Entry.linkCharacter({

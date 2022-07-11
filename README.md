@@ -29,7 +29,7 @@ Specifically, the information generated from **social activities** will be the i
 
 This repository is the implementation of the protocol.
 
-##  ⚙ Development
+## ⚙ Development
 
 ```shell
 yarn
