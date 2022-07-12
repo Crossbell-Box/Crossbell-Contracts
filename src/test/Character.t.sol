@@ -15,6 +15,7 @@ import "../Web3Entry.sol";
 import "../misc/Periphery.sol";
 import "../upgradeability/TransparentUpgradeableProxy.sol";
 import "./EmitExpecter.sol";
+import "./Const.sol";
 
 contract setUpTest is Test, EmitExpecter {
     Web3Entry web3Entry;
@@ -40,15 +41,15 @@ contract setUpTest is Test, EmitExpecter {
     function testCreateCharacter() public {
         DataTypes.CreateCharacterData memory characterData = DataTypes.CreateCharacterData(
             alice,
-            character_handle,
-            character_uri,
+            Const.MOCK_CHARACTER_HANDLE,
+            Const.MOCK_CHARACTER_URI,
             address(0),
             ""
         );
 
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         // The event we expect
-        emit Events.CharacterCreated(1, bob, alice, character_handle, block.timestamp);
+        emit Events.CharacterCreated(1, bob, alice, Const.MOCK_CHARACTER_HANDLE, block.timestamp);
         // The event we get
         vm.prank(bob);
         web3Entry.createCharacter(characterData);
