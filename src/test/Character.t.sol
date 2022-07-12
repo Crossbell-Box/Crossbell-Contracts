@@ -16,17 +16,13 @@ import "../misc/Periphery.sol";
 import "../upgradeability/TransparentUpgradeableProxy.sol";
 import "./EmitExpecter.sol";
 import "./Const.sol";
+import "./helpers/utils.sol";
 
-contract setUpTest is Test, EmitExpecter {
+contract setUpTest is Test, EmitExpecter, Utils {
     Web3Entry web3Entry;
 
     address public alice = address(0x1111);
     address public bob = address(0x2222);
-
-    uint256 characterId = 1;
-    string character_uri =
-        "https://raw.githubusercontent.com/Crossbell-Box/Crossbell-Contracts/main/examples/sampleProfile.json";
-    string character_handle = "0xcrossbell-eth";
 
     function setUp() public {
         Web3Entry web3EntryImpl = new Web3Entry();
@@ -39,19 +35,29 @@ contract setUpTest is Test, EmitExpecter {
     }
 
     function testCreateCharacter() public {
-        DataTypes.CreateCharacterData memory characterData = DataTypes.CreateCharacterData(
-            alice,
-            Const.MOCK_CHARACTER_HANDLE,
-            Const.MOCK_CHARACTER_URI,
-            address(0),
-            ""
-        );
+        DataTypes.CreateCharacterData memory characterData = makeCharacterData(Const.MOCK_CHARACTER_HANDLE);
 
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         // The event we expect
-        emit Events.CharacterCreated(1, bob, alice, Const.MOCK_CHARACTER_HANDLE, block.timestamp);
+        emit Events.CharacterCreated(1, bob, bob, Const.MOCK_CHARACTER_HANDLE, block.timestamp);
         // The event we get
         vm.prank(bob);
         web3Entry.createCharacter(characterData);
+
+    }
+
+    function testCreateCharacterFail() public {
+        string memory handle = "da2423cea4f1047556e7a142f81a7eda";
+        DataTypes.CreateCharacterData memory characterData = makeCharacterData(handle);
+        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
+        vm.prank(bob);
+        web3Entry.createCharacter(characterData);
+
+        string memory handle2 = "";
+        DataTypes.CreateCharacterData memory characterData2 = makeCharacterData(handle2);
+        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
+        vm.prank(bob);
+        web3Entry.createCharacter(characterData2);
+        
     }
 }
