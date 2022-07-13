@@ -3361,8 +3361,8 @@
       }
     },
     "src/test/Characters/PrimaryCharacter.t.sol": {
-      "lastModificationDate": 1657728041940,
-      "contentHash": "b21b96dd504b48aea1fcc17a3120f0ed",
+      "lastModificationDate": 1657732156854,
+      "contentHash": "a780fd2462a6ae8bc4e3bc742ace2393",
       "sourceName": "src/test/Characters/PrimaryCharacter.t.sol",
       "solcConfig": {
         "settings": {
