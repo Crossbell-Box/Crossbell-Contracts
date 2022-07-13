@@ -6,8 +6,7 @@ import "src/libraries/DataTypes.sol";
 import "../Const.sol";
 
 contract Utils is Test {
-    address public _to = address(0x2222);
-    function makeCharacterData(string memory _handle) public returns (DataTypes.CreateCharacterData memory) {
+    function makeCharacterData(string memory _handle, address _to) public returns (DataTypes.CreateCharacterData memory) {
         DataTypes.CreateCharacterData memory characterData = DataTypes.CreateCharacterData(
             _to,
             _handle,

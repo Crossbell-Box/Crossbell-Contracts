@@ -38,7 +38,8 @@ contract setUpTest is Test, EmitExpecter, Utils {
 
     function testCreateCharacter() public {
         DataTypes.CreateCharacterData memory characterData = makeCharacterData(
-            Const.MOCK_CHARACTER_HANDLE
+            Const.MOCK_CHARACTER_HANDLE,
+            bob
         );
 
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
@@ -50,25 +51,25 @@ contract setUpTest is Test, EmitExpecter, Utils {
 
         // "User should fail to create character with invalid handle"
         string memory handle = "da2423cea4f1047556e7a142f81a7eda";
-        DataTypes.CreateCharacterData memory characterData1 = makeCharacterData(handle);
+        DataTypes.CreateCharacterData memory characterData1 = makeCharacterData(handle, bob);
         vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
         vm.prank(bob);
         web3Entry.createCharacter(characterData1);
 
         string memory handle2 = "";
-        DataTypes.CreateCharacterData memory characterData2 = makeCharacterData(handle2);
+        DataTypes.CreateCharacterData memory characterData2 = makeCharacterData(handle2, bob);
         vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
         vm.prank(bob);
         web3Entry.createCharacter(characterData2);
 
         string memory handle3 = "a";
-        DataTypes.CreateCharacterData memory characterData3 = makeCharacterData(handle3);
+        DataTypes.CreateCharacterData memory characterData3 = makeCharacterData(handle3, bob);
         vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
         vm.prank(bob);
         web3Entry.createCharacter(characterData3);
 
         string memory handle4 = "ab";
-        DataTypes.CreateCharacterData memory characterData4 = makeCharacterData(handle4);
+        DataTypes.CreateCharacterData memory characterData4 = makeCharacterData(handle4, bob);
         vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
         vm.prank(bob);
         web3Entry.createCharacter(characterData4);
