@@ -2,14 +2,23 @@
 pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
+import "forge-std/console2.sol";
 import "../Web3Entry.sol";
 import "../libraries/DataTypes.sol";
-import "../Linklist.sol";
+import "../libraries/LinkModuleLogic.sol";
+import "../libraries/CharacterLogic.sol";
+import "../libraries/PostLogic.sol";
+import "../libraries/LinkLogic.sol";
+import "../MintNFT.sol";
+import "../Resolver.sol";
+import "../LinkList.sol";
+import "../Web3Entry.sol";
 import "../misc/Periphery.sol";
 import "../upgradeability/TransparentUpgradeableProxy.sol";
 import "./EmitExpecter.sol";
 import "./Const.sol";
 import "./helpers/utils.sol";
+import "./Const.sol";
 
 contract setUpTest is Test, EmitExpecter, Utils {
     Web3Entry web3Entry;
@@ -38,19 +47,42 @@ contract setUpTest is Test, EmitExpecter, Utils {
         // The event we get
         vm.prank(bob);
         web3Entry.createCharacter(characterData);
-    }
 
-    function testCreateCharacterFail() public {
+        // "User should fail to create character with invalid handle"
         string memory handle = "da2423cea4f1047556e7a142f81a7eda";
-        DataTypes.CreateCharacterData memory characterData = makeCharacterData(handle);
+        DataTypes.CreateCharacterData memory characterData1 = makeCharacterData(handle);
         vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
         vm.prank(bob);
-        web3Entry.createCharacter(characterData);
+        web3Entry.createCharacter(characterData1);
 
         string memory handle2 = "";
         DataTypes.CreateCharacterData memory characterData2 = makeCharacterData(handle2);
         vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
         vm.prank(bob);
         web3Entry.createCharacter(characterData2);
+
+        string memory handle3 = "a";
+        DataTypes.CreateCharacterData memory characterData3 = makeCharacterData(handle3);
+        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
+        vm.prank(bob);
+        web3Entry.createCharacter(characterData3);
+
+        string memory handle4 = "ab";
+        DataTypes.CreateCharacterData memory characterData4 = makeCharacterData(handle4);
+        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
+        vm.prank(bob);
+        web3Entry.createCharacter(characterData4);
+
+        address owner = web3Entry.ownerOf(Const.FIRST_CHARACTER_ID);
+        uint256 totalSupply = web3Entry.totalSupply();
+        DataTypes.Character memory character = web3Entry.getCharacterByHandle(
+            Const.MOCK_CHARACTER_HANDLE
+        );
+
+        assertEq(owner, bob);
+        assertEq(totalSupply, 1);
+        assertEq(character.characterId, Const.FIRST_CHARACTER_ID);
+        assertEq(character.handle, Const.MOCK_CHARACTER_HANDLE);
+        assertEq(character.uri, Const.MOCK_CHARACTER_URI);
     }
 }
