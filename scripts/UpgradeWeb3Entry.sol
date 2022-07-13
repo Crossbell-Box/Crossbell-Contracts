@@ -6,14 +6,15 @@ import "@std/Script.sol";
 import "../src/Web3Entry.sol";
 import "../src/upgradeability/TransparentUpgradeableProxy.sol";
 
-contract Web3EntryScript is Script {
-    address admin = address(0x01); // update admin address before deployment
+contract UpgradeWeb3Entry is Script {
+    address payable web3EntryProxy = payable(0xa6f969045641Cf486a747A2688F3a5A6d43cd0D8);
 
     function run() external {
         vm.startBroadcast();
 
         Web3Entry web3Entry = new Web3Entry();
-        TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(address(web3Entry), admin, "");
+        TransparentUpgradeableProxy proxy = TransparentUpgradeableProxy(web3EntryProxy);
+        proxy.upgradeTo(address(web3Entry));
 
         vm.stopBroadcast();
     }

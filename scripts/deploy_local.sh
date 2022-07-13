@@ -9,4 +9,4 @@ set -x
 source .env
 
 # To deploy and verify our contract
-forge script scripts/MarketPlace.s.sol:MarketPlaceScript --fork-url http://localhost:8545  --private-key $PRIVATE_KEY_LOCAL --broadcast -vvvvv
+forge script scripts/Deploy.sol:Deploy --fork-url http://localhost:8545  --private-key $PRIVATE_KEY_LOCAL --broadcast -vvvvv

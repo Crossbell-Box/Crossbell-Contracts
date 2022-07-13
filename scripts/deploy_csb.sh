@@ -6,4 +6,4 @@ set -x
 source .env
 
 # To deploy and verify our contract
-forge script scripts/MarketPlace.s.sol:MarketPlaceScript ---rpc-url $CROSSBELL_RPC  --private-key $PRIVATE_KEY --broadcast -vvv
+forge script scripts/Deploy.sol:Deploy ---rpc-url $CROSSBELL_RPC  --private-key $PRIVATE_KEY --broadcast -vvv
