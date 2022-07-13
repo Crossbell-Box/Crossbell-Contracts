@@ -18,11 +18,10 @@ contract ApprovalLinkModule4Character is ILinkModule4Character, ModuleBase {
     {
         address owner = IERC721(Web3Entry).ownerOf(characterId);
 
+        if (data.length > 0) {
+            address[] memory addresses = abi.decode(data, (address[]));
 
-    if (data.length > 0) {
-        address[] memory addresses = abi.decode(data, (address[]));
-
-        uint256 addressesLength = addresses.length;
+            uint256 addressesLength = addresses.length;
             for (uint256 i = 0; i < addressesLength; ) {
                 _approvedByCharacterByOwner[owner][characterId][addresses[i]] = true;
                 unchecked {

@@ -28,7 +28,10 @@ contract Utils is Test {
         vm.expectEmit(checkTopic1, checkTopic2, checkTopic3, checkData);
     }
 
-    function makeCharacterData(string memory _handle, address _to) public returns (DataTypes.CreateCharacterData memory) {
+    function makeCharacterData(string memory _handle, address _to)
+        public
+        returns (DataTypes.CreateCharacterData memory)
+    {
         DataTypes.CreateCharacterData memory characterData = DataTypes.CreateCharacterData(
             _to,
             _handle,

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.10;
 
-import 'forge-std/Script.sol';
+import "forge-std/Script.sol";
 import "../src/Web3Entry.sol";
 import "../src/Linklist.sol";
 import "../src/MintNFT.sol";
@@ -48,7 +48,6 @@ contract Deploy is Script {
         );
         Periphery periphery = Periphery(address(proxyPeriphery));
 
-
         // initialize web3Entry
         web3Entry.initialize(
             WEB3_ENTRY_NFT_NAME,
@@ -59,11 +58,7 @@ contract Deploy is Script {
             address(0x2) // resolver
         );
         // initialize linklist
-        linklist.initialize(
-            LINK_LIST_NFT_NAME,
-            LINK_LIST_NFT_SYMBOL,
-            address(web3Entry)
-        );
+        linklist.initialize(LINK_LIST_NFT_NAME, LINK_LIST_NFT_SYMBOL, address(web3Entry));
         // initialize periphery
         periphery.initialize(address(web3Entry), address(linklist));
 

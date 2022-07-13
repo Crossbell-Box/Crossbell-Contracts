@@ -11,7 +11,6 @@ import "../../modules/link/ApprovalLinkModule4Character.sol";
 import "./Const.sol";
 import "./utils.sol";
 
-
 contract SetUp {
     Web3Entry web3Entry;
     Linklist linklist;
