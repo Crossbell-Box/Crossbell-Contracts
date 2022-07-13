@@ -8,7 +8,6 @@ import "../../libraries/DataTypes.sol";
 import "../../MintNFT.sol";
 import "../../upgradeability/TransparentUpgradeableProxy.sol";
 import "../../modules/link/ApprovalLinkModule4Character.sol";
-import "./EmitExpecter.sol";
 import "./Const.sol";
 import "./utils.sol";
 

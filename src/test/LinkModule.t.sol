@@ -9,13 +9,12 @@ import "../MintNFT.sol";
 import "../libraries/DataTypes.sol";
 import "../upgradeability/TransparentUpgradeableProxy.sol";
 import "../modules/link/ApprovalLinkModule4Character.sol";
-import "./helpers/EmitExpecter.sol";
 import "./helpers/Const.sol";
 import "./helpers/utils.sol";
 
 import "./helpers/SetUp.sol";
 
-contract LinkModuleTest is Test, SetUp, EmitExpecter, Utils {
+contract LinkModuleTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
     address public userThree = address(0x3333);

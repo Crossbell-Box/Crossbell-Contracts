@@ -6,12 +6,11 @@ import "forge-std/console2.sol";
 import "../../Web3Entry.sol";
 import "../../libraries/DataTypes.sol";
 import "../../upgradeability/TransparentUpgradeableProxy.sol";
-import "../helpers/EmitExpecter.sol";
 import "../helpers/Const.sol";
 import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
 
-contract setUpTest is Test, SetUp, EmitExpecter, Utils {
+contract setUpTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
 
