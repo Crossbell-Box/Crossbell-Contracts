@@ -16,4 +16,17 @@ contract Utils is Test {
         );
         return characterData;
     }
+
+    function makePostNoteData(uint256 characterId) public returns (DataTypes.PostNoteData memory) {
+        DataTypes.PostNoteData memory postNoteData = DataTypes.PostNoteData(
+            characterId,
+            Const.MOCK_NOTE_URI,
+            Const.AddressZero,
+            new bytes(0),
+            Const.AddressZero,
+            new bytes(0),
+            false
+        );
+        return postNoteData;
+    }
 }

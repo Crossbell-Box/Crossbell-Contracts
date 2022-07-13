@@ -13,6 +13,8 @@ library Const {
     uint256 constant FIRST_NOTE_ID = 1;
     uint256 constant SECOND_NOTE_ID = 2;
 
+    address constant AddressZero = address(0);
+
     string constant WEB3_ENTRY_NFT_NAME = "Web3 Entry Character";
     string constant WEB3_ENTRY_NFT_SYMBOL = "WEC";
     string constant LINK_LIST_NFT_NAME = "Link List Token";
