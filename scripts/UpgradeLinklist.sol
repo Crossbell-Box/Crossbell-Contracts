@@ -3,8 +3,8 @@ pragma solidity 0.8.10;
 
 import "@std/Test.sol";
 import "@std/Script.sol";
-import "../src/Linklist.sol";
-import "../src/upgradeability/TransparentUpgradeableProxy.sol";
+import "../Linklist.sol";
+import "../upgradeability/TransparentUpgradeableProxy.sol";
 
 contract UpgradeLinklist is Script {
     address payable linklistProxy = payable(0xFc8C75bD5c26F50798758f387B698f207a016b6A);

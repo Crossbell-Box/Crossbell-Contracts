@@ -5,27 +5,18 @@ import "forge-std/Test.sol";
 import "forge-std/console2.sol";
 import "../Web3Entry.sol";
 import "../libraries/DataTypes.sol";
-import "../Web3Entry.sol";
 import "../upgradeability/TransparentUpgradeableProxy.sol";
-import "./EmitExpecter.sol";
-import "./Const.sol";
+import "./helpers/EmitExpecter.sol";
+import "./helpers/Const.sol";
 import "./helpers/utils.sol";
-import "./Const.sol";
+import "./helpers/SetUp.sol";
 
-contract setUpTest is Test, EmitExpecter, Utils {
-    Web3Entry web3Entry;
-
+contract setUpTest is Test, SetUp, EmitExpecter, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
 
     function setUp() public {
-        Web3Entry web3EntryImpl = new Web3Entry();
-        TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
-            address(web3EntryImpl),
-            alice,
-            ""
-        );
-        web3Entry = Web3Entry(address(proxy));
+        _setUp();
     }
 
     function testCreateCharacter() public {
