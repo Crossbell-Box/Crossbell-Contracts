@@ -4,14 +4,7 @@ pragma solidity 0.8.10;
 import "forge-std/Test.sol";
 import "../Web3Entry.sol";
 import "../libraries/DataTypes.sol";
-import "../libraries/LinkModuleLogic.sol";
-import "../libraries/CharacterLogic.sol";
-import "../libraries/PostLogic.sol";
-import "../libraries/LinkLogic.sol";
-import "../MintNFT.sol";
-import "../Resolver.sol";
-import "../LinkList.sol";
-import "../Web3Entry.sol";
+import "../Linklist.sol";
 import "../misc/Periphery.sol";
 import "../upgradeability/TransparentUpgradeableProxy.sol";
 import "./EmitExpecter.sol";
@@ -35,7 +28,9 @@ contract setUpTest is Test, EmitExpecter, Utils {
     }
 
     function testCreateCharacter() public {
-        DataTypes.CreateCharacterData memory characterData = makeCharacterData(Const.MOCK_CHARACTER_HANDLE);
+        DataTypes.CreateCharacterData memory characterData = makeCharacterData(
+            Const.MOCK_CHARACTER_HANDLE
+        );
 
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         // The event we expect
@@ -43,7 +38,6 @@ contract setUpTest is Test, EmitExpecter, Utils {
         // The event we get
         vm.prank(bob);
         web3Entry.createCharacter(characterData);
-
     }
 
     function testCreateCharacterFail() public {
@@ -58,6 +52,5 @@ contract setUpTest is Test, EmitExpecter, Utils {
         vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
         vm.prank(bob);
         web3Entry.createCharacter(characterData2);
-        
     }
 }
