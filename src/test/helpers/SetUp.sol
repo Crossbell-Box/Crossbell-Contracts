@@ -9,6 +9,7 @@ import "../../MintNFT.sol";
 import "../../upgradeability/TransparentUpgradeableProxy.sol";
 import "../../modules/link/ApprovalLinkModule4Character.sol";
 import "../../mocks/NFT.sol";
+import "../../Resolver.sol";
 import "./Const.sol";
 import "./utils.sol";
 
@@ -19,6 +20,7 @@ contract SetUp {
     MintNFT mintNFT;
     ApprovalLinkModule4Character linkModule4Character;
     NFT nft;
+    Resolver resolver;
 
     address public admin = address(0x999999999999999999999999999999);
 
@@ -50,6 +52,11 @@ contract SetUp {
         // deploy linkModule4Character
         linkModule4Character = new ApprovalLinkModule4Character(address(web3Entry));
 
+
+        // deploy resolver
+        resolver = new Resolver();
+
+
         // initialize web3Entry
         web3Entry.initialize(
             Const.WEB3_ENTRY_NFT_NAME,
@@ -57,7 +64,7 @@ contract SetUp {
             address(linklist),
             address(mintNFT),
             address(periphery), // periphery
-            address(0x2) // resolver
+            address(resolver) // resolver
         );
         // initialize linklist
         linklist.initialize(
