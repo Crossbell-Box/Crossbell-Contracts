@@ -31,6 +31,14 @@ contract NoteTest is Test, SetUp, Utils {
     }
 
     function testPostNote() public {
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        emit Events.PostNote(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.bytes32Zero,
+            Const.bytes32Zero,
+            new bytes(0)
+        );
         vm.prank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
@@ -53,8 +61,17 @@ contract NoteTest is Test, SetUp, Utils {
     }
 
     function testUpdateNote() public {
+        // post note
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+
+        // update note
+        expectEmit(CheckTopic1 | CheckData);
+        emit Events.SetNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
@@ -80,17 +97,54 @@ contract NoteTest is Test, SetUp, Utils {
         );
     }
 
-    function testLockNote() public {
+    function testUpdateNoteFail() public {
+        // NotCharacterOwner
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.prank(bob);
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
+
         vm.startPrank(alice);
+        // NoteNotExists
+        vm.expectRevert(abi.encodePacked("NoteNotExists"));
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
+
+        // NoteLocked
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
-
         vm.expectRevert(abi.encodePacked("NoteLocked"));
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             Const.MOCK_NEW_NOTE_URI
         );
+
+        // NoteIsDeleted
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID);
+        vm.expectRevert(abi.encodePacked("NoteIsDeleted"));
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.SECOND_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
+        vm.stopPrank();
+    }
+
+    function testLockNote() public {
+        vm.startPrank(alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+
+        expectEmit(CheckTopic1 | CheckData);
+        emit Events.LockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
         vm.stopPrank();
 
         // check note
@@ -111,9 +165,32 @@ contract NoteTest is Test, SetUp, Utils {
         );
     }
 
+    function testLockNoteFail() public {
+        // NotCharacterOwner
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.prank(bob);
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+
+        vm.startPrank(alice);
+        // NoteNotExists
+        vm.expectRevert(abi.encodePacked("NoteNotExists"));
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+
+        // NoteIsDeleted
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        vm.expectRevert(abi.encodePacked("NoteIsDeleted"));
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+
+        vm.stopPrank();
+    }
+
     function testDeleteNote() public {
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+
+        expectEmit(CheckTopic1 | CheckData);
+        emit Events.DeleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
         web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
         vm.stopPrank();
 
@@ -135,22 +212,52 @@ contract NoteTest is Test, SetUp, Utils {
         );
     }
 
-    function testUpdateNoteFail() public {
+    function testDeleteLockedNote() public {
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        vm.stopPrank();
+
+        // check note
+        DataTypes.Note memory note = web3Entry.getNote(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+        _matchNote(
+            note,
+            Const.bytes32Zero,
+            Const.bytes32Zero,
+            Const.MOCK_NOTE_URI,
+            address(0),
+            address(0),
+            address(0),
+            true,
+            true
+        );
+    }
+
+    function testDeleteNoteFail() public {
+        // NotCharacterOwner
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.prank(bob);
         web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 
+        vm.startPrank(alice);
+        // NoteNotExists
+        vm.expectRevert(abi.encodePacked("NoteNotExists"));
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+
+        // NoteIsDeleted
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
         vm.expectRevert(abi.encodePacked("NoteIsDeleted"));
-        web3Entry.setNoteUri(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            Const.MOCK_NEW_NOTE_URI
-        );
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+
         vm.stopPrank();
     }
 
     function testPostNote4Character() public {
-        //  bob should fail to post note for character at a character owned by alice
         vm.prank(alice);
         web3Entry.postNote4Character(
             makePostNoteData(Const.FIRST_CHARACTER_ID),
@@ -172,6 +279,15 @@ contract NoteTest is Test, SetUp, Utils {
             address(0),
             false,
             false
+        );
+    }
+
+    function testPostNote4CharacterFail() public {
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.prank(bob);
+        web3Entry.postNote4Character(
+            makePostNoteData(Const.FIRST_CHARACTER_ID),
+            Const.SECOND_CHARACTER_ID
         );
     }
 
@@ -197,6 +313,14 @@ contract NoteTest is Test, SetUp, Utils {
             false,
             false
         );
+    }
+
+    function testPostNote4AddressFail() public {
+        address toAddress = address(0x123456789);
+
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.prank(bob);
+        web3Entry.postNote4Address(makePostNoteData(Const.FIRST_CHARACTER_ID), toAddress);
     }
 
     function testPostNote4Linklist() public {
@@ -234,6 +358,15 @@ contract NoteTest is Test, SetUp, Utils {
         );
     }
 
+    function testPostNote4LinklistFail() public {
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.prank(bob);
+        web3Entry.postNote4Linklist(
+            makePostNoteData(Const.FIRST_CHARACTER_ID),
+            Const.FIRST_LINKLIST_ID
+        );
+    }
+
     function testPostNote4Note() public {
         vm.prank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
@@ -260,6 +393,15 @@ contract NoteTest is Test, SetUp, Utils {
             address(0),
             false,
             false
+        );
+    }
+
+    function testPostNote4NoteFail() public {
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.prank(bob);
+        web3Entry.postNote4Note(
+            makePostNoteData(Const.FIRST_CHARACTER_ID),
+            DataTypes.NoteStruct(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID)
         );
     }
 
@@ -290,6 +432,24 @@ contract NoteTest is Test, SetUp, Utils {
         );
     }
 
+    function testPostNote4ERC721Fail() public {
+        // NotCharacterOwner
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.prank(bob);
+        web3Entry.postNote4ERC721(
+            makePostNoteData(Const.FIRST_CHARACTER_ID),
+            DataTypes.ERC721Struct(address(nft), 1)
+        );
+
+        // REC721NotExists
+        vm.expectRevert(abi.encodePacked("ERC721: owner query for nonexistent token"));
+        vm.prank(alice);
+        web3Entry.postNote4ERC721(
+            makePostNoteData(Const.FIRST_CHARACTER_ID),
+            DataTypes.ERC721Struct(address(nft), 1)
+        );
+    }
+
     function testPostNote4AnyUri() public {
         string memory uri = "ipfs://abcdefg";
 
@@ -311,6 +471,56 @@ contract NoteTest is Test, SetUp, Utils {
             address(0),
             false,
             false
+        );
+    }
+
+    function testPostNote4AnyUriFail() public {
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.prank(bob);
+        web3Entry.postNote4AnyUri(makePostNoteData(Const.FIRST_CHARACTER_ID), "ipfs://anyURI");
+    }
+
+    function testMintNote() public {
+        vm.prank(alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+
+        vm.prank(bob);
+        web3Entry.mintNote(
+            DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
+        );
+        // check mint note
+        DataTypes.Note memory note = web3Entry.getNote(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+        address nftAddress = note.mintNFT;
+        assertEq(IERC721(nftAddress).ownerOf(1), bob);
+
+        // mint locked note
+        vm.prank(alice);
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        vm.prank(bob);
+        web3Entry.mintNote(
+            DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
+        );
+    }
+
+    function testMintNoteFail() public {
+        vm.expectRevert(abi.encodePacked("NoteNotExists"));
+        vm.prank(bob);
+        web3Entry.mintNote(
+            DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
+        );
+
+        // mint a deleted note
+        vm.startPrank(alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        vm.stopPrank();
+        vm.expectRevert(abi.encodePacked("NoteIsDeleted"));
+        vm.prank(bob);
+        web3Entry.mintNote(
+            DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
         );
     }
 

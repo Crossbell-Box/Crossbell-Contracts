@@ -52,10 +52,8 @@ contract SetUp {
         // deploy linkModule4Character
         linkModule4Character = new ApprovalLinkModule4Character(address(web3Entry));
 
-
         // deploy resolver
         resolver = new Resolver();
-
 
         // initialize web3Entry
         web3Entry.initialize(
