@@ -8,10 +8,10 @@ import "../helpers/Const.sol";
 import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
 
-contract setUpTest is Test, Utils, SetUp {
+contract PrimaryCharacterTest is Test, Utils, SetUp {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
-    address public userThree = address(0x3333);
+    address public carol = address(0x3333);
 
     function setUp() public {
         _setUp();
@@ -29,9 +29,9 @@ contract setUpTest is Test, Utils, SetUp {
         uint256 primaryCharacter = web3Entry.getPrimaryCharacterId(bob);
         assertEq(primaryCharacter, Const.FIRST_CHARACTER_ID);
 
-        // UserThree should fail to set the primary character as a character owned by user 1
+        // UserTwo should fail to set the primary character as a character owned by user 1
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        vm.prank(userThree);
+        vm.prank(carol);
         web3Entry.setPrimaryCharacterId(Const.FIRST_CHARACTER_ID);
 
         // User should set the new primary character
@@ -51,9 +51,9 @@ contract setUpTest is Test, Utils, SetUp {
 
         // User should transfer the primary character, and then their primary character and operator should be unset
         vm.startPrank(bob);
-        web3Entry.setOperator(Const.FIRST_CHARACTER_ID, userThree);
+        web3Entry.setOperator(Const.FIRST_CHARACTER_ID, carol);
         address operator = web3Entry.getOperator(Const.FIRST_NOTE_ID);
-        assertEq(operator, userThree);
+        assertEq(operator, carol);
         web3Entry.transferFrom(bob, alice, Const.FIRST_NOTE_ID);
         uint256 primaryCharacter4 = web3Entry.getPrimaryCharacterId(bob);
         address operator2 = web3Entry.getOperator(Const.FIRST_NOTE_ID);
@@ -94,16 +94,16 @@ contract setUpTest is Test, Utils, SetUp {
         assertEq(linklistOwner, alice);
 
         // User without a character, and then receives a character, it should be unset
-        web3Entry.transferFrom(bob, userThree, 2);
-        uint256 primaryCharacterUserThree = web3Entry.getPrimaryCharacterId(userThree);
-        assertEq(primaryCharacterUserThree, 0);
+        web3Entry.transferFrom(bob, carol, 2);
+        uint256 primaryCharactercarol = web3Entry.getPrimaryCharacterId(carol);
+        assertEq(primaryCharactercarol, 0);
         vm.stopPrank();
 
-        // userThree set primary character
-        vm.startPrank(userThree);
+        // UserTwo set primary character
+        vm.startPrank(carol);
         web3Entry.setPrimaryCharacterId(2);
-        uint256 primaryCharacterUserThree2 = web3Entry.getPrimaryCharacterId(userThree);
-        assertEq(primaryCharacterUserThree2, 2);
+        uint256 primaryCharactercarol2 = web3Entry.getPrimaryCharacterId(carol);
+        assertEq(primaryCharactercarol2, 2);
 
         // UserTwo should fail to set handle as a character owned by user 1
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
@@ -111,7 +111,7 @@ contract setUpTest is Test, Utils, SetUp {
 
         //UserTwo should burn primary character
         web3Entry.burn(2);
-        uint256 userCharacterID = web3Entry.getPrimaryCharacterId(userThree);
+        uint256 userCharacterID = web3Entry.getPrimaryCharacterId(carol);
         assertEq(userCharacterID, 0);
         string memory userHandel = web3Entry.getHandle(2);
         assertEq(userHandel, "");
