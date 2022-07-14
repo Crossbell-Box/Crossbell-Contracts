@@ -8,6 +8,7 @@ import "../../libraries/DataTypes.sol";
 import "../../MintNFT.sol";
 import "../../upgradeability/TransparentUpgradeableProxy.sol";
 import "../../modules/link/ApprovalLinkModule4Character.sol";
+import "../../mocks/NFT.sol";
 import "./Const.sol";
 import "./utils.sol";
 
@@ -17,6 +18,7 @@ contract SetUp {
     Periphery periphery;
     MintNFT mintNFT;
     ApprovalLinkModule4Character linkModule4Character;
+    NFT nft;
 
     address public admin = address(0x999999999999999999999999999999);
 
@@ -65,5 +67,9 @@ contract SetUp {
         );
         // initialize periphery
         periphery.initialize(address(web3Entry), address(linklist));
+
+        // deploy NFT for test
+        nft = new NFT();
+        nft.initialize("NFT", "NFT");
     }
 }

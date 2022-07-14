@@ -2,11 +2,14 @@
 
 pragma solidity 0.8.10;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "../base/NFTBase.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-contract NFT is ERC721Enumerable {
-    constructor() ERC721("NFT", "NFT") {}
+contract NFT is NFTBase, Initializable {
+    function initialize(string calldata _name, string calldata _symbol) external initializer {
+        super._initialize(_name, _symbol);
+    }
 
     function mint(address to) public {
         uint256 tokenId = totalSupply() + 1;
