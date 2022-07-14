@@ -3,6 +3,14 @@
 pragma solidity 0.8.10;
 
 library DataTypes {
+    struct MigrateData {
+        address account;
+        string handle;
+        string uri;
+        address[] toAddresses;
+        bytes32 linkType;
+    }
+
     struct CreateCharacterData {
         address to;
         string handle;

@@ -21,19 +21,10 @@ contract LinkProfileTest is Test, SetUp, Utils {
     function testLinkProfile() public {
         // User not in approval list should not fail to link a character
         vm.startPrank(alice);
-        web3Entry.createCharacter(makeCharacterData(
-            Const.MOCK_CHARACTER_HANDLE,
-            alice
-        ));
-        web3Entry.createCharacter(makeCharacterData(
-            "hadle2",
-            alice
-        ));
-        web3Entry.linkCharacter(DataTypes.linkCharacterData(
-            1,
-            2,
-            Const.FollowLinkType,
-            new bytes(0)     
-        ));
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
+        web3Entry.createCharacter(makeCharacterData("hadle2", alice));
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(1, 2, Const.FollowLinkType, new bytes(0))
+        );
     }
 }
