@@ -3,18 +3,22 @@ pragma solidity 0.8.10;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
-contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
+contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI, AccessControlEnumerable {
     using Address for address;
 
-    event Mint(uint256 indexed to, uint256 indexed tokenId);
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+
+    event Mint(uint256 indexed to, uint256 indexed tokenId, uint256 indexed amount);
+    event Burn(uint256 indexed from, uint256 indexed tokenId, uint256 indexed amount);
 
     // Mapping from token ID to character balances
     // tokenId => characterId => balance
@@ -29,6 +33,9 @@ contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
 
     constructor(address web3Entry) {
         _web3Entry = web3Entry;
+
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _setupRole(MINTER_ROLE, _msgSender());
     }
 
     /**
@@ -38,7 +45,7 @@ contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
         public
         view
         virtual
-        override(ERC165, IERC165)
+        override(AccessControlEnumerable, ERC165, IERC165)
         returns (bool)
     {
         return
@@ -47,43 +54,84 @@ contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
             super.supportsInterface(interfaceId);
     }
 
-    function mint(uint256 characterId, uint256 tokenId) public {
-        // TODO
-        // onlyOwner
+    function mint(
+        uint256 characterId,
+        uint256 tokenId,
+        uint256 amount
+    ) public {
+        require(hasRole(MINTER_ROLE, _msgSender()), "must have minter role to mint");
+        require(characterId != 0, "mint to the zero characterId");
+
+        _balances[characterId][tokenId] += amount;
+        emit Mint(characterId, tokenId, amount);
     }
 
-    function burn(uint256 tokenId) public {
+    // TODO: burn from account or from character ?
+    function burn(
+        address account,
+        uint256 tokenId,
+        uint256 amount
+    ) public {
         // TODO
+        require(
+            account == _msgSender() || isApprovedForAll(account, _msgSender()),
+            "caller is not token owner nor approved"
+        );
+
+        uint256 characterId;
+        uint256 fromBalance;
+        require(fromBalance >= amount, "burn amount exceeds balance");
+        unchecked {
+            _balances[characterId][tokenId] = fromBalance - amount;
+        }
+        emit Burn(characterId, tokenId, amount);
     }
 
     function setTokenURI(uint256 tokenId, string memory tokenURI) public {
-        // TODO
+        _setURI(tokenId, tokenURI);
     }
 
-    function balanceOf(address account, uint256 id) public view virtual override returns (uint256) {
-        // TODO
-        return 0;
+    function balanceOf(address account, uint256 tokenId)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
+        uint256 balance;
+        uint256 characterCount = IERC721Enumerable(_web3Entry).balanceOf(account);
+        for (uint256 i = 0; i < characterCount; i++) {
+            uint256 characterId = IERC721Enumerable(_web3Entry).tokenOfOwnerByIndex(account, i);
+            balance += balanceOfByCharacterId(characterId, tokenId);
+        }
+        return balance;
     }
 
-    function balanceOfByCharacterId(uint256 characterId, uint256 id)
+    function balanceOfByCharacterId(uint256 characterId, uint256 tokenId)
         public
         view
         virtual
         returns (uint256)
     {
         require(characterId != 1, "zero is not a valid owner");
-        return _balances[id][characterId];
+        return _balances[tokenId][characterId];
     }
 
-    function balanceOfBatch(address[] memory accounts, uint256[] memory ids)
+    function balanceOfBatch(address[] memory accounts, uint256[] memory tokenIds)
         public
         view
         virtual
         override
         returns (uint256[] memory)
     {
-        // TODO
-        uint256[] memory batchBalances = new uint256[](1);
+        require(accounts.length == tokenIds.length, "accounts and ids length mismatch");
+
+        uint256[] memory batchBalances = new uint256[](accounts.length);
+
+        for (uint256 i = 0; i < accounts.length; ++i) {
+            batchBalances[i] = balanceOf(accounts[i], tokenIds[i]);
+        }
+
         return batchBalances;
     }
 
