@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.10;
 
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
@@ -13,8 +10,6 @@ import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
 contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI, AccessControlEnumerable {
-    using Address for address;
-
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     event Mint(uint256 indexed to, uint256 indexed tokenId, uint256 indexed amount);
@@ -70,7 +65,7 @@ contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI, AccessContro
         uint256 tokenId,
         uint256 amount
     ) public {
-        address account = IERC721Enumerable(_web3Entry).ownerOf(tokenId);
+        address account = IERC721Enumerable(_web3Entry).ownerOf(characterId);
         require(
             account == _msgSender() || isApprovedForAll(account, _msgSender()),
             "caller is not token owner nor approved"
@@ -91,15 +86,13 @@ contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI, AccessContro
         view
         virtual
         override
-        returns (uint256)
+        returns (uint256 balance)
     {
-        uint256 balance;
         uint256 characterCount = IERC721Enumerable(_web3Entry).balanceOf(account);
         for (uint256 i = 0; i < characterCount; i++) {
             uint256 characterId = IERC721Enumerable(_web3Entry).tokenOfOwnerByIndex(account, i);
             balance += balanceOfByCharacterId(characterId, tokenId);
         }
-        return balance;
     }
 
     function balanceOfByCharacterId(uint256 characterId, uint256 tokenId)
