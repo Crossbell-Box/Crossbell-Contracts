@@ -101,7 +101,7 @@ contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI, AccessContro
         virtual
         returns (uint256)
     {
-        require(characterId != 1, "zero is not a valid owner");
+        require(characterId != 0, "zero is not a valid owner");
         return _balances[tokenId][characterId];
     }
 
