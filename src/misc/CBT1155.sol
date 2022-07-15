@@ -58,36 +58,31 @@ contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI, AccessContro
         uint256 characterId,
         uint256 tokenId,
         uint256 amount
-    ) public {
-        require(hasRole(MINTER_ROLE, _msgSender()), "must have minter role to mint");
+    ) public onlyRole(MINTER_ROLE) {
         require(characterId != 0, "mint to the zero characterId");
 
         _balances[characterId][tokenId] += amount;
         emit Mint(characterId, tokenId, amount);
     }
 
-    // TODO: burn from account or from character ?
     function burn(
-        address account,
+        uint256 characterId,
         uint256 tokenId,
         uint256 amount
     ) public {
-        // TODO
+        address account = IERC721Enumerable(_web3Entry).ownerOf(tokenId);
         require(
             account == _msgSender() || isApprovedForAll(account, _msgSender()),
             "caller is not token owner nor approved"
         );
 
-        uint256 characterId;
-        uint256 fromBalance;
+        uint256 fromBalance = balanceOfByCharacterId(characterId, tokenId);
         require(fromBalance >= amount, "burn amount exceeds balance");
-        unchecked {
-            _balances[characterId][tokenId] = fromBalance - amount;
-        }
+        _balances[characterId][tokenId] = fromBalance - amount;
         emit Burn(characterId, tokenId, amount);
     }
 
-    function setTokenURI(uint256 tokenId, string memory tokenURI) public {
+    function setTokenURI(uint256 tokenId, string memory tokenURI) public onlyRole(MINTER_ROLE) {
         _setURI(tokenId, tokenURI);
     }
 
