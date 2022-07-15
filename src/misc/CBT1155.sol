@@ -16,7 +16,7 @@ contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI, AccessContro
     event Burn(uint256 indexed from, uint256 indexed tokenId, uint256 indexed amount);
 
     // Mapping from token ID to character balances
-    // tokenId => characterId => balance
+    // characterId => tokenId => balance
     mapping(uint256 => mapping(uint256 => uint256)) private _balances;
 
     // Mapping from account to operator approvals
@@ -102,7 +102,7 @@ contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI, AccessContro
         returns (uint256)
     {
         require(characterId != 0, "zero is not a valid owner");
-        return _balances[tokenId][characterId];
+        return _balances[characterId][tokenId];
     }
 
     function balanceOfBatch(address[] memory accounts, uint256[] memory tokenIds)
