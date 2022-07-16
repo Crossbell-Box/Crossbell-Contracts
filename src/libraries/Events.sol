@@ -215,9 +215,7 @@ library Events {
         bytes32 indexed linkType
     );
 
-    event Mint(
-        uint256 indexed to,
-        uint256 indexed tokenId, 
-        uint256 indexed amount
-    );
+    event Mint(uint256 indexed to, uint256 indexed tokenId, uint256 indexed amount);
+
+    event Burn(uint256 indexed from, uint256 indexed tokenId, uint256 indexed amount);
 }

@@ -4,6 +4,7 @@ pragma solidity 0.8.10;
 import "../../Web3Entry.sol";
 import "../../Linklist.sol";
 import "../../misc/Periphery.sol";
+import "../../misc/CBT1155.sol";
 import "../../libraries/DataTypes.sol";
 import "../../MintNFT.sol";
 import "../../upgradeability/TransparentUpgradeableProxy.sol";
@@ -21,6 +22,7 @@ contract SetUp {
     ApprovalLinkModule4Character linkModule4Character;
     NFT nft;
     Resolver resolver;
+    CBT1155 cbt;
 
     address public admin = address(0x999999999999999999999999999999);
 
@@ -54,6 +56,9 @@ contract SetUp {
 
         // deploy resolver
         resolver = new Resolver();
+
+        // deploy cbt
+        cbt = new CBT1155(address(web3Entry));
 
         // initialize web3Entry
         web3Entry.initialize(
