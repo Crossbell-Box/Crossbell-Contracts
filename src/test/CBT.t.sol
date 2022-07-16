@@ -13,6 +13,7 @@ contract CbtTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
     uint256 amount = 1;
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     function setUp() public {
         _setUp();
@@ -81,5 +82,24 @@ contract CbtTest is Test, SetUp, Utils {
         cbt.setTokenURI(Const.FIRST_CBT_ID, Const.MOCK_NEW_TOKEN_URI);
         string memory postUri = cbt.uri(Const.FIRST_CBT_ID);
         assertEq(Const.MOCK_NEW_TOKEN_URI, postUri);
+
+        cbt.setTokenURI(Const.SECOND_CBT_ID, Const.MOCK_TOKEN_URI);
+        string memory preUri2 = cbt.uri(Const.SECOND_CBT_ID);
+        assertEq(Const.MOCK_TOKEN_URI, preUri2);
+        cbt.setTokenURI(Const.SECOND_CBT_ID, Const.MOCK_NEW_TOKEN_URI);
+        string memory postUri2 = cbt.uri(Const.SECOND_CBT_ID);
+        assertEq(Const.MOCK_NEW_TOKEN_URI, postUri2);
+
+        // only MINTER_ROLE can set uri
+        vm.prank(alice);
+        vm.expectRevert(
+            abi.encodePacked(
+                "AccessControl: account ",
+                Strings.toHexString(alice),
+                " is missing role ",
+                Strings.toHexString(uint256(MINTER_ROLE), 32)
+            )
+        );
+        cbt.setTokenURI(Const.FIRST_CBT_ID, Const.MOCK_TOKEN_URI);
     }
 }
