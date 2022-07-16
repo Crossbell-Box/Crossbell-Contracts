@@ -73,5 +73,13 @@ contract CbtTest is Test, SetUp, Utils {
         emit Events.Burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
         vm.prank(alice);
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
+
+        // setTokenURI
+        cbt.setTokenURI(Const.FIRST_CBT_ID, Const.MOCK_TOKEN_URI);
+        string memory preUri = cbt.uri(Const.FIRST_CBT_ID);
+        assertEq(Const.MOCK_TOKEN_URI, preUri);
+        cbt.setTokenURI(Const.FIRST_CBT_ID, Const.MOCK_NEW_TOKEN_URI);
+        string memory postUri = cbt.uri(Const.FIRST_CBT_ID);
+        assertEq(Const.MOCK_NEW_TOKEN_URI, postUri);
     }
 }
