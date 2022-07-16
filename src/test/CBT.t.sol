@@ -60,6 +60,9 @@ contract CbtTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_CBT_ID
         );
+        // approved cbt should burn
+        //TODO
+
         assertEq(preBalance - amount, postBalance);
         // caller is not token owner nor approved
         vm.expectRevert(abi.encodePacked("caller is not token owner nor approved"));
@@ -101,5 +104,15 @@ contract CbtTest is Test, SetUp, Utils {
             )
         );
         cbt.setTokenURI(Const.FIRST_CBT_ID, Const.MOCK_TOKEN_URI);
+
+        // cbt cannot be tansferred
+        vm.expectRevert(abi.encodePacked("non-transferable"));
+        cbt.safeTransferFrom(alice, bob, Const.FIRST_CBT_ID, amount, new bytes(0));
+        vm.expectRevert(abi.encodePacked("non-transferable"));
+        uint256[] memory ids = new uint256[](1);
+        ids[0] = Const.FIRST_CBT_ID;
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = amount;
+        cbt.safeBatchTransferFrom(alice, bob, ids, amounts, new bytes(0));
     }
 }
