@@ -15,6 +15,9 @@ contract CbtTest is Test, SetUp, Utils {
     uint256 amount = 1;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
+    event Mint(uint256 indexed to, uint256 indexed tokenId, uint256 indexed amount);
+    event Burn(uint256 indexed from, uint256 indexed tokenId, uint256 indexed amount);
+
     function setUp() public {
         _setUp();
     }
@@ -46,7 +49,7 @@ contract CbtTest is Test, SetUp, Utils {
         cbt.mint(Const.ZERO_CBT_ID, Const.FIRST_CBT_ID, amount);
         // expect correct emit
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
+        emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
 
         //owner should burn
@@ -74,7 +77,7 @@ contract CbtTest is Test, SetUp, Utils {
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, postBalance + 1);
         // expect correct emit
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.Burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
+        emit Burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
         vm.prank(alice);
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
 
