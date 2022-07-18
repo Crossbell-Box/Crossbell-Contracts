@@ -3,7 +3,22 @@ node_modules
 coverage
 coverage.json
 typechain
+cache/
+out/
 
 #Hardhat files
 cache
+cache-foundry
 artifacts
+artifacts-foundry
+
+# Ignore Environment Variables!
+.env
+.env.prod
+
+# Ignore all vscode settings
+.vscode/
+
+# Ignore flattened files
+flattened.txt
+node_modules
