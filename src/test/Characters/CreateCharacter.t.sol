@@ -43,8 +43,9 @@ contract CreateCharacterTest is Test, SetUp, Utils {
         assertEq(character.uri, Const.MOCK_CHARACTER_URI);
     }
 
-    function testCreateCharacterFail() public {
+    function testCreateCharacterAndSetHandleFail() public {
         vm.startPrank(bob);
+
         // handle length > 31
         vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
         web3Entry.createCharacter(makeCharacterData("da2423cea4f1047556e7a142f81a7eda", bob));
@@ -105,9 +106,15 @@ contract CreateCharacterTest is Test, SetUp, Utils {
             "ab:",
             "ab,"
         ];
+        web3Entry.createCharacter(makeCharacterData("abcd", bob));
+
         for (uint256 i = 0; i < handles.length; i++) {
             vm.expectRevert(abi.encodePacked("HandleContainsInvalidCharacters"));
             web3Entry.createCharacter(makeCharacterData(handles[i], bob));
+
+            // set handle fail
+            vm.expectRevert(abi.encodePacked("HandleContainsInvalidCharacters"));
+            web3Entry.setHandle(1, handles[i]);
         }
     }
 }
