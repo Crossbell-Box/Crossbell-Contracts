@@ -30,31 +30,6 @@ contract CreateCharacterTest is Test, SetUp, Utils {
         vm.prank(bob);
         web3Entry.createCharacter(characterData);
 
-        // "User should fail to create character with invalid handle"
-        string memory handle = "da2423cea4f1047556e7a142f81a7eda";
-        DataTypes.CreateCharacterData memory characterData1 = makeCharacterData(handle, bob);
-        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
-        vm.prank(bob);
-        web3Entry.createCharacter(characterData1);
-
-        string memory handle2 = "";
-        DataTypes.CreateCharacterData memory characterData2 = makeCharacterData(handle2, bob);
-        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
-        vm.prank(bob);
-        web3Entry.createCharacter(characterData2);
-
-        string memory handle3 = "a";
-        DataTypes.CreateCharacterData memory characterData3 = makeCharacterData(handle3, bob);
-        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
-        vm.prank(bob);
-        web3Entry.createCharacter(characterData3);
-
-        string memory handle4 = "ab";
-        DataTypes.CreateCharacterData memory characterData4 = makeCharacterData(handle4, bob);
-        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
-        vm.prank(bob);
-        web3Entry.createCharacter(characterData4);
-
         address owner = web3Entry.ownerOf(Const.FIRST_CHARACTER_ID);
         uint256 totalSupply = web3Entry.totalSupply();
         DataTypes.Character memory character = web3Entry.getCharacterByHandle(
@@ -66,5 +41,73 @@ contract CreateCharacterTest is Test, SetUp, Utils {
         assertEq(character.characterId, Const.FIRST_CHARACTER_ID);
         assertEq(character.handle, Const.MOCK_CHARACTER_HANDLE);
         assertEq(character.uri, Const.MOCK_CHARACTER_URI);
+    }
+
+    function testCreateCharacterFail() public {
+        vm.startPrank(bob);
+        // handle length > 31
+        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
+        web3Entry.createCharacter(makeCharacterData("da2423cea4f1047556e7a142f81a7eda", bob));
+
+        // empty handle
+        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
+        web3Entry.createCharacter(makeCharacterData("", bob));
+
+        // handle length < 3
+        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
+        web3Entry.createCharacter(makeCharacterData("a", bob));
+        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
+        web3Entry.createCharacter(makeCharacterData("ab", bob));
+
+        // invalid character handle
+        // string memory s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()+|[]:,";
+        string[42] memory handles = [
+            "abA",
+            "abB",
+            "abC",
+            "abD",
+            "abE",
+            "abF",
+            "abG",
+            "abH",
+            "abI",
+            "abJ",
+            "abK",
+            "abL",
+            "abM",
+            "abN",
+            "abO",
+            "abP",
+            "abQ",
+            "abR",
+            "abS",
+            "abT",
+            "abU",
+            "abV",
+            "abW",
+            "abX",
+            "abY",
+            "abZ",
+            "ab!",
+            "ab@",
+            "ab#",
+            "ab$",
+            "ab%",
+            "ab^",
+            "ab&",
+            "ab*",
+            "ab(",
+            "ab)",
+            "ab+",
+            "ab|",
+            "ab[",
+            "ab]",
+            "ab:",
+            "ab,"
+        ];
+        for (uint256 i = 0; i < handles.length; i++) {
+            vm.expectRevert(abi.encodePacked("HandleContainsInvalidCharacters"));
+            web3Entry.createCharacter(makeCharacterData(handles[i], bob));
+        }
     }
 }
