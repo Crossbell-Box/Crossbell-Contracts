@@ -4,7 +4,7 @@
 echo Which contract do you want to flatten \(eg Greeter\)\?
 read contract
 
-# Remove an existing flattened contracts
+# Remove an existing flattened src
 rm -rf flattened.txt
 
 # FLATTEN

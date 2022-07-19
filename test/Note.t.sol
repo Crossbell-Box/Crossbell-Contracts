@@ -3,10 +3,9 @@ pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
 import "forge-std/console2.sol";
-import "../Web3Entry.sol";
-import "../libraries/DataTypes.sol";
-import "../Web3Entry.sol";
-import "../upgradeability/TransparentUpgradeableProxy.sol";
+import "../src/Web3Entry.sol";
+import "../src/libraries/DataTypes.sol";
+import "../src/upgradeability/TransparentUpgradeableProxy.sol";
 import "./helpers/Const.sol";
 import "./helpers/utils.sol";
 import "./helpers/SetUp.sol";

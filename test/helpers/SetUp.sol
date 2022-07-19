@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.10;
 
-import "../../Web3Entry.sol";
-import "../../Linklist.sol";
-import "../../misc/Periphery.sol";
-import "../../libraries/DataTypes.sol";
-import "../../MintNFT.sol";
-import "../../upgradeability/TransparentUpgradeableProxy.sol";
-import "../../modules/link/ApprovalLinkModule4Character.sol";
-import "../../mocks/NFT.sol";
-import "../../Resolver.sol";
+import "../../src/Web3Entry.sol";
+import "../../src/Linklist.sol";
+import "../../src/misc/Periphery.sol";
+import "../../src/libraries/DataTypes.sol";
+import "../../src/MintNFT.sol";
+import "../../src/upgradeability/TransparentUpgradeableProxy.sol";
+import "../../src/modules/link/ApprovalLinkModule4Character.sol";
+import "../../src/mocks/NFT.sol";
+import "../../src/Resolver.sol";
 import "./Const.sol";
 import "./utils.sol";
 

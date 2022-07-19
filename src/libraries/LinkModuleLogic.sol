@@ -2,7 +2,6 @@
 
 pragma solidity 0.8.10;
 
-import "@std/console2.sol";
 import "./Events.sol";
 import "./DataTypes.sol";
 import "../interfaces/IMintModule4Note.sol";

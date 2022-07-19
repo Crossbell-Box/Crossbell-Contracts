@@ -17,11 +17,6 @@ cache_path = 'cache-foundry'
 
 # Fuzz more than the default 256
 fuzz_runs = 1_000
-# Configure remappings
-remappings = [
-  "@std=lib/forge-std/src/",
-  "@openzeppelin/=lib/openzeppelin-contracts/",
-]
 
 # Extreme Fuzzing CI Profile :P
 [profile.ci]
