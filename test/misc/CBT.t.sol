@@ -12,7 +12,7 @@ import "../../src/misc/CBT1155.sol";
 contract CbtTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
-    uint256 amount = 1;
+    uint256 public amount = 1;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     event Mint(uint256 indexed to, uint256 indexed tokenId, uint256 indexed amount);
@@ -20,9 +20,7 @@ contract CbtTest is Test, SetUp, Utils {
 
     function setUp() public {
         _setUp();
-    }
 
-    function testCbt() public {
         // alice mint first character
         DataTypes.CreateCharacterData memory characterData = makeCharacterData(
             Const.MOCK_CHARACTER_HANDLE,
@@ -38,7 +36,9 @@ contract CbtTest is Test, SetUp, Utils {
         );
         vm.prank(bob);
         web3Entry.createCharacter(characterData2);
+    }
 
+    function testCbt() public {
         // MINTER_ROLE should mint
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
         uint256 balance1Of1 = cbt.balanceOfByCharacterId(
@@ -52,9 +52,7 @@ contract CbtTest is Test, SetUp, Utils {
             Const.SECOND_CBT_ID
         );
         assertEq(balance2Of1, amount);
-        // can't mint to the zero characterID
-        vm.expectRevert(abi.encodePacked("mint to the zero characterId"));
-        cbt.mint(Const.ZERO_CBT_ID, Const.FIRST_CBT_ID);
+        
         // expect correct emit
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
@@ -73,14 +71,7 @@ contract CbtTest is Test, SetUp, Utils {
             Const.FIRST_CBT_ID
         );
         assertEq(preBalance - amount, postBalance);
-        // caller is not token owner nor approved
-        vm.expectRevert(abi.encodePacked("caller is not token owner nor approved"));
-        vm.prank(bob);
-        cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
-        //burn amount exceeds balance
-        vm.prank(alice);
-        vm.expectRevert(abi.encodePacked("burn amount exceeds balance"));
-        cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, postBalance + 1);
+
         // expect correct emit
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
@@ -92,13 +83,6 @@ contract CbtTest is Test, SetUp, Utils {
         vm.prank(alice);
         cbt.setApprovalForAll(bob, true);
         vm.prank(bob);
-        cbt.burn(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
-
-        // cancel approval should not run
-        vm.prank(alice);
-        cbt.setApprovalForAll(bob, false);
-        vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("caller is not token owner nor approved"));
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
 
         // setTokenURI
@@ -115,6 +99,34 @@ contract CbtTest is Test, SetUp, Utils {
         cbt.setTokenURI(Const.SECOND_CBT_ID, Const.MOCK_NEW_TOKEN_URI);
         string memory postUri2 = cbt.uri(Const.SECOND_CBT_ID);
         assertEq(Const.MOCK_NEW_TOKEN_URI, postUri2);
+    }
+
+    function testCbtFail() public {
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        // can't mint to the zero characterID
+        vm.expectRevert(abi.encodePacked("mint to the zero characterId"));
+        cbt.mint(Const.ZERO_CBT_ID, Const.FIRST_CBT_ID);
+
+        // caller is not token owner nor approved
+        vm.expectRevert(abi.encodePacked("caller is not token owner nor approved"));
+        vm.prank(bob);
+        cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
+
+        //burn amount exceeds balance
+        uint256 currentBalance = cbt.balanceOfByCharacterId(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_CBT_ID
+        );
+        vm.prank(alice);
+        vm.expectRevert(abi.encodePacked("burn amount exceeds balance"));
+        cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, currentBalance + 1);
+
+        // cancel approval should not run
+        vm.prank(alice);
+        cbt.setApprovalForAll(bob, false);
+        vm.prank(bob);
+        vm.expectRevert(abi.encodePacked("caller is not token owner nor approved"));
+        cbt.burn(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
 
         // only MINTER_ROLE can set uri
         vm.prank(alice);
@@ -151,7 +163,7 @@ contract CbtTest is Test, SetUp, Utils {
         assertEq(cbt.getRoleMember(MINTER_ROLE, 1), bob);
 
         // mint cbt
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
         vm.prank(bob);
         cbt.mint(1, 1);
     }
@@ -167,7 +179,7 @@ contract CbtTest is Test, SetUp, Utils {
         assertEq(cbt.hasRole(MINTER_ROLE, bob), false);
 
         // mint cbt fail
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE4, alice));
         vm.prank(bob);
         vm.expectRevert(
             abi.encodePacked(
