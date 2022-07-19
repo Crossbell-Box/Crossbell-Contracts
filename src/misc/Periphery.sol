@@ -171,32 +171,62 @@ contract Periphery is Initializable {
         }
     }
 
+    function sync(
+        address account,
+        string calldata handle,
+        string calldata uri,
+        address[] calldata toAddresses,
+        bytes32 linkType
+    ) external {
+        _migrate(account, handle, uri, toAddresses, linkType);
+    }
+
     function migrate(DataTypes.MigrateData calldata vars) external {
-        uint256 fromProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(vars.account);
+        _migrate(vars.account, vars.handle, vars.uri, vars.toAddresses, vars.linkType);
+    }
+
+    function _migrate(
+        address account,
+        string memory handle,
+        string memory uri,
+        address[] memory toAddresses,
+        bytes32 linkType
+    ) internal {
+        uint256 fromProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(account);
         if (fromProfileId == 0) {
             // create character first
             IWeb3Entry(web3Entry).createCharacter(
                 DataTypes.CreateCharacterData({
-                    to: vars.account,
-                    handle: vars.handle,
-                    uri: vars.uri,
+                    to: account,
+                    handle: handle,
+                    uri: uri,
                     linkModule: address(0),
-                    linkModuleInitData: "0x"
+                    linkModuleInitData: ""
                 })
             );
             // get primary character id
-            fromProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(vars.account);
+            fromProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(account);
+        } else {
+            if (bytes(handle).length > 0) {
+                // set handle
+                IWeb3Entry(web3Entry).setHandle(fromProfileId, handle);
+            }
+
+            if (bytes(uri).length > 0) {
+                // set character uri
+                IWeb3Entry(web3Entry).setCharacterUri(fromProfileId, uri);
+            }
         }
 
         // link
-        for (uint256 i = 0; i < vars.toAddresses.length; i++) {
-            uint256 toProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(vars.toAddresses[i]);
+        for (uint256 i = 0; i < toAddresses.length; i++) {
+            uint256 toProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(toAddresses[i]);
             if (toProfileId == 0) {
                 IWeb3Entry(web3Entry).createThenLinkCharacter(
                     DataTypes.createThenLinkCharacterData({
                         fromCharacterId: fromProfileId,
-                        to: vars.toAddresses[i],
-                        linkType: vars.linkType
+                        to: toAddresses[i],
+                        linkType: linkType
                     })
                 );
             } else {
@@ -204,8 +234,8 @@ contract Periphery is Initializable {
                     DataTypes.linkCharacterData({
                         fromCharacterId: fromProfileId,
                         toCharacterId: toProfileId,
-                        linkType: vars.linkType,
-                        data: "0x"
+                        linkType: linkType,
+                        data: ""
                     })
                 );
             }
