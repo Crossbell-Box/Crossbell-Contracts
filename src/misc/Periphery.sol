@@ -207,10 +207,10 @@ contract Periphery is Initializable {
             // get primary character id
             fromProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(account);
         } else {
-            if (bytes(handle).length > 0) {
-                // set handle
-                IWeb3Entry(web3Entry).setHandle(fromProfileId, handle);
-            }
+            //            if (bytes(handle).length > 0) {
+            //                // set handle
+            //                IWeb3Entry(web3Entry).setHandle(fromProfileId, handle);
+            //            }
 
             if (bytes(uri).length > 0) {
                 // set character uri
