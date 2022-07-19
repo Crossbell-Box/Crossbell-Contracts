@@ -31,6 +31,14 @@ contract CbtTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.createCharacter(characterData);
 
+        // bob mint second character
+        DataTypes.CreateCharacterData memory characterData2 = makeCharacterData(
+            Const.MOCK_CHARACTER_HANDLE2,
+            bob
+        );
+        vm.prank(bob);
+        web3Entry.createCharacter(characterData2);
+
         // MINTER_ROLE should mint
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
         uint256 balance1Of1 = cbt.balanceOfByCharacterId(
@@ -57,15 +65,13 @@ contract CbtTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_CBT_ID
         );
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
         vm.prank(alice);
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
         uint256 postBalance = cbt.balanceOfByCharacterId(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_CBT_ID
         );
-        // approved cbt should burn
-        //TODO
-
         assertEq(preBalance - amount, postBalance);
         // caller is not token owner nor approved
         vm.expectRevert(abi.encodePacked("caller is not token owner nor approved"));
@@ -80,6 +86,21 @@ contract CbtTest is Test, SetUp, Utils {
         emit Burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
         vm.prank(alice);
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
+
+        // approved cbt should burn
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
+        vm.prank(alice);
+        cbt.setApprovalForAll(bob, true);
+        vm.prank(bob);
+        cbt.burn(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
+
+        // cancel approval should not run
+        vm.prank(alice);
+        cbt.setApprovalForAll(bob, false);
+        vm.prank(bob);
+        vm.expectRevert(abi.encodePacked("caller is not token owner nor approved"));
+        cbt.burn(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
+
 
         // setTokenURI
         cbt.setTokenURI(Const.FIRST_CBT_ID, Const.MOCK_TOKEN_URI);
