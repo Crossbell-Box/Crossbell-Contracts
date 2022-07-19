@@ -40,13 +40,13 @@ contract CbtTest is Test, SetUp, Utils {
         web3Entry.createCharacter(characterData2);
 
         // MINTER_ROLE should mint
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
         uint256 balance1Of1 = cbt.balanceOfByCharacterId(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_CBT_ID
         );
         assertEq(balance1Of1, amount);
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
         uint256 balance2Of1 = cbt.balanceOfByCharacterId(
             Const.FIRST_CHARACTER_ID,
             Const.SECOND_CBT_ID
@@ -54,18 +54,18 @@ contract CbtTest is Test, SetUp, Utils {
         assertEq(balance2Of1, amount);
         // can't mint to the zero characterID
         vm.expectRevert(abi.encodePacked("mint to the zero characterId"));
-        cbt.mint(Const.ZERO_CBT_ID, Const.FIRST_CBT_ID, amount);
+        cbt.mint(Const.ZERO_CBT_ID, Const.FIRST_CBT_ID);
         // expect correct emit
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
 
         //owner should burn
         uint256 preBalance = cbt.balanceOfByCharacterId(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_CBT_ID
         );
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
         vm.prank(alice);
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
         uint256 postBalance = cbt.balanceOfByCharacterId(
@@ -88,7 +88,7 @@ contract CbtTest is Test, SetUp, Utils {
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
 
         // approved cbt should burn
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
         vm.prank(alice);
         cbt.setApprovalForAll(bob, true);
         vm.prank(bob);
@@ -100,7 +100,6 @@ contract CbtTest is Test, SetUp, Utils {
         vm.prank(bob);
         vm.expectRevert(abi.encodePacked("caller is not token owner nor approved"));
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
-
 
         // setTokenURI
         cbt.setTokenURI(Const.FIRST_CBT_ID, Const.MOCK_TOKEN_URI);
@@ -138,5 +137,46 @@ contract CbtTest is Test, SetUp, Utils {
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = amount;
         cbt.safeBatchTransferFrom(alice, bob, ids, amounts, new bytes(0));
+    }
+
+    function testGrantRole() public {
+        // check role
+        assertEq(cbt.hasRole(MINTER_ROLE, bob), false);
+
+        // grant role
+        cbt.grantRole(MINTER_ROLE, bob);
+
+        // check role
+        assertEq(cbt.hasRole(MINTER_ROLE, bob), true);
+        assertEq(cbt.getRoleMember(MINTER_ROLE, 1), bob);
+
+        // mint cbt
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
+        vm.prank(bob);
+        cbt.mint(1, 1);
+    }
+
+    function testRevokeRole() public {
+        // grant role
+        cbt.grantRole(MINTER_ROLE, bob);
+        assertEq(cbt.hasRole(MINTER_ROLE, bob), true);
+        assertEq(cbt.getRoleMember(MINTER_ROLE, 1), bob);
+
+        // revoke role
+        cbt.revokeRole(MINTER_ROLE, bob);
+        assertEq(cbt.hasRole(MINTER_ROLE, bob), false);
+
+        // mint cbt fail
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
+        vm.prank(bob);
+        vm.expectRevert(
+            abi.encodePacked(
+                "AccessControl: account ",
+                Strings.toHexString(bob),
+                " is missing role ",
+                Strings.toHexString(uint256(MINTER_ROLE), 32)
+            )
+        );
+        cbt.mint(1, 1);
     }
 }

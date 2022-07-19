@@ -2,7 +2,7 @@
 # (-include to ignore error if it does not exist)
 -include .env
 
-all: clean install update build
+all: clean install build foundry-test
 
 # Install proper solc version.
 solc:; nix-env -f https://github.com/dapphub/dapptools/archive/master.tar.gz -iA solc-static-versions.solc_0_8_10
@@ -26,7 +26,7 @@ scripts :; chmod +x ./scripts/*
 foundry-test :; forge clean && forge test --optimize --optimizer-runs 200 -v # --ffi # enable if you need the `ffi` cheat code on HEVM
 
 # Lints
-lint :; prettier --write "{src,src/tests,scripts}/**/*.sol"
+lint :; prettier --write "{src,test,scripts}/**/*.sol"
 
 # Generate Gas Snapshots
 snapshot :; forge clean && forge snapshot

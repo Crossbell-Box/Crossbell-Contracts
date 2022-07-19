@@ -49,15 +49,11 @@ contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI, AccessContro
             super.supportsInterface(interfaceId);
     }
 
-    function mint(
-        uint256 characterId,
-        uint256 tokenId,
-        uint256 amount
-    ) public onlyRole(MINTER_ROLE) {
+    function mint(uint256 characterId, uint256 tokenId) public onlyRole(MINTER_ROLE) {
         require(characterId != 0, "mint to the zero characterId");
 
-        _balances[characterId][tokenId] += amount;
-        emit Mint(characterId, tokenId, amount);
+        _balances[characterId][tokenId] += 1;
+        emit Mint(characterId, tokenId, 1);
     }
 
     function burn(
