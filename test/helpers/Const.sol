@@ -13,6 +13,10 @@ library Const {
     uint256 constant FIRST_NOTE_ID = 1;
     uint256 constant SECOND_NOTE_ID = 2;
 
+    uint256 constant FIRST_CBT_ID = 1;
+    uint256 constant SECOND_CBT_ID = 2;
+    uint256 constant ZERO_CBT_ID = 0;
+
     address constant AddressZero = address(0);
 
     string constant WEB3_ENTRY_NFT_NAME = "Web3 Entry Character";
@@ -30,6 +34,9 @@ library Const {
         "https://github.com/Crossbell-Box/Crossbell-Contracts/blob/main/examples/sampleContent.json";
     string constant MOCK_NEW_NOTE_URI =
         "https://github.com/Crossbell-Box/Crossbell-Contracts/blob/main/examples/sampleContent-new.json";
+    string constant MOCK_TOKEN_URI = "http://ipfs/xxx1.json";
+    string constant MOCK_NEW_TOKEN_URI = "http://ipfs/xxx2.json";
+
     bytes32 constant bytes32Zero = bytes32(0);
 
     bytes32 constant FollowLinkType = bytes32(bytes("follow"));
