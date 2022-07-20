@@ -115,6 +115,17 @@ contract CbtTest is Test, SetUp, Utils {
         );
         uint256 balanceOfAlice = cbt.balanceOf(alice, Const.FIRST_CBT_ID);
         assertEq(balanceOfAlice, balance1of1 + balance1of3);
+
+        // balanceOfBatch
+        address[] memory accounts = new address[](2);
+        accounts[0] = alice;
+        accounts[1] = bob;
+        uint256[] memory tokenIds = new uint256[](2);
+        tokenIds[0] = Const.FIRST_CBT_ID;
+        tokenIds[1] = Const.FIRST_CBT_ID;
+        uint256[] memory batchBalance = cbt.balanceOfBatch(accounts, tokenIds);
+        assertEq(batchBalance[0], 3);
+        assertEq(batchBalance[1], 0);
     }
 
     function testCbtFail() public {
