@@ -16,7 +16,6 @@ contract CbtTest is Test, SetUp, Utils {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
-
     event Mint(uint256 indexed to, uint256 indexed tokenId, uint256 indexed amount);
     event Burn(uint256 indexed from, uint256 indexed tokenId, uint256 indexed amount);
 
@@ -54,7 +53,7 @@ contract CbtTest is Test, SetUp, Utils {
             Const.SECOND_CBT_ID
         );
         assertEq(balance2Of1, amount);
-        
+
         // expect correct emit
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
@@ -156,17 +155,16 @@ contract CbtTest is Test, SetUp, Utils {
     function testMint() public {
         // admin mint
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 );
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
         emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, 1);
         cbt.mint(1, 1);
 
         // grant mint role and mint
         cbt.grantRole(MINTER_ROLE, bob);
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 );
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
         emit Mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, 1);
         vm.prank(bob);
         cbt.mint(1, 2);
-
     }
 
     function testMintFail() public {
@@ -182,6 +180,57 @@ contract CbtTest is Test, SetUp, Utils {
             )
         );
         cbt.mint(1, 1);
+    }
+
+    function testHasRole() public {
+        // check role
+        assertEq(cbt.hasRole(MINTER_ROLE, alice), false);
+        assertEq(cbt.hasRole(MINTER_ROLE, bob), false);
+        assertEq(cbt.hasRole(DEFAULT_ADMIN_ROLE, alice), false);
+        assertEq(cbt.hasRole(DEFAULT_ADMIN_ROLE, bob), false);
+
+        // grant role
+        cbt.grantRole(MINTER_ROLE, bob);
+        cbt.grantRole(DEFAULT_ADMIN_ROLE, alice);
+
+        // check role
+        assertEq(cbt.hasRole(MINTER_ROLE, alice), false);
+        assertEq(cbt.hasRole(MINTER_ROLE, bob), true);
+        assertEq(cbt.hasRole(DEFAULT_ADMIN_ROLE, alice), true);
+        assertEq(cbt.hasRole(DEFAULT_ADMIN_ROLE, bob), false);
+    }
+
+    function testGetRoleMember() public {
+        // get role member
+        assertEq(cbt.getRoleMember(DEFAULT_ADMIN_ROLE, 0), address(this)); // owner(this contract) is granted in constructor
+        assertEq(cbt.getRoleMember(MINTER_ROLE, 0), address(this)); // owner is granted in constructor
+
+        // grant role
+        cbt.grantRole(MINTER_ROLE, bob);
+        cbt.grantRole(DEFAULT_ADMIN_ROLE, alice);
+
+        // get role member
+        assertEq(cbt.getRoleMember(DEFAULT_ADMIN_ROLE, 1), alice);
+        assertEq(cbt.getRoleMember(MINTER_ROLE, 1), bob);
+    }
+
+    function testGetRoleMemberCount() public {
+        assertEq(cbt.getRoleMemberCount(DEFAULT_ADMIN_ROLE), 1); // owner(this contract) is granted in constructor
+        assertEq(cbt.getRoleMemberCount(MINTER_ROLE), 1); // owner is granted in constructor
+
+        // grant role
+        cbt.grantRole(MINTER_ROLE, alice);
+        cbt.grantRole(MINTER_ROLE, bob);
+        cbt.grantRole(DEFAULT_ADMIN_ROLE, alice);
+        cbt.grantRole(DEFAULT_ADMIN_ROLE, bob);
+
+        assertEq(cbt.getRoleMemberCount(DEFAULT_ADMIN_ROLE), 3);
+        assertEq(cbt.getRoleMemberCount(MINTER_ROLE), 3);
+    }
+
+    function testGetRoleAdmin() public {
+        assertEq(cbt.getRoleAdmin(MINTER_ROLE), DEFAULT_ADMIN_ROLE);
+        assertEq(cbt.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
     }
 
     function testGrantRole() public {
@@ -216,7 +265,6 @@ contract CbtTest is Test, SetUp, Utils {
         );
         vm.prank(alice);
         cbt.grantRole(MINTER_ROLE, bob);
-
 
         // mint cbt fail
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
@@ -280,7 +328,6 @@ contract CbtTest is Test, SetUp, Utils {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
         vm.prank(bob);
         cbt.mint(1, 1);
-
     }
 
     function testRenounceRol() public {
@@ -292,7 +339,7 @@ contract CbtTest is Test, SetUp, Utils {
 
         // renounce role
         vm.startPrank(bob);
-        cbt.renounceRole(MINTER_ROLE,bob);
+        cbt.renounceRole(MINTER_ROLE, bob);
         assertEq(cbt.hasRole(MINTER_ROLE, bob), false);
         assertEq(cbt.getRoleMemberCount(MINTER_ROLE), 1);
 
