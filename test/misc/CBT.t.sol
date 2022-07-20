@@ -18,25 +18,19 @@ contract CbtTest is Test, SetUp, Utils {
 
     event Mint(uint256 indexed to, uint256 indexed tokenId, uint256 indexed amount);
     event Burn(uint256 indexed from, uint256 indexed tokenId, uint256 indexed amount);
+    event ApprovalForAll(address indexed account, address indexed operator, bool approved);
+    event URI(string value, uint256 indexed id);
 
     function setUp() public {
         _setUp();
 
         // alice mint first character
-        DataTypes.CreateCharacterData memory characterData = makeCharacterData(
-            Const.MOCK_CHARACTER_HANDLE,
-            alice
-        );
         vm.prank(alice);
-        web3Entry.createCharacter(characterData);
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
 
         // bob mint second character
-        DataTypes.CreateCharacterData memory characterData2 = makeCharacterData(
-            Const.MOCK_CHARACTER_HANDLE2,
-            bob
-        );
         vm.prank(bob);
-        web3Entry.createCharacter(characterData2);
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
     }
 
     function testCbt() public {
@@ -180,6 +174,101 @@ contract CbtTest is Test, SetUp, Utils {
             )
         );
         cbt.mint(1, 1);
+    }
+
+    function testBurn() public {}
+
+    function testBurnFail() public {}
+
+    function testSetTokenURI() public {
+        string memory uri = "ipfs://tokenURI";
+
+        // owner set tokenURI
+        expectEmit(CheckData);
+        emit URI(uri, 1);
+        cbt.setTokenURI(1, uri);
+        assertEq(cbt.uri(1), uri);
+
+        // grant role to alice, and set tokenURI
+        cbt.grantRole(MINTER_ROLE, alice);
+        vm.prank(alice);
+        cbt.setTokenURI(2, uri);
+        assertEq(cbt.uri(2), uri);
+    }
+
+    function testSetTokenURIFail() public {
+        string memory uri = "ipfs://tokenURI";
+
+        vm.expectRevert(
+            abi.encodePacked(
+                "AccessControl: account ",
+                Strings.toHexString(alice),
+                " is missing role ",
+                Strings.toHexString(uint256(MINTER_ROLE), 32)
+            )
+        );
+        vm.prank(alice);
+        cbt.setTokenURI(1, uri);
+    }
+
+    function testTransfer() public {
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+
+        // safeTransferFrom
+        vm.expectRevert(abi.encodePacked("non-transferable"));
+        cbt.safeTransferFrom(alice, bob, Const.FIRST_CBT_ID, 1, new bytes(0));
+
+        // safeBatchTransferFrom
+        uint256[] memory ids = new uint256[](1);
+        uint256[] memory amounts = new uint256[](1);
+        ids[0] = 1;
+        amounts[0] = 1;
+        vm.expectRevert(abi.encodePacked("non-transferable"));
+        cbt.safeBatchTransferFrom(alice, bob, ids, amounts, new bytes(0));
+    }
+
+    function testSetApprovalForAll() public {
+        assertEq(cbt.isApprovedForAll(alice, bob), false);
+
+        // set approval true
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckData);
+        emit ApprovalForAll(alice, bob, true);
+        vm.prank(alice);
+        cbt.setApprovalForAll(bob, true);
+        assertEq(cbt.isApprovedForAll(alice, bob), true);
+
+        // set approval false
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckData);
+        emit ApprovalForAll(alice, bob, false);
+        vm.prank(alice);
+        cbt.setApprovalForAll(bob, false);
+        assertEq(cbt.isApprovedForAll(alice, bob), false);
+    }
+
+    function testBalanceOf() public {}
+
+    function testBalanceOfBatch() public {}
+
+    function testBalanceOfByCharacterId() public {}
+
+    function testIsApproveForALl() public {
+        assertEq(cbt.isApprovedForAll(alice, bob), false);
+
+        vm.startPrank(alice);
+        cbt.setApprovalForAll(bob, true);
+        assertEq(cbt.isApprovedForAll(alice, bob), true);
+
+        cbt.setApprovalForAll(bob, false);
+        assertEq(cbt.isApprovedForAll(alice, bob), false);
+        vm.stopPrank();
+    }
+
+    function testUri() public {
+        string memory uri = "ipfs://tokenURI";
+        cbt.setTokenURI(1, uri);
+
+        assertEq(cbt.uri(1), uri);
+        assertEq(cbt.uri(2), "");
     }
 
     function testHasRole() public {
