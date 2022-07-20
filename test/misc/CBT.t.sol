@@ -33,7 +33,6 @@ contract CbtTest is Test, SetUp, Utils {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
     }
 
-
     function testMint() public {
         // MINTER_ROLE should mint
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
@@ -61,7 +60,6 @@ contract CbtTest is Test, SetUp, Utils {
         vm.prank(bob);
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
     }
-
 
     function testMintFail() public {
         // bob with no mint role should mint cbt fail
@@ -104,6 +102,18 @@ contract CbtTest is Test, SetUp, Utils {
         cbt.setApprovalForAll(bob, true);
         vm.prank(bob);
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
+
+        // check balance
+        assertEq(
+            cbt.balanceOf(alice, Const.FIRST_CBT_ID),
+            cbt.balanceOfByCharacterId(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID)
+        );
+        assertEq(
+            cbt.balanceOf(alice, Const.SECOND_CBT_ID),
+            cbt.balanceOfByCharacterId(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID)
+        );
+        assertEq(cbt.balanceOf(alice, Const.FIRST_CBT_ID), 0);
+        assertEq(cbt.balanceOf(alice, Const.SECOND_CBT_ID), 0);
     }
 
     function testBurnFail() public {
@@ -197,26 +207,32 @@ contract CbtTest is Test, SetUp, Utils {
     function testBalanceOf() public {
         // blanceOf should return the sum of CBTs from all characters
         // alice mint the third character
-        DataTypes.CreateCharacterData memory characterData = makeCharacterData("handle3", alice);
         vm.prank(alice);
-        web3Entry.createCharacter(characterData);
+        web3Entry.createCharacter(makeCharacterData("handle3", alice));
         // the third character get 2 CBTs
         cbt.mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID);
         cbt.mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID);
         // the first character get 1 CBT
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
         // balance of alice should be the sum of balance of character1 and character3
-        uint256 balance1of1 = cbt.balanceOfByCharacterId(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_CBT_ID
+        assertEq(
+            cbt.balanceOf(alice, Const.FIRST_CBT_ID),
+            cbt.balanceOfByCharacterId(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID) +
+                cbt.balanceOfByCharacterId(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID)
         );
-        uint256 balance1of3 = cbt.balanceOfByCharacterId(
-            Const.THIRD_CHARACTER_ID,
-            Const.FIRST_CBT_ID
-        );
-        uint256 balanceOfAlice = cbt.balanceOf(alice, Const.FIRST_CBT_ID);
-        assertEq(balanceOfAlice, balance1of1 + balance1of3);
 
+        // transfer character 3 to bob
+        vm.prank(alice);
+        web3Entry.safeTransferFrom(alice, bob, Const.THIRD_CHARACTER_ID);
+        // check balance
+        assertEq(
+            cbt.balanceOf(alice, Const.FIRST_CBT_ID),
+            cbt.balanceOfByCharacterId(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID)
+        );
+        assertEq(
+            cbt.balanceOf(bob, Const.FIRST_CBT_ID),
+            cbt.balanceOfByCharacterId(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID)
+        );
     }
 
     function testBalanceOfBatch() public {
@@ -238,7 +254,10 @@ contract CbtTest is Test, SetUp, Utils {
 
     function testBalanceOfByCharacterId() public {
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
-        uint256 balance10f1 = cbt.balanceOfByCharacterId(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        uint256 balance10f1 = cbt.balanceOfByCharacterId(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_CBT_ID
+        );
         assertEq(balance10f1, 1);
     }
 
