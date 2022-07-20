@@ -14,6 +14,8 @@ contract CbtTest is Test, SetUp, Utils {
     address public bob = address(0x2222);
     uint256 public amount = 1;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
+
 
     event Mint(uint256 indexed to, uint256 indexed tokenId, uint256 indexed amount);
     event Burn(uint256 indexed from, uint256 indexed tokenId, uint256 indexed amount);
@@ -151,6 +153,37 @@ contract CbtTest is Test, SetUp, Utils {
         cbt.safeBatchTransferFrom(alice, bob, ids, amounts, new bytes(0));
     }
 
+    function testMint() public {
+        // admin mint
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 );
+        emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, 1);
+        cbt.mint(1, 1);
+
+        // grant mint role and mint
+        cbt.grantRole(MINTER_ROLE, bob);
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 );
+        emit Mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, 1);
+        vm.prank(bob);
+        cbt.mint(1, 2);
+
+    }
+
+    function testMintFail() public {
+        // bob with no mint role should mint cbt fail
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
+        vm.prank(bob);
+        vm.expectRevert(
+            abi.encodePacked(
+                "AccessControl: account ",
+                Strings.toHexString(bob),
+                " is missing role ",
+                Strings.toHexString(uint256(MINTER_ROLE), 32)
+            )
+        );
+        cbt.mint(1, 1);
+    }
+
     function testGrantRole() public {
         // check role
         assertEq(cbt.hasRole(MINTER_ROLE, bob), false);
@@ -165,6 +198,37 @@ contract CbtTest is Test, SetUp, Utils {
         // mint cbt
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
         vm.prank(bob);
+        cbt.mint(1, 1);
+    }
+
+    function testGrantRoleFail() public {
+        // check role
+        assertEq(cbt.hasRole(MINTER_ROLE, bob), false);
+
+        // grant role fail
+        vm.expectRevert(
+            abi.encodePacked(
+                "AccessControl: account ",
+                Strings.toHexString(alice),
+                " is missing role ",
+                Strings.toHexString(uint256(DEFAULT_ADMIN_ROLE), 32)
+            )
+        );
+        vm.prank(alice);
+        cbt.grantRole(MINTER_ROLE, bob);
+
+
+        // mint cbt fail
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
+        vm.prank(bob);
+        vm.expectRevert(
+            abi.encodePacked(
+                "AccessControl: account ",
+                Strings.toHexString(bob),
+                " is missing role ",
+                Strings.toHexString(uint256(MINTER_ROLE), 32)
+            )
+        );
         cbt.mint(1, 1);
     }
 
@@ -190,5 +254,59 @@ contract CbtTest is Test, SetUp, Utils {
             )
         );
         cbt.mint(1, 1);
+    }
+
+    function testRevokeRoleFail() public {
+        // grant role
+        cbt.grantRole(MINTER_ROLE, bob);
+        assertEq(cbt.hasRole(MINTER_ROLE, bob), true);
+        assertEq(cbt.getRoleMember(MINTER_ROLE, 1), bob);
+
+        // revoke role fail
+        vm.expectRevert(
+            abi.encodePacked(
+                "AccessControl: account ",
+                Strings.toHexString(alice),
+                " is missing role ",
+                Strings.toHexString(uint256(DEFAULT_ADMIN_ROLE), 32)
+            )
+        );
+        vm.prank(alice);
+        cbt.revokeRole(MINTER_ROLE, bob);
+        // check role
+        assertEq(cbt.hasRole(MINTER_ROLE, bob), true);
+
+        // mint cbt
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
+        vm.prank(bob);
+        cbt.mint(1, 1);
+
+    }
+
+    function testRenounceRol() public {
+        // grant role to bob
+        cbt.grantRole(MINTER_ROLE, bob);
+        assertEq(cbt.hasRole(MINTER_ROLE, bob), true);
+        assertEq(cbt.getRoleMemberCount(MINTER_ROLE), 2);
+        assertEq(cbt.getRoleMember(MINTER_ROLE, 1), bob);
+
+        // renounce role
+        vm.startPrank(bob);
+        cbt.renounceRole(MINTER_ROLE,bob);
+        assertEq(cbt.hasRole(MINTER_ROLE, bob), false);
+        assertEq(cbt.getRoleMemberCount(MINTER_ROLE), 1);
+
+        // mint cbt fail
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE4, alice));
+        vm.expectRevert(
+            abi.encodePacked(
+                "AccessControl: account ",
+                Strings.toHexString(bob),
+                " is missing role ",
+                Strings.toHexString(uint256(MINTER_ROLE), 32)
+            )
+        );
+        cbt.mint(1, 1);
+        vm.stopPrank();
     }
 }
