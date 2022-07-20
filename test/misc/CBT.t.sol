@@ -33,7 +33,8 @@ contract CbtTest is Test, SetUp, Utils {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
     }
 
-    function testCbt() public {
+
+    function testMint() public {
         // MINTER_ROLE should mint
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
         uint256 balance1Of1 = cbt.balanceOfByCharacterId(
@@ -53,12 +54,43 @@ contract CbtTest is Test, SetUp, Utils {
         emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
 
+        // grant mint role and mint
+        cbt.grantRole(MINTER_ROLE, bob);
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
+        emit Mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
+        vm.prank(bob);
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
+    }
+
+
+    function testMintFail() public {
+        // bob with no mint role should mint cbt fail
+        vm.prank(bob);
+        vm.expectRevert(
+            abi.encodePacked(
+                "AccessControl: account ",
+                Strings.toHexString(bob),
+                " is missing role ",
+                Strings.toHexString(uint256(MINTER_ROLE), 32)
+            )
+        );
+        cbt.mint(Const.FIRST_CBT_ID, amount);
+
+        // can't mint to the zero characterID
+        vm.expectRevert(abi.encodePacked("mint to the zero characterId"));
+        cbt.mint(Const.ZERO_CBT_ID, Const.FIRST_CBT_ID);
+    }
+
+    function testBurn() public {
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
         //owner should burn
         uint256 preBalance = cbt.balanceOfByCharacterId(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_CBT_ID
         );
         vm.prank(alice);
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        emit Burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
         uint256 postBalance = cbt.balanceOfByCharacterId(
             Const.FIRST_CHARACTER_ID,
@@ -66,75 +98,16 @@ contract CbtTest is Test, SetUp, Utils {
         );
         assertEq(preBalance - amount, postBalance);
 
-        // expect correct emit
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
-        vm.prank(alice);
-        cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
-
         // approved cbt should burn
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
         vm.prank(alice);
         cbt.setApprovalForAll(bob, true);
         vm.prank(bob);
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
-
-        // setTokenURI
-        cbt.setTokenURI(Const.FIRST_CBT_ID, Const.MOCK_TOKEN_URI);
-        string memory preUri = cbt.uri(Const.FIRST_CBT_ID);
-        assertEq(Const.MOCK_TOKEN_URI, preUri);
-        cbt.setTokenURI(Const.FIRST_CBT_ID, Const.MOCK_NEW_TOKEN_URI);
-        string memory postUri = cbt.uri(Const.FIRST_CBT_ID);
-        assertEq(Const.MOCK_NEW_TOKEN_URI, postUri);
-
-        cbt.setTokenURI(Const.SECOND_CBT_ID, Const.MOCK_TOKEN_URI);
-        string memory preUri2 = cbt.uri(Const.SECOND_CBT_ID);
-        assertEq(Const.MOCK_TOKEN_URI, preUri2);
-        cbt.setTokenURI(Const.SECOND_CBT_ID, Const.MOCK_NEW_TOKEN_URI);
-        string memory postUri2 = cbt.uri(Const.SECOND_CBT_ID);
-        assertEq(Const.MOCK_NEW_TOKEN_URI, postUri2);
-
-        // blanceOf should return the sum of CBTs from all characters
-        // alice mint the third character
-        DataTypes.CreateCharacterData memory characterData = makeCharacterData("handle3", alice);
-        vm.prank(alice);
-        web3Entry.createCharacter(characterData);
-        // the third character get 2 CBTs
-        cbt.mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID);
-        cbt.mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID);
-        // the first character get 1 CBT
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
-        // balance of alice should be the sum of balance of character1 and character3
-        uint256 balance1of1 = cbt.balanceOfByCharacterId(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_CBT_ID
-        );
-        uint256 balance1of3 = cbt.balanceOfByCharacterId(
-            Const.THIRD_CHARACTER_ID,
-            Const.FIRST_CBT_ID
-        );
-        uint256 balanceOfAlice = cbt.balanceOf(alice, Const.FIRST_CBT_ID);
-        assertEq(balanceOfAlice, balance1of1 + balance1of3);
-
-        // balanceOfBatch
-        address[] memory accounts = new address[](2);
-        accounts[0] = alice;
-        accounts[1] = bob;
-        uint256[] memory tokenIds = new uint256[](2);
-        tokenIds[0] = Const.FIRST_CBT_ID;
-        tokenIds[1] = Const.FIRST_CBT_ID;
-        uint256[] memory batchBalance = cbt.balanceOfBatch(accounts, tokenIds);
-        assertEq(batchBalance[0], 3);
-        assertEq(batchBalance[1], 0);
     }
 
-    function testCbtFail() public {
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
-        // can't mint to the zero characterID
-        vm.expectRevert(abi.encodePacked("mint to the zero characterId"));
-        cbt.mint(Const.ZERO_CBT_ID, Const.FIRST_CBT_ID);
-
-        // caller is not token owner nor approved
+    function testBurnFail() public {
+        // only owner and approved operator can burn
         vm.expectRevert(abi.encodePacked("caller is not token owner nor approved"));
         vm.prank(bob);
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
@@ -154,63 +127,7 @@ contract CbtTest is Test, SetUp, Utils {
         vm.prank(bob);
         vm.expectRevert(abi.encodePacked("caller is not token owner nor approved"));
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
-
-        // only MINTER_ROLE can set uri
-        vm.prank(alice);
-        vm.expectRevert(
-            abi.encodePacked(
-                "AccessControl: account ",
-                Strings.toHexString(alice),
-                " is missing role ",
-                Strings.toHexString(uint256(MINTER_ROLE), 32)
-            )
-        );
-        cbt.setTokenURI(Const.FIRST_CBT_ID, Const.MOCK_TOKEN_URI);
-
-        // cbt cannot be tansferred
-        vm.expectRevert(abi.encodePacked("non-transferable"));
-        cbt.safeTransferFrom(alice, bob, Const.FIRST_CBT_ID, amount, new bytes(0));
-        vm.expectRevert(abi.encodePacked("non-transferable"));
-        uint256[] memory ids = new uint256[](1);
-        ids[0] = Const.FIRST_CBT_ID;
-        uint256[] memory amounts = new uint256[](1);
-        amounts[0] = amount;
-        cbt.safeBatchTransferFrom(alice, bob, ids, amounts, new bytes(0));
     }
-
-    function testMint() public {
-        // admin mint
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
-        emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, 1);
-        cbt.mint(1, 1);
-
-        // grant mint role and mint
-        cbt.grantRole(MINTER_ROLE, bob);
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
-        emit Mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, 1);
-        vm.prank(bob);
-        cbt.mint(1, 2);
-    }
-
-    function testMintFail() public {
-        // bob with no mint role should mint cbt fail
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
-        vm.prank(bob);
-        vm.expectRevert(
-            abi.encodePacked(
-                "AccessControl: account ",
-                Strings.toHexString(bob),
-                " is missing role ",
-                Strings.toHexString(uint256(MINTER_ROLE), 32)
-            )
-        );
-        cbt.mint(1, 1);
-    }
-
-    function testBurn() public {}
-
-    function testBurnFail() public {}
 
     function testSetTokenURI() public {
         string memory uri = "ipfs://tokenURI";
@@ -277,11 +194,53 @@ contract CbtTest is Test, SetUp, Utils {
         assertEq(cbt.isApprovedForAll(alice, bob), false);
     }
 
-    function testBalanceOf() public {}
+    function testBalanceOf() public {
+        // blanceOf should return the sum of CBTs from all characters
+        // alice mint the third character
+        DataTypes.CreateCharacterData memory characterData = makeCharacterData("handle3", alice);
+        vm.prank(alice);
+        web3Entry.createCharacter(characterData);
+        // the third character get 2 CBTs
+        cbt.mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID);
+        cbt.mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID);
+        // the first character get 1 CBT
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        // balance of alice should be the sum of balance of character1 and character3
+        uint256 balance1of1 = cbt.balanceOfByCharacterId(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_CBT_ID
+        );
+        uint256 balance1of3 = cbt.balanceOfByCharacterId(
+            Const.THIRD_CHARACTER_ID,
+            Const.FIRST_CBT_ID
+        );
+        uint256 balanceOfAlice = cbt.balanceOf(alice, Const.FIRST_CBT_ID);
+        assertEq(balanceOfAlice, balance1of1 + balance1of3);
 
-    function testBalanceOfBatch() public {}
+    }
 
-    function testBalanceOfByCharacterId() public {}
+    function testBalanceOfBatch() public {
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        cbt.mint(Const.SECOND_CHARACTER_ID, Const.FIRST_CBT_ID);
+        // the first character has 2 CBTs
+        // the second character has 1 CBT
+        address[] memory accounts = new address[](2);
+        accounts[0] = alice;
+        accounts[1] = bob;
+        uint256[] memory tokenIds = new uint256[](2);
+        tokenIds[0] = Const.FIRST_CBT_ID;
+        tokenIds[1] = Const.FIRST_CBT_ID;
+        uint256[] memory batchBalance = cbt.balanceOfBatch(accounts, tokenIds);
+        assertEq(batchBalance[0], 2);
+        assertEq(batchBalance[1], 1);
+    }
+
+    function testBalanceOfByCharacterId() public {
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        uint256 balance10f1 = cbt.balanceOfByCharacterId(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        assertEq(balance10f1, 1);
+    }
 
     function testIsApproveForALl() public {
         assertEq(cbt.isApprovedForAll(alice, bob), false);
