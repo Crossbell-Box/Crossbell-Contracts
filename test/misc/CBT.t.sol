@@ -22,7 +22,7 @@ contract CbtTest is Test, SetUp, Utils {
     function setUp() public {
         _setUp();
 
-        // alice mint first character
+        // alice mint the first character
         DataTypes.CreateCharacterData memory characterData = makeCharacterData(
             Const.MOCK_CHARACTER_HANDLE,
             alice
@@ -30,7 +30,7 @@ contract CbtTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.createCharacter(characterData);
 
-        // bob mint second character
+        // bob mint the second character
         DataTypes.CreateCharacterData memory characterData2 = makeCharacterData(
             Const.MOCK_CHARACTER_HANDLE2,
             bob
@@ -64,7 +64,6 @@ contract CbtTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_CBT_ID
         );
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
         vm.prank(alice);
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
         uint256 postBalance = cbt.balanceOfByCharacterId(
@@ -100,6 +99,28 @@ contract CbtTest is Test, SetUp, Utils {
         cbt.setTokenURI(Const.SECOND_CBT_ID, Const.MOCK_NEW_TOKEN_URI);
         string memory postUri2 = cbt.uri(Const.SECOND_CBT_ID);
         assertEq(Const.MOCK_NEW_TOKEN_URI, postUri2);
+
+        // blanceOf should return the sum of CBTs from all characters
+        // alice mint the third character
+        DataTypes.CreateCharacterData memory characterData = makeCharacterData("handle3", alice);
+        vm.prank(alice);
+        web3Entry.createCharacter(characterData);
+        // the third character get 2 CBTs
+        cbt.mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID);
+        cbt.mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID);
+        // the first character get 1 CBT
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        // balance of alice should be the sum of balance of character1 and character3
+        uint256 balance1of1 = cbt.balanceOfByCharacterId(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_CBT_ID
+        );
+        uint256 balance1of3 = cbt.balanceOfByCharacterId(
+            Const.THIRD_CHARACTER_ID,
+            Const.FIRST_CBT_ID
+        );
+        uint256 balanceOfAlice = cbt.balanceOf(alice, Const.FIRST_CBT_ID);
+        assertEq(balanceOfAlice, balance1of1 + balance1of3);
     }
 
     function testCbtFail() public {
