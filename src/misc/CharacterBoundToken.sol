@@ -9,7 +9,13 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
-contract CBT1155 is Context, ERC165, IERC1155, IERC1155MetadataURI, AccessControlEnumerable {
+contract CharacterBoundToken is
+    Context,
+    ERC165,
+    IERC1155,
+    IERC1155MetadataURI,
+    AccessControlEnumerable
+{
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     event Mint(uint256 indexed to, uint256 indexed tokenId, uint256 indexed amount);
