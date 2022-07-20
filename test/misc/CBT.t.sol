@@ -242,6 +242,21 @@ contract CbtTest is Test, SetUp, Utils {
         assertEq(balance10f1, 1);
     }
 
+    function testBalanceOfByCharacterIdFail() public {
+        vm.expectRevert(abi.encodePacked("zero is not a valid owner"));
+        cbt.balanceOfByCharacterId(0, Const.FIRST_CBT_ID);
+    }
+
+    function testbalanceOfBatchFail() public {
+        address[] memory accounts = new address[](2);
+        accounts[0] = alice;
+        accounts[1] = bob;
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = Const.FIRST_CBT_ID;
+        vm.expectRevert(abi.encodePacked("accounts and ids length mismatch"));
+        cbt.balanceOfBatch(accounts, tokenIds);
+    }
+
     function testIsApproveForALl() public {
         assertEq(cbt.isApprovedForAll(alice, bob), false);
 
