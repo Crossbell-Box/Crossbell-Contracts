@@ -158,11 +158,11 @@ contract CharacterBoundToken is
      * @dev See {IERC1155-safeTransferFrom}.
      */
     function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
     ) public virtual override {
         revert("non-transferable");
     }
@@ -171,32 +171,12 @@ contract CharacterBoundToken is
      * @dev See {IERC1155-safeBatchTransferFrom}.
      */
     function safeBatchTransferFrom(
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
+        address,
+        address,
+        uint256[] memory,
+        uint256[] memory,
+        bytes memory
     ) public virtual override {
-        revert("non-transferable");
-    }
-
-    function _safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) internal virtual {
-        revert("non-transferable");
-    }
-
-    function _safeBatchTransferFrom(
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) internal virtual {
         revert("non-transferable");
     }
 

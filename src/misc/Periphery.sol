@@ -65,7 +65,7 @@ contract Periphery is Initializable {
         }
     }
 
-    function getLinkingCharacterId(bytes32 linkKey) external view returns (uint256 characterId) {
+    function getLinkingCharacterId(bytes32 linkKey) external pure returns (uint256 characterId) {
         characterId = uint256(linkKey);
     }
 
@@ -125,7 +125,7 @@ contract Periphery is Initializable {
         return ILinklist(linklist).getLinkingAddresses(linklistId);
     }
 
-    function getLinkingAddress(bytes32 linkKey) external view returns (address) {
+    function getLinkingAddress(bytes32 linkKey) external pure returns (address) {
         return address(uint160(uint256(linkKey)));
     }
 
@@ -138,7 +138,7 @@ contract Periphery is Initializable {
         return ILinklist(linklist).getLinkingLinklistIds(linklistId);
     }
 
-    function getLinkingLinklistId(bytes32 linkKey) external view returns (uint256 linklistId) {
+    function getLinkingLinklistId(bytes32 linkKey) external pure returns (uint256 linklistId) {
         linklistId = uint256(linkKey);
     }
 

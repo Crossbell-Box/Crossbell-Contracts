@@ -30,6 +30,7 @@ contract Utils is Test {
 
     function makeCharacterData(string memory _handle, address _to)
         public
+        pure
         returns (DataTypes.CreateCharacterData memory)
     {
         DataTypes.CreateCharacterData memory characterData = DataTypes.CreateCharacterData(
@@ -42,7 +43,11 @@ contract Utils is Test {
         return characterData;
     }
 
-    function makePostNoteData(uint256 characterId) public returns (DataTypes.PostNoteData memory) {
+    function makePostNoteData(uint256 characterId)
+        public
+        pure
+        returns (DataTypes.PostNoteData memory)
+    {
         DataTypes.PostNoteData memory postNoteData = DataTypes.PostNoteData(
             characterId,
             Const.MOCK_NOTE_URI,
