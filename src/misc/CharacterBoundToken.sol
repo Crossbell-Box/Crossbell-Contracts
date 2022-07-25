@@ -55,7 +55,7 @@ contract CharacterBoundToken is
             super.supportsInterface(interfaceId);
     }
 
-    function mint(uint256 characterId, uint256 tokenId) public onlyRole(MINTER_ROLE) {
+    function mint(uint256 characterId, uint256 tokenId) external onlyRole(MINTER_ROLE) {
         require(characterId != 0, "mint to the zero characterId");
 
         _balances[characterId][tokenId] += 1;
@@ -66,7 +66,7 @@ contract CharacterBoundToken is
         uint256 characterId,
         uint256 tokenId,
         uint256 amount
-    ) public {
+    ) external {
         address account = IERC721Enumerable(_web3Entry).ownerOf(characterId);
         require(
             account == _msgSender() || isApprovedForAll(account, _msgSender()),
@@ -79,7 +79,7 @@ contract CharacterBoundToken is
         emit Burn(characterId, tokenId, amount);
     }
 
-    function setTokenURI(uint256 tokenId, string memory tokenURI) public onlyRole(MINTER_ROLE) {
+    function setTokenURI(uint256 tokenId, string memory tokenURI) external onlyRole(MINTER_ROLE) {
         _setURI(tokenId, tokenURI);
     }
 
@@ -108,7 +108,7 @@ contract CharacterBoundToken is
     }
 
     function balanceOfBatch(address[] memory accounts, uint256[] memory tokenIds)
-        public
+        external
         view
         virtual
         override
@@ -137,7 +137,7 @@ contract CharacterBoundToken is
     /**
      * @dev See {IERC1155-setApprovalForAll}.
      */
-    function setApprovalForAll(address operator, bool approved) public virtual override {
+    function setApprovalForAll(address operator, bool approved) external virtual override {
         _setApprovalForAll(_msgSender(), operator, approved);
     }
 
@@ -163,7 +163,7 @@ contract CharacterBoundToken is
         uint256,
         uint256,
         bytes memory
-    ) public virtual override {
+    ) external virtual override {
         revert("non-transferable");
     }
 
@@ -176,7 +176,7 @@ contract CharacterBoundToken is
         uint256[] memory,
         uint256[] memory,
         bytes memory
-    ) public virtual override {
+    ) external virtual override {
         revert("non-transferable");
     }
 
