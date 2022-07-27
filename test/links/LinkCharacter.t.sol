@@ -54,6 +54,18 @@ contract LinkProfileTest is Test, SetUp, Utils {
             )
         );
         vm.stopPrank();
+
+        // periphery can link
+        // the first input is msg.sender and the second input is tx.origin
+        vm.prank(address(periphery), alice);
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                Const.SECOND_CHARACTER_ID,
+                Const.FollowLinkType,
+                new bytes(0)
+            )
+        );
     }
 
     function testLinkCharacterFail() public {
