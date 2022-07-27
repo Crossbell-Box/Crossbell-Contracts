@@ -34,7 +34,7 @@ contract LinklistStorage {
     mapping(bytes32 => string) internal linkingAnylist;
 
     // tokenId => characterId
-    mapping(uint256 => uint256) internal currentTakeOver;
+    mapping(uint256 => uint256) internal currentTakeOver; // obsoleted
     mapping(uint256 => string) internal _uris; // tokenId => tokenURI
 
     // linkKey sets

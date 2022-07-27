@@ -11,11 +11,14 @@ import "./libraries/Constants.sol";
 import "./storage/LinklistStorage.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import "./storage/LinklistExtendStorage.sol";
 
-contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
+contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, LinklistExtendStorage {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using EnumerableSet for EnumerableSet.AddressSet;
+
+    event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
 
     function initialize(
         string calldata _name,
@@ -29,25 +32,56 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
     }
 
     function mint(
-        address to,
+        uint256 characterId,
         bytes32 linkType,
         uint256 tokenId
-    ) external override {
-        _validateCallerIsWeb3Entry();
-
-        linkTypes[tokenId] = linkType;
-        _mint(to, tokenId);
-    }
-
-    function setTakeOver(
-        uint256 tokenId,
-        address to,
-        uint256 characterId
     ) external {
         _validateCallerIsWeb3Entry();
-        require(to == ownerOf(tokenId), "Linklist: not token owner");
+        require(_linklistOwners[tokenId] == 0, "Linklist: Token already exists");
 
-        currentTakeOver[tokenId] = characterId;
+        linkTypes[tokenId] = linkType;
+
+        // mint tokenId to characterId
+        _linklistOwners[tokenId] = characterId;
+        _linklistBalances[characterId] += 1;
+        _tokenCount += 1;
+        emit Transfer(address(0), characterId, tokenId);
+
+        // emit erc721 transfer event
+        emit IERC721.Transfer(
+            address(0),
+            IERC721Enumerable(Web3Entry).ownerOf(characterId),
+            tokenId
+        );
+    }
+
+    function totalSupply() public view override returns (uint256) {
+        return _tokenCount;
+    }
+
+    function balanceOf(address account) public view override returns (uint256 balance) {
+        uint256 characterCount = IERC721Enumerable(Web3Entry).balanceOf(account);
+        for (uint256 i = 0; i < characterCount; i++) {
+            uint256 characterId = IERC721Enumerable(Web3Entry).tokenOfOwnerByIndex(account, i);
+            balance += balanceOfByCharacterId(characterId);
+        }
+    }
+
+    function balanceOfByCharacterId(uint256 characterId) public view returns (uint256) {
+        return _linklistBalances[characterId];
+    }
+
+    function ownerOf(uint256 tokenId) public view override returns (address) {
+        uint256 characterId = ownerOfByCharacterId(tokenId);
+        address owner = IERC721Enumerable(Web3Entry).ownerOf(characterId);
+        require(owner != address(0), "Linklist: owner query for nonexistent character");
+        return owner;
+    }
+
+    function ownerOfByCharacterId(uint256 tokenId) public view returns (uint256) {
+        uint256 characterId = _linklistOwners[tokenId];
+        require(characterId != 0, "Linklist: owner query for nonexistent token");
+        return characterId;
     }
 
     function setUri(uint256 tokenId, string memory _uri) external {
@@ -368,29 +402,25 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable {
         return _getTokenUri(tokenId);
     }
 
+    function migrate(uint256 start, uint256 limit) public {
+        for (uint256 i = start; i < limit; i++) {
+            uint256 characterId = currentTakeOver[i];
+            if (characterId > 0 && _linklistOwners[i] == 0) {
+                // set owner and balances
+                _linklistOwners[i] = characterId;
+                _linklistBalances[characterId] += 1;
+                // update token count
+                _tokenCount += 1;
+            }
+        }
+    }
+
     function _transfer(
         address from,
         address to,
         uint256 tokenId
     ) internal override {
-        // only web3Entry can transfer linklist token
-        _validateCallerIsWeb3Entry();
-
-        super._transfer(from, to, tokenId);
-    }
-
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) public override {
-        // approve for Web3Entry
-        if (!isApprovedForAll(from, Web3Entry)) {
-            _setApprovalForAll(from, Web3Entry, true);
-        }
-
-        super.safeTransferFrom(from, to, tokenId, _data);
+        revert("non-transferable");
     }
 
     function _getTokenUri(uint256 tokenId) internal view returns (string memory) {

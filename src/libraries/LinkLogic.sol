@@ -21,8 +21,7 @@ library LinkLogic {
         address linker,
         address linklist,
         address linkModule,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         uint256 linklistId = _mintLinklist(
             fromCharacterId,
@@ -31,8 +30,6 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
-
-        _linkTypesByCharacter[fromCharacterId].add(linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingCharacterId(linklistId, toCharacterId);
@@ -69,8 +66,7 @@ library LinkLogic {
         address linker,
         address linklist,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromCharacterId,
@@ -79,8 +75,6 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
-
-        _linkTypesByCharacter[vars.fromCharacterId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingNote(linklistId, vars.toCharacterId, vars.toNoteId);
@@ -135,8 +129,7 @@ library LinkLogic {
         address linker,
         bytes32 linkType,
         address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         uint256 linklistId = _mintLinklist(
             fromCharacterId,
@@ -145,8 +138,6 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
-
-        _linkTypesByCharacter[fromCharacterId].add(linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingCharacterLink(linklistId, linkData);
@@ -185,8 +176,7 @@ library LinkLogic {
         DataTypes.linkLinklistData calldata vars,
         address linker,
         address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromCharacterId,
@@ -195,8 +185,6 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
-
-        _linkTypesByCharacter[vars.fromCharacterId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingLinklistId(linklistId, vars.toLinkListId);
@@ -229,8 +217,7 @@ library LinkLogic {
         DataTypes.linkERC721Data calldata vars,
         address linker,
         address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromCharacterId,
@@ -239,8 +226,6 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
-
-        _linkTypesByCharacter[vars.fromCharacterId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId);
@@ -275,8 +260,7 @@ library LinkLogic {
         DataTypes.linkAddressData calldata vars,
         address linker,
         address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromCharacterId,
@@ -285,8 +269,6 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
-
-        _linkTypesByCharacter[vars.fromCharacterId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingAddress(linklistId, vars.ethAddress);
@@ -309,8 +291,7 @@ library LinkLogic {
         DataTypes.linkAnyUriData calldata vars,
         address linker,
         address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists,
-        mapping(uint256 => EnumerableSet.Bytes32Set) storage _linkTypesByCharacter
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromCharacterId,
@@ -319,8 +300,6 @@ library LinkLogic {
             linklist,
             _attachedLinklists
         );
-
-        _linkTypesByCharacter[vars.fromCharacterId].add(vars.linkType);
 
         // add to link list
         ILinklist(linklist).addLinkingAnyUri(linklistId, vars.toUri);
@@ -350,10 +329,9 @@ library LinkLogic {
         if (linklistId == 0) {
             linklistId = IERC721Enumerable(linklist).totalSupply() + 1;
             // mint linkList nft
-            ILinklist(linklist).mint(to, linkType, linklistId);
+            ILinklist(linklist).mint(fromCharacterId, linkType, linklistId);
 
             // attach linkList
-            ILinklist(linklist).setTakeOver(linklistId, to, fromCharacterId);
             _attachedLinklists[fromCharacterId][linkType] = linklistId;
             emit Events.AttachLinklist(linklistId, fromCharacterId, linkType);
         }

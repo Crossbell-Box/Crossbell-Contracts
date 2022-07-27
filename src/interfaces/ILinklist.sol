@@ -6,15 +6,9 @@ import "../libraries/DataTypes.sol";
 
 interface ILinklist {
     function mint(
-        address to,
+        uint256 characterId,
         bytes32 linkType,
         uint256 tokenId
-    ) external;
-
-    function setTakeOver(
-        uint256 tokenId,
-        address to,
-        uint256 characterId
     ) external;
 
     function setUri(uint256 tokenId, string memory uri) external;

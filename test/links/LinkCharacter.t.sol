@@ -165,6 +165,52 @@ contract LinkProfileTest is Test, SetUp, Utils {
         );
     }
 
+    function testLinklistTotalSupply() public {
+        vm.startPrank(alice);
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                Const.SECOND_CHARACTER_ID,
+                Const.FollowLinkType,
+                new bytes(0)
+            )
+        );
+
+        // check linklist
+        assertEq(linklist.ownerOf(1), alice);
+        assertEq(linklist.ownerOfByCharacterId(1), 1);
+        assertEq(linklist.totalSupply(), 1);
+
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                Const.SECOND_CHARACTER_ID,
+                Const.LikeLinkType,
+                new bytes(0)
+            )
+        );
+
+        // check linklist
+        assertEq(linklist.ownerOf(2), alice);
+        assertEq(linklist.ownerOfByCharacterId(2), 1);
+        assertEq(linklist.totalSupply(), 2);
+
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                Const.SECOND_CHARACTER_ID,
+                bytes32("LinkTypeAB"),
+                new bytes(0)
+            )
+        );
+
+        // check linklist
+        assertEq(linklist.ownerOf(3), alice);
+        assertEq(linklist.ownerOfByCharacterId(3), 1);
+        assertEq(linklist.totalSupply(), 3);
+        vm.stopPrank();
+    }
+
     function testCreateThenLinkCharacter() public {
         vm.prank(alice);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
