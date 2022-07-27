@@ -10,5 +10,5 @@ contract Web3EntryExtendStorage {
     address internal periphery; // slot 21
     mapping(uint256 => address) internal _operatorByCharacter;
     address public resolver;
-    mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkTypesByCharacter;
+    mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkTypesByCharacter; // obsoleted
 }

@@ -149,8 +149,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
             _linklist,
             _characterById[vars.toCharacterId].linkModule,
-            _attachedLinklists,
-            _linkTypesByCharacter
+            _attachedLinklists
         );
     }
 
@@ -211,8 +210,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             IERC721Enumerable(this).ownerOf(fromCharacterId),
             _linklist,
             address(0),
-            _attachedLinklists,
-            _linkTypesByCharacter
+            _attachedLinklists
         );
     }
 
@@ -225,8 +223,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
             _linklist,
             _noteByIdByCharacter,
-            _attachedLinklists,
-            _linkTypesByCharacter
+            _attachedLinklists
         );
     }
 
@@ -244,8 +241,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             vars,
             IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
             _linklist,
-            _attachedLinklists,
-            _linkTypesByCharacter
+            _attachedLinklists
         );
     }
 
@@ -266,8 +262,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             vars,
             IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
             _linklist,
-            _attachedLinklists,
-            _linkTypesByCharacter
+            _attachedLinklists
         );
     }
 
@@ -288,8 +283,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             vars,
             IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
             _linklist,
-            _attachedLinklists,
-            _linkTypesByCharacter
+            _attachedLinklists
         );
     }
 
@@ -317,8 +311,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             msg.sender,
             linkType,
             _linklist,
-            _attachedLinklists,
-            _linkTypesByCharacter
+            _attachedLinklists
         );
     }
 
@@ -346,8 +339,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
             vars,
             IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
             _linklist,
-            _attachedLinklists,
-            _linkTypesByCharacter
+            _attachedLinklists
         );
     }
 
@@ -733,13 +725,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         address to,
         uint256 tokenId
     ) internal override {
-        // transfer all linklist
-        bytes32[] memory linkTypes = _linkTypesByCharacter[tokenId].values();
-        for (uint256 i = 0; i < linkTypes.length; i++) {
-            uint256 linkListId = _attachedLinklists[tokenId][linkTypes[i]];
-            IERC721(_linklist).safeTransferFrom(from, to, linkListId);
-        }
-
         super._transfer(from, to, tokenId);
     }
 
