@@ -79,8 +79,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     }
 
     function _createCharacter(DataTypes.CreateCharacterData memory vars) internal {
-        require(canCreate(vars.handle, vars.to), "HandleNotEligible");
-
         _characterCounter = _characterCounter + 1;
 
         // mint character nft
@@ -102,7 +100,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
     function setHandle(uint256 characterId, string calldata newHandle) external {
         _validateCallerIsCharacterOwner(characterId);
-        require(canCreate(newHandle, ownerOf(characterId)), "HandleNotEligible");
 
         CharacterLogic.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
     }
@@ -720,14 +717,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
-    function _transfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal override {
-        super._transfer(from, to, tokenId);
-    }
-
     function _setOperator(uint256 characterId, address operator) internal {
         _operatorByCharacter[characterId] = operator;
         emit Events.SetOperator(characterId, operator, block.timestamp);
@@ -766,18 +755,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     function _validateNoteExists(uint256 characterId, uint256 noteId) internal view {
         require(!_noteByIdByCharacter[characterId][noteId].deleted, "NoteIsDeleted");
         require(noteId <= _characterById[characterId].noteCount, "NoteNotExists");
-    }
-
-    function migrateNote(uint256 characterId) external {
-        uint256 count = _characterById[characterId].noteCount;
-        for (uint256 i = 0; i < count; i++) {
-            if (
-                _noteByIdByCharacter[characterId][i].linkItemType ==
-                0x50726f66696c6500000000000000000000000000000000000000000000000000
-            ) {
-                _noteByIdByCharacter[characterId][i].linkItemType = Constants.NoteLinkTypeCharacter;
-            }
-        }
     }
 
     function getRevision() external pure returns (uint256) {
