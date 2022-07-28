@@ -502,6 +502,8 @@ contract NoteTest is Test, SetUp, Utils {
         web3Entry.mintNote(
             DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
         );
+
+        assertEq(IERC721Enumerable(nftAddress).totalSupply(), 2);
     }
 
     function testMintNoteFail() public {
@@ -521,6 +523,32 @@ contract NoteTest is Test, SetUp, Utils {
         web3Entry.mintNote(
             DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
         );
+    }
+
+    function testMintNoteTotalSupply() public {
+        vm.prank(alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+
+        vm.startPrank(bob);
+        for (uint256 i = 0; i < 10; i++) {
+            web3Entry.mintNote(
+                DataTypes.MintNoteData(
+                    Const.FIRST_CHARACTER_ID,
+                    Const.FIRST_NOTE_ID,
+                    bob,
+                    new bytes(0)
+                )
+            );
+        }
+        vm.stopPrank();
+
+        // check mint note
+        DataTypes.Note memory note = web3Entry.getNote(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+        address nftAddress = note.mintNFT;
+        assertEq(IERC721Enumerable(nftAddress).totalSupply(), 10);
     }
 
     function _matchNote(
