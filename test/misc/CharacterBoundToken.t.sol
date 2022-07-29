@@ -36,16 +36,10 @@ contract CbtTest is Test, SetUp, Utils {
     function testMint() public {
         // MINTER_ROLE should mint
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
-        uint256 balance1Of1 = cbt.balanceOfByCharacterId(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_CBT_ID
-        );
+        uint256 balance1Of1 = cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
         assertEq(balance1Of1, amount);
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
-        uint256 balance2Of1 = cbt.balanceOfByCharacterId(
-            Const.FIRST_CHARACTER_ID,
-            Const.SECOND_CBT_ID
-        );
+        uint256 balance2Of1 = cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
         assertEq(balance2Of1, amount);
 
         // expect correct emit
@@ -82,18 +76,12 @@ contract CbtTest is Test, SetUp, Utils {
     function testBurn() public {
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
         //owner should burn
-        uint256 preBalance = cbt.balanceOfByCharacterId(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_CBT_ID
-        );
+        uint256 preBalance = cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
         vm.prank(alice);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
-        uint256 postBalance = cbt.balanceOfByCharacterId(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_CBT_ID
-        );
+        uint256 postBalance = cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
         assertEq(preBalance - amount, postBalance);
 
         // approved cbt should burn
@@ -106,11 +94,11 @@ contract CbtTest is Test, SetUp, Utils {
         // check balance
         assertEq(
             cbt.balanceOf(alice, Const.FIRST_CBT_ID),
-            cbt.balanceOfByCharacterId(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID)
+            cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID)
         );
         assertEq(
             cbt.balanceOf(alice, Const.SECOND_CBT_ID),
-            cbt.balanceOfByCharacterId(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID)
+            cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID)
         );
         assertEq(cbt.balanceOf(alice, Const.FIRST_CBT_ID), 0);
         assertEq(cbt.balanceOf(alice, Const.SECOND_CBT_ID), 0);
@@ -123,10 +111,7 @@ contract CbtTest is Test, SetUp, Utils {
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
 
         //burn amount exceeds balance
-        uint256 currentBalance = cbt.balanceOfByCharacterId(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_CBT_ID
-        );
+        uint256 currentBalance = cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
         vm.prank(alice);
         vm.expectRevert(abi.encodePacked("burn amount exceeds balance"));
         cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, currentBalance + 1);
@@ -217,8 +202,8 @@ contract CbtTest is Test, SetUp, Utils {
         // balance of alice should be the sum of balance of character1 and character3
         assertEq(
             cbt.balanceOf(alice, Const.FIRST_CBT_ID),
-            cbt.balanceOfByCharacterId(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID) +
-                cbt.balanceOfByCharacterId(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID)
+            cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID) +
+                cbt.balanceOf(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID)
         );
 
         // transfer character 3 to bob
@@ -227,11 +212,11 @@ contract CbtTest is Test, SetUp, Utils {
         // check balance
         assertEq(
             cbt.balanceOf(alice, Const.FIRST_CBT_ID),
-            cbt.balanceOfByCharacterId(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID)
+            cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID)
         );
         assertEq(
             cbt.balanceOf(bob, Const.FIRST_CBT_ID),
-            cbt.balanceOfByCharacterId(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID)
+            cbt.balanceOf(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID)
         );
     }
 
@@ -254,16 +239,13 @@ contract CbtTest is Test, SetUp, Utils {
 
     function testBalanceOfByCharacterId() public {
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
-        uint256 balance10f1 = cbt.balanceOfByCharacterId(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_CBT_ID
-        );
+        uint256 balance10f1 = cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
         assertEq(balance10f1, 1);
     }
 
     function testBalanceOfByCharacterIdFail() public {
         vm.expectRevert(abi.encodePacked("zero is not a valid owner"));
-        cbt.balanceOfByCharacterId(0, Const.FIRST_CBT_ID);
+        cbt.balanceOf(0, Const.FIRST_CBT_ID);
     }
 
     function testbalanceOfBatchFail() public {

@@ -73,7 +73,7 @@ contract CharacterBoundToken is
             "caller is not token owner nor approved"
         );
 
-        uint256 fromBalance = balanceOfByCharacterId(characterId, tokenId);
+        uint256 fromBalance = balanceOf(characterId, tokenId);
         require(fromBalance >= amount, "burn amount exceeds balance");
         _balances[characterId][tokenId] = fromBalance - amount;
         emit Burn(characterId, tokenId, amount);
@@ -93,16 +93,11 @@ contract CharacterBoundToken is
         uint256 characterCount = IERC721Enumerable(_web3Entry).balanceOf(account);
         for (uint256 i = 0; i < characterCount; i++) {
             uint256 characterId = IERC721Enumerable(_web3Entry).tokenOfOwnerByIndex(account, i);
-            balance += balanceOfByCharacterId(characterId, tokenId);
+            balance += balanceOf(characterId, tokenId);
         }
     }
 
-    function balanceOfByCharacterId(uint256 characterId, uint256 tokenId)
-        public
-        view
-        virtual
-        returns (uint256)
-    {
+    function balanceOf(uint256 characterId, uint256 tokenId) public view virtual returns (uint256) {
         require(characterId != 0, "zero is not a valid owner");
         return _balances[characterId][tokenId];
     }
