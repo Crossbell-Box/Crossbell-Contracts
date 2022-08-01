@@ -63,24 +63,29 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         uint256 characterCount = IERC721Enumerable(Web3Entry).balanceOf(account);
         for (uint256 i = 0; i < characterCount; i++) {
             uint256 characterId = IERC721Enumerable(Web3Entry).tokenOfOwnerByIndex(account, i);
-            balance += balanceOfByCharacterId(characterId);
+            balance += balanceOf(characterId);
         }
     }
 
-    function balanceOfByCharacterId(uint256 characterId) public view returns (uint256) {
+    function balanceOf(uint256 characterId) public view returns (uint256) {
         return _linklistBalances[characterId];
     }
 
     function ownerOf(uint256 tokenId) public view override returns (address) {
-        uint256 characterId = ownerOfByCharacterId(tokenId);
+        uint256 characterId = characterOwnerOf(tokenId);
         address owner = IERC721Enumerable(Web3Entry).ownerOf(characterId);
         require(owner != address(0), "Linklist: owner query for nonexistent character");
         return owner;
     }
 
-    function ownerOfByCharacterId(uint256 tokenId) public view returns (uint256) {
+    /**
+     * @notice returns the characterId who owns the given tokenId.
+     * @param tokenId The token id of the linklist.
+     */
+    function characterOwnerOf(uint256 tokenId) public view returns (uint256) {
         uint256 characterId = _linklistOwners[tokenId];
         require(characterId != 0, "Linklist: owner query for nonexistent token");
+
         return characterId;
     }
 

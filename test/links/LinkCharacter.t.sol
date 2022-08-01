@@ -190,7 +190,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
-        assertEq(linklist.ownerOfByCharacterId(1), 1);
+        assertEq(linklist.characterOwnerOf(1), 1);
         assertEq(linklist.totalSupply(), 1);
 
         web3Entry.linkCharacter(
@@ -204,7 +204,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
 
         // check linklist
         assertEq(linklist.ownerOf(2), alice);
-        assertEq(linklist.ownerOfByCharacterId(2), 1);
+        assertEq(linklist.characterOwnerOf(2), 1);
         assertEq(linklist.totalSupply(), 2);
 
         web3Entry.linkCharacter(
@@ -218,7 +218,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
 
         // check linklist
         assertEq(linklist.ownerOf(3), alice);
-        assertEq(linklist.ownerOfByCharacterId(3), 1);
+        assertEq(linklist.characterOwnerOf(3), 1);
         assertEq(linklist.totalSupply(), 3);
         vm.stopPrank();
     }
