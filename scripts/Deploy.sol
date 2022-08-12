@@ -2,11 +2,11 @@
 pragma solidity 0.8.10;
 
 import "forge-std/Script.sol";
-import "../src/Web3Entry.sol";
-import "../src/Linklist.sol";
-import "../src/MintNFT.sol";
-import "../src/misc/Periphery.sol";
-import "../src/upgradeability/TransparentUpgradeableProxy.sol";
+import "../contracts/Web3Entry.sol";
+import "../contracts/Linklist.sol";
+import "../contracts/MintNFT.sol";
+import "../contracts/misc/Periphery.sol";
+import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 
 contract Deploy is Script {
     address admin = address(0x713Ba8985dF91249b9e4CD86DD9eF62f8c8ddBC6); // update admin address before deployment

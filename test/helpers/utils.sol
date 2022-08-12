@@ -3,7 +3,7 @@ pragma solidity 0.8.10;
 
 import "forge-std/Vm.sol";
 import "forge-std/Test.sol";
-import "../../src/libraries/DataTypes.sol";
+import "../../contracts/libraries/DataTypes.sol";
 import "./Const.sol";
 
 contract Utils is Test {
