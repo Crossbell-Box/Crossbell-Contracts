@@ -25,8 +25,11 @@ scripts :; chmod +x ./scripts/*
 # Tests
 foundry-test :; forge clean && forge test --optimize --optimizer-runs 200 -v # --ffi # enable if you need the `ffi` cheat code on HEVM
 
+# Run solhint
+check :; solhint "{contracts,test,scripts}/**/*.sol"
+
 # Lints
-lint :; prettier --write "{src,test,scripts}/**/*.sol"
+lint :; prettier --write "{contracts,test,scripts}/**/*.sol"
 
 # Generate Gas Snapshots
 snapshot :; forge clean && forge snapshot
