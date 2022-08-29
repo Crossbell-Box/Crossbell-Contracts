@@ -550,25 +550,4 @@ contract NoteTest is Test, SetUp, Utils {
         address nftAddress = note.mintNFT;
         assertEq(IERC721Enumerable(nftAddress).totalSupply(), 10);
     }
-
-    function _matchNote(
-        DataTypes.Note memory note,
-        bytes32 linkItemType,
-        bytes32 linkKey,
-        string memory contentUri,
-        address linkModule,
-        address mintNFT,
-        address mintModule,
-        bool deleted,
-        bool locked
-    ) internal {
-        assertEq(note.linkItemType, linkItemType);
-        assertEq(note.linkKey, linkKey);
-        assertEq(note.contentUri, contentUri);
-        assertEq(note.linkModule, linkModule);
-        assertEq(note.mintNFT, mintNFT);
-        assertEq(note.mintModule, mintModule);
-        assertEq(note.locked, locked);
-        assertEq(note.deleted, deleted);
-    }
 }
