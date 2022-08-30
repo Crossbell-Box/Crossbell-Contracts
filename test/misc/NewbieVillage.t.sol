@@ -54,7 +54,10 @@ contract NewbieVillageTest is Test, SetUp, Utils {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
 
         vm.prank(alice);
-        Web3Entry(address(newbie)).setCharacterUri();
+        Web3Entry(address(newbie)).setCharacterUri(Const.FIRST_CHARACTER_ID, Const.MOCK_URI);
+
+        // check character uri
+        assertEq(web3Entry.getCharacterUri(Const.FIRST_CHARACTER_ID), Const.MOCK_URI);
     }
 
     function testNewbieLinkCharacterFail() public {
