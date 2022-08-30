@@ -10,6 +10,7 @@ import "../../contracts/misc/NewbieVillage.sol";
 
 contract NewbieVillageTest is Test, SetUp, Utils {
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
     address public alice = address(0x1111);
     address public bob = address(0x2222);
@@ -23,6 +24,11 @@ contract NewbieVillageTest is Test, SetUp, Utils {
         newbie.initialize(address(web3Entry));
 
         newbie.grantRole(OPERATOR_ROLE, alice);
+    }
+
+    function testNewbieInitializeFail() public {
+        vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
+        newbie.initialize(address(web3Entry));
     }
 
     function testNewbieLinkCharacter() public {
@@ -42,6 +48,13 @@ contract NewbieVillageTest is Test, SetUp, Utils {
             )
         );
         assertEq(linklist.ownerOf(1), address(newbie));
+    }
+
+    function testNewbieSetCharacterUri() public {
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
+
+        vm.prank(alice);
+        Web3Entry(address(newbie)).setCharacterUri();
     }
 
     function testNewbieLinkCharacterFail() public {
@@ -101,11 +114,55 @@ contract NewbieVillageTest is Test, SetUp, Utils {
         assertEq(web3Entry.getOperator(Const.FIRST_CHARACTER_ID), bob);
     }
 
-    function testTransferCharacter() public {
+    function testNewbieTransferCharacter() public {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
 
         vm.prank(alice);
         Web3Entry(address(newbie)).transferFrom(address(newbie), bob, Const.FIRST_CHARACTER_ID);
         assertEq(web3Entry.ownerOf(Const.FIRST_CHARACTER_ID), bob);
+    }
+
+    function testNewbieRole() public {
+        // check role
+        assertEq(cbt.hasRole(OPERATOR_ROLE, alice), false);
+        assertEq(cbt.hasRole(OPERATOR_ROLE, bob), false);
+        assertEq(cbt.hasRole(DEFAULT_ADMIN_ROLE, alice), false);
+        assertEq(cbt.hasRole(DEFAULT_ADMIN_ROLE, bob), false);
+
+        // grant role
+        cbt.grantRole(OPERATOR_ROLE, bob);
+        cbt.grantRole(DEFAULT_ADMIN_ROLE, alice);
+
+        // check role
+        assertEq(cbt.hasRole(OPERATOR_ROLE, alice), false);
+        assertEq(cbt.hasRole(OPERATOR_ROLE, bob), true);
+        assertEq(cbt.hasRole(DEFAULT_ADMIN_ROLE, alice), true);
+        assertEq(cbt.hasRole(DEFAULT_ADMIN_ROLE, bob), false);
+
+        // get role member
+        assertEq(cbt.getRoleMember(DEFAULT_ADMIN_ROLE, 1), alice);
+        assertEq(cbt.getRoleMember(OPERATOR_ROLE, 0), bob);
+
+        // get role admin
+        assertEq(cbt.getRoleAdmin(OPERATOR_ROLE), DEFAULT_ADMIN_ROLE);
+        assertEq(cbt.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+
+        // revoke role
+        cbt.revokeRole(OPERATOR_ROLE, bob);
+        assertEq(cbt.hasRole(OPERATOR_ROLE, bob), false);
+    }
+
+    function testNewbieRenounceRol() public {
+        // grant role to bob
+        cbt.grantRole(OPERATOR_ROLE, bob);
+        assertEq(cbt.hasRole(OPERATOR_ROLE, bob), true);
+        assertEq(cbt.getRoleMemberCount(OPERATOR_ROLE), 1);
+        assertEq(cbt.getRoleMember(OPERATOR_ROLE, 0), bob);
+
+        // renounce role
+        vm.prank(bob);
+        cbt.renounceRole(OPERATOR_ROLE, bob);
+        assertEq(cbt.hasRole(OPERATOR_ROLE, bob), false);
+        assertEq(cbt.getRoleMemberCount(OPERATOR_ROLE), 0);
     }
 }
