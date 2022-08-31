@@ -3,10 +3,10 @@ pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
 import "forge-std/console2.sol";
-import "../../contracts/misc/Multisig.sol";
-import "../../contracts/misc/ImplementationExample.sol";
-import "../../contracts/misc/ImplementationExample2.sol";
-import "../../contracts/misc/TransparentUpgradeableProxy.sol";
+import "../../contracts/upgradeability/Multisig.sol";
+import "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
+import "../../contracts/mocks/UpgradeV1.sol";
+import "../../contracts/mocks/UpgradeV2.sol";
 
 contract MultisigTest is Test {
     address public alice = address(0x1111);
@@ -16,54 +16,49 @@ contract MultisigTest is Test {
     address[] public ownersArr = [alice, bob, charlie];
 
     Multisig multisig;
-    ImplementationExample implementationExample;
-    ImplementationExample2 implementationExample2;
     TransparentUpgradeableProxy transparentUpgradeableProxy;
+    UpgradeV1 upgradeV1;
+    UpgradeV2 upgradeV2;
 
     function setUp() public {
+        upgradeV1 = new UpgradeV1();
+        upgradeV2 = new UpgradeV2();
         multisig = new Multisig(ownersArr, 2);
-        implementationExample = new ImplementationExample();
-        implementationExample2 = new ImplementationExample2();
         // admin of transparentUpgradeableProxy is set to multisig
         transparentUpgradeableProxy = new TransparentUpgradeableProxy(
-            address(implementationExample),
+            address(upgradeV1),
             address(multisig),
-            abi.encodeWithSelector(implementationExample.initialize.selector, 1)
+            abi.encodeWithSelector(upgradeV1.initialize.selector, 1)
         );
     }
 
     function testProposeToUpgrade() public {
-        // ! before upgrading the initial value should be 1
-        uint256 initialValue = ImplementationExample(address(transparentUpgradeableProxy))
-            .retrieve();
-        assertEq(initialValue, 1);
-
-        // 1. alice propose to upgrade
+        vm.prank(address(multisig));
+        address preImplementation = transparentUpgradeableProxy.implementation();
+        assertEq(preImplementation, address(upgradeV1));
+        // alice propose to upgrade
         vm.prank(alice);
-        multisig.propose(transparentUpgradeableProxy, false, address(implementationExample2));
-        // 2. alice and bob approve the proposal
+        multisig.propose(transparentUpgradeableProxy, false, address(upgradeV2));
+        // alice approve the proposal
         vm.prank(alice);
-        multisig.approveProposal(1, true);
-        // 3. shouldn't upgrade when there is not enough approval
-        // ! the value should be 1 before executing
-        uint256 value = ImplementationExample(address(transparentUpgradeableProxy)).retrieve();
-        assertEq(value, 1);
-
+        multisig.approveProposal(1);
+        // shouldn't upgrade when there is not enough approval
+        vm.prank(address(multisig));
+        address preImplementation2 = transparentUpgradeableProxy.implementation();
+        assertEq(preImplementation2, address(upgradeV1));
+        // bob approve the proposal
         vm.prank(bob);
+        multisig.approveProposal(1);
         // once there are enough approvals, execute automatically
-        multisig.approveProposal(1, true);
-
-        // ! after the upgrading the data should be 2
-        ImplementationExample2(address(transparentUpgradeableProxy)).increment();
-        uint256 upgradeValue = ImplementationExample2(address(transparentUpgradeableProxy))
-            .retrieve();
-        assertEq(upgradeValue, 2);
+        vm.prank(address(multisig));
+        address postImplementation = transparentUpgradeableProxy.implementation();
+        assertEq(postImplementation, address(upgradeV2));
     }
 
     function testProposeToUpgradeFail() public {
         vm.expectRevert(abi.encodePacked("NotOwner"));
         vm.prank(daniel);
-        multisig.propose(transparentUpgradeableProxy, false, address(implementationExample2));
+        multisig.propose(transparentUpgradeableProxy, false, address(upgradeV2));
     }
 
     function testProposeToChangeAdmin() public {
@@ -72,9 +67,9 @@ contract MultisigTest is Test {
         multisig.propose(transparentUpgradeableProxy, true, address(alice));
         // 2. alice and bob approve
         vm.prank(alice);
-        multisig.approveProposal(1, true);
+        multisig.approveProposal(1);
         vm.prank(bob);
-        multisig.approveProposal(1, true);
+        multisig.approveProposal(1);
         // check the admin has changed
         vm.prank(alice);
         address admin = transparentUpgradeableProxy.admin();

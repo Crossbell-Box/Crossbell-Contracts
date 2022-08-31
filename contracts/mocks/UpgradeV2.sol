@@ -3,9 +3,9 @@
 
 pragma solidity 0.8.10;
 
-import "./ImplementationExample.sol";
+import "./UpgradeV1.sol";
 
-contract ImplementationExample2 is ImplementationExample {
+contract UpgradeV2 is UpgradeV1 {
     // Increments the stored value by 1
     function increment() public {
         store(retrieve() + 1);

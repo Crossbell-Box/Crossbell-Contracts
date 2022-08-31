@@ -98,7 +98,7 @@ contract Multisig {
         emit Propose(proposalId, target, proposalType, data);
     }
 
-    function approveProposal(uint256 _proposalId, bool execute) external onlyMember {
+    function approveProposal(uint256 _proposalId) external onlyMember {
         require(_isPendingProposal(_proposalId), "NotPendingProposal");
         require(!_hasApproved(msg.sender, _proposalId), "AlreadyApproved");
 
@@ -108,7 +108,7 @@ contract Multisig {
 
         emit Approval(msg.sender, _proposalId);
 
-        if (execute && proposals[_proposalId].approvalCount >= threshold) {
+        if (proposals[_proposalId].approvalCount >= threshold) {
             _executeProposal(_proposalId);
         }
     }

@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 pragma solidity 0.8.10;
 
-contract ImplementationExample is Initializable {
+contract UpgradeV1 is Initializable {
     uint256 public initialValue;
     uint256 private value;
 
