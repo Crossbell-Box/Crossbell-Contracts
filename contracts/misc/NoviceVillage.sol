@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
 contract NoviceVillage is Initializable, AccessControlEnumerable {
-    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
     address public web3Entry;
 
@@ -14,10 +14,10 @@ contract NoviceVillage is Initializable, AccessControlEnumerable {
         web3Entry = _web3Entry;
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _setupRole(OPERATOR_ROLE, _msgSender());
+        _setupRole(ADMIN_ROLE, _msgSender());
     }
 
-    fallback() external onlyRole(OPERATOR_ROLE) {
+    fallback() external onlyRole(ADMIN_ROLE) {
         address target = web3Entry;
 
         assembly {

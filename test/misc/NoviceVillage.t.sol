@@ -9,7 +9,7 @@ import "../helpers/SetUp.sol";
 import "../../contracts/misc/NoviceVillage.sol";
 
 contract NoviceVillageTest is Test, SetUp, Utils {
-    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
     address public alice = address(0x1111);
@@ -23,7 +23,7 @@ contract NoviceVillageTest is Test, SetUp, Utils {
         novice = new NoviceVillage();
         novice.initialize(address(web3Entry));
 
-        novice.grantRole(OPERATOR_ROLE, alice);
+        novice.grantRole(ADMIN_ROLE, alice);
     }
 
     function testNoviceInitializeFail() public {
@@ -90,7 +90,7 @@ contract NoviceVillageTest is Test, SetUp, Utils {
                 "AccessControl: account ",
                 Strings.toHexString(bob),
                 " is missing role ",
-                Strings.toHexString(uint256(OPERATOR_ROLE), 32)
+                Strings.toHexString(uint256(ADMIN_ROLE), 32)
             )
         );
         vm.prank(bob);
@@ -148,45 +148,45 @@ contract NoviceVillageTest is Test, SetUp, Utils {
 
     function testNoviceRole() public {
         // check role
-        assertEq(cbt.hasRole(OPERATOR_ROLE, alice), false);
-        assertEq(cbt.hasRole(OPERATOR_ROLE, bob), false);
+        assertEq(cbt.hasRole(ADMIN_ROLE, alice), false);
+        assertEq(cbt.hasRole(ADMIN_ROLE, bob), false);
         assertEq(cbt.hasRole(DEFAULT_ADMIN_ROLE, alice), false);
         assertEq(cbt.hasRole(DEFAULT_ADMIN_ROLE, bob), false);
 
         // grant role
-        cbt.grantRole(OPERATOR_ROLE, bob);
+        cbt.grantRole(ADMIN_ROLE, bob);
         cbt.grantRole(DEFAULT_ADMIN_ROLE, alice);
 
         // check role
-        assertEq(cbt.hasRole(OPERATOR_ROLE, alice), false);
-        assertEq(cbt.hasRole(OPERATOR_ROLE, bob), true);
+        assertEq(cbt.hasRole(ADMIN_ROLE, alice), false);
+        assertEq(cbt.hasRole(ADMIN_ROLE, bob), true);
         assertEq(cbt.hasRole(DEFAULT_ADMIN_ROLE, alice), true);
         assertEq(cbt.hasRole(DEFAULT_ADMIN_ROLE, bob), false);
 
         // get role member
         assertEq(cbt.getRoleMember(DEFAULT_ADMIN_ROLE, 1), alice);
-        assertEq(cbt.getRoleMember(OPERATOR_ROLE, 0), bob);
+        assertEq(cbt.getRoleMember(ADMIN_ROLE, 0), bob);
 
         // get role admin
-        assertEq(cbt.getRoleAdmin(OPERATOR_ROLE), DEFAULT_ADMIN_ROLE);
+        assertEq(cbt.getRoleAdmin(ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
         assertEq(cbt.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
 
         // revoke role
-        cbt.revokeRole(OPERATOR_ROLE, bob);
-        assertEq(cbt.hasRole(OPERATOR_ROLE, bob), false);
+        cbt.revokeRole(ADMIN_ROLE, bob);
+        assertEq(cbt.hasRole(ADMIN_ROLE, bob), false);
     }
 
     function testNoviceRenounceRol() public {
         // grant role to bob
-        cbt.grantRole(OPERATOR_ROLE, bob);
-        assertEq(cbt.hasRole(OPERATOR_ROLE, bob), true);
-        assertEq(cbt.getRoleMemberCount(OPERATOR_ROLE), 1);
-        assertEq(cbt.getRoleMember(OPERATOR_ROLE, 0), bob);
+        cbt.grantRole(ADMIN_ROLE, bob);
+        assertEq(cbt.hasRole(ADMIN_ROLE, bob), true);
+        assertEq(cbt.getRoleMemberCount(ADMIN_ROLE), 1);
+        assertEq(cbt.getRoleMember(ADMIN_ROLE, 0), bob);
 
         // renounce role
         vm.prank(bob);
-        cbt.renounceRole(OPERATOR_ROLE, bob);
-        assertEq(cbt.hasRole(OPERATOR_ROLE, bob), false);
-        assertEq(cbt.getRoleMemberCount(OPERATOR_ROLE), 0);
+        cbt.renounceRole(ADMIN_ROLE, bob);
+        assertEq(cbt.hasRole(ADMIN_ROLE, bob), false);
+        assertEq(cbt.getRoleMemberCount(ADMIN_ROLE), 0);
     }
 }
