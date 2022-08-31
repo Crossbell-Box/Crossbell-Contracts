@@ -31,6 +31,27 @@ contract NewbieVillageTest is Test, SetUp, Utils {
         newbie.initialize(address(web3Entry));
     }
 
+    function testNewbieCreateCharacter() public {
+        Web3Entry(address(newbie)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie))
+        );
+        Web3Entry(address(newbie)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob)
+        );
+        assertEq(web3Entry.ownerOf(Const.FIRST_CHARACTER_ID), address(newbie));
+        assertEq(web3Entry.ownerOf(Const.SECOND_CHARACTER_ID), bob);
+    }
+
+    function testNewbieCreateCharacterFail() public {
+        Web3Entry(address(newbie)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie))
+        );
+        vm.expectRevert(abi.encodePacked("HandleExists"));
+        Web3Entry(address(newbie)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, bob)
+        );
+    }
+
     function testNewbieLinkCharacter() public {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
