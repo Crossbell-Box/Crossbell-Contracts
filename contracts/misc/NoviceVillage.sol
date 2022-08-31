@@ -5,7 +5,7 @@ pragma solidity 0.8.10;
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
-contract NewbieVillage is Initializable, AccessControlEnumerable {
+contract NoviceVillage is Initializable, AccessControlEnumerable {
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
     address public web3Entry;
