@@ -28,6 +28,9 @@ foundry-test :; forge clean && forge test --optimize --optimizer-runs 200 -v # -
 # Run solhint
 check :; solhint "{contracts,test,scripts}/**/*.sol"
 
+# slither
+slither :; slither .
+
 # Lints
 lint :; prettier --write "{contracts,test,scripts}/**/*.sol"
 
