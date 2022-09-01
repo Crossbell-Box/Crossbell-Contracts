@@ -16,8 +16,10 @@
         "ethereum-waffle": "^3.4.4",
         "ethers": "^5.6.9",
         "hardhat": "^2.10.1",
-        "hardhat-gas-reporter": "^1.0.4",
         "hardhat-contract-sizer": "^2.5.1",
+        "hardhat-gas-reporter": "^1.0.4",
+        "husky": "^8.0.1",
+        "lint-staged": "^13.0.3",
         "prettier": "^2.3.1",
         "prettier-plugin-solidity": "^1.0.0-beta.13",
         "solidity-docgen": "^0.6.0-beta.16",
@@ -32,6 +34,9 @@
         "snapshot": "make snapshot",
         "lint": "make lint",
         "version": "auto-changelog -t keepachangelog --commit-limit false --ignore-commit-pattern 'chore:|test:|docs:' && git add CHANGELOG.md"
+    },
+    "lint-staged": {
+        "*": "make lint"
     },
     "dependencies": {}
 }
