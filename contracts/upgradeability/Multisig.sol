@@ -17,7 +17,7 @@ contract Multisig {
     event Propose(
         uint256 indexed proposalId,
         TransparentUpgradeableProxy target,
-        bool proposalType, // 0 stands for proposalTypeUpgrade, 1 stands for proposalTypeChangeAdmin
+        string proposalType, // "ChangeAdmin" or "Upgrade"
         address data
     );
     event Approval(address indexed owner, uint256 indexed proposalId);
@@ -25,7 +25,7 @@ contract Multisig {
     event Execution(
         uint256 indexed proposalId,
         TransparentUpgradeableProxy target,
-        bool proposalType, // proposalTypeUpgrade or proposalTypeChangeAdmin
+        string proposalType, // "ChangeAdmin" or "Upgrade"
         address data
     );
     event Upgrade(TransparentUpgradeableProxy target, address implementation);
@@ -47,7 +47,7 @@ contract Multisig {
 
     struct Proposal {
         TransparentUpgradeableProxy target;
-        bool proposalType; // proposalTypeUpgrade or proposalTypeChangeAdmin
+        string proposalType; // "ChangeAdmin" or "Upgrade"
         address data;
         uint256 approvalCount;
         address[] approvals;
@@ -82,9 +82,10 @@ contract Multisig {
 
     function propose(
         TransparentUpgradeableProxy target,
-        bool proposalType,
+        string calldata proposalType,
         address data
     ) external onlyMember {
+        require(keccak256(bytes(proposalType)) == keccak256(bytes("ChangeAdmin")) || keccak256(bytes(proposalType)) == keccak256(bytes("Upgrade")) , "Unexpected proposal type");
         proposalCount++;
         uint256 proposalId = proposalCount;
         // create proposal
@@ -188,14 +189,15 @@ contract Multisig {
         Proposal storage proposal = proposals[_proposalId];
         require(proposal.approvalCount >= threshold, "NotEnoughApproval");
 
-        // 0 stands for proposalTypeUpgrade, 1 stands for proposalTypeChangeAdmin
-        if (proposal.proposalType) {
+        if (keccak256(bytes(proposal.proposalType)) == keccak256(bytes("ChangeAdmin"))) {
             proposal.target.changeAdmin(proposal.data);
             // address oldAdmin = proposal.target.admin();
             emit ChangeAdmin(proposal.target, proposal.data);
-        } else {
+        } else if (keccak256(bytes(proposal.proposalType)) == keccak256(bytes("Upgrade"))) {
             proposal.target.upgradeTo(proposal.data);
             emit Upgrade(proposal.target, proposal.data);
+        } else {
+            revert("Unexpected proposal type");
         }
 
         // update proposal
