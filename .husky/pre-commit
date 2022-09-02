@@ -5,8 +5,7 @@
 echo "Running lint"
 yarn lint
 
-
+# unit test
 echo "Running test"
 forge=$HOME/.foundry/bin/forge
-# unit test
 ${forge} test

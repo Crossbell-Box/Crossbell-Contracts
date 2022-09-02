@@ -38,7 +38,7 @@ contract MultisigTest is Test {
         assertEq(preImplementation, address(upgradeV1));
         // alice propose to upgrade
         vm.prank(alice);
-        multisig.propose(transparentUpgradeableProxy, false, address(upgradeV2));
+        multisig.propose(transparentUpgradeableProxy, "Upgrade", address(upgradeV2));
         // alice approve the proposal
         vm.prank(alice);
         multisig.approveProposal(1);
@@ -58,13 +58,17 @@ contract MultisigTest is Test {
     function testProposeToUpgradeFail() public {
         vm.expectRevert(abi.encodePacked("NotOwner"));
         vm.prank(daniel);
-        multisig.propose(transparentUpgradeableProxy, false, address(upgradeV2));
+        multisig.propose(transparentUpgradeableProxy, "Upgrade", address(upgradeV2));
+
+        vm.expectRevert("Unexpected proposal type");
+        vm.prank(alice);
+        multisig.propose(transparentUpgradeableProxy, "upgrade", address(upgradeV2));
     }
 
     function testProposeToChangeAdmin() public {
         // 1. alice propose to change admin in to alice
         vm.prank(alice);
-        multisig.propose(transparentUpgradeableProxy, true, address(alice));
+        multisig.propose(transparentUpgradeableProxy, "ChangeAdmin", address(alice));
         // 2. alice and bob approve
         vm.prank(alice);
         multisig.approveProposal(1);
