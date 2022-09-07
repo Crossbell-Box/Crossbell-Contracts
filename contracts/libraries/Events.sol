@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.10;
 
+import "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
+
 library Events {
     event BaseInitialized(string name, string symbol, uint256 timestamp);
 
@@ -214,4 +216,29 @@ library Events {
         uint256 indexed characterId,
         bytes32 indexed linkType
     );
+
+    // ProxyAdminMultisig
+    event Setup(
+        address indexed initiator,
+        address[] owners,
+        uint256 indexed ownerCount,
+        uint256 indexed threshold
+    );
+
+    event Propose(
+        uint256 indexed proposalId,
+        TransparentUpgradeableProxy target,
+        string proposalType, // "ChangeAdmin" or "Upgrade"
+        address data
+    );
+    event Approval(address indexed owner, uint256 indexed proposalId);
+    event Delete(address indexed owner, uint256 indexed proposalId);
+    event Execution(
+        uint256 indexed proposalId,
+        TransparentUpgradeableProxy target,
+        string proposalType, // "ChangeAdmin" or "Upgrade"
+        address data
+    );
+    event Upgrade(TransparentUpgradeableProxy target, address implementation);
+    event ChangeAdmin(TransparentUpgradeableProxy target, address newAdmin);
 }

@@ -5,7 +5,7 @@ pragma solidity 0.8.10;
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./TransparentUpgradeableProxy.sol";
 
-contract Multisig {
+contract ProxyAdminMultisig {
     // events
     event Setup(
         address indexed initiator,
@@ -22,12 +22,6 @@ contract Multisig {
     );
     event Approval(address indexed owner, uint256 indexed proposalId);
     event Delete(address indexed owner, uint256 indexed proposalId);
-    event Execution(
-        uint256 indexed proposalId,
-        TransparentUpgradeableProxy target,
-        string proposalType, // "ChangeAdmin" or "Upgrade"
-        address data
-    );
     event Upgrade(TransparentUpgradeableProxy target, address implementation);
     event ChangeAdmin(TransparentUpgradeableProxy target, address newAdmin);
 
@@ -191,7 +185,6 @@ contract Multisig {
 
         if (keccak256(bytes(proposal.proposalType)) == keccak256(bytes("ChangeAdmin"))) {
             proposal.target.changeAdmin(proposal.data);
-            // address oldAdmin = proposal.target.admin();
             emit ChangeAdmin(proposal.target, proposal.data);
         } else if (keccak256(bytes(proposal.proposalType)) == keccak256(bytes("Upgrade"))) {
             proposal.target.upgradeTo(proposal.data);
@@ -203,8 +196,6 @@ contract Multisig {
         // update proposal
         _deletePendingProposalId(_proposalId);
         proposals[_proposalId].status = PROPOSAL_STATUS_EXECUTED;
-
-        emit Execution(_proposalId, proposal.target, proposal.proposalType, proposal.data);
     }
 
     function _deletePendingProposalId(uint256 _proposalId) internal {
