@@ -3,7 +3,12 @@
 pragma solidity 0.8.10;
 
 import "@openzeppelin/contracts/utils/math/Math.sol";
-import "./TransparentUpgradeableProxy.sol";
+
+interface ITransparentUpgradeableProxy {
+    function changeAdmin(address newAdmin) external;
+
+    function upgradeTo(address newImplementation) external;
+}
 
 contract ProxyAdminMultisig {
     // events
@@ -16,13 +21,20 @@ contract ProxyAdminMultisig {
 
     event Propose(
         uint256 indexed proposalId,
-        TransparentUpgradeableProxy target,
+        address target,
         string proposalType, // "ChangeAdmin" or "Upgrade"
         address data
     );
     event Approval(address indexed owner, uint256 indexed proposalId);
-    event Upgrade(TransparentUpgradeableProxy target, address implementation);
-    event ChangeAdmin(TransparentUpgradeableProxy target, address newAdmin);
+    event Delete(address indexed owner, uint256 indexed proposalId);
+    event Execution(
+        uint256 indexed proposalId,
+        address target,
+        string proposalType, // "ChangeAdmin" or "Upgrade"
+        address data
+    );
+    event Upgrade(address target, address implementation);
+    event ChangeAdmin(address target, address newAdmin);
 
     modifier onlyMember() {
         require(owners[msg.sender] != address(0), "NotOwner");
@@ -39,7 +51,7 @@ contract ProxyAdminMultisig {
     uint256 internal threshold;
 
     struct Proposal {
-        TransparentUpgradeableProxy target;
+        address target;
         string proposalType; // "ChangeAdmin" or "Upgrade"
         address data;
         uint256 approvalCount;
@@ -74,7 +86,7 @@ contract ProxyAdminMultisig {
     }
 
     function propose(
-        TransparentUpgradeableProxy target,
+        address target,
         string calldata proposalType,
         address data
     ) external onlyMember {
@@ -177,10 +189,10 @@ contract ProxyAdminMultisig {
         require(proposal.approvalCount >= threshold, "NotEnoughApproval");
 
         if (keccak256(bytes(proposal.proposalType)) == keccak256(bytes("ChangeAdmin"))) {
-            proposal.target.changeAdmin(proposal.data);
+            ITransparentUpgradeableProxy(proposal.target).changeAdmin(proposal.data);
             emit ChangeAdmin(proposal.target, proposal.data);
         } else if (keccak256(bytes(proposal.proposalType)) == keccak256(bytes("Upgrade"))) {
-            proposal.target.upgradeTo(proposal.data);
+            ITransparentUpgradeableProxy(proposal.target).upgradeTo(proposal.data);
             emit Upgrade(proposal.target, proposal.data);
         } else {
             revert("Unexpected proposal type");

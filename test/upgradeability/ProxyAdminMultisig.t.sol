@@ -11,7 +11,34 @@ import "../../contracts/libraries/Events.sol";
 import "../helpers/utils.sol";
 import "../helpers/Const.sol";
 
-contract MultisigTest is Test, Utils {
+interface DumbEmitterEvents {
+    // events
+    event Setup(
+        address indexed initiator,
+        address[] owners,
+        uint256 indexed ownerCount,
+        uint256 indexed threshold
+    );
+
+    event Propose(
+        uint256 indexed proposalId,
+        address target,
+        string proposalType, // "ChangeAdmin" or "Upgrade"
+        address data
+    );
+    event Approval(address indexed owner, uint256 indexed proposalId);
+    event Delete(address indexed owner, uint256 indexed proposalId);
+    event Execution(
+        uint256 indexed proposalId,
+        address target,
+        string proposalType, // "ChangeAdmin" or "Upgrade"
+        address data
+    );
+    event Upgrade(address target, address implementation);
+    event ChangeAdmin(address target, address newAdmin);
+}
+
+contract MultisigTest is DumbEmitterEvents, Test, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
     address public charlie = address(0x3333);
@@ -23,6 +50,8 @@ contract MultisigTest is Test, Utils {
     UpgradeV1 upgradeV1;
     UpgradeV2 upgradeV2;
 
+    address target;
+
     function setUp() public {
         upgradeV1 = new UpgradeV1();
         upgradeV2 = new UpgradeV2();
@@ -32,6 +61,8 @@ contract MultisigTest is Test, Utils {
             address(proxyAdminMultisig),
             abi.encodeWithSelector(upgradeV1.initialize.selector, 1)
         );
+
+        target = address(transparentUpgradeableProxy);
     }
 
     function testProposeToUpgrade() public {
@@ -42,11 +73,11 @@ contract MultisigTest is Test, Utils {
         // alice propose to upgrade
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         vm.startPrank(alice);
-        emit Events.Propose(1, transparentUpgradeableProxy, "Upgrade", address(upgradeV2));
-        proxyAdminMultisig.propose(transparentUpgradeableProxy, "Upgrade", address(upgradeV2));
+        emit Propose(1, target, "Upgrade", address(upgradeV2));
+        proxyAdminMultisig.propose(target, "Upgrade", address(upgradeV2));
         // alice approve the proposal
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.Approval(alice, 1);
+        emit Approval(alice, 1);
         proxyAdminMultisig.approveProposal(1);
         // shouldn't upgrade when there is not enough approval
         vm.stopPrank();
@@ -57,10 +88,10 @@ contract MultisigTest is Test, Utils {
         vm.startPrank(bob);
         // expect approve event
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.Approval(bob, 1);
+        emit Approval(bob, 1);
         // expect upgrade event
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.Upgrade(transparentUpgradeableProxy, address(upgradeV2));
+        emit Upgrade(target, address(upgradeV2));
         proxyAdminMultisig.approveProposal(1);
         vm.stopPrank();
         // once there are enough approvals, execute automatically
@@ -73,16 +104,16 @@ contract MultisigTest is Test, Utils {
         // not owner can't propose
         vm.expectRevert(abi.encodePacked("NotOwner"));
         vm.prank(daniel);
-        proxyAdminMultisig.propose(transparentUpgradeableProxy, "Upgrade", address(upgradeV2));
+        proxyAdminMultisig.propose(target, "Upgrade", address(upgradeV2));
 
         // can'e offer invalid proposal
         vm.expectRevert("Unexpected proposal type");
         vm.prank(alice);
-        proxyAdminMultisig.propose(transparentUpgradeableProxy, "upgrade", address(upgradeV2));
+        proxyAdminMultisig.propose(target, "upgrade", address(upgradeV2));
 
         // not owner can't approve
         vm.prank(alice);
-        proxyAdminMultisig.propose(transparentUpgradeableProxy, "Upgrade", address(upgradeV2));
+        proxyAdminMultisig.propose(target, "Upgrade", address(upgradeV2));
         vm.expectRevert(abi.encodePacked("NotOwner"));
         vm.prank(daniel);
         proxyAdminMultisig.approveProposal(1);
@@ -110,10 +141,52 @@ contract MultisigTest is Test, Utils {
         proxyAdminMultisig.approveProposal(1);
     }
 
+    function testProposeChangeAdmin() public {
+        // alice propose to change admin in to alice
+        vm.prank(alice);
+        proxyAdminMultisig.propose(target, "ChangeAdmin", address(alice));
+
+        // check proposal status
+        // TODO
+        ProxyAdminMultisig.Proposal[] memory proposals = proxyAdminMultisig.getPendingProposals();
+        assertEq(proposals[0].target, target);
+        //        assertEq(proposals[0].proposalType, "ChangeAdmin");
+        //        assertEq(proposals[0].data, "ChangeAdmin");
+        //        assertEq(proposals[0].approvals, "ChangeAdmin");
+        //        assertEq(proposals[0].status, "ChangeAdmin");
+    }
+
+    function testProposeChangeAdminFail() public {
+        // alice propose to change admin in to alice
+        vm.prank(alice);
+        proxyAdminMultisig.propose(target, "ChangeAdmin", address(alice));
+
+        // check proposal status
+        // TODO
+        ProxyAdminMultisig.Proposal[] memory proposals = proxyAdminMultisig.getPendingProposals();
+        assertEq(proposals[0].target, target);
+        //        assertEq(proposals[0].proposalType, "ChangeAdmin");
+        //        assertEq(proposals[0].data, "ChangeAdmin");
+        //        assertEq(proposals[0].approvals, "ChangeAdmin");
+        //        assertEq(proposals[0].status, "ChangeAdmin");
+    }
+
+    function testConstruct() public {}
+
+    function testConstructFail() public {}
+
+    function testApproveProposal() public {}
+
+    function testApproveProposalFail() public {}
+
+    function testDeleteProposal() public {}
+
+    function testDeleteProposalFail() public {}
+
     function testProposeToChangeAdmin() public {
         // 1. alice propose to change admin in to alice
         vm.prank(alice);
-        proxyAdminMultisig.propose(transparentUpgradeableProxy, "ChangeAdmin", address(alice));
+        proxyAdminMultisig.propose(target, "ChangeAdmin", address(alice));
         // 2. alice and bob approve
         vm.prank(alice);
         proxyAdminMultisig.approveProposal(1);
