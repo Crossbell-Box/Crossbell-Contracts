@@ -43,7 +43,8 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
     address public bob = address(0x2222);
     address public charlie = address(0x3333);
     address public daniel = address(0x4444);
-    address[] public ownersArr = [alice, bob, charlie];
+    address[] public ownersArr2 = [alice, bob];
+    address[] public ownersArr3 = [alice, bob, charlie];
     address[] public replicatedOwners = [alice, alice];
 
     ProxyAdminMultisig proxyAdminMultisig;
@@ -56,7 +57,7 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
     function setUp() public {
         upgradeV1 = new UpgradeV1();
         upgradeV2 = new UpgradeV2();
-        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr, 2);
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 2);
         transparentUpgradeableProxy = new TransparentUpgradeableProxy(
             address(upgradeV1),
             address(proxyAdminMultisig),
@@ -140,35 +141,6 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         vm.expectRevert("Unexpected proposal type");
         vm.prank(alice);
         proxyAdminMultisig.propose(target, "upgrade", address(upgradeV2));
-
-        // not owner can't approve
-        vm.prank(alice);
-        proxyAdminMultisig.propose(target, "Upgrade", address(upgradeV2));
-        vm.expectRevert(abi.encodePacked("NotOwner"));
-        vm.prank(daniel);
-        proxyAdminMultisig.approveProposal(1);
-
-        // can't approve twice
-        vm.startPrank(alice);
-        proxyAdminMultisig.approveProposal(1);
-        vm.expectRevert(abi.encodePacked("AlreadyApproved"));
-        proxyAdminMultisig.approveProposal(1);
-        vm.stopPrank();
-
-        // can't approve proposals that don't exist
-        vm.startPrank(alice);
-        vm.expectRevert(abi.encodePacked("NotPendingProposal"));
-        proxyAdminMultisig.approveProposal(0);
-        vm.expectRevert(abi.encodePacked("NotPendingProposal"));
-        proxyAdminMultisig.approveProposal(2);
-        vm.stopPrank();
-
-        // can't approve proposals that's deleted
-        vm.prank(bob);
-        proxyAdminMultisig.approveProposal(1);
-        vm.expectRevert(abi.encodePacked("NotPendingProposal"));
-        vm.startPrank(charlie);
-        proxyAdminMultisig.approveProposal(1);
     }
 
     function testProposeChangeAdmin() public {
@@ -210,29 +182,92 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         assertEq(admin, alice);
     }
 
-    function testProposeChangeAdminFail() public {}
-
     function testConstruct() public {
-        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr, 2);
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 2);
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 3);
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr2, 1);
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr2, 2);
     }
 
     function testConstructFail() public {
         // Threshold can't be 0
         vm.expectRevert(abi.encodePacked("ThresholdIsZero"));
-        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr, 0);
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 0);
         // Threshold can't Exceed OwnersCount
         vm.expectRevert(abi.encodePacked("ThresholdExceedsOwnersCount"));
-        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr, 4);
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 4);
         // replicated owners
         vm.expectRevert(abi.encodePacked("InvalidOwner"));
         proxyAdminMultisig = new ProxyAdminMultisig(replicatedOwners, 1);
     }
 
-    function testApproveProposal() public {}
+    function testApproveProposal() public {
+        vm.startPrank(alice);
+        proxyAdminMultisig.propose(target, "Upgrade", address(upgradeV2));
+        proxyAdminMultisig.approveProposal(1);
+        
+        proxyAdminMultisig.propose(target, "ChangeAdmin", address(alice));
+        proxyAdminMultisig.approveProposal(2);
+    }
 
-    function testApproveProposalFail() public {}
+    function testApproveProposalFail() public {
+        // not owner can't approve
+        vm.prank(alice);
+        proxyAdminMultisig.propose(target, "Upgrade", address(upgradeV2));
+        vm.expectRevert(abi.encodePacked("NotOwner"));
+        vm.prank(daniel);
+        proxyAdminMultisig.approveProposal(1);
 
-    function testDeleteProposal() public {}
+        // can't approve twice
+        vm.startPrank(alice);
+        proxyAdminMultisig.approveProposal(1);
+        vm.expectRevert(abi.encodePacked("AlreadyApproved"));
+        proxyAdminMultisig.approveProposal(1);
+        vm.stopPrank();
 
-    function testDeleteProposalFail() public {}
+        // can't approve proposals that don't exist
+        vm.startPrank(alice);
+        vm.expectRevert(abi.encodePacked("NotPendingProposal"));
+        proxyAdminMultisig.approveProposal(0);
+        vm.expectRevert(abi.encodePacked("NotPendingProposal"));
+        proxyAdminMultisig.approveProposal(2);
+        vm.stopPrank();
+
+        // can't approve proposals that's deleted
+        vm.prank(bob);
+        proxyAdminMultisig.approveProposal(1);
+        vm.expectRevert(abi.encodePacked("NotPendingProposal"));
+        vm.startPrank(charlie);
+        proxyAdminMultisig.approveProposal(1);
+    }
+
+    function testDeleteProposal() public {
+        vm.prank(alice);
+        proxyAdminMultisig.propose(target, "ChangeAdmin", address(alice));
+
+        uint256 count = proxyAdminMultisig.getProposalCount();
+        assertEq(count, 1);
+        vm.prank(alice);
+        proxyAdminMultisig.deleteProposal(1);
+        // delete only remove the proposal id from pending list
+        uint256 count2 = proxyAdminMultisig.getProposalCount();
+        assertEq(count2, 1);
+
+    }
+
+    function testDeleteProposalFail() public {
+        vm.prank(alice);
+        proxyAdminMultisig.propose(target, "ChangeAdmin", address(alice));
+
+        uint256 count = proxyAdminMultisig.getProposalCount();
+        assertEq(count, 1);
+        vm.prank(daniel);
+        vm.expectRevert(abi.encodePacked("NotOwner"));
+        proxyAdminMultisig.deleteProposal(1);
+
+        vm.expectRevert(abi.encodePacked("NotPendingProposal"));
+        vm.prank(alice);
+        proxyAdminMultisig.deleteProposal(2);
+
+    }
 }
