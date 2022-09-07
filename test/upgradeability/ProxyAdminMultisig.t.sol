@@ -10,7 +10,6 @@ import "../../contracts/mocks/UpgradeV2.sol";
 import "../../contracts/libraries/Events.sol";
 import "../helpers/utils.sol";
 import "../helpers/Const.sol";
-import "../helpers/Setup.sol";
 
 contract MultisigTest is Test, Utils {
     address public alice = address(0x1111);
