@@ -44,6 +44,7 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
     address public charlie = address(0x3333);
     address public daniel = address(0x4444);
     address[] public ownersArr = [alice, bob, charlie];
+    address[] public replicatedOwners = [alice, alice];
 
     ProxyAdminMultisig proxyAdminMultisig;
     TransparentUpgradeableProxy transparentUpgradeableProxy;
@@ -75,10 +76,27 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         vm.startPrank(alice);
         emit Propose(1, target, "Upgrade", address(upgradeV2));
         proxyAdminMultisig.propose(target, "Upgrade", address(upgradeV2));
+
+        // check proposal status
+        ProxyAdminMultisig.Proposal[] memory proposals1 = proxyAdminMultisig.getPendingProposals();
+        assertEq(proposals1[0].target, target);
+        assertEq(proposals1[0].proposalType, "Upgrade");
+        assertEq(proposals1[0].data, address(upgradeV2));
+        assertEq(proposals1[0].approvalCount, 0);
+        assertEq(proposals1[0].status, "Pending");
+
         // alice approve the proposal
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Approval(alice, 1);
         proxyAdminMultisig.approveProposal(1);
+
+        ProxyAdminMultisig.Proposal[] memory proposals2 = proxyAdminMultisig.getPendingProposals();
+        assertEq(proposals2[0].target, target);
+        assertEq(proposals2[0].proposalType, "Upgrade");
+        assertEq(proposals2[0].data, address(upgradeV2));
+        assertEq(proposals2[0].approvalCount, 1);
+        assertEq(proposals2[0].status, "Pending");
+
         // shouldn't upgrade when there is not enough approval
         vm.stopPrank();
         vm.prank(address(proxyAdminMultisig));
@@ -93,6 +111,18 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Upgrade(target, address(upgradeV2));
         proxyAdminMultisig.approveProposal(1);
+        // check all proposal
+        ProxyAdminMultisig.Proposal[] memory proposals3 = proxyAdminMultisig.getAllProposals(0, 1);
+        assertEq(proposals3[0].target, target);
+        assertEq(proposals3[0].proposalType, "Upgrade");
+        assertEq(proposals3[0].data, address(upgradeV2));
+        assertEq(proposals3[0].approvalCount, 2);
+        assertEq(proposals3[0].status, "Executed");
+        // TODO
+        // check pending proposal
+        // ProxyAdminMultisig.Proposal[] memory proposals4 = proxyAdminMultisig.getAllProposals(0,1);
+        // assertEq(proposals4.length, 0);
+
         vm.stopPrank();
         // once there are enough approvals, execute automatically
         vm.prank(address(proxyAdminMultisig));
@@ -142,38 +172,61 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
     }
 
     function testProposeChangeAdmin() public {
-        // alice propose to change admin in to alice
+        // 1. alice propose to change admin in to alice
         vm.prank(alice);
         proxyAdminMultisig.propose(target, "ChangeAdmin", address(alice));
 
         // check proposal status
-        // TODO
-        ProxyAdminMultisig.Proposal[] memory proposals = proxyAdminMultisig.getPendingProposals();
-        assertEq(proposals[0].target, target);
-        //        assertEq(proposals[0].proposalType, "ChangeAdmin");
-        //        assertEq(proposals[0].data, "ChangeAdmin");
-        //        assertEq(proposals[0].approvals, "ChangeAdmin");
-        //        assertEq(proposals[0].status, "ChangeAdmin");
-    }
+        ProxyAdminMultisig.Proposal[] memory proposalsC1 = proxyAdminMultisig.getPendingProposals();
+        assertEq(proposalsC1[0].target, target);
+        assertEq(proposalsC1[0].proposalType, "ChangeAdmin");
+        assertEq(proposalsC1[0].data, address(alice));
+        assertEq(proposalsC1[0].approvalCount, 0);
+        assertEq(proposalsC1[0].status, "Pending");
 
-    function testProposeChangeAdminFail() public {
-        // alice propose to change admin in to alice
+        uint256 countC1 = proxyAdminMultisig.getProposalCount();
+        assertEq(countC1, 1);
+
+        // 2. alice and bob approve
         vm.prank(alice);
-        proxyAdminMultisig.propose(target, "ChangeAdmin", address(alice));
-
+        proxyAdminMultisig.approveProposal(1);
         // check proposal status
-        // TODO
-        ProxyAdminMultisig.Proposal[] memory proposals = proxyAdminMultisig.getPendingProposals();
-        assertEq(proposals[0].target, target);
-        //        assertEq(proposals[0].proposalType, "ChangeAdmin");
-        //        assertEq(proposals[0].data, "ChangeAdmin");
-        //        assertEq(proposals[0].approvals, "ChangeAdmin");
-        //        assertEq(proposals[0].status, "ChangeAdmin");
+        ProxyAdminMultisig.Proposal[] memory proposalsC2 = proxyAdminMultisig.getPendingProposals();
+        assertEq(proposalsC2[0].target, target);
+        assertEq(proposalsC2[0].proposalType, "ChangeAdmin");
+        assertEq(proposalsC2[0].data, address(alice));
+        assertEq(proposalsC2[0].approvalCount, 1);
+        assertEq(proposalsC2[0].status, "Pending");
+        uint256 countC2 = proxyAdminMultisig.getProposalCount();
+        assertEq(countC2, 1);
+        vm.prank(bob);
+        proxyAdminMultisig.approveProposal(1);
+        // check count
+        uint256 countC3 = proxyAdminMultisig.getProposalCount();
+        assertEq(countC3, 1);
+        // check the admin has changed
+        vm.prank(alice);
+        address admin = transparentUpgradeableProxy.admin();
+        assertEq(admin, alice);
     }
 
-    function testConstruct() public {}
+    function testProposeChangeAdminFail() public {}
 
-    function testConstructFail() public {}
+    function testConstruct() public {
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr, 2);
+    }
+
+    function testConstructFail() public {
+        // Threshold can't be 0
+        vm.expectRevert(abi.encodePacked("ThresholdIsZero"));
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr, 0);
+        // Threshold can't Exceed OwnersCount
+        vm.expectRevert(abi.encodePacked("ThresholdExceedsOwnersCount"));
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr, 4);
+        // replicated owners
+        vm.expectRevert(abi.encodePacked("InvalidOwner"));
+        proxyAdminMultisig = new ProxyAdminMultisig(replicatedOwners, 1);
+    }
 
     function testApproveProposal() public {}
 
@@ -182,19 +235,4 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
     function testDeleteProposal() public {}
 
     function testDeleteProposalFail() public {}
-
-    function testProposeToChangeAdmin() public {
-        // 1. alice propose to change admin in to alice
-        vm.prank(alice);
-        proxyAdminMultisig.propose(target, "ChangeAdmin", address(alice));
-        // 2. alice and bob approve
-        vm.prank(alice);
-        proxyAdminMultisig.approveProposal(1);
-        vm.prank(bob);
-        proxyAdminMultisig.approveProposal(1);
-        // check the admin has changed
-        vm.prank(alice);
-        address admin = transparentUpgradeableProxy.admin();
-        assertEq(admin, alice);
-    }
 }

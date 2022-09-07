@@ -123,6 +123,16 @@ contract ProxyAdminMultisig {
         }
     }
 
+    // reject and delete a pending proposal
+    function deleteProposal(uint256 _proposalId) external onlyMember {
+        require(_isPendingProposal(_proposalId), "NotPendingProposal");
+
+        _deletePendingProposalId(_proposalId);
+        proposals[_proposalId].status = PROPOSAL_STATUS_DELETED;
+
+        emit Delete(msg.sender, _proposalId);
+    }
+
     function getPendingProposals() external view returns (Proposal[] memory results) {
         uint256 len = pendingProposalIds.length;
 
