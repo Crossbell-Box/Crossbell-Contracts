@@ -12,7 +12,7 @@ import "../helpers/utils.sol";
 import "../helpers/Const.sol";
 import "../helpers/Setup.sol";
 
-contract MultisigTest is Test, Utils{
+contract MultisigTest is Test, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
     address public charlie = address(0x3333);
@@ -109,7 +109,6 @@ contract MultisigTest is Test, Utils{
         vm.expectRevert(abi.encodePacked("NotPendingProposal"));
         vm.startPrank(charlie);
         proxyAdminMultisig.approveProposal(1);
-
     }
 
     function testProposeToChangeAdmin() public {
@@ -126,5 +125,4 @@ contract MultisigTest is Test, Utils{
         address admin = transparentUpgradeableProxy.admin();
         assertEq(admin, alice);
     }
-    
 }

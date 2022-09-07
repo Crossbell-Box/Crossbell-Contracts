@@ -21,7 +21,6 @@ contract ProxyAdminMultisig {
         address data
     );
     event Approval(address indexed owner, uint256 indexed proposalId);
-    event Delete(address indexed owner, uint256 indexed proposalId);
     event Upgrade(TransparentUpgradeableProxy target, address implementation);
     event ChangeAdmin(TransparentUpgradeableProxy target, address newAdmin);
 
@@ -79,7 +78,11 @@ contract ProxyAdminMultisig {
         string calldata proposalType,
         address data
     ) external onlyMember {
-        require(keccak256(bytes(proposalType)) == keccak256(bytes("ChangeAdmin")) || keccak256(bytes(proposalType)) == keccak256(bytes("Upgrade")) , "Unexpected proposal type");
+        require(
+            keccak256(bytes(proposalType)) == keccak256(bytes("ChangeAdmin")) ||
+                keccak256(bytes(proposalType)) == keccak256(bytes("Upgrade")),
+            "Unexpected proposal type"
+        );
         proposalCount++;
         uint256 proposalId = proposalCount;
         // create proposal
@@ -106,16 +109,6 @@ contract ProxyAdminMultisig {
         if (proposals[_proposalId].approvalCount >= threshold) {
             _executeProposal(_proposalId);
         }
-    }
-
-    // reject and delete a pending proposal
-    function deleteProposal(uint256 _proposalId) external onlyMember {
-        require(_isPendingProposal(_proposalId), "NotPendingProposal");
-
-        _deletePendingProposalId(_proposalId);
-        proposals[_proposalId].status = PROPOSAL_STATUS_DELETED;
-
-        emit Delete(msg.sender, _proposalId);
     }
 
     function getPendingProposals() external view returns (Proposal[] memory results) {
