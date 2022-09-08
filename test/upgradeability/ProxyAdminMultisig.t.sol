@@ -46,6 +46,9 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
     address[] public ownersArr2 = [alice, bob];
     address[] public ownersArr3 = [alice, bob, charlie];
     address[] public replicatedOwners = [alice, alice];
+    address[] public zeroOwners = [alice, address(0x0)];
+    address[] public sentinelOwners = [alice, address(0x1)];
+    address[] public existsOwners = [alice, bob, alice];
 
     ProxyAdminMultisig proxyAdminMultisig;
     TransparentUpgradeableProxy transparentUpgradeableProxy;
@@ -65,6 +68,32 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         );
 
         target = address(transparentUpgradeableProxy);
+    }
+
+    function testConstruct() public {
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 2);
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 3);
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr2, 1);
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr2, 2);
+    }
+
+    function testConstructFail() public {
+        // Threshold can't be 0
+        vm.expectRevert(abi.encodePacked("ThresholdIsZero"));
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 0);
+        // Threshold can't Exceed OwnersCount
+        vm.expectRevert(abi.encodePacked("ThresholdExceedsOwnersCount"));
+        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 4);
+        // replicated owners
+        vm.expectRevert(abi.encodePacked("InvalidOwner"));
+        proxyAdminMultisig = new ProxyAdminMultisig(replicatedOwners, 1);
+        // owner can't be 0x0 or 0x1
+        vm.expectRevert(abi.encodePacked("InvalidOwner"));
+        proxyAdminMultisig = new ProxyAdminMultisig(zeroOwners, 1);
+        vm.expectRevert(abi.encodePacked("InvalidOwner"));
+        proxyAdminMultisig = new ProxyAdminMultisig(sentinelOwners, 1);
+        vm.expectRevert(abi.encodePacked("OwnerExists"));
+        proxyAdminMultisig = new ProxyAdminMultisig(existsOwners, 1);
     }
 
     function testProposeToUpgrade() public {
@@ -119,10 +148,6 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         assertEq(proposals3[0].data, address(upgradeV2));
         assertEq(proposals3[0].approvalCount, 2);
         assertEq(proposals3[0].status, "Executed");
-        // TODO
-        // check pending proposal
-        // ProxyAdminMultisig.Proposal[] memory proposals4 = proxyAdminMultisig.getAllProposals(0,1);
-        // assertEq(proposals4.length, 0);
 
         vm.stopPrank();
         // once there are enough approvals, execute automatically
@@ -182,30 +207,11 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         assertEq(admin, alice);
     }
 
-    function testConstruct() public {
-        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 2);
-        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 3);
-        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr2, 1);
-        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr2, 2);
-    }
-
-    function testConstructFail() public {
-        // Threshold can't be 0
-        vm.expectRevert(abi.encodePacked("ThresholdIsZero"));
-        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 0);
-        // Threshold can't Exceed OwnersCount
-        vm.expectRevert(abi.encodePacked("ThresholdExceedsOwnersCount"));
-        proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 4);
-        // replicated owners
-        vm.expectRevert(abi.encodePacked("InvalidOwner"));
-        proxyAdminMultisig = new ProxyAdminMultisig(replicatedOwners, 1);
-    }
-
     function testApproveProposal() public {
         vm.startPrank(alice);
         proxyAdminMultisig.propose(target, "Upgrade", address(upgradeV2));
         proxyAdminMultisig.approveProposal(1);
-        
+
         proxyAdminMultisig.propose(target, "ChangeAdmin", address(alice));
         proxyAdminMultisig.approveProposal(2);
     }
@@ -252,7 +258,6 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         // delete only remove the proposal id from pending list
         uint256 count2 = proxyAdminMultisig.getProposalCount();
         assertEq(count2, 1);
-
     }
 
     function testDeleteProposalFail() public {
@@ -268,6 +273,5 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         vm.expectRevert(abi.encodePacked("NotPendingProposal"));
         vm.prank(alice);
         proxyAdminMultisig.deleteProposal(2);
-
     }
 }
