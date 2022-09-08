@@ -8,6 +8,7 @@ import "../../contracts/TransparentUpgradeableProxy.sol";
 import "../../contracts/mocks/UpgradeV1.sol";
 import "../../contracts/mocks/UpgradeV2.sol";
 import "./helpers/utils.sol";
+import "../../contracts/libraries/Constants.sol";
 
 interface DumbEmitterEvents {
     // events
@@ -115,11 +116,7 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
 
         // check proposal status
         ProxyAdminMultisig.Proposal[] memory proposals1 = proxyAdminMultisig.getPendingProposals();
-        assertEq(proposals1[0].target, target);
-        assertEq(proposals1[0].proposalType, "Upgrade");
-        assertEq(proposals1[0].data, address(upgradeV2));
-        assertEq(proposals1[0].approvalCount, 0);
-        assertEq(proposals1[0].status, "Pending");
+        _checkProposal(proposals1[0], target, Constants.PROPOSAL_TYPE_UPGRADE, address(upgradeV2), 0, new address[](0), Constants.PROPOSAL_STATUS_PENDING);
 
         // alice approve the proposal
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
@@ -291,15 +288,12 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         address[] memory approvals,
         string memory status
     ) internal {
-        // TODO:
+        assertEq(proposal.target, target);
+        assertEq(proposal.proposalType, proposalType);
+        assertEq(proposal.data, data);
+        assertEq(proposal.approvalCount, approvalCount);
+        assertEq(proposal.approvals, approvals);
+        assertEq(proposal.status, status);
     }
 
-    // TODO
-    // function checkProposal(ProxyAdminMultisig.Proposal proposal, address target, string ) public {
-    //     assertEq(proposal.target, target);
-    //     assertEq(proposal.proposalType, "Upgrade");
-    //     assertEq(proposal.data, address(upgradeV2));
-    //     assertEq(proposal.approvalCount, 0);
-    //     assertEq(proposal.status, "Pending");
-    // }
 }

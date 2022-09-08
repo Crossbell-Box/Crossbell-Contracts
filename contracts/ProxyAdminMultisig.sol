@@ -69,14 +69,14 @@ contract ProxyAdminMultisig {
         for (uint256 i = 0; i < _owners.length; i++) {
             address owner = _owners[i];
             require(
-                owner != address(0) && owner != SENTINEL_OWNER && currentOwner != owner,
+                owner != address(0) && owner != Constants.SENTINEL_OWNER && currentOwner != owner,
                 "InvalidOwner"
             );
             require(owners[owner] == address(0), "OwnerExists");
             owners[currentOwner] = owner;
             currentOwner = owner;
         }
-        owners[currentOwner] = SENTINEL_OWNER;
+        owners[currentOwner] = Constants.SENTINEL_OWNER;
         ownersCount = _owners.length;
         threshold = _threshold;
 
@@ -176,15 +176,15 @@ contract ProxyAdminMultisig {
     }
 
     function isOwner(address owner) external view returns (bool) {
-        return owner != SENTINEL_OWNER && owners[owner] != address(0);
+        return owner != Constants.SENTINEL_OWNER && owners[owner] != address(0);
     }
 
     function _getOwners() internal view returns (address[] memory) {
         address[] memory array = new address[](ownersCount);
 
         uint256 index = 0;
-        address currentOwner = owners[SENTINEL_OWNER];
-        while (currentOwner != SENTINEL_OWNER) {
+        address currentOwner = owners[Constants.SENTINEL_OWNER];
+        while (currentOwner != Constants.SENTINEL_OWNER) {
             array[index] = currentOwner;
             currentOwner = owners[currentOwner];
             index++;
