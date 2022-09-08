@@ -3,6 +3,8 @@
 pragma solidity 0.8.10;
 
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import "./libraries/Constants.sol";
+
 
 interface ITransparentUpgradeableProxy {
     function changeAdmin(address newAdmin) external;
@@ -41,10 +43,6 @@ contract ProxyAdminMultisig {
         _;
     }
 
-    string internal constant PROPOSAL_STATUS_PENDING = "Pending";
-    string internal constant PROPOSAL_STATUS_DELETED = "Deleted";
-    string internal constant PROPOSAL_STATUS_EXECUTED = "Executed";
-    address internal constant SENTINEL_OWNER = address(0x1);
 
     mapping(address => address) internal owners;
     uint256 internal ownersCount;
@@ -67,7 +65,7 @@ contract ProxyAdminMultisig {
         require(_threshold <= _owners.length, "ThresholdExceedsOwnersCount");
 
         // initialize owners
-        address currentOwner = SENTINEL_OWNER;
+        address currentOwner = Constants.SENTINEL_OWNER;
         for (uint256 i = 0; i < _owners.length; i++) {
             address owner = _owners[i];
             require(
@@ -91,7 +89,7 @@ contract ProxyAdminMultisig {
         address data
     ) external onlyMember {
         require(
-            keccak256(bytes(proposalType)) == keccak256(bytes("ChangeAdmin")) ||
+            keccak256(bytes(proposalType)) == keccak256(bytes(Constants.PROPOSAL_TYPE_CHANGE_ADMIN)) ||
                 keccak256(bytes(proposalType)) == keccak256(bytes("Upgrade")),
             "Unexpected proposal type"
         );
@@ -102,7 +100,7 @@ contract ProxyAdminMultisig {
         proposals[proposalId].proposalType = proposalType;
         proposals[proposalId].data = data;
         proposals[proposalId].approvalCount = 0;
-        proposals[proposalId].status = PROPOSAL_STATUS_PENDING;
+        proposals[proposalId].status = Constants.PROPOSAL_STATUS_PENDING;
         pendingProposalIds.push(proposalId);
 
         emit Propose(proposalId, target, proposalType, data);
@@ -128,7 +126,7 @@ contract ProxyAdminMultisig {
         require(_isPendingProposal(_proposalId), "NotPendingProposal");
 
         _deletePendingProposalId(_proposalId);
-        proposals[_proposalId].status = PROPOSAL_STATUS_DELETED;
+        proposals[_proposalId].status = Constants.PROPOSAL_STATUS_DELETED;
 
         emit Delete(msg.sender, _proposalId);
     }
@@ -198,10 +196,10 @@ contract ProxyAdminMultisig {
         Proposal storage proposal = proposals[_proposalId];
         require(proposal.approvalCount >= threshold, "NotEnoughApproval");
 
-        if (keccak256(bytes(proposal.proposalType)) == keccak256(bytes("ChangeAdmin"))) {
+        if (keccak256(bytes(proposal.proposalType)) == keccak256(bytes(Constants.PROPOSAL_TYPE_CHANGE_ADMIN))) {
             ITransparentUpgradeableProxy(proposal.target).changeAdmin(proposal.data);
             emit ChangeAdmin(proposal.target, proposal.data);
-        } else if (keccak256(bytes(proposal.proposalType)) == keccak256(bytes("Upgrade"))) {
+        } else if (keccak256(bytes(proposal.proposalType)) == keccak256(bytes(Constants.PROPOSAL_TYPE_UPGRADE))) {
             ITransparentUpgradeableProxy(proposal.target).upgradeTo(proposal.data);
             emit Upgrade(proposal.target, proposal.data);
         } else {
@@ -210,7 +208,7 @@ contract ProxyAdminMultisig {
 
         // update proposal
         _deletePendingProposalId(_proposalId);
-        proposals[_proposalId].status = PROPOSAL_STATUS_EXECUTED;
+        proposals[_proposalId].status = Constants.PROPOSAL_STATUS_EXECUTED;
     }
 
     function _deletePendingProposalId(uint256 _proposalId) internal {

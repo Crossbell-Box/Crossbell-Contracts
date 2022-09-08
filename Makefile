@@ -26,7 +26,7 @@ scripts :; chmod +x ./scripts/*
 foundry-test :; forge clean && forge test --optimize --optimizer-runs 200 -v # --ffi # enable if you need the `ffi` cheat code on HEVM
 
 # Run solhint
-check :; solhint "{contracts,test,scripts}/**/*.sol"
+check :; solhint "{contracts,test,scripts}/upgradeability/*.sol"
 
 # slither
 slither :; slither .

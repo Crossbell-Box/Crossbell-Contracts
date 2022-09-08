@@ -3,12 +3,11 @@ pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
 import "forge-std/console2.sol";
-import "../../contracts/upgradeability/ProxyAdminMultisig.sol";
-import "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
+import "../../contracts/ProxyAdminMultisig.sol";
+import "../../contracts/TransparentUpgradeableProxy.sol";
 import "../../contracts/mocks/UpgradeV1.sol";
 import "../../contracts/mocks/UpgradeV2.sol";
-import "../helpers/utils.sol";
-import "../helpers/Const.sol";
+import "./helpers/utils.sol";
 
 interface DumbEmitterEvents {
     // events
@@ -273,4 +272,13 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         vm.prank(alice);
         proxyAdminMultisig.deleteProposal(2);
     }
+
+    // TODO
+    // function checkProposal(ProxyAdminMultisig.Proposal proposal, address target, string ) public {
+    //     assertEq(proposal.target, target);
+    //     assertEq(proposal.proposalType, "Upgrade");
+    //     assertEq(proposal.data, address(upgradeV2));
+    //     assertEq(proposal.approvalCount, 0);
+    //     assertEq(proposal.status, "Pending");
+    // }
 }
