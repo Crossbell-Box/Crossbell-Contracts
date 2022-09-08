@@ -7,7 +7,6 @@ import "../../contracts/upgradeability/ProxyAdminMultisig.sol";
 import "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import "../../contracts/mocks/UpgradeV1.sol";
 import "../../contracts/mocks/UpgradeV2.sol";
-import "../../contracts/libraries/Events.sol";
 import "../helpers/utils.sol";
 import "../helpers/Const.sol";
 
