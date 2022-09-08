@@ -74,18 +74,25 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 3);
         proxyAdminMultisig = new ProxyAdminMultisig(ownersArr2, 1);
         proxyAdminMultisig = new ProxyAdminMultisig(ownersArr2, 2);
+
+        // TODO: check status
+        // getWalletDetail
     }
 
     function testConstructFail() public {
         // Threshold can't be 0
         vm.expectRevert(abi.encodePacked("ThresholdIsZero"));
         proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 0);
+
         // Threshold can't Exceed OwnersCount
         vm.expectRevert(abi.encodePacked("ThresholdExceedsOwnersCount"));
         proxyAdminMultisig = new ProxyAdminMultisig(ownersArr3, 4);
+
+        // [alice, bob, alice] and [alice, alice, bob]
         // replicated owners
         vm.expectRevert(abi.encodePacked("InvalidOwner"));
         proxyAdminMultisig = new ProxyAdminMultisig(replicatedOwners, 1);
+
         // owner can't be 0x0 or 0x1
         vm.expectRevert(abi.encodePacked("InvalidOwner"));
         proxyAdminMultisig = new ProxyAdminMultisig(zeroOwners, 1);
@@ -100,6 +107,7 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         vm.prank(address(proxyAdminMultisig));
         address preImplementation = transparentUpgradeableProxy.implementation();
         assertEq(preImplementation, address(upgradeV1));
+
         // alice propose to upgrade
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         vm.startPrank(alice);
@@ -125,12 +133,11 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         assertEq(proposals2[0].data, address(upgradeV2));
         assertEq(proposals2[0].approvalCount, 1);
         assertEq(proposals2[0].status, "Pending");
+        vm.stopPrank();
 
         // shouldn't upgrade when there is not enough approval
-        vm.stopPrank();
         vm.prank(address(proxyAdminMultisig));
-        address preImplementation2 = transparentUpgradeableProxy.implementation();
-        assertEq(preImplementation2, address(upgradeV1));
+        assertEq(transparentUpgradeableProxy.implementation(), address(upgradeV1));
         // bob approve the proposal
         vm.startPrank(bob);
         // expect approve event
@@ -272,5 +279,19 @@ contract MultisigTest is DumbEmitterEvents, Test, Utils {
         vm.expectRevert(abi.encodePacked("NotPendingProposal"));
         vm.prank(alice);
         proxyAdminMultisig.deleteProposal(2);
+
+        // TODO: can't delete an executed proposal
+    }
+
+    function _checkProposal(
+        ProxyAdminMultisig.Proposal memory proposal,
+        address target,
+        string memory proposalType,
+        address data,
+        uint256 approvalCount,
+        address[] memory approvals,
+        string memory status
+    ) internal {
+        // TODO:
     }
 }
