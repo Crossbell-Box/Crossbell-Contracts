@@ -54,8 +54,8 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.stopPrank();
 
         vm.startPrank(bob);
-        // setProfileUri
-        web3Entry.setProfileUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        // setCharacterUri
+        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
 
         // postNote4Address
         web3Entry.postNote4Address(makePostNoteData(Const.FIRST_CHARACTER_ID), address(0x1232414));

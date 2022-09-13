@@ -43,18 +43,6 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         emit Events.Web3EntryInitialized(block.timestamp);
     }
 
-    function canCreate(string memory handle, address account) public view returns (bool) {
-        return true;
-    }
-
-    function createProfile(DataTypes.CreateCharacterData calldata vars) external {
-        _createCharacter(vars);
-    }
-
-    function setProfileUri(uint256 profileId, string calldata newUri) external {
-        _setCharacterUri(profileId, newUri);
-    }
-
     function _setCharacterUri(uint256 profileId, string memory newUri) internal {
         _validateCallerIsCharacterOwnerOrOperator(profileId);
 
