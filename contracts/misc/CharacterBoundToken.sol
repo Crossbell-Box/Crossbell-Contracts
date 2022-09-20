@@ -18,7 +18,7 @@ contract CharacterBoundToken is
 {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
-    event Mint(uint256 indexed to, uint256 indexed tokenId, uint256 indexed amount);
+    event Mint(uint256 indexed to, uint256 indexed tokenId, uint256 indexed tokenNumber);
     event Burn(uint256 indexed from, uint256 indexed tokenId, uint256 indexed amount);
 
     // Mapping from token ID to character balances
@@ -31,6 +31,8 @@ contract CharacterBoundToken is
     mapping(uint256 => string) private _tokenURIs;
 
     address public _web3Entry;
+
+    uint256 internal currentTokenNumber;
 
     constructor(address web3Entry) {
         _web3Entry = web3Entry;
@@ -59,7 +61,9 @@ contract CharacterBoundToken is
         require(characterId != 0, "mint to the zero characterId");
 
         _balances[characterId][tokenId] += 1;
-        emit Mint(characterId, tokenId, 1);
+
+        currentTokenNumber++;
+        emit Mint(characterId, tokenId, currentTokenNumber);
     }
 
     function burn(

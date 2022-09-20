@@ -17,7 +17,7 @@ contract CbtTest is Test, SetUp, Utils {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
-    event Mint(uint256 indexed to, uint256 indexed tokenId, uint256 indexed amount);
+    event Mint(uint256 indexed to, uint256 indexed tokenId, uint256 indexed tokenNumber);
     event Burn(uint256 indexed from, uint256 indexed tokenId, uint256 indexed amount);
     event ApprovalForAll(address indexed account, address indexed operator, bool approved);
     event URI(string value, uint256 indexed id);
@@ -37,23 +37,24 @@ contract CbtTest is Test, SetUp, Utils {
     function testMint() public {
         // MINTER_ROLE should mint
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
-        uint256 balance1Of1 = cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
-        assertEq(balance1Of1, amount);
+        assertEq(cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID), amount);
+        // mint
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
-        uint256 balance2Of1 = cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
-        assertEq(balance2Of1, amount);
+        assertEq(cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID), amount);
 
         // expect correct emit
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
+        emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, 3);
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        assertEq(cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID), amount * 2);
 
         // grant mint role and mint
         cbt.grantRole(MINTER_ROLE, bob);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
-        emit Mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
+        emit Mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, 4);
         vm.prank(bob);
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
+        assertEq(cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID), amount * 2);
     }
 
     function testMintFail() public {
