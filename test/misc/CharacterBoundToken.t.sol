@@ -44,14 +44,14 @@ contract CbtTest is Test, SetUp, Utils {
 
         // expect correct emit
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, 3);
+        emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, 2);
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
         assertEq(cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID), amount * 2);
 
         // grant mint role and mint
         cbt.grantRole(MINTER_ROLE, bob);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
-        emit Mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, 4);
+        emit Mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, 2);
         vm.prank(bob);
         cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
         assertEq(cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID), amount * 2);
@@ -453,5 +453,25 @@ contract CbtTest is Test, SetUp, Utils {
         );
         cbt.mint(1, 1);
         vm.stopPrank();
+    }
+
+    function testTokenNumber() public {
+        // tokenNumber is emitted by Mint event
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
+        emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, 1);
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
+        emit Mint(Const.SECOND_CHARACTER_ID, Const.FIRST_CBT_ID, 2);
+        cbt.mint(Const.SECOND_CHARACTER_ID, Const.FIRST_CBT_ID);
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
+        emit Mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID, 3);
+        cbt.mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID);
+
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
+        emit Mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, 1);
+        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
+        emit Mint(Const.SECOND_CHARACTER_ID, Const.SECOND_CBT_ID, 2);
+        cbt.mint(Const.SECOND_CHARACTER_ID, Const.SECOND_CBT_ID);
     }
 }

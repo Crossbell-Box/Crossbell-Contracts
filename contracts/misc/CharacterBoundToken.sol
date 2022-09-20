@@ -32,7 +32,8 @@ contract CharacterBoundToken is
 
     address public _web3Entry;
 
-    uint256 internal currentTokenNumber;
+    // tokenId => currentTokenNumber
+    mapping(uint256 => uint256) private currentTokenNumbers;
 
     constructor(address web3Entry) {
         _web3Entry = web3Entry;
@@ -62,8 +63,8 @@ contract CharacterBoundToken is
 
         _balances[characterId][tokenId] += 1;
 
-        currentTokenNumber++;
-        emit Mint(characterId, tokenId, currentTokenNumber);
+        currentTokenNumbers[tokenId] = currentTokenNumbers[tokenId] + 1;
+        emit Mint(characterId, tokenId, currentTokenNumbers[tokenId]);
     }
 
     function burn(
