@@ -42,8 +42,14 @@ Compile and run:
 ```shell
 yarn
 yarn test
-#run sigle test function using --match-test
+#run single test function using --match-test
 forge test --match-test testXXX  -vvvvv
+#run single test contract using --match-contract
+forge test --match-contract xxxTest  -vvvvv
+#run a group of tests using --match-path
+forge test --match-path test/...  -vvvvv
+
+
 ```
 
 Deploy:
