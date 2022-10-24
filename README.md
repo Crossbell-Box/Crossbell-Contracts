@@ -31,27 +31,23 @@ This repository is the implementation of the protocol.
 
 ## ⚙ Development
 
-```shell
-yarn
-yarn test
-```
 Install forge if you don't have one:
 ```shell
 # install foge
 curl -L https://foundry.paradigm.xyz | bash
 foundryup
 ```
-Compile and run test:
+
+Compile and run:
 ```shell
-make
-# or
-make test
-# or run sigle test function using --match-test
+yarn
+yarn test
+#run sigle test function using --match-test
 forge test --match-test testXXX  -vvvvv
 ```
+
 Deploy:
 ```shell
-chmod +x  ./scripts/deploy_XXX.sh 
-deploy_XXX.sh
+npx hardhat run ./scripts/deployXXX.ts
 ```
 
