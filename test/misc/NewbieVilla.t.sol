@@ -6,61 +6,61 @@ import "../../contracts/libraries/DataTypes.sol";
 import "../helpers/Const.sol";
 import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
-import "../../contracts/misc/NoviceVillage.sol";
+import "../../contracts/misc/NewbieVilla.sol";
 
-contract NoviceVillageTest is Test, SetUp, Utils {
+contract NewbieVillaTest is Test, SetUp, Utils {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
     address public alice = address(0x1111);
     address public bob = address(0x2222);
 
-    NoviceVillage public novice;
+    NewbieVilla public newbie;
 
     function setUp() public {
         _setUp();
 
-        novice = new NoviceVillage();
-        novice.initialize(address(web3Entry));
+        newbie = new NewbieVilla();
+        newbie.initialize(address(web3Entry));
 
-        novice.grantRole(ADMIN_ROLE, alice);
+        newbie.grantRole(ADMIN_ROLE, alice);
     }
 
-    function testNoviceInitializeFail() public {
+    function testNewbieInitializeFail() public {
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
-        novice.initialize(address(web3Entry));
+        newbie.initialize(address(web3Entry));
     }
 
-    function testNoviceCreateCharacter() public {
-        Web3Entry(address(novice)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(novice))
+    function testNewbieCreateCharacter() public {
+        Web3Entry(address(newbie)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie))
         );
-        Web3Entry(address(novice)).createCharacter(
+        Web3Entry(address(newbie)).createCharacter(
             makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob)
         );
-        assertEq(web3Entry.ownerOf(Const.FIRST_CHARACTER_ID), address(novice));
+        assertEq(web3Entry.ownerOf(Const.FIRST_CHARACTER_ID), address(newbie));
         assertEq(web3Entry.ownerOf(Const.SECOND_CHARACTER_ID), bob);
     }
 
-    function testNoviceCreateCharacterFail() public {
-        Web3Entry(address(novice)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(novice))
+    function testNewbieCreateCharacterFail() public {
+        Web3Entry(address(newbie)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie))
         );
         vm.expectRevert(abi.encodePacked("HandleExists"));
-        Web3Entry(address(novice)).createCharacter(
+        Web3Entry(address(newbie)).createCharacter(
             makeCharacterData(Const.MOCK_CHARACTER_HANDLE, bob)
         );
     }
 
-    function testNoviceLinkCharacter() public {
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(novice)));
+    function testNewbieLinkCharacter() public {
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
 
-        assertEq(web3Entry.ownerOf(Const.FIRST_CHARACTER_ID), address(novice));
+        assertEq(web3Entry.ownerOf(Const.FIRST_CHARACTER_ID), address(newbie));
         assertEq(web3Entry.ownerOf(Const.SECOND_CHARACTER_ID), bob);
 
         vm.prank(alice);
-        Web3Entry(address(novice)).linkCharacter(
+        Web3Entry(address(newbie)).linkCharacter(
             DataTypes.linkCharacterData(
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
@@ -68,21 +68,21 @@ contract NoviceVillageTest is Test, SetUp, Utils {
                 new bytes(0)
             )
         );
-        assertEq(linklist.ownerOf(1), address(novice));
+        assertEq(linklist.ownerOf(1), address(newbie));
     }
 
-    function testNoviceSetCharacterUri() public {
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(novice)));
+    function testNewbieSetCharacterUri() public {
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
 
         vm.prank(alice);
-        Web3Entry(address(novice)).setCharacterUri(Const.FIRST_CHARACTER_ID, Const.MOCK_URI);
+        Web3Entry(address(newbie)).setCharacterUri(Const.FIRST_CHARACTER_ID, Const.MOCK_URI);
 
         // check character uri
         assertEq(web3Entry.getCharacterUri(Const.FIRST_CHARACTER_ID), Const.MOCK_URI);
     }
 
-    function testNoviceLinkCharacterFail() public {
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(novice)));
+    function testNewbieLinkCharacterFail() public {
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
 
         vm.expectRevert(
@@ -94,7 +94,7 @@ contract NoviceVillageTest is Test, SetUp, Utils {
             )
         );
         vm.prank(bob);
-        Web3Entry(address(novice)).linkCharacter(
+        Web3Entry(address(newbie)).linkCharacter(
             DataTypes.linkCharacterData(
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
@@ -104,11 +104,11 @@ contract NoviceVillageTest is Test, SetUp, Utils {
         );
     }
 
-    function testNovicePostNote() public {
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(novice)));
+    function testNewbiePostNote() public {
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
 
         vm.prank(alice);
-        Web3Entry(address(novice)).postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        Web3Entry(address(newbie)).postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(
@@ -128,25 +128,25 @@ contract NoviceVillageTest is Test, SetUp, Utils {
         );
     }
 
-    function testNoviceSetOperator() public {
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(novice)));
+    function testNewbieSetOperator() public {
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
 
         vm.prank(alice);
-        Web3Entry(address(novice)).setOperator(Const.FIRST_CHARACTER_ID, bob);
+        Web3Entry(address(newbie)).setOperator(Const.FIRST_CHARACTER_ID, bob);
 
         // check operator
         assertEq(web3Entry.getOperator(Const.FIRST_CHARACTER_ID), bob);
     }
 
-    function testNoviceTransferCharacter() public {
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(novice)));
+    function testNewbieTransferCharacter() public {
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
 
         vm.prank(alice);
-        Web3Entry(address(novice)).transferFrom(address(novice), bob, Const.FIRST_CHARACTER_ID);
+        Web3Entry(address(newbie)).transferFrom(address(newbie), bob, Const.FIRST_CHARACTER_ID);
         assertEq(web3Entry.ownerOf(Const.FIRST_CHARACTER_ID), bob);
     }
 
-    function testNoviceRole() public {
+    function testNewbieRole() public {
         // check role
         assertEq(cbt.hasRole(ADMIN_ROLE, alice), false);
         assertEq(cbt.hasRole(ADMIN_ROLE, bob), false);
@@ -176,7 +176,7 @@ contract NoviceVillageTest is Test, SetUp, Utils {
         assertEq(cbt.hasRole(ADMIN_ROLE, bob), false);
     }
 
-    function testNoviceRenounceRol() public {
+    function testNewbieRenounceRol() public {
         // grant role to bob
         cbt.grantRole(ADMIN_ROLE, bob);
         assertEq(cbt.hasRole(ADMIN_ROLE, bob), true);

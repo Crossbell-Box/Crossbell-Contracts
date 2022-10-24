@@ -4,26 +4,24 @@ async function main() {
     const [owner, addr1] = await ethers.getSigners();
     const admin = owner.address;
 
-    const NoviceVillage = await ethers.getContractFactory("NoviceVillage");
-    const noviceVillage = await NoviceVillage.deploy();
+    const NewbieVilla = await ethers.getContractFactory("NewbieVilla");
+    const newbieVilla = await NewbieVilla.deploy();
 
     const Proxy = await ethers.getContractFactory("TransparentUpgradeableProxy");
-    const proxyNoviceVillage = await Proxy.deploy(noviceVillage.address, admin, "0x");
+    const proxyNewbieVilla = await Proxy.deploy(newbieVilla.address, admin, "0x");
 
-    await noviceVillage.deployed();
-    await proxyNoviceVillage.deployed();
-
+    await newbieVilla.deployed();
+    await proxyNewbieVilla.deployed();
 
     const proxyWeb3Entry = await Proxy.attach("0xa6f969045641Cf486a747A2688F3a5A6d43cd0D8");
 
-    await noviceVillage
-        .attach(proxyNoviceVillage.address)
+    await newbieVilla
+        .attach(proxyNewbieVilla.address)
         .connect(addr1)
         .initialize(proxyWeb3Entry.address);
 
-    console.log("noviceVillage deployed to:", noviceVillage.address);
-    console.log("proxyNoviceVillage deployed to:", proxyNoviceVillage.address);
-
+    console.log("newbieVilla deployed to:", newbieVilla.address);
+    console.log("proxyNewbieVilla deployed to:", proxyNewbieVilla.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
