@@ -67,9 +67,8 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
     function _createCharacter(DataTypes.CreateCharacterData memory vars) internal {
         _characterCounter = _characterCounter + 1;
-
         // mint character nft
-        _mint(vars.to, _characterCounter);
+        _safeMint(vars.to, _characterCounter);
 
         CharacterLogic.createCharacter(
             vars,
@@ -166,7 +165,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         uint256 characterId = ++_characterCounter;
         // mint character nft
-        _mint(to, characterId);
+        _safeMint(to, characterId);
 
         CharacterLogic.createCharacter(
             DataTypes.CreateCharacterData({
