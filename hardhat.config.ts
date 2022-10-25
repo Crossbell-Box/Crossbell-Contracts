@@ -1,12 +1,11 @@
-import * as dotenv from "dotenv";
-
-import "hardhat/config";
+import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
 import "solidity-docgen";
+import * as dotenv from "dotenv";
 
 dotenv.config();
 
@@ -19,6 +18,11 @@ module.exports = {
                 runs: 200,
             },
         },
+    },
+    paths: {
+        sources: "./contracts",
+        cache: "./cache_hardhat",
+        artifacts: "./artifacts_hardhat",
     },
     networks: {
         ropsten: {
@@ -34,7 +38,7 @@ module.exports = {
     etherscan: {
         apiKey: {
             ropsten: process.env.ROPSTEN_API_KEY,
-            crossbell: 'your API key',
+            crossbell: "your API key",
         },
         customChains: [
             {
@@ -47,4 +51,4 @@ module.exports = {
             },
         ],
     },
-};
+} as HardhatUserConfig;

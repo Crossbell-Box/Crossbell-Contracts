@@ -12,11 +12,12 @@ auto_detect_solc = false
 optimizer = true
 optimizer_runs = 200
 
-out = 'artifacts-foundry'
-cache_path = 'cache-foundry'
+out = 'artifacts_foundry'
+cache_path = 'cache_foundry'
 
 # Fuzz more than the default 256
 fuzz_runs = 1_000
+libs = ["node_modules", "lib"]
 
 # Extreme Fuzzing CI Profile :P
 [profile.ci]

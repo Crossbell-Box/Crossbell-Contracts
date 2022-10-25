@@ -10,6 +10,7 @@
         "@openzeppelin/contracts": "4.7.3",
         "@typechain/ethers-v5": "^7.0.1",
         "@typechain/hardhat": "^2.3.0",
+        "@types/mocha": "^10.0.0",
         "auto-changelog": "^2.4.0",
         "chai": "^4.3.6",
         "dotenv": "^10.0.0",
@@ -33,10 +34,10 @@
         "test": "make foundry-test",
         "snapshot": "make snapshot",
         "lint": "make lint",
+        "remap": "forge remappings > remappings.txt",
         "version": "auto-changelog -t keepachangelog --commit-limit false --ignore-commit-pattern 'chore:|test:|docs:' && git add CHANGELOG.md"
     },
     "lint-staged": {
         "*": "make lint"
-    },
-    "dependencies": {}
+    }
 }

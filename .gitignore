@@ -1,16 +1,16 @@
+# Hardhat dependencies
 node_modules
+# Foundry dependencies
+lib 
 .env
 coverage
 coverage.json
 typechain
-cache/
-out/
 
-#Hardhat files
-cache
-cache-foundry
-artifacts
-artifacts-foundry
+cache_hardhat
+cache_foundry
+artifacts_hardhat
+artifacts_foundry
 
 # Ignore Environment Variables!
 .env
