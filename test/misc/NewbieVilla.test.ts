@@ -15,6 +15,7 @@ let receiver: SignerWithAddress;
 let nonce: number;
 let expires: number;
 let proof: string;
+let digest: Uint8Array;
 
 beforeEach(async () => {
     [owner, receiver] = await ethers.getSigners();
@@ -28,7 +29,7 @@ beforeEach(async () => {
 
     nonce = 0x77c614;
     expires = Math.floor((Date.now() + 1000 * 60) / 1000);
-    const digest = ethers.utils.arrayify(
+    digest = ethers.utils.arrayify(
         ethers.utils.solidityKeccak256(
             ["address", "uint256", "uint256", "uint256"],
             [newbieVilla.address, FIRST_CHARACTER_ID, nonce, expires]
@@ -57,6 +58,26 @@ describe("NewbieVilla contract", function () {
                 .withdraw(receiver.address, FIRST_CHARACTER_ID, nonce, expires, proof);
         } catch (e) {
             expect(true);
+        }
+    });
+    it("Unauthorized withdraw will fail", async function () {
+        const wrongProof = await receiver.signMessage(digest);
+        try {
+            await newbieVilla
+                .connect(receiver)
+                .withdraw(receiver.address, FIRST_CHARACTER_ID, nonce, expires, wrongProof);
+        } catch (e: any) {
+            expect(e.message.includes("NewbieVilla: Unauthorized withdraw"));
+        }
+    });
+    it("Wrong length proof will fail", async function () {
+        const wrongProof = proof.slice(1);
+        try {
+            await newbieVilla
+                .connect(receiver)
+                .withdraw(receiver.address, FIRST_CHARACTER_ID, nonce, expires, wrongProof);
+        } catch (e: any) {
+            expect(e.message.includes("NewbieVilla: Wrong signature length"));
         }
     });
 });
