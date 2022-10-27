@@ -8,7 +8,9 @@ contract Web3EntryExtendStorage {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     address internal periphery; // slot 21
-    mapping(uint256 => address) internal _operatorByCharacter;
+    mapping(uint256 => address) internal _operatorByCharacter; // obsoleted
     address public resolver;
     mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkTypesByCharacter; // obsoleted
+    mapping(uint256 => address[]) internal _operatorListByCharacter;
+
 }

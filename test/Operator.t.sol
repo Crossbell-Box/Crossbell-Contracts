@@ -14,6 +14,8 @@ import "./helpers/SetUp.sol";
 contract OperatorTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
+    address public carol = address(0x3333);
+    address[] public arr =  [bob, carol];
 
     function setUp() public {
         _setUp();
@@ -21,6 +23,13 @@ contract OperatorTest is Test, SetUp, Utils {
         // create character
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+    }
+
+    function testSetOperatorList() public {
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        emit Events.SetOperatorList(Const.FIRST_CHARACTER_ID, arr, block.timestamp);
+        vm.prank(alice);
+        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr);
     }
 
     function testSetOperator() public {

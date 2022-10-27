@@ -115,6 +115,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         _setOperator(characterId, operator);
     }
 
+    function setOperatorList(uint256 characterId, address[] calldata operatorList) external {
+        _validateCallerIsCharacterOwner(characterId);
+        _setOperatorList(characterId, operatorList);
+    }
+
     function setLinklistUri(uint256 linklistId, string calldata uri) external {
         _validateCallerIsLinklistOwner(linklistId);
 
@@ -707,6 +712,11 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     function _setOperator(uint256 characterId, address operator) internal {
         _operatorByCharacter[characterId] = operator;
         emit Events.SetOperator(characterId, operator, block.timestamp);
+    }
+
+    function _setOperatorList(uint256 characterId, address[] calldata operator) internal {
+        _operatorListByCharacter[characterId] = operator;
+        emit Events.SetOperatorList(characterId, operator, block.timestamp);
     }
 
     function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view {
