@@ -30,6 +30,9 @@ contract OperatorTest is Test, SetUp, Utils {
         emit Events.SetOperatorList(Const.FIRST_CHARACTER_ID, arr, block.timestamp);
         vm.prank(alice);
         web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr);
+        // carol can link character
+        vm.prank(carol);
+        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
     }
 
     function testSetOperator() public {
@@ -49,6 +52,7 @@ contract OperatorTest is Test, SetUp, Utils {
     function testOperatorActions() public {
         vm.startPrank(alice);
         web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
+        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr);
 
         // link character
         web3Entry.linkCharacter(
@@ -62,7 +66,7 @@ contract OperatorTest is Test, SetUp, Utils {
 
         vm.stopPrank();
 
-        vm.startPrank(bob);
+        vm.startPrank(carol);
         // setCharacterUri
         web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
 

@@ -721,7 +721,17 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
     function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view {
         address owner = ownerOf(characterId);
+        address[] memory operatorList = _operatorListByCharacter[characterId];
+
+        bool exist = false;
+        for (uint i; i < operatorList.length; i++) {
+            if (operatorList[i] == msg.sender) {
+                exist = true;
+                break;
+            }
+        }
         require(
+            exist ||
             msg.sender == owner ||
                 msg.sender == _operatorByCharacter[characterId] ||
                 (tx.origin == owner && msg.sender == periphery),
