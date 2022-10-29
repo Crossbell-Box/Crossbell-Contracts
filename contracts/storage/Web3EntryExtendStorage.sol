@@ -11,6 +11,7 @@ contract Web3EntryExtendStorage {
     mapping(uint256 => address) internal _operatorByCharacter; // obsoleted
     address public resolver;
     mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkTypesByCharacter; // obsoleted
-    mapping(uint256 => address[]) internal _operatorListByCharacter;
+    // mapping(uint256 => address[]) internal _operatorListByCharacter;
+    mapping (uint256 => mapping(address => bool)) internal _operatorListByCharacter;
 
 }

@@ -25,16 +25,6 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
     }
 
-    function testSetOperatorList() public {
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.SetOperatorList(Const.FIRST_CHARACTER_ID, arr, block.timestamp);
-        vm.prank(alice);
-        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr);
-        // carol can link character
-        vm.prank(carol);
-        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
-    }
-
     function testSetOperator() public {
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Events.SetOperator(Const.FIRST_CHARACTER_ID, bob, block.timestamp);
@@ -42,11 +32,25 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
     }
 
+    function testSetOperatorList() public {
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        emit Events.SetOperatorList(Const.FIRST_CHARACTER_ID, arr, block.timestamp);
+        vm.prank(alice);
+        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr);
+    }
+
     function testSetOperatorFail() public {
         // bob can't set operator for alice
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         vm.prank(bob);
         web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
+    }
+
+    function testSetOperatorListFail() public {
+        // bob can't set operator for alice
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.prank(bob);
+        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr);
     }
 
     function testOperatorActions() public {
@@ -66,7 +70,7 @@ contract OperatorTest is Test, SetUp, Utils {
 
         vm.stopPrank();
 
-        vm.startPrank(carol);
+        vm.startPrank(bob);
         // setCharacterUri
         web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
 

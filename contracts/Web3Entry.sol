@@ -714,28 +714,26 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         emit Events.SetOperator(characterId, operator, block.timestamp);
     }
 
-    function _setOperatorList(uint256 characterId, address[] calldata operator) internal {
-        _operatorListByCharacter[characterId] = operator;
-        emit Events.SetOperatorList(characterId, operator, block.timestamp);
+    function _setOperatorList(uint256 characterId, address[] calldata operatorList) internal {
+        // _validateOperatorList(operator);
+        for (uint256 index = 0; index < operatorList.length; index++) {
+            _operatorListByCharacter[characterId][operatorList[index]] = true; 
+        }
+        emit Events.SetOperatorList(characterId, operatorList, block.timestamp);
     }
+
+    // function _validateOperatorList(address[] operator) internal { 
+    // }
 
     function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view {
         address owner = ownerOf(characterId);
-        address[] memory operatorList = _operatorListByCharacter[characterId];
 
-        bool exist = false;
-        for (uint i; i < operatorList.length; i++) {
-            if (operatorList[i] == msg.sender) {
-                exist = true;
-                break;
-            }
-        }
         require(
-            exist ||
+            _operatorListByCharacter[characterId][msg.sender] ||
             msg.sender == owner ||
                 msg.sender == _operatorByCharacter[characterId] ||
                 (tx.origin == owner && msg.sender == periphery),
-            "NotCharacterOwner"
+            "NotCharacterOwnerNorOperator"
         );
     }
 
