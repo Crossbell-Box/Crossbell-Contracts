@@ -15,7 +15,7 @@ contract OperatorTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
     address public carol = address(0x3333);
-    address[] public arr =  [bob, carol];
+    address[] public arr = [bob, carol];
 
     function setUp() public {
         _setUp();

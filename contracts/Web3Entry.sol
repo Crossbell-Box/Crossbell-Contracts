@@ -717,12 +717,12 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     function _setOperatorList(uint256 characterId, address[] calldata operatorList) internal {
         // _validateOperatorList(operator);
         for (uint256 index = 0; index < operatorList.length; index++) {
-            _operatorListByCharacter[characterId][operatorList[index]] = true; 
+            _operatorListByCharacter[characterId][operatorList[index]] = true;
         }
         emit Events.SetOperatorList(characterId, operatorList, block.timestamp);
     }
 
-    // function _validateOperatorList(address[] operator) internal { 
+    // function _validateOperatorList(address[] operator) internal {
     // }
 
     function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view {
@@ -730,7 +730,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
         require(
             _operatorListByCharacter[characterId][msg.sender] ||
-            msg.sender == owner ||
+                msg.sender == owner ||
                 msg.sender == _operatorByCharacter[characterId] ||
                 (tx.origin == owner && msg.sender == periphery),
             "NotCharacterOwnerNorOperator"
