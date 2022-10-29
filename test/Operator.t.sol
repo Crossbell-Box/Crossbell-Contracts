@@ -15,6 +15,7 @@ contract OperatorTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
     address public carol = address(0x3333);
+    address public dick = address(0x4444);
     address[] public arr = [bob, carol];
 
     function setUp() public {
@@ -33,10 +34,24 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testSetOperatorList() public {
+        // approve operator list
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.SetOperatorList(Const.FIRST_CHARACTER_ID, arr, block.timestamp);
+        emit Events.SetOperatorList(Const.FIRST_CHARACTER_ID, arr, true, block.timestamp);
         vm.prank(alice);
-        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr);
+        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, true);
+        // carol is operator now
+        vm.prank(carol);
+        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        // but dick can't
+        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
+        vm.prank(dick);
+        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+
+        // disapprove operator list
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        emit Events.SetOperatorList(Const.FIRST_CHARACTER_ID, arr, false, block.timestamp);
+        vm.prank(alice);
+        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, false);
     }
 
     function testSetOperatorFail() public {
@@ -47,16 +62,21 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testSetOperatorListFail() public {
-        // bob can't set operator for alice
+        // bob can't approve operator list for alice
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         vm.prank(bob);
-        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr);
+        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, true);
+
+        // bob can't disapprove operator list for alice
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.prank(bob);
+        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, false);
     }
 
     function testOperatorActions() public {
         vm.startPrank(alice);
         web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
-        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr);
+        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, true);
 
         // link character
         web3Entry.linkCharacter(

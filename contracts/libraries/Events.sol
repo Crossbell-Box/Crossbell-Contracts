@@ -38,6 +38,7 @@ library Events {
     event SetOperatorList(
         uint256 indexed characterId,
         address[] indexed operatorList,
+        bool indexed approved,
         uint256 timestamp
     );
 

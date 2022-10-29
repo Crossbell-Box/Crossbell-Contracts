@@ -115,9 +115,17 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         _setOperator(characterId, operator);
     }
 
-    function setOperatorList(uint256 characterId, address[] calldata operatorList) external {
+    function setOperatorList(
+        uint256 characterId,
+        address[] calldata operatorList,
+        bool approve
+    ) external {
         _validateCallerIsCharacterOwner(characterId);
-        _setOperatorList(characterId, operatorList);
+        if (approve) {
+            _approveOperatorList(characterId, operatorList);
+        } else {
+            _disapproveOperatorList(characterId, operatorList);
+        }
     }
 
     function setLinklistUri(uint256 linklistId, string calldata uri) external {
@@ -714,12 +722,20 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         emit Events.SetOperator(characterId, operator, block.timestamp);
     }
 
-    function _setOperatorList(uint256 characterId, address[] calldata operatorList) internal {
-        // _validateOperatorList(operator);
+    function _approveOperatorList(uint256 characterId, address[] calldata operatorList) internal {
         for (uint256 index = 0; index < operatorList.length; index++) {
             _operatorListByCharacter[characterId][operatorList[index]] = true;
         }
-        emit Events.SetOperatorList(characterId, operatorList, block.timestamp);
+        emit Events.SetOperatorList(characterId, operatorList, true, block.timestamp);
+    }
+
+    function _disapproveOperatorList(uint256 characterId, address[] calldata operatorList)
+        internal
+    {
+        for (uint256 index = 0; index < operatorList.length; index++) {
+            _operatorListByCharacter[characterId][operatorList[index]] = false;
+        }
+        emit Events.SetOperatorList(characterId, operatorList, false, block.timestamp);
     }
 
     // function _validateOperatorList(address[] operator) internal {
