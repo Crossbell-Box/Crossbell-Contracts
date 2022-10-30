@@ -17,6 +17,7 @@ contract OperatorTest is Test, SetUp, Utils {
     address public carol = address(0x3333);
     address public dick = address(0x4444);
     address[] public arr = [bob, carol];
+    address[] public arr_dick = [dick];
 
     function setUp() public {
         _setUp();
@@ -71,6 +72,16 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         vm.prank(bob);
         web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, false);
+
+        // already approved
+        vm.startPrank(alice);
+        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, true);
+        vm.expectRevert(abi.encodeWithSelector(Events.alreadyApproved.selector, bob));
+        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, true);
+
+        // already disapproved
+        vm.expectRevert(abi.encodeWithSelector(Events.alreadyDisapproved.selector, dick));
+        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr_dick, false);
     }
 
     function testOperatorActions() public {

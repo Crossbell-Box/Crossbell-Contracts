@@ -34,14 +34,11 @@ contract UpgradeOperatorTest is Test, Utils {
     address public carol = address(0x3333);
     address public dick = address(0x4444);
     address[] public arr = [carol, dick];
+    address[] public arr2 = [carol];
 
     function setUp() public {
         oldWeb3EntryImpl = new OldWeb3Entry();
-        proxyWeb3Entry = new TransparentUpgradeableProxy(
-            address(oldWeb3EntryImpl),
-            admin,
-            ""
-        );
+        proxyWeb3Entry = new TransparentUpgradeableProxy(address(oldWeb3EntryImpl), admin, "");
     }
 
     function testImpl() public {
@@ -54,15 +51,17 @@ contract UpgradeOperatorTest is Test, Utils {
         proxyWeb3Entry.upgradeTo(address(web3EntryImpl));
         address impl = proxyWeb3Entry.implementation();
         assertEq(impl, address(web3EntryImpl));
-
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+        vm.stopPrank();
     }
 
     function testCheckStorage() public {
         // use old web3entry to generate some data
-        OldWeb3Entry(address(proxyWeb3Entry)).createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
-        OldWeb3Entry(address(proxyWeb3Entry)).createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+        OldWeb3Entry(address(proxyWeb3Entry)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice)
+        );
+        OldWeb3Entry(address(proxyWeb3Entry)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob)
+        );
 
         // set operator using old web3entry
         vm.prank(alice);
@@ -72,15 +71,38 @@ contract UpgradeOperatorTest is Test, Utils {
         web3EntryImpl = new Web3Entry();
         vm.prank(admin);
         proxyWeb3Entry.upgradeTo(address(web3EntryImpl));
-        
+
         // set operator list using new web3entry
         vm.prank(alice);
         Web3Entry(address(proxyWeb3Entry)).setOperatorList(Const.FIRST_CHARACTER_ID, arr, true);
-
         // now bob and [carol, dick] should be operator
         vm.prank(bob);
-        Web3Entry(address(proxyWeb3Entry)).setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        Web3Entry(address(proxyWeb3Entry)).setCharacterUri(
+            Const.FIRST_CHARACTER_ID,
+            "https://example.com/profile"
+        );
         vm.prank(carol);
-        Web3Entry(address(proxyWeb3Entry)).setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        Web3Entry(address(proxyWeb3Entry)).setCharacterUri(
+            Const.FIRST_CHARACTER_ID,
+            "https://example.com/profile"
+        );
+
+        // delete operator using new web3Entry
+        vm.prank(alice);
+        // disapprove carol
+        Web3Entry(address(proxyWeb3Entry)).setOperatorList(Const.FIRST_CHARACTER_ID, arr2, false);
+        // carol is not operator now
+        vm.prank(carol);
+        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
+        Web3Entry(address(proxyWeb3Entry)).setCharacterUri(
+            Const.FIRST_CHARACTER_ID,
+            "https://example.com/profile"
+        );
+        // dick is still operator
+        vm.prank(dick);
+        Web3Entry(address(proxyWeb3Entry)).setCharacterUri(
+            Const.FIRST_CHARACTER_ID,
+            "https://example.com/profile"
+        );
     }
 }

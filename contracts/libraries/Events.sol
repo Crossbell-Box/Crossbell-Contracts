@@ -221,4 +221,7 @@ library Events {
         uint256 indexed characterId,
         bytes32 indexed linkType
     );
+
+    error alreadyDisapproved(address operator);
+    error alreadyApproved(address operator);
 }

@@ -724,6 +724,9 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
 
     function _approveOperatorList(uint256 characterId, address[] calldata operatorList) internal {
         for (uint256 index = 0; index < operatorList.length; index++) {
+            if (_operatorListByCharacter[characterId][operatorList[index]] == true) {
+                revert Events.alreadyApproved(operatorList[index]);
+            }
             _operatorListByCharacter[characterId][operatorList[index]] = true;
         }
         emit Events.SetOperatorList(characterId, operatorList, true, block.timestamp);
@@ -733,6 +736,9 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         internal
     {
         for (uint256 index = 0; index < operatorList.length; index++) {
+            if (_operatorListByCharacter[characterId][operatorList[index]] == false) {
+                revert Events.alreadyDisapproved(operatorList[index]);
+            }
             _operatorListByCharacter[characterId][operatorList[index]] = false;
         }
         emit Events.SetOperatorList(characterId, operatorList, false, block.timestamp);
