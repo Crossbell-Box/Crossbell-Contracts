@@ -23,7 +23,7 @@ contract SetUp {
     NFT nft;
     Resolver resolver;
     CharacterBoundToken cbt;
-
+    TransparentUpgradeableProxy proxyWeb3Entry;
     address public admin = address(0x999999999999999999999999999999);
 
     function _setUp() internal {
