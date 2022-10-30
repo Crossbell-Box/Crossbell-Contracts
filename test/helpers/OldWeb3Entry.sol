@@ -20,7 +20,13 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-contract OldWeb3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3EntryExtendStorage {
+contract OldWeb3Entry is
+    IWeb3Entry,
+    NFTBase,
+    Web3EntryStorage,
+    Initializable,
+    Web3EntryExtendStorage
+{
     using Strings for uint256;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
