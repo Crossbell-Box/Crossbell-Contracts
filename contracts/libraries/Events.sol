@@ -35,12 +35,9 @@ library Events {
 
     event SetOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
 
-    event SetOperatorList(
-        uint256 indexed characterId,
-        address[] indexed operatorList,
-        bool indexed approved,
-        uint256 timestamp
-    );
+    event AddOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
+
+    event RemoveOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
 
     event SetCharacterUri(uint256 indexed characterId, string newUri);
 
@@ -221,7 +218,4 @@ library Events {
         uint256 indexed characterId,
         bytes32 indexed linkType
     );
-
-    error alreadyDisapproved(address operator);
-    error alreadyApproved(address operator);
 }

@@ -115,17 +115,14 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         _setOperator(characterId, operator);
     }
 
-    function setOperatorList(
-        uint256 characterId,
-        address[] calldata operatorList,
-        bool approve
-    ) external {
+    function addOperator(uint256 characterId, address operator) external {
         _validateCallerIsCharacterOwner(characterId);
-        if (approve) {
-            _approveOperatorList(characterId, operatorList);
-        } else {
-            _disapproveOperatorList(characterId, operatorList);
-        }
+        _addOperator(characterId, operator);
+    }
+
+    function removeOperator(uint256 characterId, address operator) external {
+        _validateCallerIsCharacterOwner(characterId);
+        _removeOperator(characterId, operator);
     }
 
     function setLinklistUri(uint256 linklistId, string calldata uri) external {
@@ -722,26 +719,17 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         emit Events.SetOperator(characterId, operator, block.timestamp);
     }
 
-    function _approveOperatorList(uint256 characterId, address[] calldata operatorList) internal {
-        for (uint256 index = 0; index < operatorList.length; index++) {
-            if (_operatorListByCharacter[characterId][operatorList[index]] == true) {
-                revert Events.alreadyApproved(operatorList[index]);
-            }
-            _operatorListByCharacter[characterId][operatorList[index]] = true;
-        }
-        emit Events.SetOperatorList(characterId, operatorList, true, block.timestamp);
+    function _addOperator(uint256 characterId, address operator) internal {
+        _operatorListByCharacter[characterId][operator] = true;
+        emit Events.AddOperator(characterId, operator, block.timestamp);
     }
 
-    function _disapproveOperatorList(uint256 characterId, address[] calldata operatorList)
+    function _removeOperator(uint256 characterId, address operator)
         internal
     {
-        for (uint256 index = 0; index < operatorList.length; index++) {
-            if (_operatorListByCharacter[characterId][operatorList[index]] == false) {
-                revert Events.alreadyDisapproved(operatorList[index]);
-            }
-            _operatorListByCharacter[characterId][operatorList[index]] = false;
-        }
-        emit Events.SetOperatorList(characterId, operatorList, false, block.timestamp);
+        _operatorListByCharacter[characterId][operator] = false;
+        _operatorByCharacter[characterId] = address(0x0);
+        emit Events.RemoveOperator(characterId, operator, block.timestamp);
     }
 
     // function _validateOperatorList(address[] operator) internal {

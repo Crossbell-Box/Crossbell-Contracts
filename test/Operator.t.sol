@@ -16,8 +16,6 @@ contract OperatorTest is Test, SetUp, Utils {
     address public bob = address(0x2222);
     address public carol = address(0x3333);
     address public dick = address(0x4444);
-    address[] public arr = [bob, carol];
-    address[] public arr_dick = [dick];
 
     function setUp() public {
         _setUp();
@@ -27,67 +25,43 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
     }
 
-    function testSetOperator() public {
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.SetOperator(Const.FIRST_CHARACTER_ID, bob, block.timestamp);
-        vm.prank(alice);
-        web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
-    }
-
     function testSetOperatorList() public {
-        // approve operator list
+        // add operator
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.SetOperatorList(Const.FIRST_CHARACTER_ID, arr, true, block.timestamp);
+        emit Events.AddOperator(Const.FIRST_CHARACTER_ID, carol, block.timestamp);
         vm.prank(alice);
-        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, true);
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, carol);
         // carol is operator now
         vm.prank(carol);
         web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
-        // but dick can't
-        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
-        vm.prank(dick);
-        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
 
-        // disapprove operator list
+        // remove operator
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.SetOperatorList(Const.FIRST_CHARACTER_ID, arr, false, block.timestamp);
+        emit Events.RemoveOperator(Const.FIRST_CHARACTER_ID, carol, block.timestamp);
         vm.prank(alice);
-        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, false);
-    }
-
-    function testSetOperatorFail() public {
-        // bob can't set operator for alice
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        vm.prank(bob);
-        web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
+        web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, carol);
+        // carol is not operator now
+        vm.prank(carol);
+        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
+        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
     }
 
     function testSetOperatorListFail() public {
-        // bob can't approve operator list for alice
+        // only owner can add operator
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         vm.prank(bob);
-        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, true);
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, bob);
 
-        // bob can't disapprove operator list for alice
+        // only owner can remove operator
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         vm.prank(bob);
-        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, false);
-
-        // already approved
-        vm.startPrank(alice);
-        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, true);
-        vm.expectRevert(abi.encodeWithSelector(Events.alreadyApproved.selector, bob));
-        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, true);
-
-        // already disapproved
-        vm.expectRevert(abi.encodeWithSelector(Events.alreadyDisapproved.selector, dick));
-        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr_dick, false);
+        web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, bob);
     }
 
     function testOperatorActions() public {
         vm.startPrank(alice);
         web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
-        web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, true);
+        // web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, true);
 
         // link character
         web3Entry.linkCharacter(
