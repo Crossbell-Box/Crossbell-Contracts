@@ -104,5 +104,15 @@ contract UpgradeOperatorTest is Test, Utils {
             Const.FIRST_CHARACTER_ID,
             "https://example.com/profile"
         );
+
+        // delete operator using old Web3entry
+        vm.prank(alice);
+        OldWeb3Entry(address(proxyWeb3Entry)).setOperator(Const.FIRST_CHARACTER_ID, address(0x0));
+        vm.prank(bob);
+        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
+        Web3Entry(address(proxyWeb3Entry)).setCharacterUri(
+            Const.FIRST_CHARACTER_ID,
+            "https://example.com/profile"
+        );
     }
 }
