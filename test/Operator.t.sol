@@ -25,7 +25,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
     }
 
-    function testSetOperatorList() public {
+    function testSetOperator() public {
         // add operator
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Events.AddOperator(Const.FIRST_CHARACTER_ID, carol, block.timestamp);
@@ -41,12 +41,12 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, carol);
         // carol is not operator now
-        vm.prank(carol);
         vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
+        vm.prank(carol);
         web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
     }
 
-    function testSetOperatorListFail() public {
+    function testSetOperatorFail() public {
         // only owner can add operator
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         vm.prank(bob);
