@@ -1,11 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# lint
-echo "Running lint"
-yarn lint
-
-# unit test
-echo "Running test"
-forge=$HOME/.foundry/bin/forge
-${forge} test
+npm test
