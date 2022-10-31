@@ -1,4 +1,11 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm test
+# lint
+echo "Running lint"
+yarn lint
+
+# unit test
+echo "Running test"
+yarn test
+yarn docgen
