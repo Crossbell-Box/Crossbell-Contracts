@@ -78,7 +78,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
      *     digest = ethers.utils.arrayify(
      *          ethers.utils.solidityKeccak256(
      *              ["address", "uint256", "uint256", "uint256"],
-     *              [newbieVilla.address, FIRST_CHARACTER_ID, nonce, expires]
+     *              [newbieVilla.address, characterId, nonce, expires]
      *          )
      *      );
      *      proof = await owner.signMessage(digest);
