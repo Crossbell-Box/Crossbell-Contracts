@@ -32,10 +32,19 @@ contract UpgradeOperatorTest is Test, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
     address public carol = address(0x3333);
+    string[] public prevSlot;
 
     function setUp() public {
         web3EntryV1Impl = new Web3EntryV1();
         proxyWeb3Entry = new TransparentUpgradeableProxy(address(web3EntryV1Impl), admin, "");
+        Web3EntryV1(address(proxyWeb3Entry)).initialize(
+            Const.WEB3_ENTRY_NFT_NAME,
+            Const.WEB3_ENTRY_NFT_SYMBOL,
+            address(0x111), // linklistContract
+            address(0x222), // mintNFTImpl
+            address(0x333), // periphery
+            address(0x444) // resolver
+        );
     }
 
     function testImpl() public {
@@ -105,5 +114,21 @@ contract UpgradeOperatorTest is Test, Utils {
             Const.FIRST_CHARACTER_ID,
             "https://example.com/profile"
         );
+    }
+
+    function testSlot() public {
+        bytes32 prevslot21 = vm.load(address(proxyWeb3Entry), bytes32(uint256(21)));
+        bytes32 prevslot22 = vm.load(address(proxyWeb3Entry), bytes32(uint256(22)));
+        bytes32 prevslot23 = vm.load(address(proxyWeb3Entry), bytes32(uint256(23)));
+
+        vm.startPrank(admin);
+        web3EntryImpl = new Web3Entry();
+        proxyWeb3Entry.upgradeTo(address(web3EntryImpl));
+        address impl = proxyWeb3Entry.implementation();
+        assertEq(impl, address(web3EntryImpl));
+
+        bytes32 newslot21 = vm.load(address(proxyWeb3Entry), bytes32(uint256(21)));
+        bytes32 newslot22 = vm.load(address(proxyWeb3Entry), bytes32(uint256(22)));
+        bytes32 newslot23 = vm.load(address(proxyWeb3Entry), bytes32(uint256(23)));
     }
 }
