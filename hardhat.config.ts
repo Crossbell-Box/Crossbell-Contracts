@@ -19,6 +19,10 @@ module.exports = {
             },
         },
     },
+    docgen: {
+        output: "docs",
+        pages: "files",
+    },
     paths: {
         sources: "./contracts",
         cache: "./cache_hardhat",

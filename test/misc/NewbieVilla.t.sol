@@ -66,17 +66,21 @@ contract NewbieVillaTest is Test, SetUp, Utils {
     }
 
     function testTransferNewbieInFail() public {
-        vm.prank(bob);
+        vm.startPrank(bob);
         Web3Entry(address(web3Entry)).createCharacter(
             makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(bob))
         );
-        vm.prank(bob);
         vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
         Web3Entry(address(web3Entry)).safeTransferFrom(
             address(bob),
             address(newbieVilla),
             Const.FIRST_CHARACTER_ID
         );
+
+        NFT nft = new NFT();
+        nft.mint(bob);
+        vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown token"));
+        nft.safeTransferFrom(address(bob), address(newbieVilla), Const.FIRST_CHARACTER_ID);
     }
 
     function testWithdrawNewbieOut() public {
