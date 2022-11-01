@@ -270,8 +270,8 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
         vm.prank(alice);
         web3Entry.transferFrom(alice, bob, Const.FIRST_CHARACTER_ID);
-        
-        // operator should be reset after transfer 
+
+        // operator should be reset after transfer
         vm.prank(carol);
         vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
         web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");

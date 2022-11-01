@@ -4,7 +4,7 @@ pragma solidity 0.8.10;
 import "forge-std/Test.sol";
 import "forge-std/console2.sol";
 import "../contracts/Web3Entry.sol";
-import "../contracts/Web3EntryV1.sol";
+import "../contracts/Web3EntryBase.sol";
 import "../contracts/libraries/DataTypes.sol";
 import "../contracts/Web3Entry.sol";
 import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
@@ -23,8 +23,8 @@ import "../contracts/mocks/NFT.sol";
 import "../contracts/Resolver.sol";
 
 contract UpgradeOperatorTest is Test, Utils {
-    Web3EntryV1 web3EntryV1Impl;
-    Web3EntryV1 web3EntryV1;
+    Web3EntryBase web3EntryBaseImpl;
+    Web3EntryBase web3EntryBase;
     Web3Entry web3EntryImpl;
     Web3Entry web3Entry;
     TransparentUpgradeableProxy proxyWeb3Entry;
@@ -35,9 +35,9 @@ contract UpgradeOperatorTest is Test, Utils {
     string[] public prevSlot;
 
     function setUp() public {
-        web3EntryV1Impl = new Web3EntryV1();
-        proxyWeb3Entry = new TransparentUpgradeableProxy(address(web3EntryV1Impl), admin, "");
-        Web3EntryV1(address(proxyWeb3Entry)).initialize(
+        web3EntryBaseImpl = new Web3EntryBase();
+        proxyWeb3Entry = new TransparentUpgradeableProxy(address(web3EntryBaseImpl), admin, "");
+        Web3EntryBase(address(proxyWeb3Entry)).initialize(
             Const.WEB3_ENTRY_NFT_NAME,
             Const.WEB3_ENTRY_NFT_SYMBOL,
             address(0x111), // linklistContract
@@ -49,8 +49,8 @@ contract UpgradeOperatorTest is Test, Utils {
 
     function testImpl() public {
         vm.startPrank(admin);
-        address implV1 = proxyWeb3Entry.implementation();
-        assertEq(implV1, address(web3EntryV1Impl));
+        address implBase = proxyWeb3Entry.implementation();
+        assertEq(implBase, address(web3EntryBaseImpl));
 
         // upgrade
         web3EntryImpl = new Web3Entry();
@@ -61,17 +61,17 @@ contract UpgradeOperatorTest is Test, Utils {
     }
 
     function testCheckStorage() public {
-        // use web3entryV1 to generate some data
-        Web3EntryV1(address(proxyWeb3Entry)).createCharacter(
+        // use web3entryBase to generate some data
+        Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
             makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice)
         );
-        Web3EntryV1(address(proxyWeb3Entry)).createCharacter(
+        Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
             makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob)
         );
 
-        // set operator using Web3entryV1
+        // set operator using Web3entryBase
         vm.prank(alice);
-        Web3EntryV1(address(proxyWeb3Entry)).setOperator(Const.FIRST_CHARACTER_ID, bob);
+        Web3EntryBase(address(proxyWeb3Entry)).setOperator(Const.FIRST_CHARACTER_ID, bob);
 
         // upgrade web3Entry
         web3EntryImpl = new Web3Entry();
@@ -105,7 +105,7 @@ contract UpgradeOperatorTest is Test, Utils {
             "https://example.com/profile"
         );
 
-        // delete operator set up by web3EntryV1
+        // delete operator set up by web3EntryBase
         vm.prank(alice);
         Web3Entry(address(proxyWeb3Entry)).removeOperator(Const.FIRST_CHARACTER_ID, bob);
         vm.prank(bob);
