@@ -715,15 +715,10 @@ contract Web3EntryBase is
         emit Events.SetOperator(characterId, operator, block.timestamp);
     }
 
-    function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view virtual {
-        address owner = ownerOf(characterId);
-        require(
-            msg.sender == owner ||
-                msg.sender == _operatorByCharacter[characterId] ||
-                (tx.origin == owner && msg.sender == periphery),
-            "NotCharacterOwnerNorOperator"
-        );
-    }
+    /**
+     * @dev This is a virtual function and it doesn't check anything, so you should complete validating logic in inheritance contracts that use this Web3EntryBase contract as parent contract.
+     */
+    function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view virtual {}
 
     function _validateCallerIsCharacterOwner(uint256 characterId) internal view {
         address owner = ownerOf(characterId);

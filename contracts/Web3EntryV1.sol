@@ -59,10 +59,6 @@ contract Web3EntryV1 is Web3EntryBase {
             _operatorListByCharacter[tokenId].remove(_value);
         }
 
-        if (_primaryCharacterByAddress[from] != 0) {
-            _primaryCharacterByAddress[from] = 0;
-        }
-
         super._beforeTokenTransfer(from, to, tokenId);
     }
 }
