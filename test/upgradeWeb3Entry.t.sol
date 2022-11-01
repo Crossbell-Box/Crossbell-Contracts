@@ -33,6 +33,8 @@ contract UpgradeOperatorTest is Test, Utils {
     address public bob = address(0x2222);
     address public carol = address(0x3333);
     string[] public prevSlot;
+    bytes32[] public prevSlotArr;
+    bytes32[] public newSlotArr;
 
     function setUp() public {
         web3EntryBaseImpl = new Web3EntryBase();
@@ -117,9 +119,10 @@ contract UpgradeOperatorTest is Test, Utils {
     }
 
     function testSlot() public {
-        bytes32 prevslot21 = vm.load(address(proxyWeb3Entry), bytes32(uint256(21)));
-        bytes32 prevslot22 = vm.load(address(proxyWeb3Entry), bytes32(uint256(22)));
-        bytes32 prevslot23 = vm.load(address(proxyWeb3Entry), bytes32(uint256(23)));
+        for (uint256 index = 0; index < 24; index++) {
+            bytes32 value = vm.load(address(proxyWeb3Entry), bytes32(uint256(index)));
+            prevSlotArr.push(value);
+        }
 
         vm.startPrank(admin);
         web3EntryImpl = new Web3Entry();
@@ -127,8 +130,15 @@ contract UpgradeOperatorTest is Test, Utils {
         address impl = proxyWeb3Entry.implementation();
         assertEq(impl, address(web3EntryImpl));
 
-        bytes32 newslot21 = vm.load(address(proxyWeb3Entry), bytes32(uint256(21)));
-        bytes32 newslot22 = vm.load(address(proxyWeb3Entry), bytes32(uint256(22)));
-        bytes32 newslot23 = vm.load(address(proxyWeb3Entry), bytes32(uint256(23)));
+        for (uint256 index = 0; index < 24; index++) {
+            bytes32 value = vm.load(address(proxyWeb3Entry), bytes32(uint256(index)));
+            newSlotArr.push(value);
+        }
+
+        for (uint256 index = 0; index < 24; index++) {
+            bytes32 prevSlot = prevSlotArr[index];
+            bytes32 newSlot = prevSlotArr[index];
+            assertEq(prevSlot,newSlot);
+        }
     }
 }
