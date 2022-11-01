@@ -698,7 +698,7 @@ contract Web3EntryV1 is
         address from,
         address to,
         uint256 tokenId
-    ) internal override {
+    ) internal virtual override {
         if (_operatorByCharacter[tokenId] != address(0)) {
             _setOperator(tokenId, address(0));
         }

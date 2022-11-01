@@ -10,6 +10,7 @@ import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import "./helpers/Const.sol";
 import "./helpers/utils.sol";
 import "./helpers/SetUp.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract OperatorTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
@@ -256,5 +257,27 @@ contract OperatorTest is Test, SetUp, Utils {
             DataTypes.unlinkLinklistData(Const.FIRST_CHARACTER_ID, 1, Const.LikeLinkType)
         );
         vm.stopPrank();
+    }
+
+    function testOperatorAfterTransfer() public {
+        vm.startPrank(alice);
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, carol);
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, dick);
+        vm.stopPrank();
+        vm.prank(dick);
+        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        vm.prank(carol);
+        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        vm.prank(alice);
+        web3Entry.transferFrom(alice, bob, Const.FIRST_CHARACTER_ID);
+        
+        // operator should be reset after transfer 
+        vm.prank(carol);
+        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
+        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+
+        vm.prank(dick);
+        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
+        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
     }
 }

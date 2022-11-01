@@ -5,7 +5,9 @@ pragma solidity 0.8.10;
 import "./Web3EntryV1.sol";
 
 contract Web3Entry is Web3EntryV1 {
-    mapping(uint256 => mapping(address => bool)) internal _operatorListByCharacter;
+    using EnumerableSet for EnumerableSet.AddressSet;
+
+    mapping(uint256 => EnumerableSet.AddressSet) internal _operatorListByCharacter;
 
     function addOperator(uint256 characterId, address operator) external {
         _validateCallerIsCharacterOwner(characterId);
@@ -17,11 +19,6 @@ contract Web3Entry is Web3EntryV1 {
         _removeOperator(characterId, operator);
     }
 
-    function _addOperator(uint256 characterId, address operator) internal {
-        _operatorListByCharacter[characterId][operator] = true;
-        emit Events.AddOperator(characterId, operator, block.timestamp);
-    }
-
     function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId)
         internal
         view
@@ -31,7 +28,7 @@ contract Web3Entry is Web3EntryV1 {
         address owner = ownerOf(characterId);
 
         require(
-            _operatorListByCharacter[characterId][msg.sender] ||
+            _operatorListByCharacter[characterId].contains(msg.sender) ||
                 msg.sender == owner ||
                 msg.sender == _operatorByCharacter[characterId] ||
                 (tx.origin == owner && msg.sender == periphery),
@@ -39,9 +36,33 @@ contract Web3Entry is Web3EntryV1 {
         );
     }
 
+    function _addOperator(uint256 characterId, address operator) internal {
+        _operatorListByCharacter[characterId].add(operator);
+        emit Events.AddOperator(characterId, operator, block.timestamp);
+    }
+
     function _removeOperator(uint256 characterId, address operator) internal {
-        _operatorListByCharacter[characterId][operator] = false;
+        _operatorListByCharacter[characterId].remove(operator);
         _operatorByCharacter[characterId] = address(0x0);
         emit Events.RemoveOperator(characterId, operator, block.timestamp);
+    }
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual override {
+        address[] memory _list = _operatorListByCharacter[tokenId].values();
+
+        for (uint256 index = 0; index < _list.length; index++) {
+            address _value = _list[index];
+            _operatorListByCharacter[tokenId].remove(_value);
+        }
+
+        if (_primaryCharacterByAddress[from] != 0) {
+            _primaryCharacterByAddress[from] = 0;
+        }
+
+        super._beforeTokenTransfer(from, to, tokenId);
     }
 }
