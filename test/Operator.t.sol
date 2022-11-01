@@ -62,7 +62,6 @@ contract OperatorTest is Test, SetUp, Utils {
     function testOperatorActions() public {
         vm.startPrank(alice);
         web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
-        // web3Entry.setOperatorList(Const.FIRST_CHARACTER_ID, arr, true);
 
         // link character
         web3Entry.linkCharacter(

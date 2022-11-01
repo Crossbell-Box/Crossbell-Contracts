@@ -7,7 +7,7 @@ import "./Web3EntryBase.sol";
 contract Web3EntryV1 is Web3EntryBase {
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    mapping(uint256 => EnumerableSet.AddressSet) internal _operatorListByCharacter;
+    mapping(uint256 => EnumerableSet.AddressSet) internal _operatorsByCharacter;
 
     function addOperator(uint256 characterId, address operator) external {
         _validateCallerIsCharacterOwner(characterId);
@@ -28,7 +28,7 @@ contract Web3EntryV1 is Web3EntryBase {
         address owner = ownerOf(characterId);
 
         require(
-            _operatorListByCharacter[characterId].contains(msg.sender) ||
+            _operatorsByCharacter[characterId].contains(msg.sender) ||
                 msg.sender == owner ||
                 msg.sender == _operatorByCharacter[characterId] ||
                 (tx.origin == owner && msg.sender == periphery),
@@ -37,12 +37,12 @@ contract Web3EntryV1 is Web3EntryBase {
     }
 
     function _addOperator(uint256 characterId, address operator) internal {
-        _operatorListByCharacter[characterId].add(operator);
+        _operatorsByCharacter[characterId].add(operator);
         emit Events.AddOperator(characterId, operator, block.timestamp);
     }
 
     function _removeOperator(uint256 characterId, address operator) internal {
-        _operatorListByCharacter[characterId].remove(operator);
+        _operatorsByCharacter[characterId].remove(operator);
         _operatorByCharacter[characterId] = address(0x0);
         emit Events.RemoveOperator(characterId, operator, block.timestamp);
     }
@@ -52,11 +52,11 @@ contract Web3EntryV1 is Web3EntryBase {
         address to,
         uint256 tokenId
     ) internal virtual override {
-        address[] memory _list = _operatorListByCharacter[tokenId].values();
+        address[] memory _list = _operatorsByCharacter[tokenId].values();
 
         for (uint256 index = 0; index < _list.length; index++) {
             address _value = _list[index];
-            _operatorListByCharacter[tokenId].remove(_value);
+            _operatorsByCharacter[tokenId].remove(_value);
         }
 
         super._beforeTokenTransfer(from, to, tokenId);
