@@ -22,7 +22,7 @@ import "../contracts/modules/link/ApprovalLinkModule4Character.sol";
 import "../contracts/mocks/NFT.sol";
 import "../contracts/Resolver.sol";
 
-contract UpgradeOperatorTest is Test, Utils {
+contract UpgradeWeb3Entry is Test, Utils {
     Web3EntryBase web3EntryBaseImpl;
     Web3EntryBase web3EntryBase;
     Web3Entry web3EntryImpl;
