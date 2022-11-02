@@ -121,6 +121,14 @@ contract Web3EntryBase is
         _setOperator(characterId, operator);
     }
 
+    function addOperator(uint256, address) external virtual {}
+
+    function removeOperator(uint256, address) external virtual {}
+
+    function isOperator(uint256, address) external virtual returns (bool) {}
+
+    function getOperators(uint256) external virtual returns (address[] memory) {}
+
     function setLinklistUri(uint256 linklistId, string calldata uri) external {
         _validateCallerIsLinklistOwner(linklistId);
 

@@ -9,25 +9,29 @@ contract Web3Entry is Web3EntryBase {
 
     mapping(uint256 => EnumerableSet.AddressSet) internal _operatorsByCharacter;
 
-    function addOperator(uint256 characterId, address operator) external {
+    function addOperator(uint256 characterId, address operator) external override {
         _validateCallerIsCharacterOwner(characterId);
         _addOperator(characterId, operator);
     }
 
-    function removeOperator(uint256 characterId, address operator) external {
+    function removeOperator(uint256 characterId, address operator) external override {
         _validateCallerIsCharacterOwner(characterId);
         _removeOperator(characterId, operator);
     }
 
-    function isOperator(uint256 characterId, address operator) external returns (bool) {
+    function isOperator(uint256 characterId, address operator)
+        external
+        view
+        override
+        returns (bool)
+    {
         bool inOperator = _operatorByCharacter[characterId] == operator;
         bool inOpertors = _operatorsByCharacter[characterId].contains(operator);
         return inOperator || inOpertors;
     }
 
-    function getOperators(uint256 characterId) external returns (address[] memory) {
-        address[] memory operators = _operatorsByCharacter[characterId].values();
-        return operators;
+    function getOperators(uint256 characterId) external view override returns (address[] memory) {
+        return _operatorsByCharacter[characterId].values();
     }
 
     function _addOperator(uint256 characterId, address operator) internal {

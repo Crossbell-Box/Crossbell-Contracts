@@ -56,6 +56,30 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, bob);
     }
 
+    function testIsOperator() public {
+        vm.prank(alice);
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, bob);
+        assert(web3Entry.isOperator(Const.FIRST_CHARACTER_ID, bob));
+        assert(!web3Entry.isOperator(Const.FIRST_CHARACTER_ID, carol));
+    }
+
+    function testGetOperators() public {
+        // getOperators returns correct values
+        vm.startPrank(alice);
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, bob);
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, carol);
+        address[] memory prevOperators = web3Entry.getOperators(Const.FIRST_CHARACTER_ID);
+        assertEq(prevOperators[0], bob);
+        assertEq(prevOperators[1], carol);
+        assertEq(prevOperators.length, 2);
+
+        // getOperators returns correct values after removeOperator
+        web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, bob);
+        address[] memory newOperators = web3Entry.getOperators(Const.FIRST_CHARACTER_ID);
+        assertEq(newOperators[0], carol);
+        assertEq(newOperators.length, 1);
+    }
+
     function testOperatorActions() public {
         vm.startPrank(alice);
         web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
