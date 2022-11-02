@@ -32,7 +32,6 @@ contract UpgradeWeb3Entry is Test, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
     address public carol = address(0x3333);
-    string[] public prevSlot;
     bytes32[] public prevSlotArr;
     bytes32[] public newSlotArr;
 
