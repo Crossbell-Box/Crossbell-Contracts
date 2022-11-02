@@ -221,12 +221,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
         _validateCallerIsCharacterOwner(vars.fromCharacterId);
         _validateERC721Exists(vars.tokenAddress, vars.tokenId);
 
-        LinkLogic.linkERC721(
-            vars,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
-            _linklist,
-            _attachedLinklists
-        );
+        LinkLogic.linkERC721(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external {
@@ -242,12 +237,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     function linkAddress(DataTypes.linkAddressData calldata vars) external {
         _validateCallerIsCharacterOwner(vars.fromCharacterId);
 
-        LinkLogic.linkAddress(
-            vars,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
-            _linklist,
-            _attachedLinklists
-        );
+        LinkLogic.linkAddress(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external {
@@ -263,12 +253,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external {
         _validateCallerIsCharacterOwner(vars.fromCharacterId);
 
-        LinkLogic.linkAnyUri(
-            vars,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
-            _linklist,
-            _attachedLinklists
-        );
+        LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external {
@@ -319,12 +304,7 @@ contract Web3Entry is IWeb3Entry, NFTBase, Web3EntryStorage, Initializable, Web3
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
         _validateCallerIsCharacterOwner(vars.fromCharacterId);
 
-        LinkLogic.linkLinklist(
-            vars,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
-            _linklist,
-            _attachedLinklists
-        );
+        LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external {
