@@ -32,8 +32,6 @@ contract UpgradeWeb3Entry is Test, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
     address public carol = address(0x3333);
-    bytes32[] public prevSlotArr;
-    bytes32[] public newSlotArr;
 
     function setUp() public {
         web3EntryBaseImpl = new Web3EntryBase();
@@ -118,26 +116,38 @@ contract UpgradeWeb3Entry is Test, Utils {
     }
 
     function testSlot() public {
-        for (uint256 index = 0; index < 24; index++) {
+        // create character
+        Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice)
+        );
+
+        uint256[] memory prevSlotArr = new uint256[](25);
+        for (uint256 index = 0; index < 25; index++) {
             bytes32 value = vm.load(address(proxyWeb3Entry), bytes32(uint256(index)));
-            prevSlotArr.push(value);
+            prevSlotArr[index] = uint256(value);
         }
 
+        // upgrade to new web3Entry
         vm.startPrank(admin);
         web3EntryImpl = new Web3Entry();
         proxyWeb3Entry.upgradeTo(address(web3EntryImpl));
         address impl = proxyWeb3Entry.implementation();
         assertEq(impl, address(web3EntryImpl));
+        vm.stopPrank();
 
-        for (uint256 index = 0; index < 24; index++) {
+        // add operator
+        vm.prank(alice);
+        Web3Entry(address(proxyWeb3Entry)).addOperator(Const.FIRST_CHARACTER_ID, carol);
+
+        uint256[] memory newSlotArr = new uint256[](25);
+        for (uint256 index = 0; index < 25; index++) {
             bytes32 value = vm.load(address(proxyWeb3Entry), bytes32(uint256(index)));
-            newSlotArr.push(value);
+            newSlotArr[index] = uint256(value);
         }
 
-        for (uint256 index = 0; index < 24; index++) {
-            bytes32 prevSlot = prevSlotArr[index];
-            bytes32 newSlot = prevSlotArr[index];
-            assertEq(prevSlot,newSlot);
+        // check slots
+        for (uint256 index = 0; index < 25; index++) {
+            assertEq(prevSlotArr[index], newSlotArr[index]);
         }
     }
 }
