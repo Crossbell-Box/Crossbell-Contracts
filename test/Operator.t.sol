@@ -33,8 +33,7 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.addOperator(Const.FIRST_CHARACTER_ID, carol);
         // carol is operator now
-        vm.prank(carol);
-        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        assert(web3Entry.isOperator(Const.FIRST_CHARACTER_ID, carol));
 
         // remove operator
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
@@ -42,9 +41,7 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, carol);
         // carol is not operator now
-        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
-        vm.prank(carol);
-        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        assert(!web3Entry.isOperator(Const.FIRST_CHARACTER_ID, carol));
     }
 
     function testSetOperatorFail() public {
@@ -263,20 +260,14 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.addOperator(Const.FIRST_CHARACTER_ID, carol);
         web3Entry.addOperator(Const.FIRST_CHARACTER_ID, dick);
         vm.stopPrank();
-        vm.prank(dick);
-        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
-        vm.prank(carol);
-        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        assert(web3Entry.isOperator(Const.FIRST_CHARACTER_ID, carol));
+        assert(web3Entry.isOperator(Const.FIRST_CHARACTER_ID, dick));
+
         vm.prank(alice);
         web3Entry.transferFrom(alice, bob, Const.FIRST_CHARACTER_ID);
 
         // operator should be reset after transfer
-        vm.prank(carol);
-        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
-        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
-
-        vm.prank(dick);
-        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
-        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        assert(!web3Entry.isOperator(Const.FIRST_CHARACTER_ID, dick));
+        assert(!web3Entry.isOperator(Const.FIRST_CHARACTER_ID, carol));
     }
 }

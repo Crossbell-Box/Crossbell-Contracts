@@ -32,11 +32,7 @@ contract SetUp {
 
         // deploy web3Entry
         Web3Entry web3EntryImpl = new Web3Entry();
-        proxyWeb3Entry = new TransparentUpgradeableProxy(
-            address(web3EntryImpl),
-            admin,
-            ""
-        );
+        proxyWeb3Entry = new TransparentUpgradeableProxy(address(web3EntryImpl), admin, "");
         web3Entry = Web3Entry(address(proxyWeb3Entry));
 
         // deploy Linklist

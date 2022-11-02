@@ -77,42 +77,19 @@ contract UpgradeWeb3Entry is Test, Utils {
         vm.prank(admin);
         proxyWeb3Entry.upgradeTo(address(web3EntryImpl));
 
-        // set operator using new web3entry
+        // add operator using new web3entry
         vm.prank(alice);
         Web3Entry(address(proxyWeb3Entry)).addOperator(Const.FIRST_CHARACTER_ID, carol);
         // now bob and bob and carol should be operator
-        vm.prank(bob);
-        Web3Entry(address(proxyWeb3Entry)).setCharacterUri(
-            Const.FIRST_CHARACTER_ID,
-            "https://example.com/profile"
-        );
-        vm.prank(carol);
-        Web3Entry(address(proxyWeb3Entry)).setCharacterUri(
-            Const.FIRST_CHARACTER_ID,
-            "https://example.com/profile"
-        );
+        assert(Web3Entry(address(proxyWeb3Entry)).isOperator(Const.FIRST_CHARACTER_ID, bob));
+        assert(Web3Entry(address(proxyWeb3Entry)).isOperator(Const.FIRST_CHARACTER_ID, carol));
 
-        // delete operator using new web3Entry
+        // remove operator using new web3Entry
         vm.prank(alice);
-        // disapprove carol
+        // remove carol
         Web3Entry(address(proxyWeb3Entry)).removeOperator(Const.FIRST_CHARACTER_ID, carol);
         // carol is not operator now
-        vm.prank(carol);
-        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
-        Web3Entry(address(proxyWeb3Entry)).setCharacterUri(
-            Const.FIRST_CHARACTER_ID,
-            "https://example.com/profile"
-        );
-
-        // delete operator set up by web3EntryBase
-        vm.prank(alice);
-        Web3Entry(address(proxyWeb3Entry)).removeOperator(Const.FIRST_CHARACTER_ID, bob);
-        vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
-        Web3Entry(address(proxyWeb3Entry)).setCharacterUri(
-            Const.FIRST_CHARACTER_ID,
-            "https://example.com/profile"
-        );
+        assert(!Web3Entry(address(proxyWeb3Entry)).isOperator(Const.FIRST_CHARACTER_ID, carol));
     }
 
     function testSlot() public {
