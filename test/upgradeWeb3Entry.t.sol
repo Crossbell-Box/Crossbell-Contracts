@@ -3,24 +3,17 @@ pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
 import "forge-std/console2.sol";
+import "../contracts/Linklist.sol";
+import "../contracts/MintNFT.sol";
+import "../contracts/Resolver.sol";
 import "../contracts/Web3Entry.sol";
 import "../contracts/Web3EntryBase.sol";
 import "../contracts/libraries/DataTypes.sol";
-import "../contracts/Web3Entry.sol";
+import "../contracts/misc/Periphery.sol";
 import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import "./helpers/Const.sol";
-import "./helpers/utils.sol";
 import "./helpers/SetUp.sol";
-import "../../contracts/Web3Entry.sol";
-import "../contracts/Linklist.sol";
-import "../contracts/misc/Periphery.sol";
-import "../contracts/misc/CharacterBoundToken.sol";
-import "../contracts/libraries/DataTypes.sol";
-import "../contracts/MintNFT.sol";
-import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
-import "../contracts/modules/link/ApprovalLinkModule4Character.sol";
-import "../contracts/mocks/NFT.sol";
-import "../contracts/Resolver.sol";
+import "./helpers/utils.sol";
 
 contract UpgradeWeb3Entry is Test, Utils {
     Web3EntryBase web3EntryBaseImpl;
