@@ -17,6 +17,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
     address public web3Entry;
+    address public xsyncOperator;
 
     modifier _notExpired(uint256 expires) {
         require(expires >= block.timestamp, "NewbieVilla: receipt has expired");
@@ -27,9 +28,11 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
      * @notice  Initialize the Newbie Villa contract.
      * @dev     msg.sender will be granted both DEFAULT_ADMIN_ROLE and ADMIN_ROLE.
      * @param   _web3Entry  Address of Web3Entry.
+     * @param   _xsyncOperator  Address of xsyncOperator.
      */
-    function initialize(address _web3Entry) external initializer {
+    function initialize(address _web3Entry, address _xsyncOperator) external initializer {
         web3Entry = _web3Entry;
+        xsyncOperator = _xsyncOperator;
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(ADMIN_ROLE, _msgSender());
@@ -128,18 +131,21 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
      */
     function onERC721Received(
         address operator,
-        address from,
+        address,
         uint256 tokenId,
         bytes calldata data
     ) external override returns (bytes4) {
+        // Only character nft could be received, other nft, e.g. mint nft would be reverted
         require(msg.sender == web3Entry, "NewbieVilla: receive unknown token");
+        // Only admin role could send character to this contract
         require(hasRole(ADMIN_ROLE, operator), "NewbieVilla: receive unknown character");
         if (data.length == 0) {
-            IWeb3Entry(web3Entry).setOperator(tokenId, operator);
+            IWeb3Entry(web3Entry).addOperator(tokenId, operator);
         } else {
             address selectedOperator = abi.decode(data, (address));
-            IWeb3Entry(web3Entry).setOperator(tokenId, selectedOperator);
+            IWeb3Entry(web3Entry).addOperator(tokenId, selectedOperator);
         }
+        IWeb3Entry(web3Entry).addOperator(tokenId, xsyncOperator);
         return IERC721Receiver.onERC721Received.selector;
     }
 }
