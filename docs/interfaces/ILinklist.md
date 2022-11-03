@@ -11,7 +11,7 @@ function mint(uint256 characterId, bytes32 linkType, uint256 tokenId) external
 ### setUri
 
 ```solidity
-function setUri(uint256 tokenId, string uri) external
+function setUri(uint256 tokenId, string _uri) external
 ```
 
 ### addLinkingCharacterId
@@ -36,6 +36,12 @@ function getLinkingCharacterIds(uint256 tokenId) external view returns (uint256[
 
 ```solidity
 function getLinkingCharacterListLength(uint256 tokenId) external view returns (uint256)
+```
+
+### getOwnerCharacterId
+
+```solidity
+function getOwnerCharacterId(uint256 tokenId) external view returns (uint256)
 ```
 
 ### addLinkingNote
@@ -174,6 +180,12 @@ function getLinkingAnyUris(uint256 tokenId) external view returns (string[] resu
 
 ```solidity
 function getLinkingAnyUri(bytes32 linkKey) external view returns (string)
+```
+
+### getLinkingAnyUriKeys
+
+```solidity
+function getLinkingAnyUriKeys(uint256 tokenId) external view returns (bytes32[])
 ```
 
 ### getLinkingAnyListLength

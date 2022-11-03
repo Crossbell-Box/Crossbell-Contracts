@@ -92,6 +92,12 @@ function getLinkingCharacterIds(uint256 tokenId) external view returns (uint256[
 function getLinkingCharacterListLength(uint256 tokenId) external view returns (uint256)
 ```
 
+### getOwnerCharacterId
+
+```solidity
+function getOwnerCharacterId(uint256 tokenId) external view returns (uint256)
+```
+
 ### addLinkingNote
 
 ```solidity
@@ -284,14 +290,6 @@ function getLinkType(uint256 tokenId) external view returns (bytes32)
 function Uri(uint256 tokenId) external view returns (string)
 ```
 
-### tokenURI
-
-```solidity
-function tokenURI(uint256 tokenId) public view returns (string)
-```
-
-_See {IERC721Metadata-tokenURI}._
-
 ### migrate
 
 ```solidity
@@ -301,18 +299,8 @@ function migrate(uint256 start, uint256 limit) public
 ### _transfer
 
 ```solidity
-function _transfer(address from, address to, uint256 tokenId) internal
+function _transfer(address, address, uint256) internal pure
 ```
-
-_Transfers `tokenId` from `from` to `to`.
- As opposed to {transferFrom}, this imposes no restrictions on msg.sender.
-
-Requirements:
-
-- `to` cannot be the zero address.
-- `tokenId` token must be owned by `from`.
-
-Emits a {Transfer} event._
 
 ### _getTokenUri
 

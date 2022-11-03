@@ -20,9 +20,3 @@ mapping(uint256 => address) _operatorByCharacter
 address resolver
 ```
 
-### _linkTypesByCharacter
-
-```solidity
-mapping(uint256 => struct EnumerableSet.Bytes32Set) _linkTypesByCharacter
-```
-

@@ -29,7 +29,7 @@ function approve(uint256 characterId, uint256 noteId, address[] addresses, bool[
 ### processMint
 
 ```solidity
-function processMint(address to, uint256 characterId, uint256 noteId, bytes data) external
+function processMint(address to, uint256 characterId, uint256 noteId, bytes) external view
 ```
 
 ### isApproved

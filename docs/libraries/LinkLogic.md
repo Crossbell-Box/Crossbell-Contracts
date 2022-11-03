@@ -29,7 +29,7 @@ function unlinkNote(struct DataTypes.unlinkNoteData vars, address linklist, mapp
 ### linkCharacterLink
 
 ```solidity
-function linkCharacterLink(uint256 fromCharacterId, struct DataTypes.CharacterLinkStruct linkData, address linker, bytes32 linkType, address linklist, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
+function linkCharacterLink(uint256 fromCharacterId, struct DataTypes.CharacterLinkStruct linkData, bytes32 linkType, address linklist, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
 ```
 
 ### unlinkCharacterLink
@@ -41,7 +41,7 @@ function unlinkCharacterLink(uint256 fromCharacterId, struct DataTypes.Character
 ### linkLinklist
 
 ```solidity
-function linkLinklist(struct DataTypes.linkLinklistData vars, address linker, address linklist, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
+function linkLinklist(struct DataTypes.linkLinklistData vars, address linklist, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
 ```
 
 ### unlinkLinklist
@@ -53,7 +53,7 @@ function unlinkLinklist(struct DataTypes.unlinkLinklistData vars, address linkli
 ### linkERC721
 
 ```solidity
-function linkERC721(struct DataTypes.linkERC721Data vars, address linker, address linklist, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
+function linkERC721(struct DataTypes.linkERC721Data vars, address linklist, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
 ```
 
 ### unlinkERC721
@@ -65,7 +65,7 @@ function unlinkERC721(struct DataTypes.unlinkERC721Data vars, address linklist, 
 ### linkAddress
 
 ```solidity
-function linkAddress(struct DataTypes.linkAddressData vars, address linker, address linklist, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
+function linkAddress(struct DataTypes.linkAddressData vars, address linklist, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
 ```
 
 ### unlinkAddress
@@ -77,7 +77,7 @@ function unlinkAddress(struct DataTypes.unlinkAddressData vars, address linklist
 ### linkAnyUri
 
 ```solidity
-function linkAnyUri(struct DataTypes.linkAnyUriData vars, address linker, address linklist, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
+function linkAnyUri(struct DataTypes.linkAnyUriData vars, address linklist, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
 ```
 
 ### unlinkAnyUri
@@ -89,6 +89,6 @@ function unlinkAnyUri(struct DataTypes.unlinkAnyUriData vars, address linklist, 
 ### _mintLinklist
 
 ```solidity
-function _mintLinklist(uint256 fromCharacterId, bytes32 linkType, address to, address linklist, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) internal returns (uint256 linklistId)
+function _mintLinklist(uint256 fromCharacterId, bytes32 linkType, address linklist, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) internal returns (uint256 linklistId)
 ```
 

@@ -18,6 +18,12 @@ bytes32 ADMIN_ROLE
 address web3Entry
 ```
 
+### xsyncOperator
+
+```solidity
+address xsyncOperator
+```
+
 ### _notExpired
 
 ```solidity
@@ -27,7 +33,7 @@ modifier _notExpired(uint256 expires)
 ### initialize
 
 ```solidity
-function initialize(address _web3Entry) external
+function initialize(address _web3Entry, address _xsyncOperator) external
 ```
 
 Initialize the Newbie Villa contract.
@@ -39,6 +45,7 @@ _msg.sender will be granted both DEFAULT_ADMIN_ROLE and ADMIN_ROLE._
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | _web3Entry | address | Address of Web3Entry. |
+| _xsyncOperator | address | Address of xsyncOperator. |
 
 ### splitSignature
 
@@ -97,7 +104,7 @@ Requirements:
 ### onERC721Received
 
 ```solidity
-function onERC721Received(address operator, address from, uint256 tokenId, bytes data) external returns (bytes4)
+function onERC721Received(address operator, address, uint256 tokenId, bytes data) external returns (bytes4)
 ```
 
 _Whenever a character `tokenId` is transferred to this contract via {IERC721-safeTransferFrom}
@@ -115,7 +122,7 @@ Requirements:
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | operator | address |  |
-| from | address |  |
+|  | address |  |
 | tokenId | uint256 |  |
 | data | bytes | bytes encoded from the operator address to set for the incoming character. |
 
