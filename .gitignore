@@ -7,6 +7,7 @@ coverage
 coverage.json
 typechain
 
+cache
 cache_hardhat
 cache_foundry
 artifacts_hardhat
@@ -22,3 +23,4 @@ artifacts_foundry
 # Ignore flattened files
 flattened.txt
 node_modules
+out/

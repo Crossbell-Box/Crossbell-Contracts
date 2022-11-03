@@ -117,6 +117,13 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         return linkingCharacterList[tokenId].length();
     }
 
+    function getOwnerCharacterId(uint256 tokenId) external view returns (uint256) {
+        uint256 characterId = _linklistOwners[tokenId];
+        require(characterId != 0, "Linklist: owner query for nonexistent token");
+
+        return characterId;
+    }
+
     /////////////////////////////////
     // linking Note
     /////////////////////////////////
@@ -400,10 +407,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     }
 
     function Uri(uint256 tokenId) external view returns (string memory) {
-        return _getTokenUri(tokenId);
-    }
-
-    function tokenURI(uint256 tokenId) public view override returns (string memory) {
         return _getTokenUri(tokenId);
     }
 
