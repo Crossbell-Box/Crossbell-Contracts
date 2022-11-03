@@ -100,6 +100,25 @@ contract OperatorTest is Test, SetUp, Utils {
         // setCharacterUri
         web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
 
+        // link character
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                Const.SECOND_CHARACTER_ID,
+                Const.LikeLinkType,
+                new bytes(0)
+            )
+        );
+
+        // unlink character
+        web3Entry.unlinkCharacter(
+            DataTypes.unlinkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                Const.SECOND_CHARACTER_ID,
+                Const.LikeLinkType
+            )
+        );
+
         // postNote4Address
         web3Entry.postNote4Address(makePostNoteData(Const.FIRST_CHARACTER_ID), address(0x1232414));
 
@@ -111,6 +130,30 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // postNote
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+
+        // setNoteUri
+        web3Entry.setNoteUri(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, Const.MOCK_NEW_NOTE_URI);
+
+        // lockNote
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+
+        // postNote4Character
+        web3Entry.postNote4Character(
+            makePostNoteData(Const.FIRST_CHARACTER_ID),
+            Const.FIRST_CHARACTER_ID
+        );
+
+        // postNote4Address
+        web3Entry.postNote4Address(
+            makePostNoteData(Const.FIRST_CHARACTER_ID),
+            address(0x328)
+        );
+
+        // postNote4Linklist
+        web3Entry.postNote4Linklist(
+            makePostNoteData(Const.FIRST_CHARACTER_ID),
+            Const.FIRST_LINKLIST_ID
+        );
 
         // postNote4Note
         web3Entry.postNote4Note(
@@ -149,6 +192,80 @@ contract OperatorTest is Test, SetUp, Utils {
             )
         );
 
+        // linkERC721
+        web3Entry.linkERC721(
+            DataTypes.linkERC721Data(
+                Const.FIRST_CHARACTER_ID,
+                address(nft),
+                1,
+                Const.LikeLinkType,
+                new bytes(0)
+            )
+        );
+
+        // unlinkERC721
+        web3Entry.unlinkERC721(
+            DataTypes.unlinkERC721Data(
+                Const.FIRST_CHARACTER_ID,
+                address(nft),
+                1,
+                Const.LikeLinkType
+            )
+        );
+
+        // linkAddress
+        web3Entry.linkAddress(
+            DataTypes.linkAddressData(
+                Const.FIRST_CHARACTER_ID,
+                address(0x1232414),
+                Const.LikeLinkType,
+                new bytes(0)
+            )
+        );
+
+        // unlinkAddress
+        web3Entry.unlinkAddress(
+            DataTypes.unlinkAddressData(
+                Const.FIRST_CHARACTER_ID,
+                address(0x1232414),
+                Const.LikeLinkType
+            )
+        );
+
+        // linkAnyUri
+        web3Entry.linkAnyUri(
+            DataTypes.linkAnyUriData(
+                Const.FIRST_CHARACTER_ID,
+                "ipfs://anyURI",
+                Const.LikeLinkType,
+                new bytes(0)
+            )
+        );
+
+        // unlinkAnyUri
+        web3Entry.unlinkAnyUri(
+            DataTypes.unlinkAnyUriData(
+                Const.FIRST_CHARACTER_ID,
+                "ipfs://anyURI",
+                Const.LikeLinkType
+            )
+        );
+
+        // linkLinklist
+        web3Entry.linkLinklist(
+            DataTypes.linkLinklistData(
+                Const.FIRST_CHARACTER_ID,
+                1,
+                Const.LikeLinkType,
+                new bytes(0)
+            )
+        );
+
+        // unlinkLinklist
+        web3Entry.unlinkLinklist(
+            DataTypes.unlinkLinklistData(Const.FIRST_CHARACTER_ID, 1, Const.LikeLinkType)
+        );
+
         vm.stopPrank();
     }
 
@@ -168,114 +285,29 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // set primary character id
         // user can only set primary character id to himself
-        // vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        // web3Entry.setPrimaryCharacterId(Const.SECOND_CHARACTER_ID);
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        web3Entry.setPrimaryCharacterId(Const.FIRST_CHARACTER_ID);
 
         // set operator
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         web3Entry.setOperator(Const.FIRST_CHARACTER_ID, address(0x444));
 
-        // link character
+        // add operator
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.LikeLinkType,
-                new bytes(0)
-            )
-        );
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, address(0x444));
 
-        // unlink character
+        // remove operator
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.LikeLinkType
-            )
-        );
+        web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, address(0x444));
 
-        // linkERC721
+        // create then link character
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        web3Entry.linkERC721(
-            DataTypes.linkERC721Data(
-                Const.FIRST_CHARACTER_ID,
-                address(nft),
-                1,
-                Const.LikeLinkType,
-                new bytes(0)
-            )
-        );
+        web3Entry.createThenLinkCharacter(DataTypes.createThenLinkCharacterData(Const.FIRST_CHARACTER_ID, Const.MOCK_TO_ADDRESS, Const.LinkItemTypeCharacter));
 
-        // unlinkERC721
+        // delete note
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        web3Entry.unlinkERC721(
-            DataTypes.unlinkERC721Data(
-                Const.FIRST_CHARACTER_ID,
-                address(nft),
-                1,
-                Const.LikeLinkType
-            )
-        );
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 
-        // linkAddress
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        web3Entry.linkAddress(
-            DataTypes.linkAddressData(
-                Const.FIRST_CHARACTER_ID,
-                address(0x1232414),
-                Const.LikeLinkType,
-                new bytes(0)
-            )
-        );
-
-        // unlinkAddress
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        web3Entry.unlinkAddress(
-            DataTypes.unlinkAddressData(
-                Const.FIRST_CHARACTER_ID,
-                address(0x1232414),
-                Const.LikeLinkType
-            )
-        );
-
-        // linkAnyUri
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        web3Entry.linkAnyUri(
-            DataTypes.linkAnyUriData(
-                Const.FIRST_CHARACTER_ID,
-                "ipfs://anyURI",
-                Const.LikeLinkType,
-                new bytes(0)
-            )
-        );
-
-        // unlinkAnyUri
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        web3Entry.unlinkAnyUri(
-            DataTypes.unlinkAnyUriData(
-                Const.FIRST_CHARACTER_ID,
-                "ipfs://anyURI",
-                Const.LikeLinkType
-            )
-        );
-
-        // linkLinklist
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        web3Entry.linkLinklist(
-            DataTypes.linkLinklistData(
-                Const.FIRST_CHARACTER_ID,
-                1,
-                Const.LikeLinkType,
-                new bytes(0)
-            )
-        );
-        // unlinkLinklist
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        web3Entry.unlinkLinklist(
-            DataTypes.unlinkLinklistData(Const.FIRST_CHARACTER_ID, 1, Const.LikeLinkType)
-        );
         vm.stopPrank();
     }
 

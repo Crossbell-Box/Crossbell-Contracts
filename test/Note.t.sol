@@ -98,7 +98,7 @@ contract NoteTest is Test, SetUp, Utils {
 
     function testUpdateNoteFail() public {
         // NotCharacterOwner
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
         vm.prank(bob);
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
@@ -238,7 +238,7 @@ contract NoteTest is Test, SetUp, Utils {
 
     function testDeleteNoteFail() public {
         // NotCharacterOwner
-        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         vm.prank(bob);
         web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 

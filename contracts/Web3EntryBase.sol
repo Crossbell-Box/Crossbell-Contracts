@@ -136,7 +136,7 @@ contract Web3EntryBase is
     }
 
     function linkCharacter(DataTypes.linkCharacterData calldata vars) external {
-        _validateCallerIsCharacterOwner(vars.fromCharacterId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
         _validateCharacterExists(vars.toCharacterId);
 
         LinkLogic.linkCharacter(
@@ -152,7 +152,7 @@ contract Web3EntryBase is
     }
 
     function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external {
-        _validateCallerIsCharacterOwner(vars.fromCharacterId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkCharacter(
             vars,
@@ -232,7 +232,7 @@ contract Web3EntryBase is
     }
 
     function linkERC721(DataTypes.linkERC721Data calldata vars) external {
-        _validateCallerIsCharacterOwner(vars.fromCharacterId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
         _validateERC721Exists(vars.tokenAddress, vars.tokenId);
 
         LinkLogic.linkERC721(
@@ -244,7 +244,7 @@ contract Web3EntryBase is
     }
 
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external {
-        _validateCallerIsCharacterOwner(vars.fromCharacterId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkERC721(
             vars,
@@ -254,7 +254,7 @@ contract Web3EntryBase is
     }
 
     function linkAddress(DataTypes.linkAddressData calldata vars) external {
-        _validateCallerIsCharacterOwner(vars.fromCharacterId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.linkAddress(
             vars,
@@ -265,7 +265,7 @@ contract Web3EntryBase is
     }
 
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external {
-        _validateCallerIsCharacterOwner(vars.fromCharacterId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkAddress(
             vars,
@@ -275,7 +275,7 @@ contract Web3EntryBase is
     }
 
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external {
-        _validateCallerIsCharacterOwner(vars.fromCharacterId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.linkAnyUri(
             vars,
@@ -286,7 +286,7 @@ contract Web3EntryBase is
     }
 
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external {
-        _validateCallerIsCharacterOwner(vars.fromCharacterId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkAnyUri(
             vars,
@@ -331,7 +331,7 @@ contract Web3EntryBase is
     */
 
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
-        _validateCallerIsCharacterOwner(vars.fromCharacterId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.linkLinklist(
             vars,
@@ -342,7 +342,7 @@ contract Web3EntryBase is
     }
 
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external {
-        _validateCallerIsCharacterOwner(vars.fromCharacterId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkLinklist(
             vars,
@@ -353,7 +353,7 @@ contract Web3EntryBase is
 
     // set link module for his character
     function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external {
-        _validateCallerIsCharacterOwner(vars.characterId);
+         _validateCallerIsCharacterOwner(vars.characterId);
 
         CharacterLogic.setCharacterLinkModule(
             vars.characterId,
@@ -364,7 +364,7 @@ contract Web3EntryBase is
     }
 
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external {
-        _validateCallerIsCharacterOwner(vars.characterId);
+         _validateCallerIsCharacterOwner(vars.characterId);
         _validateNoteExists(vars.characterId, vars.noteId);
 
         LinkModuleLogic.setLinkModule4Note(
@@ -424,7 +424,7 @@ contract Web3EntryBase is
     }
 
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external {
-        _validateCallerIsCharacterOwner(vars.characterId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
         _validateNoteExists(vars.characterId, vars.noteId);
 
         LinkModuleLogic.setMintModule4Note(
@@ -450,7 +450,7 @@ contract Web3EntryBase is
         uint256 noteId,
         string calldata newUri
     ) external {
-        _validateCallerIsCharacterOwner(characterId);
+        _validateCallerIsCharacterOwnerOrOperator(characterId);
         _validateNoteExists(characterId, noteId);
 
         PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
@@ -466,7 +466,7 @@ contract Web3EntryBase is
     }
 
     function deleteNote(uint256 characterId, uint256 noteId) external {
-        _validateCallerIsCharacterOwnerOrOperator(characterId);
+        _validateCallerIsCharacterOwner(characterId);
         _validateNoteExists(characterId, noteId);
 
         _noteByIdByCharacter[characterId][noteId].deleted = true;
