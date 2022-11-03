@@ -71,7 +71,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
     function testLinkCharacterFail() public {
         // NotCharacterOwner
         vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
                 Const.FIRST_CHARACTER_ID,
@@ -166,7 +166,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
         );
 
         // unlink
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
         vm.prank(bob);
         web3Entry.unlinkCharacter(
             DataTypes.unlinkCharacterData(

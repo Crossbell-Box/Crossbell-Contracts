@@ -35,6 +35,10 @@ library Events {
 
     event SetOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
 
+    event AddOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
+
+    event RemoveOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
+
     event SetCharacterUri(uint256 indexed characterId, string newUri);
 
     event PostNote(
