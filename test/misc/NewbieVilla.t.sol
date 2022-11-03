@@ -15,135 +15,81 @@ contract NewbieVillaTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
 
-    NewbieVilla public newbie;
+    NewbieVilla public newbieVilla;
 
     function setUp() public {
         _setUp();
 
-        newbie = new NewbieVilla();
-        newbie.initialize(address(web3Entry));
+        newbieVilla = new NewbieVilla();
+        newbieVilla.initialize(address(web3Entry));
 
-        newbie.grantRole(ADMIN_ROLE, alice);
+        newbieVilla.grantRole(ADMIN_ROLE, alice);
     }
 
     function testNewbieInitializeFail() public {
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
-        newbie.initialize(address(web3Entry));
+        newbieVilla.initialize(address(web3Entry));
     }
 
     function testNewbieCreateCharacter() public {
-        Web3Entry(address(newbie)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie))
+        vm.prank(alice);
+        Web3Entry(address(web3Entry)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbieVilla))
         );
-        Web3Entry(address(newbie)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob)
+        console.logAddress(Web3Entry(address(web3Entry)).getOperator(Const.FIRST_CHARACTER_ID));
+        assertEq(
+            address(alice),
+            Web3Entry(address(web3Entry)).getOperator(Const.FIRST_CHARACTER_ID)
         );
-        assertEq(web3Entry.ownerOf(Const.FIRST_CHARACTER_ID), address(newbie));
-        assertEq(web3Entry.ownerOf(Const.SECOND_CHARACTER_ID), bob);
     }
 
     function testNewbieCreateCharacterFail() public {
-        Web3Entry(address(newbie)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie))
-        );
-        vm.expectRevert(abi.encodePacked("HandleExists"));
-        Web3Entry(address(newbie)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, bob)
-        );
-    }
-
-    function testNewbieLinkCharacter() public {
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
-
-        assertEq(web3Entry.ownerOf(Const.FIRST_CHARACTER_ID), address(newbie));
-        assertEq(web3Entry.ownerOf(Const.SECOND_CHARACTER_ID), bob);
-
-        vm.prank(alice);
-        Web3Entry(address(newbie)).linkCharacter(
-            DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
-                new bytes(0)
-            )
-        );
-        assertEq(linklist.ownerOf(1), address(newbie));
-    }
-
-    function testNewbieSetCharacterUri() public {
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
-
-        vm.prank(alice);
-        Web3Entry(address(newbie)).setCharacterUri(Const.FIRST_CHARACTER_ID, Const.MOCK_URI);
-
-        // check character uri
-        assertEq(web3Entry.getCharacterUri(Const.FIRST_CHARACTER_ID), Const.MOCK_URI);
-    }
-
-    function testNewbieLinkCharacterFail() public {
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
-
-        vm.expectRevert(
-            abi.encodePacked(
-                "AccessControl: account ",
-                Strings.toHexString(bob),
-                " is missing role ",
-                Strings.toHexString(uint256(ADMIN_ROLE), 32)
-            )
-        );
         vm.prank(bob);
-        Web3Entry(address(newbie)).linkCharacter(
-            DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
-                new bytes(0)
-            )
+        vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
+        Web3Entry(address(web3Entry)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbieVilla))
         );
     }
 
-    function testNewbiePostNote() public {
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
-
+    function testTransferNewbieIn() public {
         vm.prank(alice);
-        Web3Entry(address(newbie)).postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
-
-        // check note
-        DataTypes.Note memory note = web3Entry.getNote(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID
+        Web3Entry(address(web3Entry)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(alice))
         );
-        _matchNote(
-            note,
-            Const.bytes32Zero,
-            Const.bytes32Zero,
-            Const.MOCK_NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            false,
-            false
+        vm.prank(alice);
+        Web3Entry(address(web3Entry)).safeTransferFrom(
+            address(alice),
+            address(newbieVilla),
+            Const.FIRST_CHARACTER_ID
         );
+        assertEq(address(alice), Web3Entry(web3Entry).getOperator(Const.FIRST_CHARACTER_ID));
     }
 
-    function testNewbieSetOperator() public {
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
+    function testTransferNewbieInFail() public {
+        vm.startPrank(bob);
+        Web3Entry(address(web3Entry)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(bob))
+        );
+        vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
+        Web3Entry(address(web3Entry)).safeTransferFrom(
+            address(bob),
+            address(newbieVilla),
+            Const.FIRST_CHARACTER_ID
+        );
 
-        vm.prank(alice);
-        Web3Entry(address(newbie)).setOperator(Const.FIRST_CHARACTER_ID, bob);
-
-        // check operator
-        assertEq(web3Entry.getOperator(Const.FIRST_CHARACTER_ID), bob);
+        NFT nft = new NFT();
+        nft.mint(bob);
+        vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown token"));
+        nft.safeTransferFrom(address(bob), address(newbieVilla), Const.FIRST_CHARACTER_ID);
     }
 
-    function testNewbieTransferCharacter() public {
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbie)));
+    function testWithdrawNewbieOut() public {
+        // In Hardhat
+    }
 
-        vm.prank(alice);
-        Web3Entry(address(newbie)).transferFrom(address(newbie), bob, Const.FIRST_CHARACTER_ID);
-        assertEq(web3Entry.ownerOf(Const.FIRST_CHARACTER_ID), bob);
+    function testExpired() public {
+        vm.expectRevert("NewbieVilla: receipt has expired");
+        newbieVilla.withdraw(bob, 1, 0, block.timestamp - 1, "");
     }
 
     function testNewbieRole() public {

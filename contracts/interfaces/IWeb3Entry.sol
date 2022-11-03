@@ -26,6 +26,10 @@ interface IWeb3Entry {
 
     function setOperator(uint256 characterId, address operator) external;
 
+    function addOperator(uint256 characterId, address operator) external;
+
+    function removeOperator(uint256 characterId, address operator) external;
+
     function setLinklistUri(uint256 linkListId, string calldata uri) external;
 
     function linkAddress(DataTypes.linkAddressData calldata vars) external;

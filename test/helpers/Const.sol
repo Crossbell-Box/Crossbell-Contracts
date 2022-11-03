@@ -18,6 +18,7 @@ library Const {
     uint256 constant ZERO_CBT_ID = 0;
 
     address constant AddressZero = address(0);
+    address constant MOCK_TO_ADDRESS = address(0x05004003);
 
     string constant WEB3_ENTRY_NFT_NAME = "Web3 Entry Character";
     string constant WEB3_ENTRY_NFT_SYMBOL = "WEC";
@@ -56,4 +57,7 @@ library Const {
         0x4c696e6b6c697374000000000000000000000000000000000000000000000000;
     bytes32 constant LinkItemTypeAnyUri =
         0x416e795572690000000000000000000000000000000000000000000000000000;
+
+    uint256 constant PrivateKey0x1 =
+        0x0000000000000000000000000000000000000000000000000000000000000001;
 }

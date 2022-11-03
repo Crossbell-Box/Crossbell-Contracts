@@ -23,7 +23,7 @@ contract SetUp {
     NFT nft;
     Resolver resolver;
     CharacterBoundToken cbt;
-
+    TransparentUpgradeableProxy proxyWeb3Entry;
     address public admin = address(0x999999999999999999999999999999);
 
     function _setUp() internal {
@@ -32,11 +32,7 @@ contract SetUp {
 
         // deploy web3Entry
         Web3Entry web3EntryImpl = new Web3Entry();
-        TransparentUpgradeableProxy proxyWeb3Entry = new TransparentUpgradeableProxy(
-            address(web3EntryImpl),
-            admin,
-            ""
-        );
+        proxyWeb3Entry = new TransparentUpgradeableProxy(address(web3EntryImpl), admin, "");
         web3Entry = Web3Entry(address(proxyWeb3Entry));
 
         // deploy Linklist
