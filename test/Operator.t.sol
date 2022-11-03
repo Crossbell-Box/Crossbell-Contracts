@@ -132,7 +132,11 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
         // setNoteUri
-        web3Entry.setNoteUri(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, Const.MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
 
         // lockNote
         web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
@@ -144,10 +148,7 @@ contract OperatorTest is Test, SetUp, Utils {
         );
 
         // postNote4Address
-        web3Entry.postNote4Address(
-            makePostNoteData(Const.FIRST_CHARACTER_ID),
-            address(0x328)
-        );
+        web3Entry.postNote4Address(makePostNoteData(Const.FIRST_CHARACTER_ID), address(0x328));
 
         // postNote4Linklist
         web3Entry.postNote4Linklist(
@@ -302,7 +303,13 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // create then link character
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        web3Entry.createThenLinkCharacter(DataTypes.createThenLinkCharacterData(Const.FIRST_CHARACTER_ID, Const.MOCK_TO_ADDRESS, Const.LinkItemTypeCharacter));
+        web3Entry.createThenLinkCharacter(
+            DataTypes.createThenLinkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                Const.MOCK_TO_ADDRESS,
+                Const.LinkItemTypeCharacter
+            )
+        );
 
         // delete note
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));

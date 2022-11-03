@@ -141,5 +141,4 @@ interface ILinklist {
     function getLinkType(uint256 tokenId) external view returns (bytes32);
 
     function Uri(uint256 tokenId) external view returns (string memory);
-
 }
