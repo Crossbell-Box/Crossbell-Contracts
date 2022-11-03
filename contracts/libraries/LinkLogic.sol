@@ -23,13 +23,7 @@ library LinkLogic {
         address linkModule,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
-        uint256 linklistId = _mintLinklist(
-            fromCharacterId,
-            linkType,
-            linker,
-            linklist,
-            _attachedLinklists
-        );
+        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist, _attachedLinklists);
 
         // add to link list
         ILinklist(linklist).addLinkingCharacterId(linklistId, toCharacterId);
@@ -71,7 +65,6 @@ library LinkLogic {
         uint256 linklistId = _mintLinklist(
             vars.fromCharacterId,
             vars.linkType,
-            linker,
             linklist,
             _attachedLinklists
         );
@@ -126,18 +119,11 @@ library LinkLogic {
     function linkCharacterLink(
         uint256 fromCharacterId,
         DataTypes.CharacterLinkStruct calldata linkData,
-        address linker,
         bytes32 linkType,
         address linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
-        uint256 linklistId = _mintLinklist(
-            fromCharacterId,
-            linkType,
-            linker,
-            linklist,
-            _attachedLinklists
-        );
+        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist, _attachedLinklists);
 
         // add to link list
         ILinklist(linklist).addLinkingCharacterLink(linklistId, linkData);
@@ -174,14 +160,12 @@ library LinkLogic {
 
     function linkLinklist(
         DataTypes.linkLinklistData calldata vars,
-        address linker,
         address linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromCharacterId,
             vars.linkType,
-            linker,
             linklist,
             _attachedLinklists
         );
@@ -215,14 +199,12 @@ library LinkLogic {
 
     function linkERC721(
         DataTypes.linkERC721Data calldata vars,
-        address linker,
         address linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromCharacterId,
             vars.linkType,
-            linker,
             linklist,
             _attachedLinklists
         );
@@ -258,14 +240,12 @@ library LinkLogic {
 
     function linkAddress(
         DataTypes.linkAddressData calldata vars,
-        address linker,
         address linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromCharacterId,
             vars.linkType,
-            linker,
             linklist,
             _attachedLinklists
         );
@@ -289,14 +269,12 @@ library LinkLogic {
 
     function linkAnyUri(
         DataTypes.linkAnyUriData calldata vars,
-        address linker,
         address linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         uint256 linklistId = _mintLinklist(
             vars.fromCharacterId,
             vars.linkType,
-            linker,
             linklist,
             _attachedLinklists
         );
@@ -321,7 +299,6 @@ library LinkLogic {
     function _mintLinklist(
         uint256 fromCharacterId,
         bytes32 linkType,
-        address to,
         address linklist,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) internal returns (uint256 linklistId) {

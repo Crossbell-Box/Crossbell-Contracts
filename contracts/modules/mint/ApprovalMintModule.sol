@@ -57,8 +57,8 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         address to,
         uint256 characterId,
         uint256 noteId,
-        bytes calldata data
-    ) external onlyWeb3Entry {
+        bytes calldata
+    ) external view onlyWeb3Entry {
         address owner = IERC721(Web3Entry).ownerOf(characterId);
 
         require(
