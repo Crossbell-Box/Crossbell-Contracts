@@ -21,7 +21,10 @@ $ git commit -m "feat: A brief summary of the commit
 Start reading our code and you'll get the hang of it. We optimize for readability:
 
 + We indent using four spaces
-+ Use ``filename: reason string(without a period at the end)`` format in the error message for ``require``
-
++ Use ``filename: a sentence to describe the reason (without capitalization, without a period at the end)`` format in the error message for ``require`` in upgradable contracts
++ Comment style
+  - It is recommended that Solidity contracts are fully annotated using NatSpec for all public interfaces (everything in the ABI).
+  - It is recommended all the condition check logic are described in ``Requirements``
+  - It is recommended to describe the Event emitted in a function.
 
 Thanks.

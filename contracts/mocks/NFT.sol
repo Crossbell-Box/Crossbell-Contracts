@@ -13,7 +13,7 @@ contract NFT is NFTBase, Initializable {
 
     function mint(address to) public {
         uint256 tokenId = totalSupply() + 1;
-        _safeMint(to, tokenId);
+        _mint(to, tokenId);
     }
 }
 

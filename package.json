@@ -31,11 +31,12 @@
     "scripts": {
         "setup": "make clean && make build",
         "sync": "make install",
-        "test": "make foundry-test",
+        "test": "make foundry-test && npx hardhat test",
         "snapshot": "make snapshot",
         "lint": "make lint",
         "remap": "forge remappings > remappings.txt",
-        "version": "auto-changelog -t keepachangelog --commit-limit false --ignore-commit-pattern 'chore:|test:|docs:' && git add CHANGELOG.md"
+        "version": "auto-changelog -t keepachangelog --commit-limit false --ignore-commit-pattern 'chore:|test:|docs:' && git add CHANGELOG.md",
+        "docgen": "hardhat docgen"
     },
     "lint-staged": {
         "*": "make lint"
