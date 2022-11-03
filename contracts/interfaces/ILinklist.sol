@@ -11,7 +11,7 @@ interface ILinklist {
         uint256 tokenId
     ) external;
 
-    function setUri(uint256 tokenId, string memory uri) external;
+    function setUri(uint256 tokenId, string memory _uri) external;
 
     /////////////////////////////////
     // linking Character
@@ -23,6 +23,8 @@ interface ILinklist {
     function getLinkingCharacterIds(uint256 tokenId) external view returns (uint256[] memory);
 
     function getLinkingCharacterListLength(uint256 tokenId) external view returns (uint256);
+
+    function getOwnerCharacterId(uint256 tokenId) external view returns (uint256);
 
     /////////////////////////////////
     // linking Note
@@ -119,6 +121,8 @@ interface ILinklist {
 
     function getLinkingAnyUri(bytes32 linkKey) external view returns (string memory);
 
+    function getLinkingAnyUriKeys(uint256 tokenId) external view returns (bytes32[] memory);
+
     function getLinkingAnyListLength(uint256 tokenId) external view returns (uint256);
 
     /////////////////////////////////
@@ -137,4 +141,5 @@ interface ILinklist {
     function getLinkType(uint256 tokenId) external view returns (bytes32);
 
     function Uri(uint256 tokenId) external view returns (string memory);
+
 }

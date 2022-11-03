@@ -353,7 +353,7 @@ contract Web3EntryBase is
 
     // set link module for his character
     function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external {
-         _validateCallerIsCharacterOwner(vars.characterId);
+         _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
 
         CharacterLogic.setCharacterLinkModule(
             vars.characterId,
@@ -364,7 +364,7 @@ contract Web3EntryBase is
     }
 
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external {
-         _validateCallerIsCharacterOwner(vars.characterId);
+        _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
         _validateNoteExists(vars.characterId, vars.noteId);
 
         LinkModuleLogic.setLinkModule4Note(
@@ -757,3 +757,4 @@ contract Web3EntryBase is
         return REVISION;
     }
 }
+

@@ -20,7 +20,7 @@ contract Web3Entry is Web3EntryBase {
     }
 
     function isOperator(uint256 characterId, address operator)
-        external
+        public
         view
         override
         returns (bool)
@@ -59,6 +59,10 @@ contract Web3Entry is Web3EntryBase {
                 (tx.origin == owner && msg.sender == periphery),
             "NotCharacterOwnerNorOperator"
         );
+    }
+
+    function _validateCallerIsLinklistOwnerOrOperator(uint256 tokenId) internal view {
+        require(msg.sender == IERC721(_linklist).ownerOf(tokenId) || _operatorsByCharacter[ILinklist(_linklist).getOwnerCharacterId(tokenId)].contains(msg.sender), "NotLinkListOwnerNorOperator");
     }
 
     function _beforeTokenTransfer(
