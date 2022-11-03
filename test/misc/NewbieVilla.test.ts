@@ -22,7 +22,8 @@ beforeEach(async () => {
     const NewbieVilla = await ethers.getContractFactory("NewbieVilla");
     newbieVilla = await NewbieVilla.deploy();
     mockNft = await (await ethers.getContractFactory("NFT")).deploy();
-    await newbieVilla.connect(owner).initialize(mockNft.address);
+    const mockxSyncOperator = ethers.constants.AddressZero;
+    await newbieVilla.connect(owner).initialize(mockNft.address, mockxSyncOperator);
     // mockNft doesn't implement "setOperator", but here's not safeTransfer
     // so the onERC721Received will not be triggered
     await mockNft.connect(owner).mint(newbieVilla.address);

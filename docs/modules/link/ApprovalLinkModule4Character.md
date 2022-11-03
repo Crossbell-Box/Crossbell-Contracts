@@ -29,7 +29,7 @@ function approve(uint256 characterId, address[] addresses, bool[] toApprove) ext
 ### processLink
 
 ```solidity
-function processLink(address caller, uint256 characterId, bytes data) external
+function processLink(address caller, uint256 characterId, bytes) external view
 ```
 
 ### isApproved

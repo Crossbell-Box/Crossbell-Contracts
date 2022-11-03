@@ -1,17 +1,43 @@
 # Solidity API
 
-## IWeb3Entry
+## Web3EntryBase
+
+### REVISION
+
+```solidity
+uint256 REVISION
+```
 
 ### initialize
 
 ```solidity
-function initialize(string _name, string _symbol, address _linklistContract, address _mintNFTImpl, address _periphery, address resolver) external
+function initialize(string _name, string _symbol, address _linklistContract, address _mintNFTImpl, address _periphery, address _resolver) external
+```
+
+### _setCharacterUri
+
+```solidity
+function _setCharacterUri(uint256 profileId, string newUri) internal
 ```
 
 ### createCharacter
 
 ```solidity
 function createCharacter(struct DataTypes.CreateCharacterData vars) external
+```
+
+This method creates a character with the given parameters to the given address.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| vars | struct DataTypes.CreateCharacterData | The CreateCharacterData struct containing the following parameters:      * to: The address receiving the character.      * handle: The handle to set for the character.      * uri: The URI to set for the character metadata.      * linkModule: The link module to use, can be the zero address.      * linkModuleInitData: The link module initialization data, if any. |
+
+### _createCharacter
+
+```solidity
+function _createCharacter(struct DataTypes.CreateCharacterData vars) internal
 ```
 
 ### setHandle
@@ -47,43 +73,31 @@ function setOperator(uint256 characterId, address operator) external
 ### addOperator
 
 ```solidity
-function addOperator(uint256 characterId, address operator) external
+function addOperator(uint256, address) external virtual
 ```
 
 ### removeOperator
 
 ```solidity
-function removeOperator(uint256 characterId, address operator) external
+function removeOperator(uint256, address) external virtual
 ```
 
 ### isOperator
 
 ```solidity
-function isOperator(uint256 characterId, address operator) external view returns (bool)
+function isOperator(uint256, address) external view virtual returns (bool)
 ```
 
 ### getOperators
 
 ```solidity
-function getOperators(uint256 characterId) external view returns (address[])
+function getOperators(uint256) external view virtual returns (address[])
 ```
 
 ### setLinklistUri
 
 ```solidity
-function setLinklistUri(uint256 linkListId, string uri) external
-```
-
-### linkAddress
-
-```solidity
-function linkAddress(struct DataTypes.linkAddressData vars) external
-```
-
-### unlinkAddress
-
-```solidity
-function unlinkAddress(struct DataTypes.unlinkAddressData vars) external
+function setLinklistUri(uint256 linklistId, string uri) external
 ```
 
 ### linkCharacter
@@ -102,6 +116,12 @@ function unlinkCharacter(struct DataTypes.unlinkCharacterData vars) external
 
 ```solidity
 function createThenLinkCharacter(struct DataTypes.createThenLinkCharacterData vars) external
+```
+
+### _createThenLinkCharacter
+
+```solidity
+function _createThenLinkCharacter(uint256 fromCharacterId, address to, bytes32 linkType, bytes data) internal
 ```
 
 ### linkNote
@@ -126,6 +146,18 @@ function linkERC721(struct DataTypes.linkERC721Data vars) external
 
 ```solidity
 function unlinkERC721(struct DataTypes.unlinkERC721Data vars) external
+```
+
+### linkAddress
+
+```solidity
+function linkAddress(struct DataTypes.linkAddressData vars) external
+```
+
+### unlinkAddress
+
+```solidity
+function unlinkAddress(struct DataTypes.unlinkAddressData vars) external
 ```
 
 ### linkAnyUri
@@ -254,6 +286,12 @@ function postNote4ERC721(struct DataTypes.PostNoteData postNoteData, struct Data
 function postNote4AnyUri(struct DataTypes.PostNoteData postNoteData, string uri) external returns (uint256)
 ```
 
+### burn
+
+```solidity
+function burn(uint256 tokenId) public
+```
+
 ### getPrimaryCharacterId
 
 ```solidity
@@ -320,6 +358,12 @@ function getLinkModule4Linklist(uint256 tokenId) external view returns (address)
 function getLinkModule4ERC721(address tokenAddress, uint256 tokenId) external view returns (address)
 ```
 
+### tokenURI
+
+```solidity
+function tokenURI(uint256 characterId) public view returns (string)
+```
+
 ### getLinklistUri
 
 ```solidity
@@ -342,6 +386,70 @@ function getLinklistType(uint256 linkListId) external view returns (bytes32)
 
 ```solidity
 function getLinklistContract() external view returns (address)
+```
+
+### _beforeTokenTransfer
+
+```solidity
+function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual
+```
+
+_Hook that is called before any token transfer. This includes minting
+and burning.
+
+Calling conditions:
+
+- When `from` and `to` are both non-zero, ``from``'s `tokenId` will be
+transferred to `to`.
+- When `from` is zero, `tokenId` will be minted for `to`.
+- When `to` is zero, ``from``'s `tokenId` will be burned.
+- `from` cannot be the zero address.
+- `to` cannot be the zero address.
+
+To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks]._
+
+### _setOperator
+
+```solidity
+function _setOperator(uint256 characterId, address operator) internal
+```
+
+### _validateCallerIsCharacterOwnerOrOperator
+
+```solidity
+function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view virtual
+```
+
+_This is a virtual function and it doesn't check anything, so you should complete validating logic in inheritance contracts that use this Web3EntryBase contract as parent contract._
+
+### _validateCallerIsCharacterOwner
+
+```solidity
+function _validateCallerIsCharacterOwner(uint256 characterId) internal view
+```
+
+### _validateCallerIsLinklistOwner
+
+```solidity
+function _validateCallerIsLinklistOwner(uint256 tokenId) internal view
+```
+
+### _validateCharacterExists
+
+```solidity
+function _validateCharacterExists(uint256 characterId) internal view
+```
+
+### _validateERC721Exists
+
+```solidity
+function _validateERC721Exists(address tokenAddress, uint256 tokenId) internal view
+```
+
+### _validateNoteExists
+
+```solidity
+function _validateNoteExists(uint256 characterId, uint256 noteId) internal view
 ```
 
 ### getRevision

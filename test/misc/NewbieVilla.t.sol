@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.10;
 
-import "forge-std/console2.sol";
 import "../../contracts/libraries/DataTypes.sol";
 import "../helpers/Const.sol";
 import "../helpers/utils.sol";
@@ -14,6 +13,7 @@ contract NewbieVillaTest is Test, SetUp, Utils {
 
     address public alice = address(0x1111);
     address public bob = address(0x2222);
+    address public xsyncOperator = address(0x3333);
 
     NewbieVilla public newbieVilla;
 
@@ -21,14 +21,14 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         _setUp();
 
         newbieVilla = new NewbieVilla();
-        newbieVilla.initialize(address(web3Entry));
+        newbieVilla.initialize(address(web3Entry), xsyncOperator);
 
         newbieVilla.grantRole(ADMIN_ROLE, alice);
     }
 
     function testNewbieInitializeFail() public {
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
-        newbieVilla.initialize(address(web3Entry));
+        newbieVilla.initialize(address(web3Entry), xsyncOperator);
     }
 
     function testNewbieCreateCharacter() public {
@@ -36,11 +36,8 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         Web3Entry(address(web3Entry)).createCharacter(
             makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbieVilla))
         );
-        console.logAddress(Web3Entry(address(web3Entry)).getOperator(Const.FIRST_CHARACTER_ID));
-        assertEq(
-            address(alice),
-            Web3Entry(address(web3Entry)).getOperator(Const.FIRST_CHARACTER_ID)
-        );
+        assert(Web3Entry(address(web3Entry)).isOperator(Const.FIRST_CHARACTER_ID, alice));
+        assert(Web3Entry(address(web3Entry)).isOperator(Const.FIRST_CHARACTER_ID, xsyncOperator));
     }
 
     function testNewbieCreateCharacterFail() public {
@@ -62,7 +59,8 @@ contract NewbieVillaTest is Test, SetUp, Utils {
             address(newbieVilla),
             Const.FIRST_CHARACTER_ID
         );
-        assertEq(address(alice), Web3Entry(web3Entry).getOperator(Const.FIRST_CHARACTER_ID));
+        assert(Web3Entry(address(web3Entry)).isOperator(Const.FIRST_CHARACTER_ID, alice));
+        assert(Web3Entry(address(web3Entry)).isOperator(Const.FIRST_CHARACTER_ID, xsyncOperator));
     }
 
     function testTransferNewbieInFail() public {
@@ -122,7 +120,7 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         assertEq(cbt.hasRole(ADMIN_ROLE, bob), false);
     }
 
-    function testNewbieRenounceRol() public {
+    function testNewbieRenounceRole() public {
         // grant role to bob
         cbt.grantRole(ADMIN_ROLE, bob);
         assertEq(cbt.hasRole(ADMIN_ROLE, bob), true);

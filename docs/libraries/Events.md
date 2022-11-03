@@ -56,6 +56,18 @@ event SetSocialToken(address account, uint256 characterId, address tokenAddress)
 event SetOperator(uint256 characterId, address operator, uint256 timestamp)
 ```
 
+### AddOperator
+
+```solidity
+event AddOperator(uint256 characterId, address operator, uint256 timestamp)
+```
+
+### RemoveOperator
+
+```solidity
+event RemoveOperator(uint256 characterId, address operator, uint256 timestamp)
+```
+
 ### SetCharacterUri
 
 ```solidity

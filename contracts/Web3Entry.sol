@@ -19,7 +19,12 @@ contract Web3Entry is Web3EntryBase {
         _removeOperator(characterId, operator);
     }
 
-    function isOperator(uint256 characterId, address operator) public view override returns (bool) {
+    function isOperator(uint256 characterId, address operator)
+        external
+        view
+        override
+        returns (bool)
+    {
         bool inOperator = _operatorByCharacter[characterId] == operator;
         bool inOpertors = _operatorsByCharacter[characterId].contains(operator);
         return inOperator || inOpertors;
