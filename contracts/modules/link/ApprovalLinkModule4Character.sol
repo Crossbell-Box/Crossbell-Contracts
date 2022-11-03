@@ -53,8 +53,8 @@ contract ApprovalLinkModule4Character is ILinkModule4Character, ModuleBase {
     function processLink(
         address caller,
         uint256 characterId,
-        bytes calldata data
-    ) external override onlyWeb3Entry {
+        bytes calldata
+    ) external view override onlyWeb3Entry {
         address owner = IERC721(Web3Entry).ownerOf(characterId);
 
         require(

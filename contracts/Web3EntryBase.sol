@@ -72,22 +72,21 @@ contract Web3EntryBase is
     }
 
     function _createCharacter(DataTypes.CreateCharacterData memory vars) internal {
-        _characterCounter = _characterCounter + 1;
-
+        uint256 characterId = ++_characterCounter;
         // mint character nft
-        _mint(vars.to, _characterCounter);
+        _safeMint(vars.to, characterId);
 
         CharacterLogic.createCharacter(
             vars,
             true,
-            _characterCounter,
+            characterId,
             _characterIdByHandleHash,
             _characterById
         );
 
         // set primary character
         if (_primaryCharacterByAddress[vars.to] == 0) {
-            _primaryCharacterByAddress[vars.to] = _characterCounter;
+            _primaryCharacterByAddress[vars.to] = characterId;
         }
     }
 
@@ -180,7 +179,7 @@ contract Web3EntryBase is
 
         uint256 characterId = ++_characterCounter;
         // mint character nft
-        _mint(to, characterId);
+        _safeMint(to, characterId);
 
         CharacterLogic.createCharacter(
             DataTypes.CreateCharacterData({
@@ -235,12 +234,7 @@ contract Web3EntryBase is
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
         _validateERC721Exists(vars.tokenAddress, vars.tokenId);
 
-        LinkLogic.linkERC721(
-            vars,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
-            _linklist,
-            _attachedLinklists
-        );
+        LinkLogic.linkERC721(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external {
@@ -256,12 +250,7 @@ contract Web3EntryBase is
     function linkAddress(DataTypes.linkAddressData calldata vars) external {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
-        LinkLogic.linkAddress(
-            vars,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
-            _linklist,
-            _attachedLinklists
-        );
+        LinkLogic.linkAddress(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external {
@@ -277,12 +266,7 @@ contract Web3EntryBase is
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
-        LinkLogic.linkAnyUri(
-            vars,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
-            _linklist,
-            _attachedLinklists
-        );
+        LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external {
@@ -333,12 +317,7 @@ contract Web3EntryBase is
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
-        LinkLogic.linkLinklist(
-            vars,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
-            _linklist,
-            _attachedLinklists
-        );
+        LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external {

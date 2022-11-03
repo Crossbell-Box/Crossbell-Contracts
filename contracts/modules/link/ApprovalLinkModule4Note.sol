@@ -57,8 +57,8 @@ contract ApprovalLinkModule4Note is ILinkModule4Note, ModuleBase {
         address caller,
         uint256 characterId,
         uint256 noteId,
-        bytes calldata data
-    ) external onlyWeb3Entry {
+        bytes calldata
+    ) external view onlyWeb3Entry {
         address owner = IERC721(Web3Entry).ownerOf(characterId);
 
         require(

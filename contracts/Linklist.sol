@@ -424,10 +424,10 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     }
 
     function _transfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal override {
+        address,
+        address,
+        uint256
+    ) internal pure override {
         revert("non-transferable");
     }
 
