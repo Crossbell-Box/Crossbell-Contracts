@@ -356,7 +356,7 @@ contract Web3EntryBase is
     }
 
     function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external {
-        _validateCallerIsLinklistOwner(vars.linklistId);
+        _validateCallerIsLinklistOwnerOrOperator(vars.linklistId);
 
         LinkModuleLogic.setLinkModule4Linklist(
             vars.linklistId,
@@ -366,6 +366,10 @@ contract Web3EntryBase is
         );
     }
 
+    /**
+     * @notice Set linkModule for a ERC721 token that you own.
+     * @dev Operators can't setLinkModule4ERC721, because operators are set for characters but erc721 tokens belong to address and not characters.
+     */
     function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external {
         require(msg.sender == ERC721(vars.tokenAddress).ownerOf(vars.tokenId), "NotERC721Owner");
 
@@ -378,6 +382,10 @@ contract Web3EntryBase is
         );
     }
 
+    /**
+     * @notice Set linkModule for an address.
+     * @dev Operators can't setLinkModule4Address, because this linkModule is for addresses and is irrelevan to characters.
+     */
     function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external {
         LinkModuleLogic.setLinkModule4Address(
             vars.account,
@@ -435,6 +443,9 @@ contract Web3EntryBase is
         PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
     }
 
+    /**
+     * @notice lockNote put a note into a immutable state where no modifications are allowed. You should call this method to announce that this is the final version.
+     */
     function lockNote(uint256 characterId, uint256 noteId) external {
         _validateCallerIsCharacterOwnerOrOperator(characterId);
         _validateNoteExists(characterId, noteId);
@@ -706,6 +717,8 @@ contract Web3EntryBase is
      * @dev This is a virtual function and it doesn't check anything, so you should complete validating logic in inheritance contracts that use this Web3EntryBase contract as parent contract.
      */
     function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view virtual {}
+
+    function _validateCallerIsLinklistOwnerOrOperator(uint256 noteId) internal view virtual {}
 
     function _validateCallerIsCharacterOwner(uint256 characterId) internal view {
         address owner = ownerOf(characterId);

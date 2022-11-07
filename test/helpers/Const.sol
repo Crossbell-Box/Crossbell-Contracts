@@ -17,6 +17,9 @@ library Const {
     uint256 constant SECOND_CBT_ID = 2;
     uint256 constant ZERO_CBT_ID = 0;
 
+    uint256 constant MOCK_FIRST_TOKEN_ID = 0;
+    uint256 constant MOCK_SECOND_TOKEN_ID = 1;
+
     address constant AddressZero = address(0);
     address constant MOCK_TO_ADDRESS = address(0x05004003);
 

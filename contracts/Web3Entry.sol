@@ -61,6 +61,23 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
+    function _validateCallerIsLinklistOwnerOrOperator(uint256 tokenId)
+        internal
+        view
+        virtual
+        override
+    {
+        // get character id of the owner of this linklist
+        uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(tokenId);
+        // require msg.sender is operator of the owner character or the owner of this linklist
+        require(
+            msg.sender == IERC721(_linklist).ownerOf(tokenId) ||
+                _operatorsByCharacter[ownerCharacterId].contains(msg.sender) ||
+                msg.sender == _operatorByCharacter[ownerCharacterId],
+            "NotLinkListOwnerNorOperator"
+        );
+    }
+
     function _beforeTokenTransfer(
         address from,
         address to,
@@ -70,7 +87,7 @@ contract Web3Entry is Web3EntryBase {
 
         for (uint256 index = 0; index < _list.length; index++) {
             address _value = _list[index];
-            _operatorsByCharacter[tokenId].remove(_value);
+            _removeOperator(tokenId, _value);
         }
 
         super._beforeTokenTransfer(from, to, tokenId);

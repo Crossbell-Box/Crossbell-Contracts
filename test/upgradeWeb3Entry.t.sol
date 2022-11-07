@@ -100,24 +100,32 @@ contract UpgradeWeb3Entry is Test, Utils {
         Web3EntryBase(address(proxyWeb3Entry)).setOperator(Const.FIRST_CHARACTER_ID, bob);
 
         // slot 21 is periphery address
-        bytes32 peripheryBytes32 = bytes32(0x0000000000000000000000000000000000000000000000000000000000000222);
+        bytes32 peripheryBytes32 = bytes32(
+            0x0000000000000000000000000000000000000000000000000000000000000222
+        );
         bytes32 valueAt21 = vm.load(address(proxyWeb3Entry), bytes32(uint256(21)));
         assertEq(peripheryBytes32, valueAt21);
 
         // slot 22 is _operatorByCharacter mapping, so it's 0
-        bytes32 operatorByCharacterBytes32 = bytes32(0x0000000000000000000000000000000000000000000000000000000000000000);
+        bytes32 operatorByCharacterBytes32 = bytes32(
+            0x0000000000000000000000000000000000000000000000000000000000000000
+        );
         bytes32 valueAt22 = vm.load(address(proxyWeb3Entry), bytes32(uint256(22)));
         assertEq(operatorByCharacterBytes32, valueAt22);
 
         // check _operatorByCharacter slot
-        bytes32 bobBytes32 = bytes32(0x0000000000000000000000000000000000000000000000000000000000002222);
+        bytes32 bobBytes32 = bytes32(
+            0x0000000000000000000000000000000000000000000000000000000000002222
+        );
         uint256 slot = 22;
         bytes32 operatorSlot = keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, slot));
         bytes32 valueAtOperatorSlot = vm.load(address(proxyWeb3Entry), operatorSlot);
         assertEq(valueAtOperatorSlot, bobBytes32);
 
         // slot 23 is resolver address
-        bytes32 resolverBytes32 = bytes32(0x0000000000000000000000000000000000000000000000000000000000000444);
+        bytes32 resolverBytes32 = bytes32(
+            0x0000000000000000000000000000000000000000000000000000000000000444
+        );
         bytes32 valueAt23 = vm.load(address(proxyWeb3Entry), bytes32(uint256(23)));
         assertEq(resolverBytes32, valueAt23);
 
@@ -127,7 +135,6 @@ contract UpgradeWeb3Entry is Test, Utils {
             bytes32 value = vm.load(address(proxyWeb3Entry), bytes32(uint256(index)));
             prevSlotArr[index] = uint256(value);
         }
-
 
         // upgrade to new web3Entry
         vm.startPrank(admin);
