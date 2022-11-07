@@ -14,11 +14,17 @@ mapping(uint256 => struct EnumerableSet.AddressSet) _operatorsByCharacter
 function addOperator(uint256 characterId, address operator) external
 ```
 
+Designate addresses as operators of your character so that it can send transactions on behalf
+      of your characters(e.g. post notes or follow someone). This a high risk operation, so take special 
+      attention and make sure the addresses you input is familiar to you.
+
 ### removeOperator
 
 ```solidity
 function removeOperator(uint256 characterId, address operator) external
 ```
+
+Cancel authorization on operators and remove them from operator list.
 
 ### isOperator
 
@@ -26,11 +32,21 @@ function removeOperator(uint256 characterId, address operator) external
 function isOperator(uint256 characterId, address operator) external view returns (bool)
 ```
 
+Check if an address is the operator of a character.
+
+_`isOperator` is compatible with operators set by old `setOperator`, which is deprected and will
+      be disabled in later updates._
+
 ### getOperators
 
 ```solidity
 function getOperators(uint256 characterId) external view returns (address[])
 ```
+
+Get operator addresses of a character.
+
+_`getOperators` returns operators in _operatorsByCharacter, but doesn't return 
+     _operatorByCharacter, which is deprected and will be disabled in later updates._
 
 ### _addOperator
 
@@ -64,17 +80,6 @@ function _validateCallerIsLinklistOwnerOrOperator(uint256 tokenId) internal view
 function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual
 ```
 
-_Hook that is called before any token transfer. This includes minting
-and burning.
-
-Calling conditions:
-
-- When `from` and `to` are both non-zero, ``from``'s `tokenId` will be
-transferred to `to`.
-- When `from` is zero, `tokenId` will be minted for `to`.
-- When `to` is zero, ``from``'s `tokenId` will be burned.
-- `from` cannot be the zero address.
-- `to` cannot be the zero address.
-
-To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks]._
+_Operator lists will be reset to blank before the characters are transferred in order to grant the
+      whole control power to receivers of character transfers._
 

@@ -9,16 +9,29 @@ contract Web3Entry is Web3EntryBase {
 
     mapping(uint256 => EnumerableSet.AddressSet) internal _operatorsByCharacter; //slot 24
 
+    /**
+     * @notice Designate addresses as operators of your character so that it can send transactions on behalf
+      of your characters(e.g. post notes or follow someone). This a high risk operation, so take special 
+      attention and make sure the addresses you input is familiar to you.
+     */
     function addOperator(uint256 characterId, address operator) external override {
         _validateCallerIsCharacterOwner(characterId);
         _addOperator(characterId, operator);
     }
 
+    /**
+     * @notice Cancel authorization on operators and remove them from operator list.
+     */
     function removeOperator(uint256 characterId, address operator) external override {
         _validateCallerIsCharacterOwner(characterId);
         _removeOperator(characterId, operator);
     }
 
+    /**
+     * @notice Check if an address is the operator of a character.
+     * @dev `isOperator` is compatible with operators set by old `setOperator`, which is deprected and will
+      be disabled in later updates. 
+     */
     function isOperator(uint256 characterId, address operator)
         external
         view
@@ -30,6 +43,11 @@ contract Web3Entry is Web3EntryBase {
         return inOperator || inOpertors;
     }
 
+    /**
+     * @notice Get operator addresses of a character.
+     * @dev `getOperators` returns operators in _operatorsByCharacter, but doesn't return 
+     _operatorByCharacter, which is deprected and will be disabled in later updates.
+     */
     function getOperators(uint256 characterId) external view override returns (address[] memory) {
         return _operatorsByCharacter[characterId].values();
     }
@@ -78,6 +96,10 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
+    /**
+     * @dev Operator lists will be reset to blank before the characters are transferred in order to grant the
+      whole control power to receivers of character transfers.
+     */
     function _beforeTokenTransfer(
         address from,
         address to,
