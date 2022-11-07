@@ -117,10 +117,11 @@ contract UpgradeWeb3Entry is Test, Utils {
         bytes32 bobBytes32 = bytes32(
             0x0000000000000000000000000000000000000000000000000000000000002222
         );
-        uint256 slot = 22;
-        bytes32 operatorSlot = keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, slot));
-        bytes32 valueAtOperatorSlot = vm.load(address(proxyWeb3Entry), operatorSlot);
-        assertEq(valueAtOperatorSlot, bobBytes32);
+        bytes32 prevOperatorSlot = keccak256(
+            abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(22)))
+        );
+        bytes32 prevValueAtOperatorSlot = vm.load(address(proxyWeb3Entry), prevOperatorSlot);
+        assertEq(prevValueAtOperatorSlot, bobBytes32);
 
         // slot 23 is resolver address
         bytes32 resolverBytes32 = bytes32(
@@ -158,5 +159,36 @@ contract UpgradeWeb3Entry is Test, Utils {
         for (uint256 index = 0; index < 25; index++) {
             assertEq(prevSlotArr[index], newSlotArr[index]);
         }
+
+        // check operatorSlot
+        bytes32 operatorSlot = keccak256(
+            abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(22)))
+        );
+        bytes32 valueAtOperatorSlot = vm.load(address(proxyWeb3Entry), operatorSlot);
+        assertEq(valueAtOperatorSlot, bobBytes32);
+
+        // check operatorsSlot
+        // the slot storages the length of EnumerableSet.AddressSet, and it's 1(there is only 1 operator in this list)
+        bytes32 operatorsSlot = keccak256(
+            abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(24)))
+        );
+        bytes32 valueAtOperatorsSlot = vm.load(address(proxyWeb3Entry), operatorsSlot);
+        assertEq(
+            valueAtOperatorsSlot,
+            bytes32(0x0000000000000000000000000000000000000000000000000000000000000001)
+        );
+
+        // add operator
+        vm.prank(alice);
+        Web3Entry(address(proxyWeb3Entry)).addOperator(Const.FIRST_CHARACTER_ID, bob);
+
+        // check operatorsSlot
+        // now the length of EnumerableSet.AddressSet becomes 2
+        operatorsSlot = keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(24))));
+        valueAtOperatorsSlot = vm.load(address(proxyWeb3Entry), operatorsSlot);
+        assertEq(
+            valueAtOperatorsSlot,
+            bytes32(0x0000000000000000000000000000000000000000000000000000000000000002)
+        );
     }
 }

@@ -7,7 +7,7 @@ import "./Web3EntryBase.sol";
 contract Web3Entry is Web3EntryBase {
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    mapping(uint256 => EnumerableSet.AddressSet) internal _operatorsByCharacter;
+    mapping(uint256 => EnumerableSet.AddressSet) internal _operatorsByCharacter; //slot 24
 
     function addOperator(uint256 characterId, address operator) external override {
         _validateCallerIsCharacterOwner(characterId);

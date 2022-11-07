@@ -304,7 +304,7 @@ contract OperatorTest is Test, SetUp, Utils {
             )
         );
 
-        // vm.stopPrank();
+        vm.stopPrank();
     }
 
     function testOperatorActionsFail() public {
@@ -364,6 +364,10 @@ contract OperatorTest is Test, SetUp, Utils {
         assert(web3Entry.isOperator(Const.FIRST_CHARACTER_ID, dick));
 
         vm.prank(alice);
+
+        expectEmit(CheckTopic1 | CheckData);
+        emit Events.RemoveOperator(Const.FIRST_CHARACTER_ID, carol, block.timestamp);
+        emit Events.RemoveOperator(Const.FIRST_CHARACTER_ID, dick, block.timestamp);
         web3Entry.transferFrom(alice, bob, Const.FIRST_CHARACTER_ID);
 
         // operator should be reset after transfer

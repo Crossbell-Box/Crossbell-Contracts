@@ -52,6 +52,12 @@ function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal
 
 _This is a virtual function and it doesn't check anything, so you should complete validating logic in inheritance contracts that use this Web3EntryBase contract as parent contract._
 
+### _validateCallerIsLinklistOwnerOrOperator
+
+```solidity
+function _validateCallerIsLinklistOwnerOrOperator(uint256 tokenId) internal view virtual
+```
+
 ### _beforeTokenTransfer
 
 ```solidity
