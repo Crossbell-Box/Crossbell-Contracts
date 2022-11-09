@@ -208,11 +208,19 @@ function setLinkModule4Linklist(struct DataTypes.setLinkModule4LinklistData vars
 function setLinkModule4ERC721(struct DataTypes.setLinkModule4ERC721Data vars) external
 ```
 
+Set linkModule for a ERC721 token that you own.
+
+_Operators can't setLinkModule4ERC721, because operators are set for characters but erc721 tokens belong to address and not characters._
+
 ### setLinkModule4Address
 
 ```solidity
 function setLinkModule4Address(struct DataTypes.setLinkModule4AddressData vars) external
 ```
+
+Set linkModule for an address.
+
+_Operators can't setLinkModule4Address, because this linkModule is for addresses and is irrelevan to characters._
 
 ### mintNote
 
@@ -243,6 +251,8 @@ function setNoteUri(uint256 characterId, uint256 noteId, string newUri) external
 ```solidity
 function lockNote(uint256 characterId, uint256 noteId) external
 ```
+
+lockNote put a note into a immutable state where no modifications are allowed. You should call this method to announce that this is the final version.
 
 ### deleteNote
 
@@ -421,6 +431,12 @@ function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal
 ```
 
 _This is a virtual function and it doesn't check anything, so you should complete validating logic in inheritance contracts that use this Web3EntryBase contract as parent contract._
+
+### _validateCallerIsLinklistOwnerOrOperator
+
+```solidity
+function _validateCallerIsLinklistOwnerOrOperator(uint256 noteId) internal view virtual
+```
 
 ### _validateCallerIsCharacterOwner
 

@@ -7,6 +7,8 @@ import "../contracts/Web3Entry.sol";
 import "../contracts/libraries/DataTypes.sol";
 import "../contracts/Web3Entry.sol";
 import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
+import "../contracts/modules/link/ApprovalLinkModule4Character.sol";
+import "../contracts/modules/link/ApprovalLinkModule4Note.sol";
 import "./helpers/Const.sol";
 import "./helpers/utils.sol";
 import "./helpers/SetUp.sol";
@@ -267,6 +269,41 @@ contract OperatorTest is Test, SetUp, Utils {
             DataTypes.unlinkLinklistData(Const.FIRST_CHARACTER_ID, 1, Const.LikeLinkType)
         );
 
+        ApprovalLinkModule4Character linkModule4Character = new ApprovalLinkModule4Character(
+            address(web3Entry)
+        );
+
+        // setLinkModule4Character
+        web3Entry.setLinkModule4Character(
+            DataTypes.setLinkModule4CharacterData(
+                Const.FIRST_CHARACTER_ID,
+                address(linkModule4Character),
+                new bytes(0)
+            )
+        );
+
+        ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
+
+        // setLinkModule4Note
+        web3Entry.setLinkModule4Note(
+            DataTypes.setLinkModule4NoteData(
+                Const.FIRST_CHARACTER_ID,
+                Const.SECOND_NOTE_ID,
+                address(linkModule4Note),
+                new bytes(0)
+            )
+        );
+
+        // setLinkModule4Linklist
+        // i use the address(linkModule4Character) for link module(cuz the logic here is the same)
+        web3Entry.setLinkModule4Linklist(
+            DataTypes.setLinkModule4LinklistData(
+                Const.FIRST_LINKLIST_ID,
+                address(linkModule4Character),
+                new bytes(0)
+            )
+        );
+
         vm.stopPrank();
     }
 
@@ -327,6 +364,10 @@ contract OperatorTest is Test, SetUp, Utils {
         assert(web3Entry.isOperator(Const.FIRST_CHARACTER_ID, dick));
 
         vm.prank(alice);
+
+        expectEmit(CheckTopic1 | CheckData);
+        emit Events.RemoveOperator(Const.FIRST_CHARACTER_ID, carol, block.timestamp);
+        emit Events.RemoveOperator(Const.FIRST_CHARACTER_ID, dick, block.timestamp);
         web3Entry.transferFrom(alice, bob, Const.FIRST_CHARACTER_ID);
 
         // operator should be reset after transfer
