@@ -8,6 +8,29 @@ contract Web3Entry is Web3EntryBase {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     mapping(uint256 => EnumerableSet.AddressSet) internal _operatorsByCharacter; //slot 24
+    // characterId => operator => permissionsBitMap
+    mapping(uint256 => mapping(address => uint256)) internal operatorsPermissionBitMap;
+
+    function grantOperatorPermissions(
+        uint256 characterId,
+        address operator,
+        uint256 permissionBitMap
+    ) external {
+        operatorsPermissionBitMap[characterId][operator] = permissionBitMap;
+    }
+
+    function migrateOperator(uint256[] calldata characterIds) external {
+        // migrate operators permissions to operatorsAuthBitMap
+        // set default permissions bitmap
+    }
+
+    function getOperatorPermission(uint256 characterId, address operator)
+        external
+        view
+        returns (uint256)
+    {
+        return operatorsPermissionBitMap[characterId][operator];
+    }
 
     /**
      * @notice Designate addresses as operators of your character so that it can send transactions on behalf
@@ -15,6 +38,7 @@ contract Web3Entry is Web3EntryBase {
       attention and make sure the addresses you input is familiar to you.
      */
     function addOperator(uint256 characterId, address operator) external override {
+        // set default permissions bitmap
         _validateCallerIsCharacterOwner(characterId);
         _addOperator(characterId, operator);
     }
@@ -24,7 +48,9 @@ contract Web3Entry is Web3EntryBase {
      */
     function removeOperator(uint256 characterId, address operator) external override {
         _validateCallerIsCharacterOwner(characterId);
-        _removeOperator(characterId, operator);
+        _removeOperator(characterId, operator); // TODO: remove
+        // clear all permissions
+        operatorsPermissionBitMap[characterId][operator] = 0;
     }
 
     /**
