@@ -3,6 +3,7 @@
 pragma solidity 0.8.10;
 
 import "./Web3EntryBase.sol";
+import "./libraries/OP.sol";
 
 contract Web3Entry is Web3EntryBase {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -19,9 +20,21 @@ contract Web3Entry is Web3EntryBase {
         operatorsPermissionBitMap[characterId][operator] = permissionBitMap;
     }
 
+    // migrateOperator migrates operators permissions to operatorsAuthBitMap
     function migrateOperator(uint256[] calldata characterIds) external {
-        // migrate operators permissions to operatorsAuthBitMap
         // set default permissions bitmap
+        for (uint256 i = 0; i < characterIds.length; ++i) {
+            uint256 characterId = characterIds[i];
+            address operator = _operatorByCharacter[characterId];
+            if (operator != address(0)) {
+                operatorsPermissionBitMap[characterId][operator] = OP.DEFAULT_PERMISSION_BITMAP;
+            }
+
+            address[] memory operators = _operatorsByCharacter[characterId].values();
+            for (uint256 j = 0; j < operators.length; ++j) {
+                operatorsPermissionBitMap[characterId][operators[j]] = OP.DEFAULT_PERMISSION_BITMAP;
+            }
+        }
     }
 
     function getOperatorPermission(uint256 characterId, address operator)

@@ -11,6 +11,7 @@ library OP {
     uint8 internal constant REMOVE_OPERATOR = 3;
     uint8 internal constant SET_SOCIAL_TOKEN = 4;
     uint8 internal constant GRANT_OPERATOR_PERMISSIONS = 5;
+    uint256 internal constant DEFAULT_PERMISSION_BITMAP = ~uint256(0) >> 20;
 
     // [21,80] for operator sign permissions
     uint8 internal constant SET_CHARACTER_URI = 21;
