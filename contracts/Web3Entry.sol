@@ -14,6 +14,7 @@ contract Web3Entry is Web3EntryBase {
         address operator,
         uint256 permissionBitMap
     ) external {
+        _validateCallerIsCharacterOwner(characterId);
         operatorsPermissionBitMap[characterId][operator] = permissionBitMap;
     }
 

@@ -40,7 +40,13 @@ contract OperatorTest is Test, SetUp, Utils {
         );
 
         // only only owner can grant operator
-        // TODO
+        vm.prank(bob);
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
     }
 
     function testCheckPermissionAtPosition() public {
