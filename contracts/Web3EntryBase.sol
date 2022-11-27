@@ -51,7 +51,7 @@ contract Web3EntryBase is
         emit Events.Web3EntryInitialized(block.timestamp);
     }
 
-    function _setCharacterUri(uint256 profileId, string memory newUri) internal {
+    function _setCharacterUri(uint256 profileId, string memory newUri) internal virtual {
         _validateCallerIsCharacterOwnerOrOperator(profileId);
 
         _characterById[profileId].uri = newUri;
@@ -92,22 +92,26 @@ contract Web3EntryBase is
         }
     }
 
+    // owner permission
     function setHandle(uint256 characterId, string calldata newHandle) external {
         _validateCallerIsCharacterOwner(characterId);
 
         CharacterLogic.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
     }
 
+    // owner permission
     function setSocialToken(uint256 characterId, address tokenAddress) external {
         _validateCallerIsCharacterOwner(characterId);
 
         CharacterLogic.setSocialToken(characterId, tokenAddress, _characterById);
     }
 
-    function setCharacterUri(uint256 characterId, string calldata newUri) external {
+    // opSign permission id = 176
+    function setCharacterUri(uint256 characterId, string calldata newUri) external virtual {
         _setCharacterUri(characterId, newUri);
     }
 
+    // owner permission
     function setPrimaryCharacterId(uint256 characterId) external {
         _validateCallerIsCharacterOwner(characterId);
 
@@ -148,11 +152,7 @@ contract Web3EntryBase is
      * @dev `isOperator` is compatible with operators set by old `setOperator`, which is deprected and will
       be disabled in later updates. 
      */
-    function isOperator(uint256 characterId, address operator)
-        external
-        view
-        returns (bool)
-    {
+    function isOperator(uint256 characterId, address operator) external view returns (bool) {
         bool inOperator = _operatorByCharacter[characterId] == operator;
         bool inOpertors = _operatorsByCharacter[characterId].contains(operator);
         return inOperator || inOpertors;
@@ -177,12 +177,7 @@ contract Web3EntryBase is
         emit Events.RemoveOperator(characterId, operator, block.timestamp);
     }
 
-
-    function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId)
-        internal
-        view
-        virtual
-    {
+    function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view virtual {
         address owner = ownerOf(characterId);
 
         require(
@@ -194,11 +189,7 @@ contract Web3EntryBase is
         );
     }
 
-    function _validateCallerIsLinklistOwnerOrOperator(uint256 tokenId)
-        internal
-        view
-        virtual
-    {
+    function _validateCallerIsLinklistOwnerOrOperator(uint256 tokenId) internal view virtual {
         // get character id of the owner of this linklist
         uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(tokenId);
         // require msg.sender is operator of the owner character or the owner of this linklist
@@ -210,13 +201,21 @@ contract Web3EntryBase is
         );
     }
 
-    function setLinklistUri(uint256 linklistId, string calldata uri) external {
+    // opSign permission
+    // id = 177
+    function setLinklistUri(uint256 linklistId, string calldata uri) external virtual {
         _validateCallerIsLinklistOwner(linklistId);
 
         ILinklist(_linklist).setUri(linklistId, uri);
     }
 
-    function linkCharacter(DataTypes.linkCharacterData calldata vars) external {
+    function _setLinklistUri(uint256 linklistId, string calldata uri) external virtual {
+        _validateCallerIsLinklistOwner(linklistId);
+
+        ILinklist(_linklist).setUri(linklistId, uri);
+    }
+
+    function linkCharacter(DataTypes.linkCharacterData calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
         _validateCharacterExists(vars.toCharacterId);
 
@@ -232,7 +231,7 @@ contract Web3EntryBase is
         );
     }
 
-    function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external {
+    function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkCharacter(
@@ -243,7 +242,11 @@ contract Web3EntryBase is
         );
     }
 
-    function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars) external {
+    function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars)
+        external
+        virtual
+    {
+        _validateCallerIsCharacterOwner(vars.fromCharacterId);
         _createThenLinkCharacter(vars.fromCharacterId, vars.to, vars.linkType, "0x");
     }
 
@@ -253,7 +256,6 @@ contract Web3EntryBase is
         bytes32 linkType,
         bytes memory data
     ) internal {
-        _validateCallerIsCharacterOwner(fromCharacterId);
         require(
             _primaryCharacterByAddress[to] == 0,
             "Target address already has primary character."
@@ -293,7 +295,7 @@ contract Web3EntryBase is
         );
     }
 
-    function linkNote(DataTypes.linkNoteData calldata vars) external {
+    function linkNote(DataTypes.linkNoteData calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
         _validateNoteExists(vars.toCharacterId, vars.toNoteId);
 
@@ -306,20 +308,20 @@ contract Web3EntryBase is
         );
     }
 
-    function unlinkNote(DataTypes.unlinkNoteData calldata vars) external {
+    function unlinkNote(DataTypes.unlinkNoteData calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkNote(vars, _linklist, _attachedLinklists);
     }
 
-    function linkERC721(DataTypes.linkERC721Data calldata vars) external {
+    function linkERC721(DataTypes.linkERC721Data calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
         _validateERC721Exists(vars.tokenAddress, vars.tokenId);
 
         LinkLogic.linkERC721(vars, _linklist, _attachedLinklists);
     }
 
-    function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external {
+    function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkERC721(
@@ -329,13 +331,13 @@ contract Web3EntryBase is
         );
     }
 
-    function linkAddress(DataTypes.linkAddressData calldata vars) external {
+    function linkAddress(DataTypes.linkAddressData calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.linkAddress(vars, _linklist, _attachedLinklists);
     }
 
-    function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external {
+    function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkAddress(
@@ -345,13 +347,13 @@ contract Web3EntryBase is
         );
     }
 
-    function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external {
+    function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists);
     }
 
-    function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external {
+    function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkAnyUri(
@@ -396,13 +398,13 @@ contract Web3EntryBase is
     }
     */
 
-    function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
+    function linkLinklist(DataTypes.linkLinklistData calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists);
     }
 
-    function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external {
+    function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
 
         LinkLogic.unlinkLinklist(
@@ -413,7 +415,10 @@ contract Web3EntryBase is
     }
 
     // set link module for his character
-    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external {
+    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars)
+        external
+        virtual
+    {
         _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
 
         CharacterLogic.setCharacterLinkModule(
@@ -424,7 +429,7 @@ contract Web3EntryBase is
         );
     }
 
-    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external {
+    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
         _validateNoteExists(vars.characterId, vars.noteId);
 
@@ -437,7 +442,10 @@ contract Web3EntryBase is
         );
     }
 
-    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external {
+    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars)
+        external
+        virtual
+    {
         _validateCallerIsLinklistOwnerOrOperator(vars.linklistId);
 
         LinkModuleLogic.setLinkModule4Linklist(
@@ -492,7 +500,7 @@ contract Web3EntryBase is
             );
     }
 
-    function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external {
+    function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
         _validateNoteExists(vars.characterId, vars.noteId);
 
@@ -505,7 +513,7 @@ contract Web3EntryBase is
         );
     }
 
-    function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256) {
+    function postNote(DataTypes.PostNoteData calldata vars) external virtual returns (uint256) {
         _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
 
         uint256 noteId = ++_characterById[vars.characterId].noteCount;
@@ -518,7 +526,7 @@ contract Web3EntryBase is
         uint256 characterId,
         uint256 noteId,
         string calldata newUri
-    ) external {
+    ) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(characterId);
         _validateNoteExists(characterId, noteId);
 
@@ -528,7 +536,7 @@ contract Web3EntryBase is
     /**
      * @notice lockNote put a note into a immutable state where no modifications are allowed. You should call this method to announce that this is the final version.
      */
-    function lockNote(uint256 characterId, uint256 noteId) external {
+    function lockNote(uint256 characterId, uint256 noteId) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(characterId);
         _validateNoteExists(characterId, noteId);
 
@@ -537,7 +545,7 @@ contract Web3EntryBase is
         emit Events.LockNote(characterId, noteId);
     }
 
-    function deleteNote(uint256 characterId, uint256 noteId) external {
+    function deleteNote(uint256 characterId, uint256 noteId) external virtual {
         _validateCallerIsCharacterOwner(characterId);
         _validateNoteExists(characterId, noteId);
 
@@ -548,6 +556,7 @@ contract Web3EntryBase is
 
     function postNote4Character(DataTypes.PostNoteData calldata postNoteData, uint256 toCharacterId)
         external
+        virtual
         returns (uint256)
     {
         _validateCallerIsCharacterOwnerOrOperator(postNoteData.characterId);
@@ -570,6 +579,7 @@ contract Web3EntryBase is
 
     function postNote4Address(DataTypes.PostNoteData calldata noteData, address ethAddress)
         external
+        virtual
         returns (uint256)
     {
         _validateCallerIsCharacterOwnerOrOperator(noteData.characterId);
@@ -592,6 +602,7 @@ contract Web3EntryBase is
 
     function postNote4Linklist(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
         external
+        virtual
         returns (uint256)
     {
         _validateCallerIsCharacterOwnerOrOperator(noteData.characterId);
@@ -615,7 +626,7 @@ contract Web3EntryBase is
     function postNote4Note(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.NoteStruct calldata note
-    ) external returns (uint256) {
+    ) external virtual returns (uint256) {
         _validateCallerIsCharacterOwnerOrOperator(postNoteData.characterId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeNote;
@@ -637,7 +648,7 @@ contract Web3EntryBase is
     function postNote4ERC721(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.ERC721Struct calldata erc721
-    ) external returns (uint256) {
+    ) external virtual returns (uint256) {
         _validateCallerIsCharacterOwnerOrOperator(postNoteData.characterId);
         _validateERC721Exists(erc721.tokenAddress, erc721.erc721TokenId);
 
@@ -663,6 +674,7 @@ contract Web3EntryBase is
 
     function postNote4AnyUri(DataTypes.PostNoteData calldata postNoteData, string calldata uri)
         external
+        virtual
         returns (uint256)
     {
         _validateCallerIsCharacterOwnerOrOperator(postNoteData.characterId);
