@@ -34,13 +34,13 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         web3Entry.setPrimaryCharacterId(1);
         assertEq(web3Entry.getPrimaryCharacterId(bob), 1);
 
-        // User should transfer the primary character, and then their primary character and operator should be unset
-        web3Entry.setOperator(Const.FIRST_CHARACTER_ID, carol);
-        assertEq(web3Entry.getOperator(Const.FIRST_NOTE_ID), carol);
-        web3Entry.transferFrom(bob, alice, Const.FIRST_NOTE_ID);
-        assertEq(web3Entry.getPrimaryCharacterId(bob), 0);
-        assertEq(web3Entry.getOperator(Const.FIRST_NOTE_ID), address(0));
-        vm.stopPrank();
+        // // User should transfer the primary character, and then their primary character and operator should be unset
+        // web3Entry.setOperator(Const.FIRST_CHARACTER_ID, carol);
+        // assertEq(web3Entry.getOperator(Const.FIRST_NOTE_ID), carol);
+        // web3Entry.transferFrom(bob, alice, Const.FIRST_NOTE_ID);
+        // assertEq(web3Entry.getPrimaryCharacterId(bob), 0);
+        // assertEq(web3Entry.getOperator(Const.FIRST_NOTE_ID), address(0));
+        // vm.stopPrank();
     }
 
     function testSetPrimaryCharacterIdFail() public {
@@ -78,16 +78,16 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         assertEq(web3Entry.getPrimaryCharacterId(carol), 2);
 
         // UserTwo should fail to set handle as a character owned by user 1
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-        web3Entry.setPrimaryCharacterId(1);
+        // vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        // web3Entry.setPrimaryCharacterId(1);
 
         //UserTwo should burn primary character
-        web3Entry.burn(2);
-        assertEq(web3Entry.getPrimaryCharacterId(carol), 0);
-        assertEq(web3Entry.getHandle(2), "");
-        assertEq(web3Entry.getOperator(2), address(0));
-        DataTypes.Character memory userCharacter = web3Entry.getCharacter(2);
-        assertEq(userCharacter.noteCount, 0);
-        assertEq(userCharacter.characterId, 0);
+        // web3Entry.burn(2);
+        // assertEq(web3Entry.getPrimaryCharacterId(carol), 0);
+        // assertEq(web3Entry.getHandle(2), "");
+        // assertEq(web3Entry.getOperator(2), address(0));
+        // DataTypes.Character memory userCharacter = web3Entry.getCharacter(2);
+        // assertEq(userCharacter.noteCount, 0);
+        // assertEq(userCharacter.characterId, 0);
     }
 }

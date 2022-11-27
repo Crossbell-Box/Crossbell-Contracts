@@ -29,8 +29,10 @@ contract Web3EntryBase is
 {
     using Strings for uint256;
     using EnumerableSet for EnumerableSet.Bytes32Set;
+    using EnumerableSet for EnumerableSet.AddressSet;
 
     uint256 internal constant REVISION = 4;
+    mapping(uint256 => EnumerableSet.AddressSet) internal _operatorsByCharacter; //slot 24
 
     function initialize(
         string calldata _name,
@@ -120,13 +122,93 @@ contract Web3EntryBase is
         _setOperator(characterId, operator);
     }
 
-    function addOperator(uint256, address) external virtual {}
+    /**
+     * @notice Designate addresses as operators of your character so that it can send transactions on behalf
+      of your characters(e.g. post notes or follow someone). This a high risk operation, so take special 
+      attention and make sure the addresses you input is familiar to you.
+     */
+    function addOperator(uint256 characterId, address operator) external {
+        // set default permissions bitmap
+        _validateCallerIsCharacterOwner(characterId);
+        _addOperator(characterId, operator);
+    }
 
-    function removeOperator(uint256, address) external virtual {}
+    /**
+     * @notice Cancel authorization on operators and remove them from operator list.
+     */
+    function removeOperator(uint256 characterId, address operator) external {
+        _validateCallerIsCharacterOwner(characterId);
+        _removeOperator(characterId, operator); // TODO: remove
+        // clear all permissions
+        // operatorsPermissionBitMap[characterId][operator] = 0;
+    }
 
-    function isOperator(uint256, address) external view virtual returns (bool) {}
+    /**
+     * @notice Check if an address is the operator of a character.
+     * @dev `isOperator` is compatible with operators set by old `setOperator`, which is deprected and will
+      be disabled in later updates. 
+     */
+    function isOperator(uint256 characterId, address operator)
+        external
+        view
+        returns (bool)
+    {
+        bool inOperator = _operatorByCharacter[characterId] == operator;
+        bool inOpertors = _operatorsByCharacter[characterId].contains(operator);
+        return inOperator || inOpertors;
+    }
 
-    function getOperators(uint256) external view virtual returns (address[] memory) {}
+    /**
+     * @notice Get operator addresses of a character.
+     * @dev `getOperators` returns operators in _operatorsByCharacter, but doesn't return 
+     _operatorByCharacter, which is deprected and will be disabled in later updates.
+     */
+    function getOperators(uint256 characterId) external view returns (address[] memory) {
+        return _operatorsByCharacter[characterId].values();
+    }
+
+    function _addOperator(uint256 characterId, address operator) internal {
+        _operatorsByCharacter[characterId].add(operator);
+        emit Events.AddOperator(characterId, operator, block.timestamp);
+    }
+
+    function _removeOperator(uint256 characterId, address operator) internal {
+        _operatorsByCharacter[characterId].remove(operator);
+        emit Events.RemoveOperator(characterId, operator, block.timestamp);
+    }
+
+
+    function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId)
+        internal
+        view
+        virtual
+    {
+        address owner = ownerOf(characterId);
+
+        require(
+            _operatorsByCharacter[characterId].contains(msg.sender) ||
+                msg.sender == owner ||
+                msg.sender == _operatorByCharacter[characterId] ||
+                (tx.origin == owner && msg.sender == periphery),
+            "NotCharacterOwnerNorOperator"
+        );
+    }
+
+    function _validateCallerIsLinklistOwnerOrOperator(uint256 tokenId)
+        internal
+        view
+        virtual
+    {
+        // get character id of the owner of this linklist
+        uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(tokenId);
+        // require msg.sender is operator of the owner character or the owner of this linklist
+        require(
+            msg.sender == IERC721(_linklist).ownerOf(tokenId) ||
+                _operatorsByCharacter[ownerCharacterId].contains(msg.sender) ||
+                msg.sender == _operatorByCharacter[ownerCharacterId],
+            "NotLinkListOwnerNorOperator"
+        );
+    }
 
     function setLinklistUri(uint256 linklistId, string calldata uri) external {
         _validateCallerIsLinklistOwner(linklistId);
@@ -692,17 +774,20 @@ contract Web3EntryBase is
         return _linklist;
     }
 
+    /**
+     * @dev Operator lists will be reset to blank before the characters are transferred in order to grant the
+      whole control power to receivers of character transfers.
+     */
     function _beforeTokenTransfer(
         address from,
         address to,
         uint256 tokenId
     ) internal virtual override {
-        if (_operatorByCharacter[tokenId] != address(0)) {
-            _setOperator(tokenId, address(0));
-        }
+        address[] memory _list = _operatorsByCharacter[tokenId].values();
 
-        if (_primaryCharacterByAddress[from] != 0) {
-            _primaryCharacterByAddress[from] = 0;
+        for (uint256 index = 0; index < _list.length; index++) {
+            address _value = _list[index];
+            _removeOperator(tokenId, _value);
         }
 
         super._beforeTokenTransfer(from, to, tokenId);
@@ -712,13 +797,6 @@ contract Web3EntryBase is
         _operatorByCharacter[characterId] = operator;
         emit Events.SetOperator(characterId, operator, block.timestamp);
     }
-
-    /**
-     * @dev This is a virtual function and it doesn't check anything, so you should complete validating logic in inheritance contracts that use this Web3EntryBase contract as parent contract.
-     */
-    function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view virtual {}
-
-    function _validateCallerIsLinklistOwnerOrOperator(uint256 noteId) internal view virtual {}
 
     function _validateCallerIsCharacterOwner(uint256 characterId) internal view {
         address owner = ownerOf(characterId);
