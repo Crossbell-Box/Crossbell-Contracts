@@ -20,6 +20,14 @@ contract Web3Entry is Web3EntryBase {
         operatorsPermissionBitMap[characterId][operator] = permissionBitMap;
     }
 
+    function checkPermissionAtPosition(
+        uint256 characterId,
+        address operator,
+        uint256 position
+    ) external returns (bool) {
+        return ((operatorsPermissionBitMap[characterId][operator] >> position) & 1) == 1;
+    }
+
     // migrateOperator migrates operators permissions to operatorsAuthBitMap
     function migrateOperator(uint256[] calldata characterIds) external {
         // set default permissions bitmap
