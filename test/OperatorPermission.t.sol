@@ -432,9 +432,9 @@ contract OperatorTest is Test, SetUp, Utils {
         );
 
         web3Entry.grantOperatorPermissions4Note(
-            Const.FIRST_CHARACTER_ID, 
-            Const.FIRST_NOTE_ID, 
-            carol, 
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            carol,
             OP.DEFAULT_NOTE_PERMISSION_BITMAP
         );
         vm.stopPrank();
@@ -468,7 +468,7 @@ contract OperatorTest is Test, SetUp, Utils {
             bob,
             ~(~uint256(0) << 4)
         );
-        
+
         vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
         vm.prank(bob);
         web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);

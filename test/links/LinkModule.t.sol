@@ -12,7 +12,8 @@ import "../helpers/SetUp.sol";
 contract LinkModuleTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
-    address public userThree = address(0x3333);
+    address public carol = address(0x3333);
+    address public dick = address(0x4444);
 
     function setUp() public {
         _setUp();
@@ -21,7 +22,7 @@ contract LinkModuleTest is Test, SetUp, Utils {
     function testLinkCharacterWithLinkModule() public {
         // User not in approval list should not fail to link a character
         address[] memory whitelist = new address[](2);
-        whitelist[0] = userThree;
+        whitelist[0] = carol;
         whitelist[1] = bob;
 
         // create character
@@ -44,6 +45,12 @@ contract LinkModuleTest is Test, SetUp, Utils {
                 Const.LikeLinkType,
                 new bytes(1)
             )
+        );
+
+        web3Entry.createCharacter(makeCharacterData("imdick", dick));
+        vm.prank(dick);
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(3, 2, Const.LikeLinkType, new bytes(1))
         );
     }
 }
