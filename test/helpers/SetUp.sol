@@ -9,6 +9,7 @@ import "../../contracts/libraries/DataTypes.sol";
 import "../../contracts/MintNFT.sol";
 import "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import "../../contracts/modules/link/ApprovalLinkModule4Character.sol";
+import "../../contracts/modules/mint/ApprovalMintModule.sol";
 import "../../contracts/mocks/NFT.sol";
 import "../../contracts/Resolver.sol";
 import "./Const.sol";

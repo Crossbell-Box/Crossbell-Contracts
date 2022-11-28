@@ -209,12 +209,6 @@ contract Web3EntryBase is
         ILinklist(_linklist).setUri(linklistId, uri);
     }
 
-    function _setLinklistUri(uint256 linklistId, string calldata uri) external virtual {
-        _validateCallerIsLinklistOwner(linklistId);
-
-        ILinklist(_linklist).setUri(linklistId, uri);
-    }
-
     function linkCharacter(DataTypes.linkCharacterData calldata vars) external virtual {
         _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
         _validateCharacterExists(vars.toCharacterId);

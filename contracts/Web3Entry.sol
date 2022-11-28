@@ -7,7 +7,7 @@ import "./libraries/OP.sol";
 
 contract Web3Entry is Web3EntryBase {
     using EnumerableSet for EnumerableSet.AddressSet;
-    
+
     // characterId => operator => permissionsBitMap
     mapping(uint256 => mapping(address => uint256)) internal operatorsPermissionBitMap;
 
@@ -100,9 +100,9 @@ contract Web3Entry is Web3EntryBase {
 
     // opSign permission
     // id = 177
-    function _setLinklistUri(uint256 linklistId, string calldata uri) external override {
+    function setLinklistUri(uint256 linklistId, string calldata uri) external override {
         uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
-        _validateCallerIsLinklistOwner(ownerCharacterId);
+        _validateCallerPermission(ownerCharacterId, OP.SET_LINK_LIST_URI);
 
         ILinklist(_linklist).setUri(linklistId, uri);
     }

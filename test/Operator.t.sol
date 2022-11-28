@@ -145,12 +145,13 @@ contract OperatorTest is Test, SetUp, Utils {
 
     function testOperatorSignCan() public {
         // alice grant bob as OPERATORSIGN_PERMISSION_BITMAP permission
-        vm.prank(alice);
+        vm.startPrank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
             OP.OPERATORSIGN_PERMISSION_BITMAP
         );
+        vm.stopPrank();
 
         vm.startPrank(bob);
         // operatorSign can postNote(id = 236)
@@ -158,7 +159,7 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // operatorSign can setCharacterUri(id = 176)
         web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
-        // TODO setlinklisturi
+
         // operatorSign can linkCharacter(id = 176)
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
@@ -175,6 +176,7 @@ contract OperatorTest is Test, SetUp, Utils {
                 Const.LikeLinkType
             )
         );
+
         web3Entry.createThenLinkCharacter(
             DataTypes.createThenLinkCharacterData(
                 Const.FIRST_CHARACTER_ID,
@@ -182,6 +184,15 @@ contract OperatorTest is Test, SetUp, Utils {
                 Const.LinkItemTypeCharacter
             )
         );
+
+        // operatorSign can setlinklisturi
+        // vm.stopPrank();
+        // todo something wrong here
+        // vm.prank(address(web3Entry));
+        // ILinklist(linklist).mint(Const.FIRST_CHARACTER_ID, Const.LinkItemTypeCharacter, 4);
+        // vm.startPrank(bob);
+        // web3Entry.setLinklistUri(4, Const.MOCK_URI);
+
         web3Entry.linkNote(
             DataTypes.linkNoteData(
                 Const.FIRST_CHARACTER_ID,
@@ -398,6 +409,15 @@ contract OperatorTest is Test, SetUp, Utils {
         );
 
         // TODO SET_MINT_MODULE_FOR_NOTE
+        ApprovalMintModule mintModule = new ApprovalMintModule(address(web3Entry));
+        web3Entry.setMintModule4Note(
+            DataTypes.setMintModule4NoteData(
+                Const.FIRST_CHARACTER_ID,
+                Const.FIRST_NOTE_ID,
+                address(mintModule),
+                new bytes(0)
+            )
+        );
 
         // setNoteUri
         web3Entry.setNoteUri(
@@ -481,7 +501,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.addOperator(Const.FIRST_CHARACTER_ID, dick);
         vm.stopPrank();
 
-        uint256[] memory characters =new uint256[](1);
+        uint256[] memory characters = new uint256[](1);
         characters[0] = 1;
 
         web3Entry.migrateOperator(characters);
