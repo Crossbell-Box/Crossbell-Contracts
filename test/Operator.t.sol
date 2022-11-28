@@ -141,88 +141,88 @@ contract OperatorTest is Test, SetUp, Utils {
     //     // postNote
     //     web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
-    //     // setNoteUri
-    //     web3Entry.setNoteUri(
-    //         Const.FIRST_CHARACTER_ID,
-    //         Const.FIRST_NOTE_ID,
-    //         Const.MOCK_NEW_NOTE_URI
-    //     );
+    // // setNoteUri
+    // web3Entry.setNoteUri(
+    //     Const.FIRST_CHARACTER_ID,
+    //     Const.FIRST_NOTE_ID,
+    //     Const.MOCK_NEW_NOTE_URI
+    // );
 
-    //     // lockNote
-    //     web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+    // // lockNote
+    // web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 
-    //     // postNote4Character
-    //     web3Entry.postNote4Character(
-    //         makePostNoteData(Const.FIRST_CHARACTER_ID),
-    //         Const.FIRST_CHARACTER_ID
-    //     );
+    // // postNote4Character
+    // web3Entry.postNote4Character(
+    //     makePostNoteData(Const.FIRST_CHARACTER_ID),
+    //     Const.FIRST_CHARACTER_ID
+    // );
 
-    //     // postNote4Address
-    //     web3Entry.postNote4Address(makePostNoteData(Const.FIRST_CHARACTER_ID), address(0x328));
+    // // postNote4Address
+    // web3Entry.postNote4Address(makePostNoteData(Const.FIRST_CHARACTER_ID), address(0x328));
 
-    //     // postNote4Linklist
-    //     web3Entry.postNote4Linklist(
-    //         makePostNoteData(Const.FIRST_CHARACTER_ID),
-    //         Const.FIRST_LINKLIST_ID
-    //     );
+    // // postNote4Linklist
+    // web3Entry.postNote4Linklist(
+    //     makePostNoteData(Const.FIRST_CHARACTER_ID),
+    //     Const.FIRST_LINKLIST_ID
+    // );
 
-    //     // postNote4Note
-    //     web3Entry.postNote4Note(
-    //         makePostNoteData(Const.FIRST_CHARACTER_ID),
-    //         DataTypes.NoteStruct(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID)
-    //     );
+    // // postNote4Note
+    // web3Entry.postNote4Note(
+    //     makePostNoteData(Const.FIRST_CHARACTER_ID),
+    //     DataTypes.NoteStruct(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID)
+    // );
 
-    //     // postNote4ERC721
-    //     nft.mint(bob);
-    //     web3Entry.postNote4ERC721(
-    //         makePostNoteData(Const.FIRST_CHARACTER_ID),
-    //         DataTypes.ERC721Struct(address(nft), 1)
-    //     );
+    // // postNote4ERC721
+    // nft.mint(bob);
+    // web3Entry.postNote4ERC721(
+    //     makePostNoteData(Const.FIRST_CHARACTER_ID),
+    //     DataTypes.ERC721Struct(address(nft), 1)
+    // );
 
-    //     // postNote4AnyUri
-    //     web3Entry.postNote4AnyUri(makePostNoteData(Const.FIRST_CHARACTER_ID), "ipfs://anyURI");
+    // // postNote4AnyUri
+    // web3Entry.postNote4AnyUri(makePostNoteData(Const.FIRST_CHARACTER_ID), "ipfs://anyURI");
 
     //     // linkNote
-    //     web3Entry.linkNote(
-    //         DataTypes.linkNoteData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             Const.FIRST_CHARACTER_ID,
-    //             Const.FIRST_NOTE_ID,
-    //             Const.FollowLinkType,
-    //             new bytes(0)
-    //         )
-    //     );
+    // web3Entry.linkNote(
+    //     DataTypes.linkNoteData(
+    //         Const.FIRST_CHARACTER_ID,
+    //         Const.FIRST_CHARACTER_ID,
+    //         Const.FIRST_NOTE_ID,
+    //         Const.FollowLinkType,
+    //         new bytes(0)
+    //     )
+    // );
 
-    //     // unlinkNote
-    //     web3Entry.unlinkNote(
-    //         DataTypes.unlinkNoteData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             Const.FIRST_CHARACTER_ID,
-    //             Const.FIRST_NOTE_ID,
-    //             Const.FollowLinkType
-    //         )
-    //     );
+    // // unlinkNote
+    // web3Entry.unlinkNote(
+    //     DataTypes.unlinkNoteData(
+    //         Const.FIRST_CHARACTER_ID,
+    //         Const.FIRST_CHARACTER_ID,
+    //         Const.FIRST_NOTE_ID,
+    //         Const.FollowLinkType
+    //     )
+    // );
 
-    //     // linkERC721
-    //     web3Entry.linkERC721(
-    //         DataTypes.linkERC721Data(
-    //             Const.FIRST_CHARACTER_ID,
-    //             address(nft),
-    //             1,
-    //             Const.LikeLinkType,
-    //             new bytes(0)
-    //         )
-    //     );
+    // // linkERC721
+    // web3Entry.linkERC721(
+    //     DataTypes.linkERC721Data(
+    //         Const.FIRST_CHARACTER_ID,
+    //         address(nft),
+    //         1,
+    //         Const.LikeLinkType,
+    //         new bytes(0)
+    //     )
+    // );
 
-    //     // unlinkERC721
-    //     web3Entry.unlinkERC721(
-    //         DataTypes.unlinkERC721Data(
-    //             Const.FIRST_CHARACTER_ID,
-    //             address(nft),
-    //             1,
-    //             Const.LikeLinkType
-    //         )
-    //     );
+    // // unlinkERC721
+    // web3Entry.unlinkERC721(
+    //     DataTypes.unlinkERC721Data(
+    //         Const.FIRST_CHARACTER_ID,
+    //         address(nft),
+    //         1,
+    //         Const.LikeLinkType
+    //     )
+    // );
 
     //     // linkAddress
     //     web3Entry.linkAddress(
@@ -243,64 +243,64 @@ contract OperatorTest is Test, SetUp, Utils {
     //         )
     //     );
 
-    //     // linkAnyUri
-    //     web3Entry.linkAnyUri(
-    //         DataTypes.linkAnyUriData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             "ipfs://anyURI",
-    //             Const.LikeLinkType,
-    //             new bytes(0)
-    //         )
-    //     );
+    // // linkAnyUri
+    // web3Entry.linkAnyUri(
+    //     DataTypes.linkAnyUriData(
+    //         Const.FIRST_CHARACTER_ID,
+    //         "ipfs://anyURI",
+    //         Const.LikeLinkType,
+    //         new bytes(0)
+    //     )
+    // );
 
-    //     // unlinkAnyUri
-    //     web3Entry.unlinkAnyUri(
-    //         DataTypes.unlinkAnyUriData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             "ipfs://anyURI",
-    //             Const.LikeLinkType
-    //         )
-    //     );
+    // // unlinkAnyUri
+    // web3Entry.unlinkAnyUri(
+    //     DataTypes.unlinkAnyUriData(
+    //         Const.FIRST_CHARACTER_ID,
+    //         "ipfs://anyURI",
+    //         Const.LikeLinkType
+    //     )
+    // );
 
-    //     // linkLinklist
-    //     web3Entry.linkLinklist(
-    //         DataTypes.linkLinklistData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             1,
-    //             Const.LikeLinkType,
-    //             new bytes(0)
-    //         )
-    //     );
+    // // linkLinklist
+    // web3Entry.linkLinklist(
+    //     DataTypes.linkLinklistData(
+    //         Const.FIRST_CHARACTER_ID,
+    //         1,
+    //         Const.LikeLinkType,
+    //         new bytes(0)
+    //     )
+    // );
 
-    //     // unlinkLinklist
-    //     web3Entry.unlinkLinklist(
-    //         DataTypes.unlinkLinklistData(Const.FIRST_CHARACTER_ID, 1, Const.LikeLinkType)
-    //     );
+    // // unlinkLinklist
+    // web3Entry.unlinkLinklist(
+    //     DataTypes.unlinkLinklistData(Const.FIRST_CHARACTER_ID, 1, Const.LikeLinkType)
+    // );
 
-    //     ApprovalLinkModule4Character linkModule4Character = new ApprovalLinkModule4Character(
-    //         address(web3Entry)
-    //     );
+    // ApprovalLinkModule4Character linkModule4Character = new ApprovalLinkModule4Character(
+    //     address(web3Entry)
+    // );
 
-    //     // setLinkModule4Character
-    //     web3Entry.setLinkModule4Character(
-    //         DataTypes.setLinkModule4CharacterData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             address(linkModule4Character),
-    //             new bytes(0)
-    //         )
-    //     );
+    // // setLinkModule4Character
+    // web3Entry.setLinkModule4Character(
+    //     DataTypes.setLinkModule4CharacterData(
+    //         Const.FIRST_CHARACTER_ID,
+    //         address(linkModule4Character),
+    //         new bytes(0)
+    //     )
+    // );
 
     //     ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
 
-    //     // setLinkModule4Note
-    //     web3Entry.setLinkModule4Note(
-    //         DataTypes.setLinkModule4NoteData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             Const.SECOND_NOTE_ID,
-    //             address(linkModule4Note),
-    //             new bytes(0)
-    //         )
-    //     );
+    // // setLinkModule4Note
+    // web3Entry.setLinkModule4Note(
+    //     DataTypes.setLinkModule4NoteData(
+    //         Const.FIRST_CHARACTER_ID,
+    //         Const.SECOND_NOTE_ID,
+    //         address(linkModule4Note),
+    //         new bytes(0)
+    //     )
+    // );
 
     //     // setLinkModule4Linklist
     //     // i use the address(linkModule4Character) for link module(cuz the logic here is the same)
@@ -322,17 +322,17 @@ contract OperatorTest is Test, SetUp, Utils {
     //     vm.startPrank(bob);
 
     //     // set handle
-    //     vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    //     web3Entry.setHandle(Const.FIRST_CHARACTER_ID, "new-handle");
+    // vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+    // web3Entry.setHandle(Const.FIRST_CHARACTER_ID, "new-handle");
 
-    //     // set social token
-    //     vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    //     web3Entry.setSocialToken(Const.FIRST_CHARACTER_ID, address(0x132414));
+    // // set social token
+    // vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+    // web3Entry.setSocialToken(Const.FIRST_CHARACTER_ID, address(0x132414));
 
-    //     // set primary character id
-    //     // user can only set primary character id to himself
-    //     vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    //     web3Entry.setPrimaryCharacterId(Const.FIRST_CHARACTER_ID);
+    // // set primary character id
+    // // user can only set primary character id to himself
+    // vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+    // web3Entry.setPrimaryCharacterId(Const.FIRST_CHARACTER_ID);
 
     //     // set operator
     //     vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
@@ -342,9 +342,9 @@ contract OperatorTest is Test, SetUp, Utils {
     //     vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
     //     web3Entry.addOperator(Const.FIRST_CHARACTER_ID, address(0x444));
 
-    //     // remove operator
-    //     vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    //     web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, address(0x444));
+    // // remove operator
+    // vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+    // web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, address(0x444));
 
     //     // create then link character
     //     vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
