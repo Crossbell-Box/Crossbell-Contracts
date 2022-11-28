@@ -9,6 +9,7 @@ import "./interfaces/IOperatorPermission.sol";
 contract Web3Entry is Web3EntryBase {
     // characterId => operator => permissionsBitMap
     mapping(uint256 => mapping(address => uint256)) internal operatorsPermissionBitMap;
+    // characterId => noteId => operator => uint256
 
     function grantOperatorPermissions(
         uint256 characterId,
@@ -65,20 +66,10 @@ contract Web3Entry is Web3EntryBase {
     // opSign permission
     // id = 176
     function _setCharacterUri(uint256 profileId, string memory newUri) public override {
+        _validateCallerPermission(profileId, OP.SET_CHARACTER_URI);
         _characterById[profileId].uri = newUri;
 
         emit Events.SetCharacterUri(profileId, newUri);
-    }
-
-    // opSign permission id = 176
-    function setCharacterUri(uint256 characterId, string calldata newUri) external override {
-        if (!isContract(msg.sender)) {
-            _validateCallerPermission(characterId, OP.SET_CHARACTER_URI);
-            _setCharacterUri(characterId, newUri);
-        } else {
-            _setCharacterUri(characterId, "hhhhhhere is contract call");
-            // msg.sender.call(abi.encodeWithSignature("setCharacterUri(uint256 characterId, string calldata newUri)", characterId, newUri));
-        }
     }
 
     // opSign permission
@@ -321,7 +312,7 @@ contract Web3Entry is Web3EntryBase {
     ) external override {
         _validateCallerPermission(characterId, OP.SET_NOTE_URI);
         _validateNoteExists(characterId, noteId);
-
+        // TODO validate noteId
         PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
     }
 

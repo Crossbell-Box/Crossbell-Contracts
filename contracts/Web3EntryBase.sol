@@ -107,7 +107,7 @@ contract Web3EntryBase is
     }
 
     // opSign permission id = 176
-    function setCharacterUri(uint256 characterId, string calldata newUri) external virtual {
+    function setCharacterUri(uint256 characterId, string calldata newUri) external {
         _setCharacterUri(characterId, newUri);
     }
 

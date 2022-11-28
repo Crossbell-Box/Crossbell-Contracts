@@ -14,7 +14,6 @@ import "./helpers/utils.sol";
 import "./helpers/SetUp.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "../contracts/libraries/OP.sol";
-import "./helpers/OperatorPermissionContract.sol";
 
 contract OperatorTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
@@ -22,8 +21,6 @@ contract OperatorTest is Test, SetUp, Utils {
     address public carol = address(0x3333);
     address public dick = address(0x4444);
     address public erik = address(0x5555);
-
-    OperatorPermissionContract operatorPermissionContract;
 
     function setUp() public {
         _setUp();
@@ -379,59 +376,4 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
-    // function testOperatorPermissionContract() public {
-    //     // alice set bob as her operator with DEFAULT_PERMISSION_BITMAP
-    //     vm.startPrank(alice);
-    //     web3Entry.grantOperatorPermissions(
-    //         Const.FIRST_CHARACTER_ID,
-    //         bob,
-    //         OP.DEFAULT_PERMISSION_BITMAP
-    //     );
-    //     web3Entry.setCharacterUri(1, "hhhhhxxxx");
-    //     string memory newUri = web3Entry.getCharacterUri(Const.FIRST_CHARACTER_ID);
-    //     console.log(newUri);
-    //     operatorPermissionContract = new OperatorPermissionContract(address(proxyWeb3Entry));
-
-    //     operatorPermissionContract.setCharacterUri(1, "hhhhxxxx2");
-    //     newUri = web3Entry.getCharacterUri(Const.FIRST_CHARACTER_ID);
-    //     console.log(newUri);
-    //     // vm.stopPrank();
-
-    //     // // vm.prank(carol);
-    //     // Web3Entry(address(proxyWeb3Entry)).setCharacterUri(1, "hhhhhxxxx3");
-    //     // (bool success, bytes memory result) = address(proxyWeb3Entry).call(abi.encodeWithSignature("setCharacterUri(uint256 characterId, string calldata newUri)", 1, "hhhhhhhhhhhhhhhdelegate"));
-    //     // console.log(success);
-
-    //     // address(proxyWeb3Entry).call(abi.encodeWithSignature("setCharacterUri(uint256 characterId, string calldata newUri)", 1, "hhhhhxxxx2"));
-
-    //     // string memory newUri = web3Entry.getCharacterUri(Const.FIRST_CHARACTER_ID);
-    //     // console.log(newUri);
-
-    // }
-
-    // function testCall() public {
-    //     vm.startPrank(alice);
-    //     Web3Entry(address(proxyWeb3Entry))._setCharacterUri(1, "test1");
-    //     string memory newUri = web3Entry.getCharacterUri(Const.FIRST_CHARACTER_ID);
-    //     console.log(newUri);
-
-    //     (bool success, bytes memory result) = address(proxyWeb3Entry).call(abi.encodeWithSignature("_setCharacterUri(uint256 profileId, string memory newUri)", 1, "test2"));
-    //     if (success == true) {
-    //         console.log("successfully set");
-    //     } else {
-    //         console.log("there's an error");
-    //     }
-
-    //     (success,  result) = address(proxyWeb3Entry).call(abi.encodeWithSignature("getCharacterUri(uint256 characterId)", 1));
-    //     if (success == true) {
-    //         string memory uri = abi.decode(result, (string));
-    //         console.log(uri);
-    //     } else {
-    //         console.log("there's an error");
-    //     }
-
-    //     newUri = web3Entry.getCharacterUri(Const.FIRST_CHARACTER_ID);
-    //     console.log(newUri);
-
-    // }
 }

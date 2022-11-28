@@ -41,17 +41,16 @@ library OP {
     uint8 internal constant UNLINK_LINK_LIST = 190;
     uint8 internal constant SET_LINK_MODULE_FOR_CHARACTER = 191;
     uint8 internal constant SET_LINK_MODULE_FOR_NOTE = 192;
-    // uint8 internal constant SET_LINK_MODULE_FOR_ERC721 = 193;
-    uint8 internal constant SET_LINK_MODULE_FOR_LINK_LIST = 194;
-    uint8 internal constant SET_MINT_MODULE_FOR_NOTE = 195;
-    uint8 internal constant SET_NOTE_URI = 196;
-    uint8 internal constant LOCK_NOTE = 197;
-    uint8 internal constant DELETE_NOTE = 198;
-    uint8 internal constant POST_NOTE_FOR_CHARACTER = 199;
-    uint8 internal constant POST_NOTE_FOR_ADDRESS = 200;
-    uint8 internal constant POST_NOTE_FOR_LINK_LIST = 201;
-    uint8 internal constant POST_NOTE_FOR_NOTE = 202;
-    uint8 internal constant POST_NOTE_FOR_ERC721 = 203;
+    uint8 internal constant SET_LINK_MODULE_FOR_LINK_LIST = 193;
+    uint8 internal constant SET_MINT_MODULE_FOR_NOTE = 194;
+    uint8 internal constant SET_NOTE_URI = 195;
+    uint8 internal constant LOCK_NOTE = 196;
+    uint8 internal constant DELETE_NOTE = 197;
+    uint8 internal constant POST_NOTE_FOR_CHARACTER = 198;
+    uint8 internal constant POST_NOTE_FOR_ADDRESS = 199;
+    uint8 internal constant POST_NOTE_FOR_LINK_LIST = 200;
+    uint8 internal constant POST_NOTE_FOR_NOTE = 201;
+    uint8 internal constant POST_NOTE_FOR_ERC721 = 202;
     uint8 internal constant POST_NOTE_FOR_ANY_URI = 203;
 
     uint256 internal constant OPERATORSIGN_PERMISSION_BITMAP = ~(~uint256(0) >> 80);
