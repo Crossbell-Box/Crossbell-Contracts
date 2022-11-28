@@ -473,4 +473,23 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.prank(bob);
         web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
     }
+
+    function testMigrate() public {
+        vm.startPrank(alice);
+        web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, carol);
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, dick);
+        vm.stopPrank();
+
+        uint256[] memory characters =new uint256[](1);
+        characters[0] = 1;
+
+        web3Entry.migrateOperator(characters);
+        vm.startPrank(bob);
+        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+
+        // note permissions are left unset
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+    }
 }

@@ -6,6 +6,8 @@ import "./Web3EntryBase.sol";
 import "./libraries/OP.sol";
 
 contract Web3Entry is Web3EntryBase {
+    using EnumerableSet for EnumerableSet.AddressSet;
+    
     // characterId => operator => permissionsBitMap
     mapping(uint256 => mapping(address => uint256)) internal operatorsPermissionBitMap;
 
@@ -62,10 +64,10 @@ contract Web3Entry is Web3EntryBase {
                 operatorsPermissionBitMap[characterId][operator] = OP.DEFAULT_PERMISSION_BITMAP;
             }
 
-            // address[] memory operators = _operatorsByCharacter[characterId].values();
-            // for (uint256 j = 0; j < operators.length; ++j) {
-            //     operatorsPermissionBitMap[characterId][operators[j]] = OP.DEFAULT_PERMISSION_BITMAP;
-            // }
+            address[] memory operators = _operatorsByCharacter[characterId].values();
+            for (uint256 j = 0; j < operators.length; ++j) {
+                operatorsPermissionBitMap[characterId][operators[j]] = OP.DEFAULT_PERMISSION_BITMAP;
+            }
         }
     }
 
