@@ -4,6 +4,7 @@ pragma solidity 0.8.10;
 
 import "./Web3EntryBase.sol";
 import "./libraries/OP.sol";
+import "./interfaces/IOperatorPermission.sol";
 
 contract Web3Entry is Web3EntryBase {
     // characterId => operator => permissionsBitMap
@@ -18,12 +19,12 @@ contract Web3Entry is Web3EntryBase {
         operatorsPermissionBitMap[characterId][operator] = permissionBitMap;
     }
 
-    function checkPermissionAtPosition(
+    function checkPermissionByPermissionID(
         uint256 characterId,
         address operator,
-        uint256 position
+        uint256 permissionId
     ) public returns (bool) {
-        return ((operatorsPermissionBitMap[characterId][operator] >> position) & 1) == 1;
+        return ((operatorsPermissionBitMap[characterId][operator] >> permissionId) & 1) == 1;
     }
 
     // migrateOperator migrates operators permissions to operatorsAuthBitMap
@@ -53,14 +54,40 @@ contract Web3Entry is Web3EntryBase {
 
     // functions below are using the new permission check:
 
+    function isContract(address _addr) private returns (bool isContract) {
+        uint32 size;
+        assembly {
+            size := extcodesize(_addr)
+        }
+        return (size > 0);
+    }
+
     // opSign permission
     // id = 176
-    function _setCharacterUri(uint256 profileId, string memory newUri) internal override {
-        _validateCallerPermission(profileId, OP.SET_CHARACTER_URI);
-
+    function _setCharacterUri(uint256 profileId, string memory newUri) public override {
         _characterById[profileId].uri = newUri;
 
         emit Events.SetCharacterUri(profileId, newUri);
+    }
+
+    // opSign permission id = 176
+    function setCharacterUri(uint256 characterId, string calldata newUri) external override {
+        if (!isContract(msg.sender)) {
+            _validateCallerPermission(characterId, OP.SET_CHARACTER_URI);
+            _setCharacterUri(characterId, newUri);
+        } else {
+            _setCharacterUri(characterId, "hhhhhhere is contract call");
+            // msg.sender.call(abi.encodeWithSignature("setCharacterUri(uint256 characterId, string calldata newUri)", characterId, newUri));
+        }
+    }
+
+    // opSign permission
+    // id = 177
+    function _setLinklistUri(uint256 linklistId, string calldata uri) external override {
+        uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
+        _validateCallerIsLinklistOwner(ownerCharacterId);
+
+        ILinklist(_linklist).setUri(linklistId, uri);
     }
 
     // opSign permission
@@ -478,11 +505,10 @@ contract Web3Entry is Web3EntryBase {
 
     function _validateCallerPermission(uint256 characterId, uint256 permissionId) internal {
         address owner = ownerOf(characterId);
-
         require(
             msg.sender == owner ||
                 (tx.origin == owner && msg.sender == periphery) ||
-                checkPermissionAtPosition(characterId, msg.sender, permissionId),
+                checkPermissionByPermissionID(characterId, msg.sender, permissionId),
             "NotEnoughPerssion"
         );
     }

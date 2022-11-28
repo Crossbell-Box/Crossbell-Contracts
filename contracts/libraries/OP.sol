@@ -25,7 +25,7 @@ library OP {
 
     // [176, 235] for operator sign permissions
     uint8 internal constant SET_CHARACTER_URI = 176;
-    // uint8 internal constant SET_LINKLIST_URI = 177;
+    uint8 internal constant SET_LINKLIST_URI = 177;
     uint8 internal constant LINK_CHARACTER = 178;
     uint8 internal constant UNLINK_CHARACTER = 179;
     uint8 internal constant CREATE_THEN_LINK_CHARACTER = 180;

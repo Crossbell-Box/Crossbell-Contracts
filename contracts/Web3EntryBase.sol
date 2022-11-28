@@ -51,7 +51,7 @@ contract Web3EntryBase is
         emit Events.Web3EntryInitialized(block.timestamp);
     }
 
-    function _setCharacterUri(uint256 profileId, string memory newUri) internal virtual {
+    function _setCharacterUri(uint256 profileId, string memory newUri) public virtual {
         _validateCallerIsCharacterOwnerOrOperator(profileId);
 
         _characterById[profileId].uri = newUri;
