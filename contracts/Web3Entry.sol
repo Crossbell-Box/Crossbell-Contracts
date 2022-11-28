@@ -4,7 +4,6 @@ pragma solidity 0.8.10;
 
 import "./Web3EntryBase.sol";
 import "./libraries/OP.sol";
-import "./interfaces/IOperatorPermission.sol";
 
 contract Web3Entry is Web3EntryBase {
     // characterId => operator => permissionsBitMap

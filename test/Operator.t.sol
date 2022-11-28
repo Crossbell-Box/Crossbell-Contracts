@@ -20,7 +20,6 @@ contract OperatorTest is Test, SetUp, Utils {
     address public bob = address(0x2222);
     address public carol = address(0x3333);
     address public dick = address(0x4444);
-
     address public erik = address(0x5555);
 
     function setUp() public {
@@ -31,355 +30,447 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
     }
 
-    // function testSetOperator() public {
-    //     // add operator
-    //     expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-    //     emit Events.AddOperator(Const.FIRST_CHARACTER_ID, carol, block.timestamp);
-    //     vm.prank(alice);
-    //     web3Entry.addOperator(Const.FIRST_CHARACTER_ID, carol);
-    //     // carol is operator now
-    //     assert(web3Entry.isOperator(Const.FIRST_CHARACTER_ID, carol));
+    function testGrantOperatorPermissions() public {
+        // alice set bob as her operator with DEFAULT_PERMISSION_BITMAP
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+    }
 
-    //     // remove operator
-    //     expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-    //     emit Events.RemoveOperator(Const.FIRST_CHARACTER_ID, carol, block.timestamp);
-    //     vm.prank(alice);
-    //     web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, carol);
-    //     // carol is not operator now
-    //     assert(!web3Entry.isOperator(Const.FIRST_CHARACTER_ID, carol));
-    // }
+    function testGrantNoteOpertorPermissionsFail() public {
+        // only only owner can grant operator
+        vm.prank(bob);
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+    }
 
-    // function testSetOperatorFail() public {
-    //     // only owner can add operator
-    //     vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    //     vm.prank(bob);
-    //     web3Entry.addOperator(Const.FIRST_CHARACTER_ID, bob);
+    function testGrantNoteOpertorPermission() public {
+        vm.startPrank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob,
+            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+        );
+    }
 
-    //     // only owner can remove operator
-    //     vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    //     vm.prank(bob);
-    //     web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, bob);
-    // }
+    function testcheckPermissionByPermissionId() public {
+        // alice grant bob DEFAULT_PERMISSION_BITMAP permission
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+        bool permission = web3Entry.checkPermissionByPermissionId(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.SET_HANDLE
+        );
+        assert(!permission);
 
-    // function testIsOperator() public {
-    //     vm.prank(alice);
-    //     web3Entry.addOperator(Const.FIRST_CHARACTER_ID, bob);
-    //     assert(web3Entry.isOperator(Const.FIRST_CHARACTER_ID, bob));
-    //     assert(!web3Entry.isOperator(Const.FIRST_CHARACTER_ID, carol));
-    // }
+        // check [0, 20] is set to false, which means `default` doesn't hava owner permission
+        for (uint256 i = 0; i < 20; i++) {
+            assert(!web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
+        }
 
-    // function testGetOperators() public {
-    //     // getOperators returns correct values
-    //     vm.startPrank(alice);
-    //     web3Entry.addOperator(Const.FIRST_CHARACTER_ID, bob);
-    //     web3Entry.addOperator(Const.FIRST_CHARACTER_ID, carol);
-    //     address[] memory prevOperators = web3Entry.getOperators(Const.FIRST_CHARACTER_ID);
-    //     assertEq(prevOperators[0], bob);
-    //     assertEq(prevOperators[1], carol);
-    //     assertEq(prevOperators.length, 2);
+        // check [21, 255] is set to true
+        for (uint256 i = 20; i < 256; i++) {
+            assert(web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
+        }
 
-    //     // getOperators returns correct values after removeOperator
-    //     web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, bob);
-    //     address[] memory newOperators = web3Entry.getOperators(Const.FIRST_CHARACTER_ID);
-    //     assertEq(newOperators[0], carol);
-    //     assertEq(newOperators.length, 1);
-    // }
+        // alice grant bob OPERATORSIGN_PERMISSION_BITMAP permission
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
 
-    // function testOperatorActions() public {
-    //     vm.startPrank(alice);
-    //     web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
-    //     // alice set erik as her opSign opertor;
-    //     web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, erik, OP.OPERATORSIGN_PERMISSION_BITMAP);
+        // check [0, 174] is set to false, which means `operator-sign` doesn't have owner permission or future permission
+        for (uint256 i = 0; i < 176; i++) {
+            assert(!web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
+        }
 
-    //     // link character
-    //     web3Entry.linkCharacter(
-    //         DataTypes.linkCharacterData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             Const.SECOND_CHARACTER_ID,
-    //             Const.LikeLinkType,
-    //             new bytes(0)
-    //         )
-    //     );
+        // check [175, 255] is set to true, which means `operator-sign` has both operator-sign and operator-sync permission
+        for (uint256 i = 176; i < 256; i++) {
+            assert(web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
+        }
 
-    //     vm.stopPrank();
+        // alice grant bob OPERATORSYNC_PERMISSION_BITMAP permission
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.OPERATORSYNC_PERMISSION_BITMAP
+        );
 
-    //     vm.prank(erik);
-    //     web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        // check [0, 174] is set to false, which means `operator-sign` doesn't have owner permission or future permission
+        for (uint256 i = 0; i < 236; i++) {
+            assert(!web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
+        }
 
-    //     vm.startPrank(bob);
-    //     // setCharacterUri
-    //     // web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        // check [175, 255] is set to true, which means `operator-sign` has both operator-sign and operator-sync permission
+        for (uint256 i = 236; i < 256; i++) {
+            assert(web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
+        }
+    }
 
-    //     // link character
-    //     web3Entry.linkCharacter(
-    //         DataTypes.linkCharacterData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             Const.SECOND_CHARACTER_ID,
-    //             Const.LikeLinkType,
-    //             new bytes(0)
-    //         )
-    //     );
+    function testOperatorSyncCan() public {
+        // alice grant bob as OPERATORSYNC_PERMISSION_BITMAP permission
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.OPERATORSYNC_PERMISSION_BITMAP
+        );
 
-    //     // unlink character
-    //     web3Entry.unlinkCharacter(
-    //         DataTypes.unlinkCharacterData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             Const.SECOND_CHARACTER_ID,
-    //             Const.LikeLinkType
-    //         )
-    //     );
+        vm.startPrank(bob);
+        // operatorSync can post note(id = 236)
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+    }
 
-    //     // postNote4Address
-    //     web3Entry.postNote4Address(makePostNoteData(Const.FIRST_CHARACTER_ID), address(0x1232414));
+    function testOperatorSignCan() public {
+        // alice grant bob as OPERATORSIGN_PERMISSION_BITMAP permission
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
 
-    //     // postNote4Linklist
-    //     web3Entry.postNote4Linklist(
-    //         makePostNoteData(Const.FIRST_CHARACTER_ID),
-    //         Const.FIRST_LINKLIST_ID
-    //     );
+        vm.startPrank(bob);
+        // operatorSign can postNote(id = 236)
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
-    //     // postNote
-    //     web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        // operatorSign can setCharacterUri(id = 176)
+        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        // TODO setlinklisturi
+        // operatorSign can linkCharacter(id = 176)
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                Const.SECOND_CHARACTER_ID,
+                Const.LikeLinkType,
+                new bytes(0)
+            )
+        );
+        web3Entry.unlinkCharacter(
+            DataTypes.unlinkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                Const.SECOND_CHARACTER_ID,
+                Const.LikeLinkType
+            )
+        );
+        web3Entry.createThenLinkCharacter(
+            DataTypes.createThenLinkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                Const.MOCK_TO_ADDRESS,
+                Const.LinkItemTypeCharacter
+            )
+        );
+        web3Entry.linkNote(
+            DataTypes.linkNoteData(
+                Const.FIRST_CHARACTER_ID,
+                Const.FIRST_CHARACTER_ID,
+                Const.FIRST_NOTE_ID,
+                Const.FollowLinkType,
+                new bytes(0)
+            )
+        );
+        // unlinkNote
+        web3Entry.unlinkNote(
+            DataTypes.unlinkNoteData(
+                Const.FIRST_CHARACTER_ID,
+                Const.FIRST_CHARACTER_ID,
+                Const.FIRST_NOTE_ID,
+                Const.FollowLinkType
+            )
+        );
+        // linkERC721
+        nft.mint(bob);
+        web3Entry.linkERC721(
+            DataTypes.linkERC721Data(
+                Const.FIRST_CHARACTER_ID,
+                address(nft),
+                1,
+                Const.LikeLinkType,
+                new bytes(0)
+            )
+        );
 
-    // // setNoteUri
-    // web3Entry.setNoteUri(
-    //     Const.FIRST_CHARACTER_ID,
-    //     Const.FIRST_NOTE_ID,
-    //     Const.MOCK_NEW_NOTE_URI
-    // );
+        // unlinkERC721
+        web3Entry.unlinkERC721(
+            DataTypes.unlinkERC721Data(
+                Const.FIRST_CHARACTER_ID,
+                address(nft),
+                1,
+                Const.LikeLinkType
+            )
+        );
+        // linkAddress
+        web3Entry.linkAddress(
+            DataTypes.linkAddressData(
+                Const.FIRST_CHARACTER_ID,
+                address(0x1232414),
+                Const.LikeLinkType,
+                new bytes(0)
+            )
+        );
 
-    // // lockNote
-    // web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        // unlinkAddress
+        web3Entry.unlinkAddress(
+            DataTypes.unlinkAddressData(
+                Const.FIRST_CHARACTER_ID,
+                address(0x1232414),
+                Const.LikeLinkType
+            )
+        );
+        // linkAnyUri
+        web3Entry.linkAnyUri(
+            DataTypes.linkAnyUriData(
+                Const.FIRST_CHARACTER_ID,
+                "ipfs://anyURI",
+                Const.LikeLinkType,
+                new bytes(0)
+            )
+        );
 
-    // // postNote4Character
-    // web3Entry.postNote4Character(
-    //     makePostNoteData(Const.FIRST_CHARACTER_ID),
-    //     Const.FIRST_CHARACTER_ID
-    // );
+        // unlinkAnyUri
+        web3Entry.unlinkAnyUri(
+            DataTypes.unlinkAnyUriData(
+                Const.FIRST_CHARACTER_ID,
+                "ipfs://anyURI",
+                Const.LikeLinkType
+            )
+        );
 
-    // // postNote4Address
-    // web3Entry.postNote4Address(makePostNoteData(Const.FIRST_CHARACTER_ID), address(0x328));
+        // linkLinklist
+        web3Entry.linkLinklist(
+            DataTypes.linkLinklistData(
+                Const.FIRST_CHARACTER_ID,
+                1,
+                Const.LikeLinkType,
+                new bytes(0)
+            )
+        );
 
-    // // postNote4Linklist
-    // web3Entry.postNote4Linklist(
-    //     makePostNoteData(Const.FIRST_CHARACTER_ID),
-    //     Const.FIRST_LINKLIST_ID
-    // );
+        // unlinkLinklist
+        web3Entry.unlinkLinklist(
+            DataTypes.unlinkLinklistData(Const.FIRST_CHARACTER_ID, 1, Const.LikeLinkType)
+        );
 
-    // // postNote4Note
-    // web3Entry.postNote4Note(
-    //     makePostNoteData(Const.FIRST_CHARACTER_ID),
-    //     DataTypes.NoteStruct(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID)
-    // );
+        ApprovalLinkModule4Character linkModule4Character = new ApprovalLinkModule4Character(
+            address(web3Entry)
+        );
 
-    // // postNote4ERC721
-    // nft.mint(bob);
-    // web3Entry.postNote4ERC721(
-    //     makePostNoteData(Const.FIRST_CHARACTER_ID),
-    //     DataTypes.ERC721Struct(address(nft), 1)
-    // );
+        // setLinkModule4Character
+        web3Entry.setLinkModule4Character(
+            DataTypes.setLinkModule4CharacterData(
+                Const.FIRST_CHARACTER_ID,
+                address(linkModule4Character),
+                new bytes(0)
+            )
+        );
 
-    // // postNote4AnyUri
-    // web3Entry.postNote4AnyUri(makePostNoteData(Const.FIRST_CHARACTER_ID), "ipfs://anyURI");
+        // setLinkModule4Linklist
+        // i use the address(linkModule4Character) for link module(cuz the logic here is the same)
+        web3Entry.setLinkModule4Linklist(
+            DataTypes.setLinkModule4LinklistData(
+                Const.FIRST_LINKLIST_ID,
+                address(linkModule4Character),
+                new bytes(0)
+            )
+        );
 
-    //     // linkNote
-    // web3Entry.linkNote(
-    //     DataTypes.linkNoteData(
-    //         Const.FIRST_CHARACTER_ID,
-    //         Const.FIRST_CHARACTER_ID,
-    //         Const.FIRST_NOTE_ID,
-    //         Const.FollowLinkType,
-    //         new bytes(0)
-    //     )
-    // );
+        // postNote4Character
+        web3Entry.postNote4Character(
+            makePostNoteData(Const.FIRST_CHARACTER_ID),
+            Const.FIRST_CHARACTER_ID
+        );
 
-    // // unlinkNote
-    // web3Entry.unlinkNote(
-    //     DataTypes.unlinkNoteData(
-    //         Const.FIRST_CHARACTER_ID,
-    //         Const.FIRST_CHARACTER_ID,
-    //         Const.FIRST_NOTE_ID,
-    //         Const.FollowLinkType
-    //     )
-    // );
+        // postNote4Address
+        web3Entry.postNote4Address(makePostNoteData(Const.FIRST_CHARACTER_ID), address(0x328));
 
-    // // linkERC721
-    // web3Entry.linkERC721(
-    //     DataTypes.linkERC721Data(
-    //         Const.FIRST_CHARACTER_ID,
-    //         address(nft),
-    //         1,
-    //         Const.LikeLinkType,
-    //         new bytes(0)
-    //     )
-    // );
+        // postNote4Linklist
+        web3Entry.postNote4Linklist(
+            makePostNoteData(Const.FIRST_CHARACTER_ID),
+            Const.FIRST_LINKLIST_ID
+        );
 
-    // // unlinkERC721
-    // web3Entry.unlinkERC721(
-    //     DataTypes.unlinkERC721Data(
-    //         Const.FIRST_CHARACTER_ID,
-    //         address(nft),
-    //         1,
-    //         Const.LikeLinkType
-    //     )
-    // );
+        // postNote4Note
+        web3Entry.postNote4Note(
+            makePostNoteData(Const.FIRST_CHARACTER_ID),
+            DataTypes.NoteStruct(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID)
+        );
 
-    //     // linkAddress
-    //     web3Entry.linkAddress(
-    //         DataTypes.linkAddressData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             address(0x1232414),
-    //             Const.LikeLinkType,
-    //             new bytes(0)
-    //         )
-    //     );
+        // postNote4ERC721
+        nft.mint(bob);
+        web3Entry.postNote4ERC721(
+            makePostNoteData(Const.FIRST_CHARACTER_ID),
+            DataTypes.ERC721Struct(address(nft), 1)
+        );
 
-    //     // unlinkAddress
-    //     web3Entry.unlinkAddress(
-    //         DataTypes.unlinkAddressData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             address(0x1232414),
-    //             Const.LikeLinkType
-    //         )
-    //     );
+        // postNote4AnyUri
+        web3Entry.postNote4AnyUri(makePostNoteData(Const.FIRST_CHARACTER_ID), "ipfs://anyURI");
+    }
 
-    // // linkAnyUri
-    // web3Entry.linkAnyUri(
-    //     DataTypes.linkAnyUriData(
-    //         Const.FIRST_CHARACTER_ID,
-    //         "ipfs://anyURI",
-    //         Const.LikeLinkType,
-    //         new bytes(0)
-    //     )
-    // );
+    function testOperatorFail() public {
+        // alice set bob as her operator with DEFAULT_PERMISSION_BITMAP
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
 
-    // // unlinkAnyUri
-    // web3Entry.unlinkAnyUri(
-    //     DataTypes.unlinkAnyUriData(
-    //         Const.FIRST_CHARACTER_ID,
-    //         "ipfs://anyURI",
-    //         Const.LikeLinkType
-    //     )
-    // );
+        // default operator can't setHandle
+        vm.prank(bob);
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        web3Entry.setHandle(Const.FIRST_CHARACTER_ID, "new-handle");
 
-    // // linkLinklist
-    // web3Entry.linkLinklist(
-    //     DataTypes.linkLinklistData(
-    //         Const.FIRST_CHARACTER_ID,
-    //         1,
-    //         Const.LikeLinkType,
-    //         new bytes(0)
-    //     )
-    // );
+        // set primary character id
+        // user can only set primary character id to himself
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        web3Entry.setPrimaryCharacterId(Const.FIRST_CHARACTER_ID);
 
-    // // unlinkLinklist
-    // web3Entry.unlinkLinklist(
-    //     DataTypes.unlinkLinklistData(Const.FIRST_CHARACTER_ID, 1, Const.LikeLinkType)
-    // );
+        // add operator
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, address(0x444));
 
-    // ApprovalLinkModule4Character linkModule4Character = new ApprovalLinkModule4Character(
-    //     address(web3Entry)
-    // );
+        // remove operator
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, address(0x444));
 
-    // // setLinkModule4Character
-    // web3Entry.setLinkModule4Character(
-    //     DataTypes.setLinkModule4CharacterData(
-    //         Const.FIRST_CHARACTER_ID,
-    //         address(linkModule4Character),
-    //         new bytes(0)
-    //     )
-    // );
+        // set social token
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        web3Entry.setSocialToken(Const.FIRST_CHARACTER_ID, address(0x132414));
 
-    //     ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+    }
 
-    // // setLinkModule4Note
-    // web3Entry.setLinkModule4Note(
-    //     DataTypes.setLinkModule4NoteData(
-    //         Const.FIRST_CHARACTER_ID,
-    //         Const.SECOND_NOTE_ID,
-    //         address(linkModule4Note),
-    //         new bytes(0)
-    //     )
-    // );
+    function testOperator4NoteCan() public {
+        // alice grant bob as OPERATORSIGN_PERMISSION_BITMAP permission
+        vm.startPrank(alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
 
-    //     // setLinkModule4Linklist
-    //     // i use the address(linkModule4Character) for link module(cuz the logic here is the same)
-    //     web3Entry.setLinkModule4Linklist(
-    //         DataTypes.setLinkModule4LinklistData(
-    //             Const.FIRST_LINKLIST_ID,
-    //             address(linkModule4Character),
-    //             new bytes(0)
-    //         )
-    //     );
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob,
+            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+        );
+        vm.stopPrank();
 
-    //     vm.stopPrank();
-    // }
+        // setLinkModule4Note
+        vm.startPrank(bob);
+        web3Entry.setLinkModule4Note(
+            DataTypes.setLinkModule4NoteData(
+                Const.FIRST_CHARACTER_ID,
+                Const.FIRST_NOTE_ID,
+                address(linkModule4Note),
+                new bytes(0)
+            )
+        );
 
-    // function testOperatorActionsFail() public {
-    //     vm.prank(alice);
-    //     web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
+        // TODO SET_MINT_MODULE_FOR_NOTE
 
-    //     vm.startPrank(bob);
+        // setNoteUri
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
 
-    //     // set handle
-    // vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    // web3Entry.setHandle(Const.FIRST_CHARACTER_ID, "new-handle");
+        // lockNote
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 
-    // // set social token
-    // vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    // web3Entry.setSocialToken(Const.FIRST_CHARACTER_ID, address(0x132414));
+        // delete note
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+    }
 
-    // // set primary character id
-    // // user can only set primary character id to himself
-    // vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    // web3Entry.setPrimaryCharacterId(Const.FIRST_CHARACTER_ID);
+    function testOperator4NoteFail() public {
+        // alice grant bob as OPERATORSIGN_PERMISSION_BITMAP permission
+        vm.startPrank(alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
 
-    //     // set operator
-    //     vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    //     web3Entry.setOperator(Const.FIRST_CHARACTER_ID, address(0x444));
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob,
+            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+        );
 
-    //     // add operator
-    //     vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    //     web3Entry.addOperator(Const.FIRST_CHARACTER_ID, address(0x444));
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            carol,
+            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+        );
+        vm.stopPrank();
 
-    // // remove operator
-    // vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    // web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, address(0x444));
+        // operator can't operate note without grant
+        // operate note 2
+        vm.prank(bob);
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
+        // setNoteUri
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.SECOND_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
 
-    //     // create then link character
-    //     vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    //     web3Entry.createThenLinkCharacter(
-    //         DataTypes.createThenLinkCharacterData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             Const.MOCK_TO_ADDRESS,
-    //             Const.LinkItemTypeCharacter
-    //         )
-    //     );
+        // granted operator can't operator without note permission
+        vm.prank(carol);
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        // setNoteUri
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
 
-    //     // delete note
-    //     vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
-    //     web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        // can't deleteNote if the permission is set as false
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob,
+            ~(~uint256(0) << 4)
+        );
 
-    //     vm.stopPrank();
-    // }
-
-    // function testOperatorAfterTransfer() public {
-    //     vm.startPrank(alice);
-    //     web3Entry.addOperator(Const.FIRST_CHARACTER_ID, carol);
-    //     web3Entry.addOperator(Const.FIRST_CHARACTER_ID, dick);
-    //     vm.stopPrank();
-    //     assert(web3Entry.isOperator(Const.FIRST_CHARACTER_ID, carol));
-    //     assert(web3Entry.isOperator(Const.FIRST_CHARACTER_ID, dick));
-
-    //     vm.prank(alice);
-
-    //     expectEmit(CheckTopic1 | CheckData);
-    //     emit Events.RemoveOperator(Const.FIRST_CHARACTER_ID, carol, block.timestamp);
-    //     emit Events.RemoveOperator(Const.FIRST_CHARACTER_ID, dick, block.timestamp);
-    //     web3Entry.transferFrom(alice, bob, Const.FIRST_CHARACTER_ID);
-
-    //     // operator should be reset after transfer
-    //     assert(!web3Entry.isOperator(Const.FIRST_CHARACTER_ID, dick));
-    //     assert(!web3Entry.isOperator(Const.FIRST_CHARACTER_ID, carol));
-    // }
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
+        vm.prank(bob);
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+    }
 }
