@@ -5,7 +5,7 @@ pragma solidity 0.8.10;
 import "../libraries/OP.sol";
 
 interface IOperatorPermission {
-    function checkPermissionByPermissionID(
+    function checkPermissionByPermissionId(
         uint256 characterId,
         address operator,
         uint256 permissionId

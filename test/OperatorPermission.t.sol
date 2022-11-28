@@ -38,7 +38,9 @@ contract OperatorTest is Test, SetUp, Utils {
             bob,
             OP.DEFAULT_PERMISSION_BITMAP
         );
+    }
 
+    function testGrantNoteOpertorPermissionsFail() public {
         // only only owner can grant operator
         vm.prank(bob);
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
@@ -49,7 +51,23 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
-    function testcheckPermissionByPermissionID() public {
+    function testGrantNoteOpertorPermission() public {
+        vm.startPrank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob,
+            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+        );
+    }
+
+    function testcheckPermissionByPermissionId() public {
         // alice grant bob DEFAULT_PERMISSION_BITMAP permission
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
@@ -57,7 +75,7 @@ contract OperatorTest is Test, SetUp, Utils {
             bob,
             OP.DEFAULT_PERMISSION_BITMAP
         );
-        bool permission = web3Entry.checkPermissionByPermissionID(
+        bool permission = web3Entry.checkPermissionByPermissionId(
             Const.FIRST_CHARACTER_ID,
             bob,
             OP.SET_HANDLE
@@ -66,12 +84,12 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // check [0, 20] is set to false, which means `default` doesn't hava owner permission
         for (uint256 i = 0; i < 20; i++) {
-            assert(!web3Entry.checkPermissionByPermissionID(Const.FIRST_CHARACTER_ID, bob, i));
+            assert(!web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
         }
 
         // check [21, 255] is set to true
         for (uint256 i = 20; i < 256; i++) {
-            assert(web3Entry.checkPermissionByPermissionID(Const.FIRST_CHARACTER_ID, bob, i));
+            assert(web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
         }
 
         // alice grant bob OPERATORSIGN_PERMISSION_BITMAP permission
@@ -84,12 +102,12 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // check [0, 174] is set to false, which means `operator-sign` doesn't have owner permission or future permission
         for (uint256 i = 0; i < 176; i++) {
-            assert(!web3Entry.checkPermissionByPermissionID(Const.FIRST_CHARACTER_ID, bob, i));
+            assert(!web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
         }
 
         // check [175, 255] is set to true, which means `operator-sign` has both operator-sign and operator-sync permission
         for (uint256 i = 176; i < 256; i++) {
-            assert(web3Entry.checkPermissionByPermissionID(Const.FIRST_CHARACTER_ID, bob, i));
+            assert(web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
         }
 
         // alice grant bob OPERATORSYNC_PERMISSION_BITMAP permission
@@ -102,12 +120,12 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // check [0, 174] is set to false, which means `operator-sign` doesn't have owner permission or future permission
         for (uint256 i = 0; i < 236; i++) {
-            assert(!web3Entry.checkPermissionByPermissionID(Const.FIRST_CHARACTER_ID, bob, i));
+            assert(!web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
         }
 
         // check [175, 255] is set to true, which means `operator-sign` has both operator-sign and operator-sync permission
         for (uint256 i = 236; i < 256; i++) {
-            assert(web3Entry.checkPermissionByPermissionID(Const.FIRST_CHARACTER_ID, bob, i));
+            assert(web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
         }
     }
 
@@ -268,19 +286,6 @@ contract OperatorTest is Test, SetUp, Utils {
             )
         );
 
-        ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
-
-        // setLinkModule4Note
-        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
-        web3Entry.setLinkModule4Note(
-            DataTypes.setLinkModule4NoteData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_NOTE_ID,
-                address(linkModule4Note),
-                new bytes(0)
-            )
-        );
-
         // setLinkModule4Linklist
         // i use the address(linkModule4Character) for link module(cuz the logic here is the same)
         web3Entry.setLinkModule4Linklist(
@@ -290,20 +295,6 @@ contract OperatorTest is Test, SetUp, Utils {
                 new bytes(0)
             )
         );
-
-        // setNoteUri
-        web3Entry.setNoteUri(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            Const.MOCK_NEW_NOTE_URI
-        );
-
-        // lockNote
-        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
-        // TODO SET_MINT_MODULE_FOR_NOTE
-
-        // delete note
-        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 
         // postNote4Character
         web3Entry.postNote4Character(
@@ -376,4 +367,110 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
+    function testOperator4NoteCan() public {
+        // alice grant bob as OPERATORSIGN_PERMISSION_BITMAP permission
+        vm.startPrank(alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
+
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob,
+            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+        );
+        vm.stopPrank();
+
+        // setLinkModule4Note
+        vm.startPrank(bob);
+        web3Entry.setLinkModule4Note(
+            DataTypes.setLinkModule4NoteData(
+                Const.FIRST_CHARACTER_ID,
+                Const.FIRST_NOTE_ID,
+                address(linkModule4Note),
+                new bytes(0)
+            )
+        );
+
+        // TODO SET_MINT_MODULE_FOR_NOTE
+
+        // setNoteUri
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
+
+        // lockNote
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+
+        // delete note
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+    }
+
+    function testOperator4NoteFail() public {
+        // alice grant bob as OPERATORSIGN_PERMISSION_BITMAP permission
+        vm.startPrank(alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
+
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob,
+            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+        );
+
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID, 
+            Const.FIRST_NOTE_ID, 
+            carol, 
+            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+        );
+        vm.stopPrank();
+
+        // operator can't operate note without grant
+        // operate note 2
+        vm.prank(bob);
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
+        // setNoteUri
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.SECOND_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
+
+        // granted operator can't operator without note permission
+        vm.prank(carol);
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        // setNoteUri
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
+
+        // can't deleteNote if the permission is set as false
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob,
+            ~(~uint256(0) << 4)
+        );
+        
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
+        vm.prank(bob);
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+    }
 }

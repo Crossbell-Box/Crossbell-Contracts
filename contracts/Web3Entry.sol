@@ -9,7 +9,9 @@ import "./interfaces/IOperatorPermission.sol";
 contract Web3Entry is Web3EntryBase {
     // characterId => operator => permissionsBitMap
     mapping(uint256 => mapping(address => uint256)) internal operatorsPermissionBitMap;
+
     // characterId => noteId => operator => uint256
+    mapping(uint256 => mapping(uint256 => mapping(address => uint256))) internal operatorsPermission4NoteBitMap;
 
     function grantOperatorPermissions(
         uint256 characterId,
@@ -20,12 +22,32 @@ contract Web3Entry is Web3EntryBase {
         operatorsPermissionBitMap[characterId][operator] = permissionBitMap;
     }
 
-    function checkPermissionByPermissionID(
+    function grantOperatorPermissions4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address operator,
+        uint256 permissionBitMap
+    ) external {
+        _validateCallerIsCharacterOwner(characterId);
+        _validateNoteExists(characterId, noteId);
+        operatorsPermission4NoteBitMap[characterId][noteId][operator] = permissionBitMap;
+    }
+
+    function checkPermissionByPermissionId(
         uint256 characterId,
         address operator,
         uint256 permissionId
     ) public returns (bool) {
         return ((operatorsPermissionBitMap[characterId][operator] >> permissionId) & 1) == 1;
+    }
+
+    function checkPermission4NoteByPermissionId(
+        uint256 characterId,
+        uint256 noteId,
+        address operator,
+        uint256 permissionId
+    ) public returns (bool) {
+        return ((operatorsPermission4NoteBitMap[characterId][noteId][operator] >> permissionId) & 1) == 1;
     }
 
     // migrateOperator migrates operators permissions to operatorsAuthBitMap
@@ -247,6 +269,7 @@ contract Web3Entry is Web3EntryBase {
     // id = 192
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external override {
         _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE);
+        _validateCallerPermission4Note(vars.characterId, vars.noteId, OP.NOTE_SET_LINK_MODULE_FOR_NOTE);
         _validateNoteExists(vars.characterId, vars.noteId);
 
         LinkModuleLogic.setLinkModule4Note(
@@ -281,6 +304,7 @@ contract Web3Entry is Web3EntryBase {
     // id = 195
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external override {
         _validateCallerPermission(vars.characterId, OP.SET_MINT_MODULE_FOR_NOTE);
+        _validateCallerPermission4Note(vars.characterId, vars.noteId, OP.NOTE_SET_MINT_MODULE_FOR_NOTE);
         _validateNoteExists(vars.characterId, vars.noteId);
 
         LinkModuleLogic.setMintModule4Note(
@@ -311,8 +335,8 @@ contract Web3Entry is Web3EntryBase {
         string calldata newUri
     ) external override {
         _validateCallerPermission(characterId, OP.SET_NOTE_URI);
+        _validateCallerPermission4Note(characterId, noteId, OP.NOTE_SET_NOTE_URI);
         _validateNoteExists(characterId, noteId);
-        // TODO validate noteId
         PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
     }
 
@@ -323,6 +347,7 @@ contract Web3Entry is Web3EntryBase {
      */
     function lockNote(uint256 characterId, uint256 noteId) external override {
         _validateCallerPermission(characterId, OP.LOCK_NOTE);
+        _validateCallerPermission4Note(characterId, noteId, OP.NOTE_LOCK_NOTE);
         _validateNoteExists(characterId, noteId);
 
         _noteByIdByCharacter[characterId][noteId].locked = true;
@@ -334,6 +359,7 @@ contract Web3Entry is Web3EntryBase {
     // id = 198
     function deleteNote(uint256 characterId, uint256 noteId) external override {
         _validateCallerPermission(characterId, OP.DELETE_NOTE);
+        _validateCallerPermission4Note(characterId, noteId, OP.NOTE_DELETE_NOTE);
         _validateNoteExists(characterId, noteId);
 
         _noteByIdByCharacter[characterId][noteId].deleted = true;
@@ -499,8 +525,18 @@ contract Web3Entry is Web3EntryBase {
         require(
             msg.sender == owner ||
                 (tx.origin == owner && msg.sender == periphery) ||
-                checkPermissionByPermissionID(characterId, msg.sender, permissionId),
+                checkPermissionByPermissionId(characterId, msg.sender, permissionId),
             "NotEnoughPerssion"
+        );
+    }
+
+    function _validateCallerPermission4Note(uint256 characterId, uint256 noteId, uint256 permissionId) internal {
+        address owner = ownerOf(characterId);
+        require(
+            msg.sender == owner ||
+                (tx.origin == owner && msg.sender == periphery) ||
+                checkPermission4NoteByPermissionId(characterId, noteId, msg.sender, permissionId),
+            "NotEnoughPerssionForThisNote"
         );
     }
 }

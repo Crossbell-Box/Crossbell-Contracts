@@ -58,4 +58,12 @@ library OP {
     // [236, 255] for operator sync permissio
     uint8 internal constant POST_NOTE = 236;
     uint256 internal constant OPERATORSYNC_PERMISSION_BITMAP = ~(~uint256(0) >> 20);
+
+    // below are permissions for note
+    uint8 internal constant NOTE_SET_LINK_MODULE_FOR_NOTE = 1;
+    uint8 internal constant NOTE_SET_MINT_MODULE_FOR_NOTE = 2;
+    uint8 internal constant NOTE_SET_NOTE_URI = 3;
+    uint8 internal constant NOTE_LOCK_NOTE = 4;
+    uint8 internal constant NOTE_DELETE_NOTE = 5;
+    uint256 internal constant DEFAULT_NOTE_PERMISSION_BITMAP = ~(~uint256(0) << 6);
 }
