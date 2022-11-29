@@ -67,7 +67,36 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
-    function testcheckPermissionByPermissionId() public {
+    function testGetOperatorPermission() public {
+        // alice grant bob DEFAULT_PERMISSION_BITMAP permission
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+        assertEq(web3Entry.getOperatorPermission(Const.FIRST_CHARACTER_ID, bob), OP.DEFAULT_PERMISSION_BITMAP);
+
+        // alice grant bob OPERATORSIGN_PERMISSION_BITMAP permission
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
+        assertEq(web3Entry.getOperatorPermission(Const.FIRST_CHARACTER_ID, bob), OP.OPERATORSIGN_PERMISSION_BITMAP);
+
+        // alice grant bob OPERATORSYNC_PERMISSION_BITMAP permission
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.OPERATORSYNC_PERMISSION_BITMAP
+        );
+        assertEq(web3Entry.getOperatorPermission(Const.FIRST_CHARACTER_ID, bob), OP.OPERATORSYNC_PERMISSION_BITMAP);
+    }
+
+    function testCheckPermissionByPermissionId() public {
         // alice grant bob DEFAULT_PERMISSION_BITMAP permission
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
@@ -186,12 +215,7 @@ contract OperatorTest is Test, SetUp, Utils {
         );
 
         // operatorSign can setlinklisturi
-        vm.stopPrank();
-        // todo something wrong here
-        vm.prank(address(web3Entry));
-        ILinklist(linklist).mint(Const.FIRST_CHARACTER_ID, Const.LinkItemTypeCharacter, 6);
-        vm.startPrank(bob);
-        web3Entry.setLinklistUri(6, Const.MOCK_URI);
+        web3Entry.setLinklistUri(1, Const.MOCK_URI);
 
         web3Entry.linkNote(
             DataTypes.linkNoteData(
