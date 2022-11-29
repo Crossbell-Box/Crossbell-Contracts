@@ -494,6 +494,7 @@ contract OperatorTest is Test, SetUp, Utils {
         // alice grant bob as OPERATORSIGN_PERMISSION_BITMAP permission
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
 
         web3Entry.grantOperatorPermissions(
@@ -516,16 +517,16 @@ contract OperatorTest is Test, SetUp, Utils {
         );
         vm.stopPrank();
 
-        // operator can't operate note without grant
-        // operate note 2
-        vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
-        // setNoteUri
-        web3Entry.setNoteUri(
-            Const.FIRST_CHARACTER_ID,
-            Const.SECOND_NOTE_ID,
-            Const.MOCK_NEW_NOTE_URI
-        );
+        // // operator can't operate note without grant
+        // // operate note 2
+        // vm.prank(bob);
+        // vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
+        // // setNoteUri
+        // web3Entry.setNoteUri(
+        //     Const.FIRST_CHARACTER_ID,
+        //     Const.SECOND_NOTE_ID,
+        //     Const.MOCK_NEW_NOTE_URI
+        // );
 
         // granted operator can't operator without note permission
         vm.prank(carol);
@@ -556,6 +557,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
         web3Entry.addOperator(Const.FIRST_CHARACTER_ID, carol);
         web3Entry.addOperator(Const.FIRST_CHARACTER_ID, dick);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         vm.stopPrank();
 
         uint256[] memory characters = new uint256[](1);
@@ -564,9 +566,5 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.migrateOperator(characters);
         vm.startPrank(bob);
         web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
-
-        // note permissions are left unset
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
-        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
     }
 }

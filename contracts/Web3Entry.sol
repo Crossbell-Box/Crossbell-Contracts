@@ -62,9 +62,10 @@ contract Web3Entry is Web3EntryBase {
         address operator,
         uint256 permissionId
     ) public returns (bool) {
-        return
-            ((operatorsPermission4NoteBitMap[characterId][noteId][operator] >> permissionId) & 1) ==
-            1;
+        return (((operatorsPermission4NoteBitMap[characterId][noteId][operator] >> permissionId) &
+            1) ==
+            1 ||
+            operatorsPermission4NoteBitMap[characterId][noteId][operator] == 0);
     }
 
     // migrateOperator migrates operators permissions to operatorsAuthBitMap
