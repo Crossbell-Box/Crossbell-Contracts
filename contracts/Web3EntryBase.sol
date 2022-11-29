@@ -49,11 +49,6 @@ contract Web3EntryBase is
     }
 
     function _setCharacterUri(uint256 profileId, string memory newUri) public virtual {
-        _validateCallerIsCharacterOwnerOrOperator(profileId);
-
-        _characterById[profileId].uri = newUri;
-
-        emit Events.SetCharacterUri(profileId, newUri);
     }
 
     /**
@@ -175,70 +170,25 @@ contract Web3EntryBase is
     }
 
     function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view virtual {
-        address owner = ownerOf(characterId);
-
-        require(
-            _operatorsByCharacter[characterId].contains(msg.sender) ||
-                msg.sender == owner ||
-                msg.sender == _operatorByCharacter[characterId] ||
-                (tx.origin == owner && msg.sender == periphery),
-            "NotCharacterOwnerNorOperator"
-        );
     }
 
     function _validateCallerIsLinklistOwnerOrOperator(uint256 tokenId) internal view virtual {
-        // get character id of the owner of this linklist
-        uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(tokenId);
-        // require msg.sender is operator of the owner character or the owner of this linklist
-        require(
-            msg.sender == IERC721(_linklist).ownerOf(tokenId) ||
-                _operatorsByCharacter[ownerCharacterId].contains(msg.sender) ||
-                msg.sender == _operatorByCharacter[ownerCharacterId],
-            "NotLinkListOwnerNorOperator"
-        );
     }
 
     // opSign permission
     // id = 177
     function setLinklistUri(uint256 linklistId, string calldata uri) external virtual {
-        _validateCallerIsLinklistOwner(linklistId);
-
-        ILinklist(_linklist).setUri(linklistId, uri);
     }
 
     function linkCharacter(DataTypes.linkCharacterData calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
-        _validateCharacterExists(vars.toCharacterId);
-
-        LinkLogic.linkCharacter(
-            vars.fromCharacterId,
-            vars.toCharacterId,
-            vars.linkType,
-            vars.data,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
-            _linklist,
-            _characterById[vars.toCharacterId].linkModule,
-            _attachedLinklists
-        );
     }
 
     function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
-
-        LinkLogic.unlinkCharacter(
-            vars,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
-            _linklist,
-            _attachedLinklists[vars.fromCharacterId][vars.linkType]
-        );
     }
 
     function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars)
         external
-        virtual
-    {
-        _validateCallerIsCharacterOwner(vars.fromCharacterId);
-        _createThenLinkCharacter(vars.fromCharacterId, vars.to, vars.linkType, "0x");
+        virtual {
     }
 
     function _createThenLinkCharacter(
@@ -287,71 +237,27 @@ contract Web3EntryBase is
     }
 
     function linkNote(DataTypes.linkNoteData calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
-        _validateNoteExists(vars.toCharacterId, vars.toNoteId);
-
-        LinkLogic.linkNote(
-            vars,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
-            _linklist,
-            _noteByIdByCharacter,
-            _attachedLinklists
-        );
     }
 
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
-
-        LinkLogic.unlinkNote(vars, _linklist, _attachedLinklists);
     }
 
     function linkERC721(DataTypes.linkERC721Data calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
-        _validateERC721Exists(vars.tokenAddress, vars.tokenId);
-
-        LinkLogic.linkERC721(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
-
-        LinkLogic.unlinkERC721(
-            vars,
-            _linklist,
-            _attachedLinklists[vars.fromCharacterId][vars.linkType]
-        );
     }
 
     function linkAddress(DataTypes.linkAddressData calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
-
-        LinkLogic.linkAddress(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
-
-        LinkLogic.unlinkAddress(
-            vars,
-            _linklist,
-            _attachedLinklists[vars.fromCharacterId][vars.linkType]
-        );
     }
 
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
-
-        LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
-
-        LinkLogic.unlinkAnyUri(
-            vars,
-            _linklist,
-            _attachedLinklists[vars.fromCharacterId][vars.linkType]
-        );
     }
 
     /*
@@ -390,61 +296,22 @@ contract Web3EntryBase is
     */
 
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
-
-        LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.fromCharacterId);
-
-        LinkLogic.unlinkLinklist(
-            vars,
-            _linklist,
-            _attachedLinklists[vars.fromCharacterId][vars.linkType]
-        );
     }
 
     // set link module for his character
-    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars)
-        external
-        virtual
-    {
-        _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
-
-        CharacterLogic.setCharacterLinkModule(
-            vars.characterId,
-            vars.linkModule,
-            vars.linkModuleInitData,
-            _characterById[vars.characterId]
-        );
+    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external virtual {
     }
 
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
-        _validateNoteExists(vars.characterId, vars.noteId);
-
-        LinkModuleLogic.setLinkModule4Note(
-            vars.characterId,
-            vars.noteId,
-            vars.linkModule,
-            vars.linkModuleInitData,
-            _noteByIdByCharacter
-        );
     }
 
     function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars)
         external
         virtual
     {
-        _validateCallerIsLinklistOwnerOrOperator(vars.linklistId);
-
-        LinkModuleLogic.setLinkModule4Linklist(
-            vars.linklistId,
-            vars.linkModule,
-            vars.linkModuleInitData,
-            _linkModules4Linklist
-        );
     }
 
     /**
@@ -492,25 +359,9 @@ contract Web3EntryBase is
     }
 
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
-        _validateNoteExists(vars.characterId, vars.noteId);
-
-        LinkModuleLogic.setMintModule4Note(
-            vars.characterId,
-            vars.noteId,
-            vars.mintModule,
-            vars.mintModuleInitData,
-            _noteByIdByCharacter
-        );
     }
 
     function postNote(DataTypes.PostNoteData calldata vars) external virtual returns (uint256) {
-        _validateCallerIsCharacterOwnerOrOperator(vars.characterId);
-
-        uint256 noteId = ++_characterById[vars.characterId].noteCount;
-
-        PostLogic.postNoteWithLink(vars, noteId, 0, 0, "", _noteByIdByCharacter);
-        return noteId;
     }
 
     function setNoteUri(
@@ -518,31 +369,15 @@ contract Web3EntryBase is
         uint256 noteId,
         string calldata newUri
     ) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(characterId);
-        _validateNoteExists(characterId, noteId);
-
-        PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
     }
 
     /**
      * @notice lockNote put a note into a immutable state where no modifications are allowed. You should call this method to announce that this is the final version.
      */
     function lockNote(uint256 characterId, uint256 noteId) external virtual {
-        _validateCallerIsCharacterOwnerOrOperator(characterId);
-        _validateNoteExists(characterId, noteId);
-
-        _noteByIdByCharacter[characterId][noteId].locked = true;
-
-        emit Events.LockNote(characterId, noteId);
     }
 
     function deleteNote(uint256 characterId, uint256 noteId) external virtual {
-        _validateCallerIsCharacterOwner(characterId);
-        _validateNoteExists(characterId, noteId);
-
-        _noteByIdByCharacter[characterId][noteId].deleted = true;
-
-        emit Events.DeleteNote(characterId, noteId);
     }
 
     function postNote4Character(DataTypes.PostNoteData calldata postNoteData, uint256 toCharacterId)
@@ -550,22 +385,6 @@ contract Web3EntryBase is
         virtual
         returns (uint256)
     {
-        _validateCallerIsCharacterOwnerOrOperator(postNoteData.characterId);
-
-        bytes32 linkItemType = Constants.NoteLinkTypeCharacter;
-        bytes32 linkKey = bytes32(toCharacterId);
-        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
-
-        PostLogic.postNoteWithLink(
-            postNoteData,
-            noteId,
-            linkItemType,
-            linkKey,
-            abi.encodePacked(toCharacterId),
-            _noteByIdByCharacter
-        );
-
-        return noteId;
     }
 
     function postNote4Address(DataTypes.PostNoteData calldata noteData, address ethAddress)
@@ -573,22 +392,6 @@ contract Web3EntryBase is
         virtual
         returns (uint256)
     {
-        _validateCallerIsCharacterOwnerOrOperator(noteData.characterId);
-
-        bytes32 linkItemType = Constants.NoteLinkTypeAddress;
-        bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
-        uint256 noteId = ++_characterById[noteData.characterId].noteCount;
-
-        PostLogic.postNoteWithLink(
-            noteData,
-            noteId,
-            linkItemType,
-            linkKey,
-            abi.encodePacked(ethAddress),
-            _noteByIdByCharacter
-        );
-
-        return noteId;
     }
 
     function postNote4Linklist(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
@@ -596,71 +399,18 @@ contract Web3EntryBase is
         virtual
         returns (uint256)
     {
-        _validateCallerIsCharacterOwnerOrOperator(noteData.characterId);
-
-        bytes32 linkItemType = Constants.NoteLinkTypeLinklist;
-        bytes32 linkKey = bytes32(toLinklistId);
-        uint256 noteId = ++_characterById[noteData.characterId].noteCount;
-
-        PostLogic.postNoteWithLink(
-            noteData,
-            noteId,
-            linkItemType,
-            linkKey,
-            abi.encodePacked(toLinklistId),
-            _noteByIdByCharacter
-        );
-
-        return noteId;
     }
 
     function postNote4Note(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.NoteStruct calldata note
     ) external virtual returns (uint256) {
-        _validateCallerIsCharacterOwnerOrOperator(postNoteData.characterId);
-
-        bytes32 linkItemType = Constants.NoteLinkTypeNote;
-        bytes32 linkKey = ILinklist(_linklist).addLinkingNote(0, note.characterId, note.noteId);
-        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
-
-        PostLogic.postNoteWithLink(
-            postNoteData,
-            noteId,
-            linkItemType,
-            linkKey,
-            abi.encodePacked(note.characterId, note.noteId),
-            _noteByIdByCharacter
-        );
-
-        return noteId;
     }
 
     function postNote4ERC721(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.ERC721Struct calldata erc721
     ) external virtual returns (uint256) {
-        _validateCallerIsCharacterOwnerOrOperator(postNoteData.characterId);
-        _validateERC721Exists(erc721.tokenAddress, erc721.erc721TokenId);
-
-        bytes32 linkItemType = Constants.NoteLinkTypeERC721;
-        bytes32 linkKey = ILinklist(_linklist).addLinkingERC721(
-            0,
-            erc721.tokenAddress,
-            erc721.erc721TokenId
-        );
-        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
-
-        PostLogic.postNoteWithLink(
-            postNoteData,
-            noteId,
-            linkItemType,
-            linkKey,
-            abi.encodePacked(erc721.tokenAddress, erc721.erc721TokenId),
-            _noteByIdByCharacter
-        );
-
-        return noteId;
     }
 
     function postNote4AnyUri(DataTypes.PostNoteData calldata postNoteData, string calldata uri)
@@ -668,22 +418,6 @@ contract Web3EntryBase is
         virtual
         returns (uint256)
     {
-        _validateCallerIsCharacterOwnerOrOperator(postNoteData.characterId);
-
-        bytes32 linkItemType = Constants.NoteLinkTypeAnyUri;
-        bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
-        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
-
-        PostLogic.postNoteWithLink(
-            postNoteData,
-            noteId,
-            linkItemType,
-            linkKey,
-            abi.encodePacked(uri),
-            _noteByIdByCharacter
-        );
-
-        return noteId;
     }
 
     function burn(uint256 tokenId) public override {

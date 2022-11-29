@@ -75,7 +75,10 @@ contract OperatorTest is Test, SetUp, Utils {
             bob,
             OP.DEFAULT_PERMISSION_BITMAP
         );
-        assertEq(web3Entry.getOperatorPermission(Const.FIRST_CHARACTER_ID, bob), OP.DEFAULT_PERMISSION_BITMAP);
+        assertEq(
+            web3Entry.getOperatorPermission(Const.FIRST_CHARACTER_ID, bob),
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
 
         // alice grant bob OPERATORSIGN_PERMISSION_BITMAP permission
         vm.prank(alice);
@@ -84,7 +87,10 @@ contract OperatorTest is Test, SetUp, Utils {
             bob,
             OP.OPERATORSIGN_PERMISSION_BITMAP
         );
-        assertEq(web3Entry.getOperatorPermission(Const.FIRST_CHARACTER_ID, bob), OP.OPERATORSIGN_PERMISSION_BITMAP);
+        assertEq(
+            web3Entry.getOperatorPermission(Const.FIRST_CHARACTER_ID, bob),
+            OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
 
         // alice grant bob OPERATORSYNC_PERMISSION_BITMAP permission
         vm.prank(alice);
@@ -93,7 +99,10 @@ contract OperatorTest is Test, SetUp, Utils {
             bob,
             OP.OPERATORSYNC_PERMISSION_BITMAP
         );
-        assertEq(web3Entry.getOperatorPermission(Const.FIRST_CHARACTER_ID, bob), OP.OPERATORSYNC_PERMISSION_BITMAP);
+        assertEq(
+            web3Entry.getOperatorPermission(Const.FIRST_CHARACTER_ID, bob),
+            OP.OPERATORSYNC_PERMISSION_BITMAP
+        );
     }
 
     function testCheckPermissionByPermissionId() public {

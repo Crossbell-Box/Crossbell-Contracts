@@ -8,9 +8,10 @@ so the bitmap looks like this:
 
 |   opSync   |   opSign   |   future   |  owner   |
 |------------|------------|------------|----------|
-| [236, 255] | [176, 235] |  [21, 175] | [0, 20]  |
+|255------236|235------176|175-------21|20-------0|
 
 */
+
 library OP {
     // [0,20] for owner permission
     uint8 internal constant SET_HANDLE = 0;
