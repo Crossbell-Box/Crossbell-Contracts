@@ -90,7 +90,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     }
 
     function setUri(uint256 tokenId, string memory _uri) external {
-        require(_exists(tokenId), "Linklist: setUri for nonexistent token");
+        require(_linklistOwners[tokenId] != 0, "Linklist: setUri for nonexistent token");
         _validateCallerIsWeb3EntryOrOwner(tokenId);
 
         _uris[tokenId] = _uri;

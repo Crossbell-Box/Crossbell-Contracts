@@ -154,13 +154,13 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.stopPrank();
 
         vm.startPrank(bob);
-        // operatorSign can postNote(id = 236)
+        // operatorSign can postNote
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
-        // operatorSign can setCharacterUri(id = 176)
+        // operatorSign can setCharacterUri
         web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
 
-        // operatorSign can linkCharacter(id = 176)
+        // operatorSign can linkCharacter
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
                 Const.FIRST_CHARACTER_ID,
@@ -186,12 +186,12 @@ contract OperatorTest is Test, SetUp, Utils {
         );
 
         // operatorSign can setlinklisturi
-        // vm.stopPrank();
+        vm.stopPrank();
         // todo something wrong here
-        // vm.prank(address(web3Entry));
-        // ILinklist(linklist).mint(Const.FIRST_CHARACTER_ID, Const.LinkItemTypeCharacter, 4);
-        // vm.startPrank(bob);
-        // web3Entry.setLinklistUri(4, Const.MOCK_URI);
+        vm.prank(address(web3Entry));
+        ILinklist(linklist).mint(Const.FIRST_CHARACTER_ID, Const.LinkItemTypeCharacter, 6);
+        vm.startPrank(bob);
+        web3Entry.setLinklistUri(6, Const.MOCK_URI);
 
         web3Entry.linkNote(
             DataTypes.linkNoteData(
@@ -408,7 +408,6 @@ contract OperatorTest is Test, SetUp, Utils {
             )
         );
 
-        // TODO SET_MINT_MODULE_FOR_NOTE
         ApprovalMintModule mintModule = new ApprovalMintModule(address(web3Entry));
         web3Entry.setMintModule4Note(
             DataTypes.setMintModule4NoteData(
