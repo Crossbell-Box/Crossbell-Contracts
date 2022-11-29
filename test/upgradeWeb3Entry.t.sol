@@ -57,113 +57,167 @@ contract UpgradeWeb3Entry is Test, Utils {
         vm.stopPrank();
     }
 
-    // function testCheckStorage() public {
-    //     // use web3entryBase to generate some data
-    //     Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
-    //         makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice)
-    //     );
-    //     Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
-    //         makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob)
-    //     );
+    function testCheckStorage() public {
+        // use web3entryBase to generate some data
+        Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice)
+        );
+        Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob)
+        );
 
-    //     // set operator using Web3entryBase
-    //     vm.prank(alice);
-    //     Web3EntryBase(address(proxyWeb3Entry)).setOperator(Const.FIRST_CHARACTER_ID, bob);
+        // set operator using Web3entryBase
+        vm.prank(alice);
+        Web3EntryBase(address(proxyWeb3Entry)).setOperator(Const.FIRST_CHARACTER_ID, bob);
+        assertEq(Web3Entry(address(proxyWeb3Entry)).getOperator(Const.FIRST_CHARACTER_ID), bob);
 
-    //     // upgrade web3Entry
-    //     web3EntryImpl = new Web3Entry();
-    //     vm.prank(admin);
-    //     proxyWeb3Entry.upgradeTo(address(web3EntryImpl));
+        // add operator using new web3entry
+        vm.prank(alice);
+        Web3Entry(address(proxyWeb3Entry)).addOperator(Const.FIRST_CHARACTER_ID, carol);
+        // now bob and bob and carol should be operator
+        assert(Web3Entry(address(proxyWeb3Entry)).isOperator(Const.FIRST_CHARACTER_ID, bob));
+        assert(Web3Entry(address(proxyWeb3Entry)).isOperator(Const.FIRST_CHARACTER_ID, carol));
 
-    //     // add operator using new web3entry
-    //     vm.prank(alice);
-    //     Web3Entry(address(proxyWeb3Entry)).addOperator(Const.FIRST_CHARACTER_ID, carol);
-    //     // now bob and bob and carol should be operator
-    //     assert(Web3Entry(address(proxyWeb3Entry)).isOperator(Const.FIRST_CHARACTER_ID, bob));
-    //     assert(Web3Entry(address(proxyWeb3Entry)).isOperator(Const.FIRST_CHARACTER_ID, carol));
+        // remove operator using new web3Entry
+        vm.prank(alice);
+        // remove carol
+        Web3Entry(address(proxyWeb3Entry)).removeOperator(Const.FIRST_CHARACTER_ID, carol);
+        // carol is not operator now
+        assert(!Web3Entry(address(proxyWeb3Entry)).isOperator(Const.FIRST_CHARACTER_ID, carol));
 
-    //     // remove operator using new web3Entry
-    //     vm.prank(alice);
-    //     // remove carol
-    //     Web3Entry(address(proxyWeb3Entry)).removeOperator(Const.FIRST_CHARACTER_ID, carol);
-    //     // carol is not operator now
-    //     assert(!Web3Entry(address(proxyWeb3Entry)).isOperator(Const.FIRST_CHARACTER_ID, carol));
-    // }
+        // upgrade web3Entry
+        web3EntryImpl = new Web3Entry();
+        vm.prank(admin);
+        proxyWeb3Entry.upgradeTo(address(web3EntryImpl));
 
-    // function testSlot() public {
-    //     // create character
-    //     Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
-    //         makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice)
-    //     );
-    //     // set bob as operator of alice
-    //     vm.prank(alice);
-    //     Web3EntryBase(address(proxyWeb3Entry)).setOperator(Const.FIRST_CHARACTER_ID, bob);
+        vm.startPrank(alice);
+        Web3Entry(address(proxyWeb3Entry)).postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+        Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            carol,
+            OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
+        Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob,
+            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+        );
+        vm.stopPrank();
+    }
 
-    //     bytes32 bytes32Periphery = bytes32((uint256(uint160(periphery))));
-    //     bytes32 bytes32Resolver = bytes32((uint256(uint160(resolver))));
-    //     bytes32 bytes32bob = bytes32((uint256(uint160(bob))));
-    //     bytes32 bytes32carol = bytes32((uint256(uint160(carol))));
+    function testSlot() public {
+        // create character
+        Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice)
+        );
+        // set operator & add operator
+        vm.startPrank(alice);
+        Web3EntryBase(address(proxyWeb3Entry)).setOperator(Const.FIRST_CHARACTER_ID, bob);
+        Web3Entry(address(proxyWeb3Entry)).addOperator(Const.FIRST_CHARACTER_ID, bob);
+        Web3Entry(address(proxyWeb3Entry)).addOperator(Const.FIRST_CHARACTER_ID, carol);
+        vm.stopPrank();
 
-    //     // get storage slot before the upgrade
-    //     bytes32[] memory prevSlotArr = new bytes32[](25);
-    //     for (uint256 i = 0; i < 25; i++) {
-    //         bytes32 value = vm.load(address(proxyWeb3Entry), bytes32(uint256(i)));
-    //         prevSlotArr[i] = value;
-    //     }
-    //     assertEq(prevSlotArr[21], bytes32Periphery);
-    //     assertEq(prevSlotArr[23], bytes32Resolver);
+        bytes32 bytes32Periphery = bytes32((uint256(uint160(periphery))));
+        bytes32 bytes32Resolver = bytes32((uint256(uint160(resolver))));
+        bytes32 bytes32bob = bytes32((uint256(uint160(bob))));
+        bytes32 bytes32carol = bytes32((uint256(uint160(carol))));
 
-    //     // check _operatorByCharacter slot
-    //     assertEq(prevSlotArr[22], bytes32((uint256(0))));
-    //     bytes32 prevOperatorSlot = keccak256(
-    //         abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(22)))
-    //     );
-    //     bytes32 prevValueAtOperatorSlot = vm.load(address(proxyWeb3Entry), prevOperatorSlot);
-    //     assertEq(prevValueAtOperatorSlot, bytes32bob);
+        // get storage slot before the upgrade
+        bytes32[] memory prevSlotArr = new bytes32[](27);
+        for (uint256 i = 0; i < 27; i++) {
+            bytes32 value = vm.load(address(proxyWeb3Entry), bytes32(uint256(i)));
+            prevSlotArr[i] = value;
+        }
+        assertEq(prevSlotArr[21], bytes32Periphery);
+        assertEq(prevSlotArr[23], bytes32Resolver);
 
-    //     // upgrade to new web3Entry
-    //     vm.startPrank(admin);
-    //     web3EntryImpl = new Web3Entry();
-    //     proxyWeb3Entry.upgradeTo(address(web3EntryImpl));
-    //     address impl = proxyWeb3Entry.implementation();
-    //     assertEq(impl, address(web3EntryImpl));
-    //     vm.stopPrank();
+        // check _operatorByCharacter slot
+        assertEq(prevSlotArr[22], bytes32((uint256(0))));
+        bytes32 prevOperatorSlot = keccak256(
+            abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(22)))
+        );
+        bytes32 prevValueAtOperatorSlot = vm.load(address(proxyWeb3Entry), prevOperatorSlot);
+        assertEq(prevValueAtOperatorSlot, bytes32bob);
 
-    //     bytes32[] memory newSlotArr = new bytes32[](25);
-    //     for (uint256 i = 0; i < 25; i++) {
-    //         bytes32 value = vm.load(address(proxyWeb3Entry), bytes32(uint256(i)));
-    //         newSlotArr[i] = value;
-    //     }
-    //     // check slots
-    //     for (uint256 i = 0; i < 25; i++) {
-    //         assertEq(prevSlotArr[i], newSlotArr[i]);
-    //     }
+        // check operatorSlot
+        bytes32 operatorSlot = keccak256(
+            abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(22)))
+        );
+        bytes32 valueAtOperatorSlot = vm.load(address(proxyWeb3Entry), operatorSlot);
+        assertEq(valueAtOperatorSlot, bytes32bob);
 
-    //     // add operator
-    //     vm.startPrank(alice);
-    //     Web3Entry(address(proxyWeb3Entry)).addOperator(Const.FIRST_CHARACTER_ID, bob);
-    //     Web3Entry(address(proxyWeb3Entry)).addOperator(Const.FIRST_CHARACTER_ID, carol);
-    //     vm.stopPrank();
+        // check operatorsSlot
+        // the slot storages the length of EnumerableSet.AddressSet, and it's 2(there is 2 operators in this list)
+        bytes32 operatorsSlot = keccak256(
+            abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(24)))
+        );
+        // check operators length
+        bytes32 valueAtOperatorsSlot = vm.load(address(proxyWeb3Entry), operatorsSlot);
+        assertEq(valueAtOperatorsSlot, bytes32(uint256(2)));
+        // check operators
+        bytes32 operators1Slot = bytes32(uint256(keccak256(abi.encodePacked(operatorsSlot))) + 0);
+        assertEq(vm.load(address(proxyWeb3Entry), operators1Slot), bytes32bob);
+        bytes32 operators2Slot = bytes32(uint256(keccak256(abi.encodePacked(operatorsSlot))) + 1);
+        assertEq(vm.load(address(proxyWeb3Entry), operators2Slot), bytes32carol);
 
-    //     // check operatorSlot
-    //     bytes32 operatorSlot = keccak256(
-    //         abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(22)))
-    //     );
-    //     bytes32 valueAtOperatorSlot = vm.load(address(proxyWeb3Entry), operatorSlot);
-    //     assertEq(valueAtOperatorSlot, bytes32bob);
+        // upgrade to new web3Entry
+        vm.startPrank(admin);
+        web3EntryImpl = new Web3Entry();
+        proxyWeb3Entry.upgradeTo(address(web3EntryImpl));
+        address impl = proxyWeb3Entry.implementation();
+        assertEq(impl, address(web3EntryImpl));
+        vm.stopPrank();
 
-    //     // check operatorsSlot
-    //     // the slot storages the length of EnumerableSet.AddressSet, and it's 2(there is 2 operators in this list)
-    //     bytes32 operatorsSlot = keccak256(
-    //         abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(24)))
-    //     );
-    //     // check operators length
-    //     bytes32 valueAtOperatorsSlot = vm.load(address(proxyWeb3Entry), operatorsSlot);
-    //     assertEq(valueAtOperatorsSlot, bytes32(uint256(2)));
-    //     // check operators
-    //     bytes32 operators1Slot = bytes32(uint256(keccak256(abi.encodePacked(operatorsSlot))) + 0);
-    //     assertEq(vm.load(address(proxyWeb3Entry), operators1Slot), bytes32bob);
-    //     bytes32 operators2Slot = bytes32(uint256(keccak256(abi.encodePacked(operatorsSlot))) + 1);
-    //     assertEq(vm.load(address(proxyWeb3Entry), operators2Slot), bytes32carol);
-    // }
+        bytes32[] memory newSlotArr = new bytes32[](27);
+        for (uint256 i = 0; i < 27; i++) {
+            bytes32 value = vm.load(address(proxyWeb3Entry), bytes32(uint256(i)));
+            newSlotArr[i] = value;
+        }
+        // check slots
+        for (uint256 i = 0; i < 27; i++) {
+            assertEq(prevSlotArr[i], newSlotArr[i]);
+        }
+
+        vm.startPrank(alice);
+        Web3Entry(address(proxyWeb3Entry)).postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+        Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            carol,
+            OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
+        Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob,
+            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+        );
+        vm.stopPrank();
+
+        // check operatorsPermissionBitMap
+        bytes32 operatorsPermissionBitMapSlot = keccak256(
+            abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(25)))
+        );
+
+        bytes32 operatorBitmapSlot = keccak256(
+            abi.encodePacked(
+                carol,
+                (keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(25)))))
+            )
+        );
+
+        bytes32 valueAtOperatorBitmapSlot = vm.load(address(proxyWeb3Entry), operatorBitmapSlot);
+        // assertEq32(valueAtOperatorBitmapSlot, bytes32(OP.DEFAULT_PERMISSION_BITMAP));
+        // TODO check mapping
+    }
 }

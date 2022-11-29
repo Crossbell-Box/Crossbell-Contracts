@@ -9,11 +9,11 @@ contract Web3Entry is Web3EntryBase {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     // characterId => operator => permissionsBitMap
-    mapping(uint256 => mapping(address => uint256)) internal operatorsPermissionBitMap;
+    mapping(uint256 => mapping(address => uint256)) internal operatorsPermissionBitMap; // slot 25
 
     // characterId => noteId => operator => uint256
     mapping(uint256 => mapping(uint256 => mapping(address => uint256)))
-        internal operatorsPermission4NoteBitMap;
+        internal operatorsPermission4NoteBitMap; // slot 26
 
     function grantOperatorPermissions(
         uint256 characterId,

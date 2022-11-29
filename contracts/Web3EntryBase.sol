@@ -31,9 +31,6 @@ contract Web3EntryBase is
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    uint256 internal constant REVISION = 4;
-    mapping(uint256 => EnumerableSet.AddressSet) internal _operatorsByCharacter; //slot 24
-
     function initialize(
         string calldata _name,
         string calldata _symbol,
