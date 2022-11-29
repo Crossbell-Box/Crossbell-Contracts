@@ -30,6 +30,19 @@ interface IWeb3Entry {
 
     function removeOperator(uint256 characterId, address operator) external;
 
+    function grantOperatorPermissions(
+        uint256 characterId,
+        address operator,
+        uint256 permissionBitMap
+    ) external;
+
+    function grantOperatorPermissions4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address operator,
+        uint256 permissionBitMap
+    ) external;
+
     function isOperator(uint256 characterId, address operator) external view returns (bool);
 
     function getOperators(uint256 characterId) external view returns (address[] memory);

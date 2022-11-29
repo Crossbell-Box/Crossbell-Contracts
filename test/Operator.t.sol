@@ -31,6 +31,14 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testGrantOperatorPermissions() public {
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        emit Events.GrantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP,
+            block.timestamp
+        );
+
         // alice set bob as her operator with DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
@@ -52,11 +60,28 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testGrantNoteOpertorPermission() public {
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        emit Events.GrantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP,
+            block.timestamp
+        );
+
         vm.startPrank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
             OP.DEFAULT_PERMISSION_BITMAP
+        );
+
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        emit Events.GrantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob,
+            OP.DEFAULT_NOTE_PERMISSION_BITMAP,
+            block.timestamp
         );
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.grantOperatorPermissions4Note(

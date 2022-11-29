@@ -48,8 +48,7 @@ contract Web3EntryBase is
         emit Events.Web3EntryInitialized(block.timestamp);
     }
 
-    function _setCharacterUri(uint256 profileId, string memory newUri) public virtual {
-    }
+    function _setCharacterUri(uint256 profileId, string memory newUri) public virtual {}
 
     /**
      * This method creates a character with the given parameters to the given address.
@@ -139,6 +138,19 @@ contract Web3EntryBase is
         // operatorsPermissionBitMap[characterId][operator] = 0;
     }
 
+    function grantOperatorPermissions(
+        uint256 characterId,
+        address operator,
+        uint256 permissionBitMap
+    ) external virtual {}
+
+    function grantOperatorPermissions4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address operator,
+        uint256 permissionBitMap
+    ) external virtual {}
+
     /**
      * @notice Check if an address is the operator of a character.
      * @dev `isOperator` is compatible with operators set by old `setOperator`, which is deprected and will
@@ -169,27 +181,22 @@ contract Web3EntryBase is
         emit Events.RemoveOperator(characterId, operator, block.timestamp);
     }
 
-    function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view virtual {
-    }
+    function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view virtual {}
 
-    function _validateCallerIsLinklistOwnerOrOperator(uint256 tokenId) internal view virtual {
-    }
+    function _validateCallerIsLinklistOwnerOrOperator(uint256 tokenId) internal view virtual {}
 
     // opSign permission
     // id = 177
-    function setLinklistUri(uint256 linklistId, string calldata uri) external virtual {
-    }
+    function setLinklistUri(uint256 linklistId, string calldata uri) external virtual {}
 
-    function linkCharacter(DataTypes.linkCharacterData calldata vars) external virtual {
-    }
+    function linkCharacter(DataTypes.linkCharacterData calldata vars) external virtual {}
 
-    function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external virtual {
-    }
+    function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external virtual {}
 
     function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars)
         external
-        virtual {
-    }
+        virtual
+    {}
 
     function _createThenLinkCharacter(
         uint256 fromCharacterId,
@@ -236,29 +243,21 @@ contract Web3EntryBase is
         );
     }
 
-    function linkNote(DataTypes.linkNoteData calldata vars) external virtual {
-    }
+    function linkNote(DataTypes.linkNoteData calldata vars) external virtual {}
 
-    function unlinkNote(DataTypes.unlinkNoteData calldata vars) external virtual {
-    }
+    function unlinkNote(DataTypes.unlinkNoteData calldata vars) external virtual {}
 
-    function linkERC721(DataTypes.linkERC721Data calldata vars) external virtual {
-    }
+    function linkERC721(DataTypes.linkERC721Data calldata vars) external virtual {}
 
-    function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external virtual {
-    }
+    function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external virtual {}
 
-    function linkAddress(DataTypes.linkAddressData calldata vars) external virtual {
-    }
+    function linkAddress(DataTypes.linkAddressData calldata vars) external virtual {}
 
-    function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external virtual {
-    }
+    function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external virtual {}
 
-    function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external virtual {
-    }
+    function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external virtual {}
 
-    function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external virtual {
-    }
+    function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external virtual {}
 
     /*
     function linkCharacterLink(
@@ -295,24 +294,22 @@ contract Web3EntryBase is
     }
     */
 
-    function linkLinklist(DataTypes.linkLinklistData calldata vars) external virtual {
-    }
+    function linkLinklist(DataTypes.linkLinklistData calldata vars) external virtual {}
 
-    function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external virtual {
-    }
+    function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external virtual {}
 
     // set link module for his character
-    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external virtual {
-    }
+    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars)
+        external
+        virtual
+    {}
 
-    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external virtual {
-    }
+    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external virtual {}
 
     function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars)
         external
         virtual
-    {
-    }
+    {}
 
     /**
      * @notice Set linkModule for a ERC721 token that you own.
@@ -358,67 +355,56 @@ contract Web3EntryBase is
             );
     }
 
-    function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external virtual {
-    }
+    function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external virtual {}
 
-    function postNote(DataTypes.PostNoteData calldata vars) external virtual returns (uint256) {
-    }
+    function postNote(DataTypes.PostNoteData calldata vars) external virtual returns (uint256) {}
 
     function setNoteUri(
         uint256 characterId,
         uint256 noteId,
         string calldata newUri
-    ) external virtual {
-    }
+    ) external virtual {}
 
     /**
      * @notice lockNote put a note into a immutable state where no modifications are allowed. You should call this method to announce that this is the final version.
      */
-    function lockNote(uint256 characterId, uint256 noteId) external virtual {
-    }
+    function lockNote(uint256 characterId, uint256 noteId) external virtual {}
 
-    function deleteNote(uint256 characterId, uint256 noteId) external virtual {
-    }
+    function deleteNote(uint256 characterId, uint256 noteId) external virtual {}
 
     function postNote4Character(DataTypes.PostNoteData calldata postNoteData, uint256 toCharacterId)
         external
         virtual
         returns (uint256)
-    {
-    }
+    {}
 
     function postNote4Address(DataTypes.PostNoteData calldata noteData, address ethAddress)
         external
         virtual
         returns (uint256)
-    {
-    }
+    {}
 
     function postNote4Linklist(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
         external
         virtual
         returns (uint256)
-    {
-    }
+    {}
 
     function postNote4Note(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.NoteStruct calldata note
-    ) external virtual returns (uint256) {
-    }
+    ) external virtual returns (uint256) {}
 
     function postNote4ERC721(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.ERC721Struct calldata erc721
-    ) external virtual returns (uint256) {
-    }
+    ) external virtual returns (uint256) {}
 
     function postNote4AnyUri(DataTypes.PostNoteData calldata postNoteData, string calldata uri)
         external
         virtual
         returns (uint256)
-    {
-    }
+    {}
 
     function burn(uint256 tokenId) public override {
         // clear handle

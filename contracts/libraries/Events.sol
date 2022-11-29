@@ -39,6 +39,21 @@ library Events {
 
     event RemoveOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
 
+    event GrantOperatorPermissions(
+        uint256 indexed characterId,
+        address indexed operator,
+        uint256 permissionBitMap,
+        uint256 timestamp
+    );
+
+    event GrantOperatorPermissions4Note(
+        uint256 indexed characterId,
+        uint256 indexed noteId,
+        address indexed operator,
+        uint256 permissionBitMap,
+        uint256 timestamp
+    );
+
     event SetCharacterUri(uint256 indexed characterId, string newUri);
 
     event PostNote(

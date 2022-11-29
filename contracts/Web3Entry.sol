@@ -19,9 +19,15 @@ contract Web3Entry is Web3EntryBase {
         uint256 characterId,
         address operator,
         uint256 permissionBitMap
-    ) external {
+    ) external override {
         _validateCallerIsCharacterOwner(characterId);
         operatorsPermissionBitMap[characterId][operator] = permissionBitMap;
+        emit Events.GrantOperatorPermissions(
+            characterId,
+            operator,
+            permissionBitMap,
+            block.timestamp
+        );
     }
 
     function grantOperatorPermissions4Note(
@@ -29,10 +35,17 @@ contract Web3Entry is Web3EntryBase {
         uint256 noteId,
         address operator,
         uint256 permissionBitMap
-    ) external {
+    ) external override {
         _validateCallerIsCharacterOwner(characterId);
         _validateNoteExists(characterId, noteId);
         operatorsPermission4NoteBitMap[characterId][noteId][operator] = permissionBitMap;
+        emit Events.GrantOperatorPermissions4Note(
+            characterId,
+            noteId,
+            operator,
+            permissionBitMap,
+            block.timestamp
+        );
     }
 
     function checkPermissionByPermissionId(
@@ -77,16 +90,6 @@ contract Web3Entry is Web3EntryBase {
         returns (uint256)
     {
         return operatorsPermissionBitMap[characterId][operator];
-    }
-
-    // functions below are using the new permission check:
-
-    function isContract(address _addr) private returns (bool isContract) {
-        uint32 size;
-        assembly {
-            size := extcodesize(_addr)
-        }
-        return (size > 0);
     }
 
     // opSign permission
