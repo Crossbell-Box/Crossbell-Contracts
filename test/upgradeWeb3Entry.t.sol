@@ -205,19 +205,35 @@ contract UpgradeWeb3Entry is Test, Utils {
         vm.stopPrank();
 
         // check operatorsPermissionBitMap
-        bytes32 operatorsPermissionBitMapSlot = keccak256(
-            abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(25)))
-        );
-
+        // check bob
         bytes32 operatorBitmapSlot = keccak256(
             abi.encodePacked(
-                carol,
+                bytes32bob,
                 (keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(25)))))
             )
         );
-
         bytes32 valueAtOperatorBitmapSlot = vm.load(address(proxyWeb3Entry), operatorBitmapSlot);
-        // assertEq32(valueAtOperatorBitmapSlot, bytes32(OP.DEFAULT_PERMISSION_BITMAP));
-        // TODO check mapping
+        assertEq32(valueAtOperatorBitmapSlot, bytes32(OP.DEFAULT_PERMISSION_BITMAP));
+
+        // check carol
+        operatorBitmapSlot = keccak256(
+            abi.encodePacked(
+                bytes32carol,
+                (keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(25)))))
+            )
+        );
+        valueAtOperatorBitmapSlot = vm.load(address(proxyWeb3Entry), operatorBitmapSlot);
+        assertEq32(valueAtOperatorBitmapSlot, bytes32(OP.OPERATORSIGN_PERMISSION_BITMAP));
+
+        // check bob note permission
+        operatorBitmapSlot = keccak256(
+            abi.encodePacked(
+                uint256(1),
+                (keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(26)))))
+            )
+        );
+        bytes32 noteBitmapSlot = keccak256(abi.encodePacked(bytes32bob, operatorBitmapSlot));
+        bytes32 valueAtNoteBitmapSlot = vm.load(address(proxyWeb3Entry), noteBitmapSlot);
+        assertEq32(valueAtNoteBitmapSlot, bytes32(OP.DEFAULT_NOTE_PERMISSION_BITMAP));
     }
 }
