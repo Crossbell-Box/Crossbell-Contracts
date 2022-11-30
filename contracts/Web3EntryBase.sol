@@ -127,8 +127,6 @@ contract Web3EntryBase is
         uint256 permissionBitMap
     ) external virtual {}
 
-    // TODO add an array to store all operators and offer a method to query
-
     function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view virtual {}
 
     function _validateCallerIsLinklistOwnerOrOperator(uint256 tokenId) internal view virtual {}
@@ -406,24 +404,6 @@ contract Web3EntryBase is
 
     function getLinklistContract() external view returns (address) {
         return _linklist;
-    }
-
-    /**
-     * @dev Operator lists will be reset to blank before the characters are transferred in order to grant the
-      whole control power to receivers of character transfers.
-     */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual override {
-        // TODO remove all operator permissions
-
-        if (_primaryCharacterByAddress[from] != 0) {
-            _primaryCharacterByAddress[from] = 0;
-        }
-
-        super._beforeTokenTransfer(from, to, tokenId);
     }
 
     function _validateCallerIsCharacterOwner(uint256 characterId) internal view {
