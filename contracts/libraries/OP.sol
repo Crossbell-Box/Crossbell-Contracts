@@ -9,14 +9,7 @@ so the bitmap looks like this:
 |   opSync   |   opSign   |   future   |  owner   |
 |------------|------------|------------|----------|
 |255------236|235------176|175-------21|20-------0|
-
- * @dev For most cases, we recommand simply granting operators the DEFAULT_PERMISSION_BITMAP, 
-        which gives operator full permissions aside from owner permissions, but for 
-        those who're more aware of access control, the custom permission bitmap is all yours, 
-        and you can find every customizable methods below.
-        
-        `OPERATORSIGN_PERMISSION_BITMAP` have access to all methods in `OPERATORSIGN_PERMISSION_BITMAP` 
-        plus more permissions for signing.
+    * @notice every uint8 stands for a single method in Web3Entry.sol.
 */
 library OP {
     // [0,20] for owner permission
@@ -26,7 +19,6 @@ library OP {
     uint8 internal constant REMOVE_OPERATOR = 3;
     uint8 internal constant SET_SOCIAL_TOKEN = 4;
     uint8 internal constant GRANT_OPERATOR_PERMISSIONS = 5;
-    uint256 internal constant DEFAULT_PERMISSION_BITMAP = ~uint256(0) << 20; // default permission sets all owner permissions to false
 
     // [21, 175] are reserved for future
 
@@ -60,11 +52,8 @@ library OP {
     uint8 internal constant POST_NOTE_FOR_ERC721 = 202;
     uint8 internal constant POST_NOTE_FOR_ANY_URI = 203;
 
-    uint256 internal constant OPERATORSIGN_PERMISSION_BITMAP = ~(~uint256(0) >> 80);
-
     // [236, 255] for operator sync permissio
     uint8 internal constant POST_NOTE = 236;
-    uint256 internal constant OPERATORSYNC_PERMISSION_BITMAP = ~(~uint256(0) >> 20);
 
     // below are permissions for note
     uint8 internal constant NOTE_SET_LINK_MODULE_FOR_NOTE = 1;
@@ -72,5 +61,4 @@ library OP {
     uint8 internal constant NOTE_SET_NOTE_URI = 3;
     uint8 internal constant NOTE_LOCK_NOTE = 4;
     uint8 internal constant NOTE_DELETE_NOTE = 5;
-    uint256 internal constant DEFAULT_NOTE_PERMISSION_BITMAP = ~(~uint256(0) << 6);
 }

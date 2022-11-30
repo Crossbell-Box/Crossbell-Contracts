@@ -14,6 +14,7 @@ import "./helpers/utils.sol";
 import "./helpers/SetUp.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "../contracts/libraries/OP.sol";
+import "../contracts/libraries/DEFAULT_OP.sol";
 
 contract OperatorTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
@@ -35,16 +36,16 @@ contract OperatorTest is Test, SetUp, Utils {
         emit Events.GrantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.DEFAULT_PERMISSION_BITMAP,
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP,
             block.timestamp
         );
 
-        // alice set bob as her operator with DEFAULT_PERMISSION_BITMAP
+        // alice set bob as her operator with DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.DEFAULT_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
     }
 
@@ -55,7 +56,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.DEFAULT_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
     }
 
@@ -64,7 +65,7 @@ contract OperatorTest is Test, SetUp, Utils {
         emit Events.GrantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.DEFAULT_PERMISSION_BITMAP,
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP,
             block.timestamp
         );
 
@@ -72,7 +73,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.DEFAULT_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
 
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
@@ -80,7 +81,7 @@ contract OperatorTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             bob,
-            OP.DEFAULT_NOTE_PERMISSION_BITMAP,
+            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP,
             block.timestamp
         );
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
@@ -88,55 +89,55 @@ contract OperatorTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             bob,
-            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
         );
     }
 
     function testgetOperatorPermissions() public {
-        // alice grant bob DEFAULT_PERMISSION_BITMAP permission
+        // alice grant bob DEFAULT_OP.DEFAULT_PERMISSION_BITMAP permission
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.DEFAULT_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
-            OP.DEFAULT_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
 
-        // alice grant bob OPERATORSIGN_PERMISSION_BITMAP permission
+        // alice grant bob DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP permission
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.OPERATORSIGN_PERMISSION_BITMAP
+            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
         );
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
-            OP.OPERATORSIGN_PERMISSION_BITMAP
+            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
         );
 
-        // alice grant bob OPERATORSYNC_PERMISSION_BITMAP permission
+        // alice grant bob DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP permission
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.OPERATORSYNC_PERMISSION_BITMAP
+            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
         );
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
-            OP.OPERATORSYNC_PERMISSION_BITMAP
+            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
         );
     }
 
     function testCheckPermissionByPermissionId() public {
-        // alice grant bob DEFAULT_PERMISSION_BITMAP permission
+        // alice grant bob DEFAULT_OP.DEFAULT_PERMISSION_BITMAP permission
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.DEFAULT_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
         bool permission = web3Entry.checkPermissionByPermissionId(
             Const.FIRST_CHARACTER_ID,
@@ -155,12 +156,12 @@ contract OperatorTest is Test, SetUp, Utils {
             assert(web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
         }
 
-        // alice grant bob OPERATORSIGN_PERMISSION_BITMAP permission
+        // alice grant bob DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP permission
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.OPERATORSIGN_PERMISSION_BITMAP
+            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
         );
 
         /** 
@@ -179,12 +180,12 @@ contract OperatorTest is Test, SetUp, Utils {
             assert(web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
         }
 
-        // alice grant bob OPERATORSYNC_PERMISSION_BITMAP permission
+        // alice grant bob DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP permission
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.OPERATORSYNC_PERMISSION_BITMAP
+            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
         );
 
         /**
@@ -204,12 +205,12 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testOperatorSyncCan() public {
-        // alice grant bob as OPERATORSYNC_PERMISSION_BITMAP permission
+        // alice grant bob as DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP permission
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.OPERATORSYNC_PERMISSION_BITMAP
+            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
         );
 
         vm.startPrank(bob);
@@ -218,12 +219,12 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testOperatorSignCan() public {
-        // alice grant bob as OPERATORSIGN_PERMISSION_BITMAP permission
+        // alice grant bob as DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP permission
         vm.startPrank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.OPERATORSIGN_PERMISSION_BITMAP
+            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
         );
         vm.stopPrank();
 
@@ -409,12 +410,12 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testOperatorFail() public {
-        // alice set bob as her operator with DEFAULT_PERMISSION_BITMAP
+        // alice set bob as her operator with DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.DEFAULT_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
 
         // default operator can't setHandle
@@ -432,7 +433,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             carol,
-            OP.DEFAULT_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
 
         // add operator for note
@@ -441,7 +442,7 @@ contract OperatorTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             carol,
-            OP.DEFAULT_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
 
         // set social token
@@ -452,7 +453,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.DEFAULT_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
         vm.stopPrank();
 
@@ -461,7 +462,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.OPERATORSYNC_PERMISSION_BITMAP
+            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
         );
         web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, 0);
         vm.stopPrank();
@@ -471,7 +472,7 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testOperator4NoteCan() public {
-        // alice grant bob as OPERATORSIGN_PERMISSION_BITMAP permission
+        // alice grant bob as DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP permission
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
@@ -479,13 +480,13 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.OPERATORSIGN_PERMISSION_BITMAP
+            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
         );
         web3Entry.grantOperatorPermissions4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             bob,
-            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
         );
         vm.stopPrank();
 
@@ -525,29 +526,28 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testOperator4NoteFail() public {
-        // alice grant bob as OPERATORSIGN_PERMISSION_BITMAP permission
+        // alice grant bob as DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP permission
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
-        ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
 
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.OPERATORSIGN_PERMISSION_BITMAP
+            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
         );
         web3Entry.grantOperatorPermissions4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             bob,
-            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
         );
 
         web3Entry.grantOperatorPermissions4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             carol,
-            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
         );
         vm.stopPrank();
 

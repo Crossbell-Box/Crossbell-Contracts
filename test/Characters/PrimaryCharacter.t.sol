@@ -13,6 +13,11 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
     address public bob = address(0x2222);
     address public carol = address(0x3333);
 
+    uint256 DEFAULT_PERMISSION_BITMAP = ~uint256(0) << 20;
+    uint256 OPERATORSIGN_PERMISSION_BITMAP = ~uint256(0) << 176;
+    uint256 OPERATORSYNC_PERMISSION_BITMAP = ~uint256(0) << 236;
+    uint256 DEFAULT_NOTE_PERMISSION_BITMAP = ~uint256(0) >> 250;
+
     function setUp() public {
         _setUp();
     }
@@ -39,11 +44,11 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             carol,
-            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+            DEFAULT_NOTE_PERMISSION_BITMAP
         );
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, carol),
-            OP.DEFAULT_NOTE_PERMISSION_BITMAP
+            DEFAULT_NOTE_PERMISSION_BITMAP
         );
         web3Entry.transferFrom(bob, alice, Const.FIRST_NOTE_ID);
         assertEq(web3Entry.getPrimaryCharacterId(bob), 0);

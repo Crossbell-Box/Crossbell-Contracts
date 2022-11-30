@@ -29,7 +29,7 @@ contract Web3Entry is Web3EntryBase {
         uint256 permissionBitMap
     ) external override {
         _validateCallerIsCharacterOwner(characterId);
-        if (permissionBitMap == 0){
+        if (permissionBitMap == 0) {
             _operatorsListByCharacter[characterId].remove(operator);
         } else {
             _operatorsListByCharacter[characterId].add(operator);
@@ -71,24 +71,27 @@ contract Web3Entry is Web3EntryBase {
 
     /**
      * @notice Check if an address have the permission of a method(by permissionId) over a character.
+     * @param permissionId The permissionId of a method. All operator methods can be found in OP.sol.
      */
     function checkPermissionByPermissionId(
         uint256 characterId,
         address operator,
         uint256 permissionId
-    ) public returns (bool) {
+    ) public view returns (bool) {
         return ((operatorsPermissionBitMap[characterId][operator] >> permissionId) & 1) == 1;
     }
 
     /**
      * @notice Check if an address have the permission of a method(by permissionId) over a note.
+     * @param noteId The ID of the note that you want to control.
+     * @param permissionId The permissionId of a note method. All note methods can be found in OP.sol.
      */
     function checkPermission4NoteByPermissionId(
         uint256 characterId,
         uint256 noteId,
         address operator,
         uint256 permissionId
-    ) public returns (bool) {
+    ) public view returns (bool) {
         return (((operatorsPermission4NoteBitMap[characterId][noteId][operator] >> permissionId) &
             1) ==
             1 ||
@@ -100,15 +103,16 @@ contract Web3Entry is Web3EntryBase {
                 keeping records of keys of `operatorsPermissionBitMap`. Thus, addresses queried by this function
                 not always have operator permissions. Keep in mind don't use this function to check
                  authorizations!!!
+        * @return All keys of operatorsPermission4NoteBitMap.
      */
-    function getOperatorList(uint256 characterId) public returns (address[] memory) {
+    function getOperatorList(uint256 characterId) public view returns (address[] memory) {
         return _operatorsListByCharacter[characterId].values();
     }
 
     /**
          * @notice Migrates operators permissions to operatorsAuthBitMap
          * @dev `addOpertor`, `removeOperator`, `setOperator` will all be deprecated soon. We recommand to use 
-                `migrateOperator` to grant DEFAULT_PERMISSION_BITMAP to all previous operators.
+                `migrateOperator` to grant OPERATOR_SIGN_PERMISSION_BITMAP to all previous operators.
      */
     function migrateOperator(uint256[] calldata characterIds) external {
         // set default permissions bitmap
@@ -116,18 +120,31 @@ contract Web3Entry is Web3EntryBase {
             uint256 characterId = characterIds[i];
             address operator = _operatorByCharacter[characterId];
             if (operator != address(0)) {
-                operatorsPermissionBitMap[characterId][operator] = OP.DEFAULT_PERMISSION_BITMAP;
+                operatorsPermissionBitMap[characterId][operator] = ~uint256(0) << 176;
+                emit Events.GrantOperatorPermissions(
+                    characterId,
+                    operator,
+                    ~uint256(0) << 176,
+                    block.timestamp
+                );
             }
 
             address[] memory operators = _operatorsByCharacter[characterId].values();
             for (uint256 j = 0; j < operators.length; ++j) {
-                operatorsPermissionBitMap[characterId][operators[j]] = OP.DEFAULT_PERMISSION_BITMAP;
+                operatorsPermissionBitMap[characterId][operators[j]] = ~uint256(0) << 176;
+                emit Events.GrantOperatorPermissions(
+                    characterId,
+                    operators[j],
+                    ~uint256(0) << 176,
+                    block.timestamp
+                );
             }
         }
     }
 
     /**
      * @notice Check permission bitmap of an opertor.
+     * @return The permission bitmap of this operator.
      */
     function getOperatorPermissions(uint256 characterId, address operator)
         external
@@ -521,7 +538,7 @@ contract Web3Entry is Web3EntryBase {
         return noteId;
     }
 
-    function _validateCallerPermission(uint256 characterId, uint256 permissionId) internal {
+    function _validateCallerPermission(uint256 characterId, uint256 permissionId) internal view {
         address owner = ownerOf(characterId);
         require(
             msg.sender == owner ||
@@ -535,7 +552,7 @@ contract Web3Entry is Web3EntryBase {
         uint256 characterId,
         uint256 noteId,
         uint256 permissionId
-    ) internal {
+    ) internal view {
         address owner = ownerOf(characterId);
         require(
             msg.sender == owner ||
@@ -558,7 +575,9 @@ contract Web3Entry is Web3EntryBase {
         uint256 operatorListLength = _operatorsListByCharacter[tokenId].values().length;
         for (uint256 i = 0; i < operatorListLength; i++) {
             operatorsPermissionBitMap[tokenId][_operatorsListByCharacter[tokenId].values()[i]] = 0;
-            _operatorsListByCharacter[tokenId].remove(_operatorsListByCharacter[tokenId].values()[i]);
+            _operatorsListByCharacter[tokenId].remove(
+                _operatorsListByCharacter[tokenId].values()[i]
+            );
         }
 
         if (_primaryCharacterByAddress[from] != 0) {

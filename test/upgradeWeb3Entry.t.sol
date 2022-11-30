@@ -31,6 +31,11 @@ contract UpgradeWeb3Entry is Test, Utils {
     address public mintNFT = address(0x333);
     address public resolver = address(0x444);
 
+    uint256 DEFAULT_PERMISSION_BITMAP = ~uint256(0) << 20;
+    uint256 OPERATORSIGN_PERMISSION_BITMAP = ~uint256(0) << 176;
+    uint256 OPERATORSYNC_PERMISSION_BITMAP = ~uint256(0) << 236;
+    uint256 DEFAULT_NOTE_PERMISSION_BITMAP = ~uint256(0) >> 250;
+
     function setUp() public {
         web3EntryBaseImpl = new Web3EntryBase();
         proxyWeb3Entry = new TransparentUpgradeableProxy(address(web3EntryBaseImpl), admin, "");
