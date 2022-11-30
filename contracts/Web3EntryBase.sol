@@ -31,6 +31,8 @@ contract Web3EntryBase is
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using EnumerableSet for EnumerableSet.AddressSet;
 
+    uint256 internal constant REVISION = 4;
+
     function initialize(
         string calldata _name,
         string calldata _symbol,
@@ -112,32 +114,6 @@ contract Web3EntryBase is
         emit Events.SetPrimaryCharacterId(msg.sender, characterId, oldCharacterId);
     }
 
-    function setOperator(uint256 characterId, address operator) external {
-        _validateCallerIsCharacterOwner(characterId);
-        _setOperator(characterId, operator);
-    }
-
-    /**
-     * @notice Designate addresses as operators of your character so that it can send transactions on behalf
-      of your characters(e.g. post notes or follow someone). This a high risk operation, so take special 
-      attention and make sure the addresses you input is familiar to you.
-     */
-    function addOperator(uint256 characterId, address operator) external {
-        // set default permissions bitmap
-        _validateCallerIsCharacterOwner(characterId);
-        _addOperator(characterId, operator);
-    }
-
-    /**
-     * @notice Cancel authorization on operators and remove them from operator list.
-     */
-    function removeOperator(uint256 characterId, address operator) external {
-        _validateCallerIsCharacterOwner(characterId);
-        _removeOperator(characterId, operator); // TODO: remove
-        // clear all permissions
-        // operatorsPermissionBitMap[characterId][operator] = 0;
-    }
-
     function grantOperatorPermissions(
         uint256 characterId,
         address operator,
@@ -151,42 +127,13 @@ contract Web3EntryBase is
         uint256 permissionBitMap
     ) external virtual {}
 
-    /**
-     * @notice Check if an address is the operator of a character.
-     * @dev `isOperator` is compatible with operators set by old `setOperator`, which is deprected and will
-      be disabled in later updates. 
-     */
-    function isOperator(uint256 characterId, address operator) external view returns (bool) {
-        bool inOperator = _operatorByCharacter[characterId] == operator;
-        bool inOpertors = _operatorsByCharacter[characterId].contains(operator);
-        return inOperator || inOpertors;
-    }
-
-    /**
-     * @notice Get operator addresses of a character.
-     * @dev `getOperators` returns operators in _operatorsByCharacter, but doesn't return 
-     _operatorByCharacter, which is deprected and will be disabled in later updates.
-     */
-    function getOperators(uint256 characterId) external view returns (address[] memory) {
-        return _operatorsByCharacter[characterId].values();
-    }
-
-    function _addOperator(uint256 characterId, address operator) internal {
-        _operatorsByCharacter[characterId].add(operator);
-        emit Events.AddOperator(characterId, operator, block.timestamp);
-    }
-
-    function _removeOperator(uint256 characterId, address operator) internal {
-        _operatorsByCharacter[characterId].remove(operator);
-        emit Events.RemoveOperator(characterId, operator, block.timestamp);
-    }
+    // TODO add an array to store all operators and offer a method to query
 
     function _validateCallerIsCharacterOwnerOrOperator(uint256 characterId) internal view virtual {}
 
     function _validateCallerIsLinklistOwnerOrOperator(uint256 tokenId) internal view virtual {}
 
     // opSign permission
-    // id = 177
     function setLinklistUri(uint256 linklistId, string calldata uri) external virtual {}
 
     function linkCharacter(DataTypes.linkCharacterData calldata vars) external virtual {}
@@ -258,41 +205,6 @@ contract Web3EntryBase is
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external virtual {}
 
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external virtual {}
-
-    /*
-    function linkCharacterLink(
-        uint256 fromCharacterId,
-        DataTypes.CharacterLinkStruct calldata linkData,
-        bytes32 linkType
-    ) external {
-        _validateCallerIsCharacterOwner(fromCharacterId);
-
-        LinkLogic.linkCharacterLink(
-            fromCharacterId,
-            linkData,
-            msg.sender,
-            linkType,
-            _linklist,
-            _attachedLinklists
-        );
-    }
-
-    function unlinkCharacterLink(
-        uint256 fromCharacterId,
-        DataTypes.CharacterLinkStruct calldata linkData,
-        bytes32 linkType
-    ) external {
-        _validateCallerIsCharacterOwner(fromCharacterId);
-
-        LinkLogic.unlinkCharacterLink(
-            fromCharacterId,
-            linkData,
-            linkType,
-            _linklist,
-            _attachedLinklists[linkData.fromCharacterId][linkData.linkType]
-        );
-    }
-    */
 
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external virtual {}
 
@@ -452,10 +364,6 @@ contract Web3EntryBase is
         return tokenURI(characterId);
     }
 
-    function getOperator(uint256 characterId) external view returns (address) {
-        return _operatorByCharacter[characterId];
-    }
-
     function getNote(uint256 characterId, uint256 noteId)
         external
         view
@@ -509,24 +417,13 @@ contract Web3EntryBase is
         address to,
         uint256 tokenId
     ) internal virtual override {
-        _setOperator(tokenId, address(0));
-
-        address[] memory _list = _operatorsByCharacter[tokenId].values();
-        for (uint256 index = 0; index < _list.length; index++) {
-            address _value = _list[index];
-            _removeOperator(tokenId, _value);
-        }
+        // TODO remove all operator permissions
 
         if (_primaryCharacterByAddress[from] != 0) {
             _primaryCharacterByAddress[from] = 0;
         }
 
         super._beforeTokenTransfer(from, to, tokenId);
-    }
-
-    function _setOperator(uint256 characterId, address operator) internal {
-        _operatorByCharacter[characterId] = operator;
-        emit Events.SetOperator(characterId, operator, block.timestamp);
     }
 
     function _validateCallerIsCharacterOwner(uint256 characterId) internal view {

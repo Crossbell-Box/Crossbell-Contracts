@@ -24,12 +24,6 @@ interface IWeb3Entry {
 
     function setPrimaryCharacterId(uint256 characterId) external;
 
-    function setOperator(uint256 characterId, address operator) external;
-
-    function addOperator(uint256 characterId, address operator) external;
-
-    function removeOperator(uint256 characterId, address operator) external;
-
     function grantOperatorPermissions(
         uint256 characterId,
         address operator,
@@ -42,10 +36,6 @@ interface IWeb3Entry {
         address operator,
         uint256 permissionBitMap
     ) external;
-
-    function isOperator(uint256 characterId, address operator) external view returns (bool);
-
-    function getOperators(uint256 characterId) external view returns (address[] memory);
 
     function setLinklistUri(uint256 linkListId, string calldata uri) external;
 
@@ -155,8 +145,6 @@ interface IWeb3Entry {
     function getHandle(uint256 characterId) external view returns (string memory);
 
     function getCharacterUri(uint256 characterId) external view returns (string memory);
-
-    function getOperator(uint256 characterId) external view returns (address);
 
     function getNote(uint256 characterId, uint256 noteId)
         external

@@ -111,7 +111,7 @@ contract Web3Entry is Web3EntryBase {
     /**
      * @notice Check permission bitmap of an opertor.
      */
-    function getOperatorPermission(uint256 characterId, address operator)
+    function getOperatorPermissions(uint256 characterId, address operator)
         external
         view
         returns (uint256)
@@ -119,7 +119,6 @@ contract Web3Entry is Web3EntryBase {
         return operatorsPermissionBitMap[characterId][operator];
     }
 
-    // opSign permission
     function _setCharacterUri(uint256 profileId, string memory newUri) public override {
         _validateCallerPermission(profileId, OP.SET_CHARACTER_URI);
         _characterById[profileId].uri = newUri;
@@ -127,7 +126,6 @@ contract Web3Entry is Web3EntryBase {
         emit Events.SetCharacterUri(profileId, newUri);
     }
 
-    // opSign permission
     function setLinklistUri(uint256 linklistId, string calldata uri) external override {
         uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
         _validateCallerPermission(ownerCharacterId, OP.SET_LINK_LIST_URI);
@@ -135,7 +133,6 @@ contract Web3Entry is Web3EntryBase {
         ILinklist(_linklist).setUri(linklistId, uri);
     }
 
-    // opSign permission
     function linkCharacter(DataTypes.linkCharacterData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
         _validateCharacterExists(vars.toCharacterId);
@@ -152,7 +149,6 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
-    // opSign permission
     function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
 
@@ -164,7 +160,6 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
-    // opSign permission
     function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars)
         external
         override
@@ -173,7 +168,6 @@ contract Web3Entry is Web3EntryBase {
         _createThenLinkCharacter(vars.fromCharacterId, vars.to, vars.linkType, "0x");
     }
 
-    // opSign permission
     function linkNote(DataTypes.linkNoteData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_NOTE);
         _validateNoteExists(vars.toCharacterId, vars.toNoteId);
@@ -187,14 +181,12 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
-    // opSign permission
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_NOTE);
 
         LinkLogic.unlinkNote(vars, _linklist, _attachedLinklists);
     }
 
-    // opSign permission
     function linkERC721(DataTypes.linkERC721Data calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ERC721);
         _validateERC721Exists(vars.tokenAddress, vars.tokenId);
@@ -202,7 +194,6 @@ contract Web3Entry is Web3EntryBase {
         LinkLogic.linkERC721(vars, _linklist, _attachedLinklists);
     }
 
-    // opSign permission
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ERC721);
 
@@ -213,14 +204,12 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
-    // opSign permission
     function linkAddress(DataTypes.linkAddressData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ADDRESS);
 
         LinkLogic.linkAddress(vars, _linklist, _attachedLinklists);
     }
 
-    // opSign permission
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ADDRESS);
 
@@ -231,14 +220,12 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
-    // opSign permission
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ANY_URI);
 
         LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists);
     }
 
-    // opSign permission
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ANY_URI);
 
@@ -249,14 +236,12 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
-    // opSign permission
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_LINK_LIST);
 
         LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists);
     }
 
-    // opSign permission
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_LINK_LIST);
 
@@ -267,8 +252,6 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
-    // set link module for his character
-    // opSign permission
     function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars)
         external
         override
@@ -283,7 +266,6 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
-    // opSign permission
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external override {
         _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE);
         _validateCallerPermission4Note(
@@ -302,7 +284,6 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
-    // opSign permission
     function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars)
         external
         override
@@ -320,7 +301,6 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
-    // opSign permission
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external override {
         _validateCallerPermission(vars.characterId, OP.SET_MINT_MODULE_FOR_NOTE);
         _validateCallerPermission4Note(
@@ -339,7 +319,6 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
-    // opSync permission
     function postNote(DataTypes.PostNoteData calldata vars) external override returns (uint256) {
         _validateCallerPermission(vars.characterId, OP.POST_NOTE);
 
@@ -349,7 +328,6 @@ contract Web3Entry is Web3EntryBase {
         return noteId;
     }
 
-    // opSign permission
     function setNoteUri(
         uint256 characterId,
         uint256 noteId,
@@ -361,7 +339,6 @@ contract Web3Entry is Web3EntryBase {
         PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
     }
 
-    // opSign permission
     /**
      * @notice lockNote put a note into a immutable state where no modifications are allowed. You should call this method to announce that this is the final version.
      */
@@ -375,7 +352,6 @@ contract Web3Entry is Web3EntryBase {
         emit Events.LockNote(characterId, noteId);
     }
 
-    // opSign permission
     function deleteNote(uint256 characterId, uint256 noteId) external override {
         _validateCallerPermission(characterId, OP.DELETE_NOTE);
         _validateCallerPermission4Note(characterId, noteId, OP.NOTE_DELETE_NOTE);
@@ -386,7 +362,6 @@ contract Web3Entry is Web3EntryBase {
         emit Events.DeleteNote(characterId, noteId);
     }
 
-    // opSign permission
     function postNote4Character(DataTypes.PostNoteData calldata postNoteData, uint256 toCharacterId)
         external
         override
@@ -410,7 +385,6 @@ contract Web3Entry is Web3EntryBase {
         return noteId;
     }
 
-    // opSign permission
     function postNote4Address(DataTypes.PostNoteData calldata noteData, address ethAddress)
         external
         override
@@ -434,7 +408,6 @@ contract Web3Entry is Web3EntryBase {
         return noteId;
     }
 
-    // opSign permission
     function postNote4Linklist(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
         external
         override
@@ -458,7 +431,6 @@ contract Web3Entry is Web3EntryBase {
         return noteId;
     }
 
-    // opSign permission
     function postNote4Note(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.NoteStruct calldata note
@@ -481,7 +453,6 @@ contract Web3Entry is Web3EntryBase {
         return noteId;
     }
 
-    // opSign permission
     function postNote4ERC721(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.ERC721Struct calldata erc721
@@ -509,7 +480,6 @@ contract Web3Entry is Web3EntryBase {
         return noteId;
     }
 
-    // opSign permission
     function postNote4AnyUri(DataTypes.PostNoteData calldata postNoteData, string calldata uri)
         external
         override

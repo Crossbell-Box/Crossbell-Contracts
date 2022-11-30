@@ -140,12 +140,20 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
         // Only admin role could send character to this contract
         require(hasRole(ADMIN_ROLE, operator), "NewbieVilla: receive unknown character");
         if (data.length == 0) {
-            IWeb3Entry(web3Entry).addOperator(tokenId, operator);
+            IWeb3Entry(web3Entry).grantOperatorPermissions(tokenId, operator, ~(~uint256(0) >> 20));
         } else {
             address selectedOperator = abi.decode(data, (address));
-            IWeb3Entry(web3Entry).addOperator(tokenId, selectedOperator);
+            IWeb3Entry(web3Entry).grantOperatorPermissions(
+                tokenId,
+                selectedOperator,
+                ~(~uint256(0) >> 20)
+            );
         }
-        IWeb3Entry(web3Entry).addOperator(tokenId, xsyncOperator);
+        IWeb3Entry(web3Entry).grantOperatorPermissions(
+            tokenId,
+            xsyncOperator,
+            ~(~uint256(0) >> 20)
+        );
         return IERC721Receiver.onERC721Received.selector;
     }
 }
