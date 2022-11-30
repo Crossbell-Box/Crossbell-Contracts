@@ -10,8 +10,14 @@ so the bitmap looks like this:
 |------------|------------|------------|----------|
 |255------236|235------176|175-------21|20-------0|
 
+ * @dev For most cases, we recommand simply granting operators the DEFAULT_PERMISSION_BITMAP, 
+        which gives operator full permissions aside from owner permissions, but for 
+        those who're more aware of access control, the custom permission bitmap is all yours, 
+        and you can find every customizable methods below.
+        
+        `OPERATORSIGN_PERMISSION_BITMAP` have access to all methods in `OPERATORSIGN_PERMISSION_BITMAP` 
+        plus more permissions for signing.
 */
-
 library OP {
     // [0,20] for owner permission
     uint8 internal constant SET_HANDLE = 0;

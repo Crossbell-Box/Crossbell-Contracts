@@ -69,9 +69,9 @@ contract LinkProfileTest is Test, SetUp, Utils {
     }
 
     function testLinkCharacterFail() public {
-        // NotEnoughPerssion
+        // Web3Entry: Not Enough Perssion
         vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        vm.expectRevert(abi.encodePacked("Web3Entry: Not Enough Perssion"));
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
                 Const.FIRST_CHARACTER_ID,
@@ -166,7 +166,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
         );
 
         // unlink
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        vm.expectRevert(abi.encodePacked("Web3Entry: Not Enough Perssion"));
         vm.prank(bob);
         web3Entry.unlinkCharacter(
             DataTypes.unlinkCharacterData(

@@ -51,7 +51,7 @@ contract OperatorTest is Test, SetUp, Utils {
     function testGrantNoteOpertorPermissionsFail() public {
         // only only owner can grant operator
         vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
@@ -163,12 +163,18 @@ contract OperatorTest is Test, SetUp, Utils {
             OP.OPERATORSIGN_PERMISSION_BITMAP
         );
 
-        // check [0, 174] is set to false, which means `operator-sign` doesn't have owner permission or future permission
+        /** 
+        check [0, 174] is set to false, which means `operator-sign` doesn't have owner
+        permission nor future permission
+        */
         for (uint256 i = 0; i < 176; i++) {
             assert(!web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
         }
 
-        // check [175, 255] is set to true, which means `operator-sign` has both operator-sign and operator-sync permission
+        /** 
+        check [175, 255] is set to true, which means `operator-sign` has both operator-sign
+        and operator-sync permission
+        */
         for (uint256 i = 176; i < 256; i++) {
             assert(web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
         }
@@ -181,12 +187,17 @@ contract OperatorTest is Test, SetUp, Utils {
             OP.OPERATORSYNC_PERMISSION_BITMAP
         );
 
-        // check [0, 174] is set to false, which means `operator-sign` doesn't have owner permission or future permission
+        /**
+        check [0, 174] is set to false, which means `operator-sign` doesn't have owner 
+        permission or future permission
+        */
         for (uint256 i = 0; i < 236; i++) {
             assert(!web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
         }
 
-        // check [175, 255] is set to true, which means `operator-sign` has both operator-sign and operator-sync permission
+        /** check [175, 255] is set to true, which means `operator-sign` has both 
+        operator-sign and operator-sync permission
+        */
         for (uint256 i = 236; i < 256; i++) {
             assert(web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
         }
@@ -407,33 +418,47 @@ contract OperatorTest is Test, SetUp, Utils {
         );
 
         // default operator can't setHandle
-        vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.startPrank(bob);
+        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
         web3Entry.setHandle(Const.FIRST_CHARACTER_ID, "new-handle");
 
         // set primary character id
         // user can only set primary character id to himself
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
         web3Entry.setPrimaryCharacterId(Const.FIRST_CHARACTER_ID);
 
         // add operator
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
         web3Entry.addOperator(Const.FIRST_CHARACTER_ID, address(0x444));
 
         // remove operator
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
         web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, address(0x444));
 
         // set social token
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
         web3Entry.setSocialToken(Const.FIRST_CHARACTER_ID, address(0x132414));
 
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
             OP.DEFAULT_PERMISSION_BITMAP
         );
+        vm.stopPrank();
+
+        // fail after canceling grant
+        vm.startPrank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.OPERATORSYNC_PERMISSION_BITMAP
+        );
+        web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, 0);
+        vm.stopPrank();
+        vm.prank(bob);
+        vm.expectRevert(abi.encodePacked("Web3Entry: Not Enough Perssion"));
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
     }
 
     function testOperator4NoteCan() public {
@@ -520,7 +545,7 @@ contract OperatorTest is Test, SetUp, Utils {
         // // operator can't operate note without grant
         // // operate note 2
         // vm.prank(bob);
-        // vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
+        // vm.expectRevert(abi.encodePacked("Web3Entry: Not Enough PerssionForThisNote"));
         // // setNoteUri
         // web3Entry.setNoteUri(
         //     Const.FIRST_CHARACTER_ID,
@@ -530,7 +555,7 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // granted operator can't operator without note permission
         vm.prank(carol);
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        vm.expectRevert(abi.encodePacked("Web3Entry: Not Enough Perssion"));
         // setNoteUri
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
@@ -547,7 +572,7 @@ contract OperatorTest is Test, SetUp, Utils {
             ~(~uint256(0) << 4)
         );
 
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
+        vm.expectRevert(abi.encodePacked("Web3Entry: Not Enough PerssionForThisNote"));
         vm.prank(bob);
         web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
     }

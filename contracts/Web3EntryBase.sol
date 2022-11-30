@@ -313,7 +313,8 @@ contract Web3EntryBase is
 
     /**
      * @notice Set linkModule for a ERC721 token that you own.
-     * @dev Operators can't setLinkModule4ERC721, because operators are set for characters but erc721 tokens belong to address and not characters.
+     * @dev Operators can't setLinkModule4ERC721, because operators are set for 
+     characters but erc721 tokens belong to address and not characters.
      */
     function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external {
         require(msg.sender == ERC721(vars.tokenAddress).ownerOf(vars.tokenId), "NotERC721Owner");
@@ -329,7 +330,8 @@ contract Web3EntryBase is
 
     /**
      * @notice Set linkModule for an address.
-     * @dev Operators can't setLinkModule4Address, because this linkModule is for addresses and is irrelevan to characters.
+     * @dev Operators can't setLinkModule4Address, because this linkModule is for 
+     addresses and is irrelevan to characters.
      */
     function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external {
         LinkModuleLogic.setLinkModule4Address(
@@ -366,7 +368,8 @@ contract Web3EntryBase is
     ) external virtual {}
 
     /**
-     * @notice lockNote put a note into a immutable state where no modifications are allowed. You should call this method to announce that this is the final version.
+     * @notice lockNote put a note into a immutable state where no modifications are 
+     allowed. You should call this method to announce that this is the final version.
      */
     function lockNote(uint256 characterId, uint256 noteId) external virtual {}
 
@@ -506,11 +509,16 @@ contract Web3EntryBase is
         address to,
         uint256 tokenId
     ) internal virtual override {
-        address[] memory _list = _operatorsByCharacter[tokenId].values();
+        _setOperator(tokenId, address(0));
 
+        address[] memory _list = _operatorsByCharacter[tokenId].values();
         for (uint256 index = 0; index < _list.length; index++) {
             address _value = _list[index];
             _removeOperator(tokenId, _value);
+        }
+
+        if (_primaryCharacterByAddress[from] != 0) {
+            _primaryCharacterByAddress[from] = 0;
         }
 
         super._beforeTokenTransfer(from, to, tokenId);
@@ -525,7 +533,7 @@ contract Web3EntryBase is
         address owner = ownerOf(characterId);
         require(
             msg.sender == owner || (tx.origin == owner && msg.sender == periphery),
-            "NotCharacterOwner"
+            "Web3Entry: Not Character Owner"
         );
     }
 

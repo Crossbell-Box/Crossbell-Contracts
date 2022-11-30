@@ -15,6 +15,11 @@ contract Web3Entry is Web3EntryBase {
     mapping(uint256 => mapping(uint256 => mapping(address => uint256)))
         internal operatorsPermission4NoteBitMap; // slot 26
 
+    /**
+     * @notice Grant an address as an operator and authorize it with cutom permissions.
+     * @param permissionBitMap Bitmap used for finer grained operator permissions controls.
+     * @dev Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol.
+     */
     function grantOperatorPermissions(
         uint256 characterId,
         address operator,
@@ -30,6 +35,14 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
+    /**
+         * @notice Grant an address as an operator and authorize it with cutom permissions for a signle note.
+         * @param permissionBitMap an uint256 bitmap used for finer grained operator permissions controls over notes
+         * @dev Every bit in permissionBitMap stands for a sigle note that this character posted. The notes are 
+                open to all operators who are granted with note permissions, until the Permissions4Note are set.
+                With grantOperatorPermissions4Note, users can restrict permissions on individual notes, for example:
+                I authorize bob to set uri for my notes, but only for my third notes(noteId = 3).
+     */
     function grantOperatorPermissions4Note(
         uint256 characterId,
         uint256 noteId,
@@ -48,6 +61,9 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
+    /**
+     * @notice Check if an address have the permission of a method(by permissionId) over a character.
+     */
     function checkPermissionByPermissionId(
         uint256 characterId,
         address operator,
@@ -56,6 +72,9 @@ contract Web3Entry is Web3EntryBase {
         return ((operatorsPermissionBitMap[characterId][operator] >> permissionId) & 1) == 1;
     }
 
+    /**
+     * @notice Check if an address have the permission of a method(by permissionId) over a note.
+     */
     function checkPermission4NoteByPermissionId(
         uint256 characterId,
         uint256 noteId,
@@ -68,7 +87,11 @@ contract Web3Entry is Web3EntryBase {
             operatorsPermission4NoteBitMap[characterId][noteId][operator] == 0);
     }
 
-    // migrateOperator migrates operators permissions to operatorsAuthBitMap
+    /**
+         * @notice Migrates operators permissions to operatorsAuthBitMap
+         * @dev `addOpertor`, `removeOperator`, `setOperator` will all be deprecated soon. We recommand to use 
+                `migrateOperator` to grant DEFAULT_PERMISSION_BITMAP to all previous operators.
+     */
     function migrateOperator(uint256[] calldata characterIds) external {
         // set default permissions bitmap
         for (uint256 i = 0; i < characterIds.length; ++i) {
@@ -85,6 +108,9 @@ contract Web3Entry is Web3EntryBase {
         }
     }
 
+    /**
+     * @notice Check permission bitmap of an opertor.
+     */
     function getOperatorPermission(uint256 characterId, address operator)
         external
         view
@@ -94,7 +120,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 176
     function _setCharacterUri(uint256 profileId, string memory newUri) public override {
         _validateCallerPermission(profileId, OP.SET_CHARACTER_URI);
         _characterById[profileId].uri = newUri;
@@ -103,7 +128,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 177
     function setLinklistUri(uint256 linklistId, string calldata uri) external override {
         uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
         _validateCallerPermission(ownerCharacterId, OP.SET_LINK_LIST_URI);
@@ -112,7 +136,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 178
     function linkCharacter(DataTypes.linkCharacterData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
         _validateCharacterExists(vars.toCharacterId);
@@ -130,7 +153,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 179
     function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
 
@@ -143,7 +165,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 180
     function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars)
         external
         override
@@ -153,7 +174,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 181
     function linkNote(DataTypes.linkNoteData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_NOTE);
         _validateNoteExists(vars.toCharacterId, vars.toNoteId);
@@ -168,7 +188,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 182
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_NOTE);
 
@@ -176,7 +195,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 183
     function linkERC721(DataTypes.linkERC721Data calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ERC721);
         _validateERC721Exists(vars.tokenAddress, vars.tokenId);
@@ -185,7 +203,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 184
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ERC721);
 
@@ -197,7 +214,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 185
     function linkAddress(DataTypes.linkAddressData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ADDRESS);
 
@@ -205,7 +221,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 186
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ADDRESS);
 
@@ -217,7 +232,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 187
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ANY_URI);
 
@@ -225,7 +239,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 188
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ANY_URI);
 
@@ -237,7 +250,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 189
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_LINK_LIST);
 
@@ -245,7 +257,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 190
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_LINK_LIST);
 
@@ -258,7 +269,6 @@ contract Web3Entry is Web3EntryBase {
 
     // set link module for his character
     // opSign permission
-    // id = 191
     function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars)
         external
         override
@@ -274,7 +284,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 192
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external override {
         _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE);
         _validateCallerPermission4Note(
@@ -294,7 +303,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 194
     function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars)
         external
         override
@@ -313,7 +321,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 195
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external override {
         _validateCallerPermission(vars.characterId, OP.SET_MINT_MODULE_FOR_NOTE);
         _validateCallerPermission4Note(
@@ -333,7 +340,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSync permission
-    // id = 236
     function postNote(DataTypes.PostNoteData calldata vars) external override returns (uint256) {
         _validateCallerPermission(vars.characterId, OP.POST_NOTE);
 
@@ -344,7 +350,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 196
     function setNoteUri(
         uint256 characterId,
         uint256 noteId,
@@ -357,7 +362,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 197
     /**
      * @notice lockNote put a note into a immutable state where no modifications are allowed. You should call this method to announce that this is the final version.
      */
@@ -372,7 +376,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 198
     function deleteNote(uint256 characterId, uint256 noteId) external override {
         _validateCallerPermission(characterId, OP.DELETE_NOTE);
         _validateCallerPermission4Note(characterId, noteId, OP.NOTE_DELETE_NOTE);
@@ -384,7 +387,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 199
     function postNote4Character(DataTypes.PostNoteData calldata postNoteData, uint256 toCharacterId)
         external
         override
@@ -409,7 +411,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 200
     function postNote4Address(DataTypes.PostNoteData calldata noteData, address ethAddress)
         external
         override
@@ -434,7 +435,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 201
     function postNote4Linklist(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
         external
         override
@@ -459,7 +459,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 202
     function postNote4Note(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.NoteStruct calldata note
@@ -483,7 +482,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 203
     function postNote4ERC721(
         DataTypes.PostNoteData calldata postNoteData,
         DataTypes.ERC721Struct calldata erc721
@@ -512,7 +510,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     // opSign permission
-    // id = 204
     function postNote4AnyUri(DataTypes.PostNoteData calldata postNoteData, string calldata uri)
         external
         override
@@ -542,7 +539,7 @@ contract Web3Entry is Web3EntryBase {
             msg.sender == owner ||
                 (tx.origin == owner && msg.sender == periphery) ||
                 checkPermissionByPermissionId(characterId, msg.sender, permissionId),
-            "NotEnoughPerssion"
+            "Web3Entry: Not Enough Perssion"
         );
     }
 
@@ -556,7 +553,7 @@ contract Web3Entry is Web3EntryBase {
             msg.sender == owner ||
                 (tx.origin == owner && msg.sender == periphery) ||
                 checkPermission4NoteByPermissionId(characterId, noteId, msg.sender, permissionId),
-            "NotEnoughPerssionForThisNote"
+            "Web3Entry: Not Enough PerssionForThisNote"
         );
     }
 }
