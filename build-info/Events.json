@@ -9,6 +9,31 @@
         {
           "indexed": true,
           "internalType": "uint256",
+          "name": "characterId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "AddOperator",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
           "name": "linklistId",
           "type": "uint256"
         },
@@ -572,6 +597,31 @@
           "type": "uint256"
         },
         {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "RemoveOperator",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "characterId",
+          "type": "uint256"
+        },
+        {
           "indexed": false,
           "internalType": "string",
           "name": "newUri",
@@ -833,6 +883,31 @@
         }
       ],
       "name": "SetNoteUri",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "characterId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetOperator",
       "type": "event"
     },
     {
@@ -1122,8 +1197,8 @@
       "type": "event"
     }
   ],
-  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122006cc74e910f6c061911379a0709db11dd36f79a0de13a3b4450bdb083bb022b364736f6c634300080a0033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122006cc74e910f6c061911379a0709db11dd36f79a0de13a3b4450bdb083bb022b364736f6c634300080a0033",
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220eef6deb3bf349f961e977f73d434d52a5b25fede8a6f0667fad771619605038664736f6c634300080a0033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220eef6deb3bf349f961e977f73d434d52a5b25fede8a6f0667fad771619605038664736f6c634300080a0033",
   "linkReferences": {},
   "deployedLinkReferences": {}
 }

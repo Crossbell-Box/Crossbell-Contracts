@@ -321,13 +321,13 @@ contract OperatorTest is Test, SetUp, Utils {
         );
 
         // setLinkModule4Character
-        web3Entry.setLinkModule4Character(
-            DataTypes.setLinkModule4CharacterData(
-                Const.FIRST_CHARACTER_ID,
-                address(linkModule4Character),
-                new bytes(0)
-            )
-        );
+        //        web3Entry.setLinkModule4Character(
+        //            DataTypes.setLinkModule4CharacterData(
+        //                Const.FIRST_CHARACTER_ID,
+        //                address(linkModule4Character),
+        //                new bytes(0)
+        //            )
+        //        );
 
         // setLinkModule4Linklist
         // i use the address(linkModule4Character) for link module(cuz the logic here is the same)
@@ -462,7 +462,7 @@ contract OperatorTest is Test, SetUp, Utils {
         // alice grant bob as DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP permission
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
-        ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
+        //        ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
 
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,

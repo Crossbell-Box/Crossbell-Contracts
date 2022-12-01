@@ -79,7 +79,7 @@ interface IWeb3Entry {
 
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external;
 
-    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external;
+    //    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external;
 
     //    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external;
 

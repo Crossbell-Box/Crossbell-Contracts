@@ -197,10 +197,10 @@ contract Web3EntryBase is
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata) external virtual {}
 
     // set link module for his character
-    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata)
-        external
-        virtual
-    {}
+    //    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata)
+    //        external
+    //        virtual
+    //    {}
 
     //    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata) external virtual {}
 

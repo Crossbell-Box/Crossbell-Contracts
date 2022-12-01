@@ -33,6 +33,12 @@ library Events {
         address indexed tokenAddress
     );
 
+    event SetOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
+
+    event AddOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
+
+    event RemoveOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
+
     event GrantOperatorPermissions(
         uint256 indexed characterId,
         address indexed operator,
