@@ -140,18 +140,6 @@ function unlinkLinklist(struct DataTypes.unlinkLinklistData vars) external
 function setLinkModule4Character(struct DataTypes.setLinkModule4CharacterData vars) external
 ```
 
-### setLinkModule4Note
-
-```solidity
-function setLinkModule4Note(struct DataTypes.setLinkModule4NoteData vars) external
-```
-
-### setLinkModule4ERC721
-
-```solidity
-function setLinkModule4ERC721(struct DataTypes.setLinkModule4ERC721Data vars) external
-```
-
 ### setLinkModule4Address
 
 ```solidity
@@ -336,5 +324,29 @@ function getLinklistContract() external view returns (address)
 
 ```solidity
 function getRevision() external pure returns (uint256)
+```
+
+### isOperator
+
+```solidity
+function isOperator(uint256 characterId, address operator) external view returns (bool)
+```
+
+### addOperator
+
+```solidity
+function addOperator(uint256 characterId, address operator) external
+```
+
+### removeOperator
+
+```solidity
+function removeOperator(uint256 characterId, address operator) external
+```
+
+### setOperator
+
+```solidity
+function setOperator(uint256 characterId, address operator) external
 ```
 

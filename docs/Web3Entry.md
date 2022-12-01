@@ -2,16 +2,16 @@
 
 ## Web3Entry
 
-### operatorsPermissionBitMap
+### _operatorsPermissionBitMap
 
 ```solidity
-mapping(uint256 => mapping(address => uint256)) operatorsPermissionBitMap
+mapping(uint256 => mapping(address => uint256)) _operatorsPermissionBitMap
 ```
 
-### operatorsPermission4NoteBitMap
+### _operatorsPermission4NoteBitMap
 
 ```solidity
-mapping(uint256 => mapping(uint256 => mapping(address => uint256))) operatorsPermission4NoteBitMap
+mapping(uint256 => mapping(uint256 => mapping(address => uint256))) _operatorsPermission4NoteBitMap
 ```
 
 ### grantOperatorPermissions
@@ -20,7 +20,7 @@ mapping(uint256 => mapping(uint256 => mapping(address => uint256))) operatorsPer
 function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) external
 ```
 
-Grant an address as an operator and authorize it with cutom permissions.
+Grant an address as an operator and authorize it with custom permissions.
 
 _Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol._
 
@@ -38,9 +38,12 @@ _Every bit in permissionBitMap stands for a corresponding method in Web3Entry. m
 function grantOperatorPermissions4Note(uint256 characterId, uint256 noteId, address operator, uint256 permissionBitMap) external
 ```
 
-Grant an address as an operator and authorize it with cutom permissions for a signle note.
+Grant an address as an operator and authorize it with custom permissions for a single note.
 
-_Every bit in permissionBitMap stands for a sigle note that this character posted. The notes are open to all operators who are granted with note permissions by default, until the Permissions4Note are set. With grantOperatorPermissions4Note, users can restrict permissions on individual notes, for example: I authorize bob to set uri for my notes, but only for my third notes(noteId = 3)._
+_Every bit in permissionBitMap stands for a single note that this character posted.
+The notes are open to all operators who are granted with note permissions by default, until the Permissions4Note are set.
+With grantOperatorPermissions4Note, users can restrict permissions on individual notes,
+for example: I authorize bob to set uri for my notes, but only for my third notes(noteId = 3)._
 
 #### Parameters
 
@@ -57,10 +60,10 @@ _Every bit in permissionBitMap stands for a sigle note that this character poste
 function getOperators(uint256 characterId) external view returns (address[])
 ```
 
-Get operator list of a character. This operatorList has only a sole purpose, whic is
-        keeping records of keys of `operatorsPermissionBitMap`. Thus, addresses queried by this function
-        not always have operator permissions. Keep in mind don't use this function to check
-        authorizations!!!
+Get operator list of a character. This operatorList has only a sole purpose, which is
+keeping records of keys of `operatorsPermissionBitMap`. Thus, addresses queried by this function
+not always have operator permissions. Keep in mind don't use this function to check
+authorizations!!!
 
 #### Parameters
 
@@ -82,14 +85,55 @@ function migrateOperator(uint256[] characterIds) external
 
 Migrates operators permissions to operatorsAuthBitMap
 
-_`addOpertor`, `removeOperator`, `setOperator` will all be deprecated soon. We recommand to use 
-                `migrateOperator` to grant OPERATOR_SIGN_PERMISSION_BITMAP to all previous operators._
+_`addOperator`, `removeOperator`, `setOperator` will all be deprecated soon. We recommend to use
+ `migrateOperator` to grant OPERATOR_SIGN_PERMISSION_BITMAP to all previous operators._
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | characterIds | uint256[] | List of characters to migrate. |
+
+### isOperator
+
+```solidity
+function isOperator(uint256 characterId, address operator) external view returns (bool)
+```
+
+Check if an address is the operator of a character.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | ID of character to query. |
+| operator | address | operator address to query. |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | true if the address is the operator of a character, otherwise false. |
+
+### addOperator
+
+```solidity
+function addOperator(uint256 characterId, address operator) external
+```
+
+### removeOperator
+
+```solidity
+function removeOperator(uint256 characterId, address operator) external
+```
+
+Cancel authorization on operators and remove them from operator list.
+
+### setOperator
+
+```solidity
+function setOperator(uint256 characterId, address operator) external
+```
 
 ### getOperatorPermissions
 
@@ -118,7 +162,7 @@ Get permission bitmap of an opertor.
 function getOperatorPermissions4Note(uint256 characterId, uint256 noteId, address operator) external view returns (uint256)
 ```
 
-Get permission bitmap of an opertor for a note.
+Get permission bitmap of an operator for a note.
 
 #### Parameters
 
@@ -242,12 +286,6 @@ function unlinkLinklist(struct DataTypes.unlinkLinklistData vars) external
 function setLinkModule4Character(struct DataTypes.setLinkModule4CharacterData vars) external
 ```
 
-### setLinkModule4Note
-
-```solidity
-function setLinkModule4Note(struct DataTypes.setLinkModule4NoteData vars) external
-```
-
 ### setMintModule4Note
 
 ```solidity
@@ -341,6 +379,6 @@ function _beforeTokenTransfer(address from, address to, uint256 tokenId) interna
 ```
 
 _Operator lists will be reset to blank before the characters are transferred in order to grant the
-      whole control power to receivers of character transfers.
-      Permissions4Note is left unset, because permissions for notes are always stricter than default._
+whole control power to receivers of character transfers.
+Permissions4Note is left unset, because permissions for notes are always stricter than default._
 

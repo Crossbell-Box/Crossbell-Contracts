@@ -172,28 +172,11 @@ function unlinkLinklist(struct DataTypes.unlinkLinklistData) external virtual
 function setLinkModule4Character(struct DataTypes.setLinkModule4CharacterData) external virtual
 ```
 
-### setLinkModule4Note
-
-```solidity
-function setLinkModule4Note(struct DataTypes.setLinkModule4NoteData) external virtual
-```
-
 ### setLinkModule4Linklist
 
 ```solidity
 function setLinkModule4Linklist(struct DataTypes.setLinkModule4LinklistData) external virtual
 ```
-
-### setLinkModule4ERC721
-
-```solidity
-function setLinkModule4ERC721(struct DataTypes.setLinkModule4ERC721Data vars) external
-```
-
-Set linkModule for a ERC721 token that you own.
-
-_Operators can't setLinkModule4ERC721, because operators are set for 
-     characters but erc721 tokens belong to address and not characters._
 
 ### setLinkModule4Address
 
@@ -423,5 +406,29 @@ function _validateNoteExists(uint256 characterId, uint256 noteId) internal view
 
 ```solidity
 function getRevision() external pure returns (uint256)
+```
+
+### isOperator
+
+```solidity
+function isOperator(uint256 characterId, address operator) external view virtual returns (bool)
+```
+
+### addOperator
+
+```solidity
+function addOperator(uint256 characterId, address operator) external virtual
+```
+
+### removeOperator
+
+```solidity
+function removeOperator(uint256 characterId, address operator) external virtual
+```
+
+### setOperator
+
+```solidity
+function setOperator(uint256 characterId, address operator) external virtual
 ```
 
