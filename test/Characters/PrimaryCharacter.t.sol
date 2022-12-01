@@ -53,7 +53,7 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         web3Entry.transferFrom(bob, alice, Const.FIRST_NOTE_ID);
         assertEq(web3Entry.getPrimaryCharacterId(bob), 0);
         assertEq(web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, carol), 0);
-        assertEq(web3Entry.getOperatorList(Const.FIRST_CHARACTER_ID).length, 0);
+        assertEq(web3Entry.getOperators(Const.FIRST_CHARACTER_ID).length, 0);
         vm.stopPrank();
     }
 

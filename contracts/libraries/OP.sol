@@ -48,9 +48,11 @@ library OP {
     uint8 internal constant POST_NOTE_FOR_NOTE = 201;
     uint8 internal constant POST_NOTE_FOR_ERC721 = 202;
     uint8 internal constant POST_NOTE_FOR_ANY_URI = 203;
+    uint256 internal constant OPERATOR_SIGN_PERMISSION_BITMAP = ~uint256(0) << 176;
 
     // [236, 255] for operator sync permissio
     uint8 internal constant POST_NOTE = 236;
+    uint256 internal constant OPERATOR_SYNC_PERMISSION_BITMAP = uint256(1) << 236;
 
     // below are permissions for note
     uint8 internal constant NOTE_SET_LINK_MODULE_FOR_NOTE = 0;

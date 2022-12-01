@@ -109,7 +109,7 @@ contract Web3EntryBase is
     function grantOperatorPermissions(
         uint256,
         address,
-        uint256 
+        uint256
     ) external virtual {}
 
     function grantOperatorPermissions4Note(
@@ -197,11 +197,17 @@ contract Web3EntryBase is
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata) external virtual {}
 
     // set link module for his character
-    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata) external virtual{}
+    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata)
+        external
+        virtual
+    {}
 
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata) external virtual {}
 
-    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata) external virtual{}
+    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata)
+        external
+        virtual
+    {}
 
     /**
      * @notice Set linkModule for a ERC721 token that you own.
@@ -256,7 +262,7 @@ contract Web3EntryBase is
     function setNoteUri(
         uint256,
         uint256,
-        string calldata 
+        string calldata
     ) external virtual {}
 
     /**
@@ -285,15 +291,17 @@ contract Web3EntryBase is
         returns (uint256)
     {}
 
-    function postNote4Note(
-        DataTypes.PostNoteData calldata,
-        DataTypes.NoteStruct calldata
-    ) external virtual returns (uint256) {}
+    function postNote4Note(DataTypes.PostNoteData calldata, DataTypes.NoteStruct calldata)
+        external
+        virtual
+        returns (uint256)
+    {}
 
-    function postNote4ERC721(
-        DataTypes.PostNoteData calldata,
-        DataTypes.ERC721Struct calldata
-    ) external virtual returns (uint256) {}
+    function postNote4ERC721(DataTypes.PostNoteData calldata, DataTypes.ERC721Struct calldata)
+        external
+        virtual
+        returns (uint256)
+    {}
 
     function postNote4AnyUri(DataTypes.PostNoteData calldata, string calldata)
         external
@@ -313,12 +321,7 @@ contract Web3EntryBase is
         super.burn(tokenId);
     }
 
-    function getOperatorList(uint256)
-        external
-        view
-        virtual
-        returns (address[] memory)
-    {}
+    function getOperators(uint256) external view virtual returns (address[] memory) {}
 
     function getOperatorPermissions4Note(
         uint256,
@@ -326,12 +329,7 @@ contract Web3EntryBase is
         address
     ) external view virtual returns (uint256) {}
 
-    function getOperatorPermissions(uint256, address)
-        external
-        view
-        virtual
-        returns (uint256)
-    {}
+    function getOperatorPermissions(uint256, address) external view virtual returns (uint256) {}
 
     function getPrimaryCharacterId(address account) external view returns (uint256) {
         return _primaryCharacterByAddress[account];
@@ -414,10 +412,6 @@ contract Web3EntryBase is
             msg.sender == owner || (tx.origin == owner && msg.sender == periphery),
             "NotCharacterOwner"
         );
-    }
-
-    function _validateCallerIsLinklistOwner(uint256 tokenId) internal view {
-        require(msg.sender == IERC721(_linklist).ownerOf(tokenId), "NotLinkListOwner");
     }
 
     function _validateCharacterExists(uint256 characterId) internal view {

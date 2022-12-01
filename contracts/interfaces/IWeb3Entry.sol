@@ -83,7 +83,7 @@ interface IWeb3Entry {
 
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external;
 
-    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external;
+    //    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external;
 
     function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external;
 
@@ -131,7 +131,7 @@ interface IWeb3Entry {
         external
         returns (uint256);
 
-    function getOperatorList(uint256 characterId) external view returns (address[] memory);
+    function getOperators(uint256 characterId) external view returns (address[] memory);
 
     function getOperatorPermissions(uint256 characterId, address operator)
         external

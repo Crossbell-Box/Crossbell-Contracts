@@ -392,7 +392,7 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // default operator can't setHandle
         vm.startPrank(bob);
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
         web3Entry.setHandle(Const.FIRST_CHARACTER_ID, "new-handle");
 
         // set primary character id
@@ -401,7 +401,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.setPrimaryCharacterId(Const.FIRST_CHARACTER_ID);
 
         // set social token
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
         web3Entry.setSocialToken(Const.FIRST_CHARACTER_ID, address(0x132414));
 
         // grant operator
@@ -439,7 +439,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, 0);
         vm.stopPrank();
         vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
         // operator with sync permission can't sign
@@ -450,7 +450,7 @@ contract OperatorTest is Test, SetUp, Utils {
             DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
         );
         vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
@@ -541,7 +541,7 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // granted operator can't operator without note permission
         vm.prank(carol);
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
         // setNoteUri
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
@@ -558,7 +558,7 @@ contract OperatorTest is Test, SetUp, Utils {
             ~(~uint256(0) << 4)
         );
 
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPermissionForThisNote"));
         vm.prank(bob);
         web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
     }
