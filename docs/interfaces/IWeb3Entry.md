@@ -38,34 +38,16 @@ function setCharacterUri(uint256 characterId, string newUri) external
 function setPrimaryCharacterId(uint256 characterId) external
 ```
 
-### setOperator
+### grantOperatorPermissions
 
 ```solidity
-function setOperator(uint256 characterId, address operator) external
+function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) external
 ```
 
-### addOperator
+### grantOperatorPermissions4Note
 
 ```solidity
-function addOperator(uint256 characterId, address operator) external
-```
-
-### removeOperator
-
-```solidity
-function removeOperator(uint256 characterId, address operator) external
-```
-
-### isOperator
-
-```solidity
-function isOperator(uint256 characterId, address operator) external view returns (bool)
-```
-
-### getOperators
-
-```solidity
-function getOperators(uint256 characterId) external view returns (address[])
+function grantOperatorPermissions4Note(uint256 characterId, uint256 noteId, address operator, uint256 permissionBitMap) external
 ```
 
 ### setLinklistUri
@@ -164,12 +146,6 @@ function setLinkModule4Character(struct DataTypes.setLinkModule4CharacterData va
 function setLinkModule4Note(struct DataTypes.setLinkModule4NoteData vars) external
 ```
 
-### setLinkModule4Linklist
-
-```solidity
-function setLinkModule4Linklist(struct DataTypes.setLinkModule4LinklistData vars) external
-```
-
 ### setLinkModule4ERC721
 
 ```solidity
@@ -254,6 +230,24 @@ function postNote4ERC721(struct DataTypes.PostNoteData postNoteData, struct Data
 function postNote4AnyUri(struct DataTypes.PostNoteData postNoteData, string uri) external returns (uint256)
 ```
 
+### getOperators
+
+```solidity
+function getOperators(uint256 characterId) external view returns (address[])
+```
+
+### getOperatorPermissions
+
+```solidity
+function getOperatorPermissions(uint256 characterId, address operator) external view returns (uint256)
+```
+
+### getOperatorPermissions4Note
+
+```solidity
+function getOperatorPermissions4Note(uint256 characterId, uint256 noteId, address operator) external view returns (uint256)
+```
+
 ### getPrimaryCharacterId
 
 ```solidity
@@ -288,12 +282,6 @@ function getHandle(uint256 characterId) external view returns (string)
 
 ```solidity
 function getCharacterUri(uint256 characterId) external view returns (string)
-```
-
-### getOperator
-
-```solidity
-function getOperator(uint256 characterId) external view returns (address)
 ```
 
 ### getNote

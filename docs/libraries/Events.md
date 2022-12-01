@@ -50,34 +50,16 @@ event SetHandle(address account, uint256 characterId, string newHandle)
 event SetSocialToken(address account, uint256 characterId, address tokenAddress)
 ```
 
-### SetOperator
-
-```solidity
-event SetOperator(uint256 characterId, address operator, uint256 timestamp)
-```
-
-### AddOperator
-
-```solidity
-event AddOperator(uint256 characterId, address operator, uint256 timestamp)
-```
-
-### RemoveOperator
-
-```solidity
-event RemoveOperator(uint256 characterId, address operator, uint256 timestamp)
-```
-
 ### GrantOperatorPermissions
 
 ```solidity
-event GrantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap, uint256 timestamp)
+event GrantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap)
 ```
 
 ### GrantOperatorPermissions4Note
 
 ```solidity
-event GrantOperatorPermissions4Note(uint256 characterId, uint256 noteId, address operator, uint256 permissionBitMap, uint256 timestamp)
+event GrantOperatorPermissions4Note(uint256 characterId, uint256 noteId, address operator, uint256 permissionBitMap)
 ```
 
 ### SetCharacterUri
