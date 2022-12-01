@@ -430,4 +430,11 @@ contract Web3EntryBase is
     function getRevision() external pure returns (uint256) {
         return REVISION;
     }
+
+    function isOperator(uint256 characterId, address operator)
+        external
+        view
+        virtual
+        returns (bool)
+    {}
 }

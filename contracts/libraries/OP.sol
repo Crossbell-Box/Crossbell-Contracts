@@ -50,7 +50,7 @@ library OP {
     uint8 internal constant POST_NOTE_FOR_ANY_URI = 203;
     uint256 internal constant OPERATOR_SIGN_PERMISSION_BITMAP = ~uint256(0) << 176;
 
-    // [236, 255] for operator sync permissio
+    // [236, 255] for operator sync permission
     uint8 internal constant POST_NOTE = 236;
     uint256 internal constant OPERATOR_SYNC_PERMISSION_BITMAP = uint256(1) << 236;
 

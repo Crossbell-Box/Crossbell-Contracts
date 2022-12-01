@@ -9,14 +9,14 @@ contract Web3Entry is Web3EntryBase {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     // characterId => operator => permissionsBitMap
-    mapping(uint256 => mapping(address => uint256)) internal operatorsPermissionBitMap; // slot 25
+    mapping(uint256 => mapping(address => uint256)) internal _operatorsPermissionBitMap; // slot 25
 
     // characterId => noteId => operator => permissionsBitMap4Note
     mapping(uint256 => mapping(uint256 => mapping(address => uint256)))
-        internal operatorsPermission4NoteBitMap; // slot 26
+        internal _operatorsPermission4NoteBitMap; // slot 26
 
     /**
-     * @notice Grant an address as an operator and authorize it with cutom permissions.
+     * @notice Grant an address as an operator and authorize it with custom permissions.
      * @param characterId ID of your character that you want to authorize.
      * @param operator Address to grant operator permissions to.
      * @param permissionBitMap Bitmap used for finer grained operator permissions controls.
@@ -37,12 +37,15 @@ contract Web3Entry is Web3EntryBase {
     }
 
     /**
-     * @notice Grant an address as an operator and authorize it with cutom permissions for a signle note.
+     * @notice Grant an address as an operator and authorize it with custom permissions for a single note.
      * @param characterId ID of your character that you want to authorize.
      * @param noteId ID of your note that you want to authorize.
      * @param operator Address to grant operator permissions to.
      * @param permissionBitMap an uint256 bitmap used for finer grained operator permissions controls over notes
-     * @dev Every bit in permissionBitMap stands for a sigle note that this character posted. The notes are open to all operators who are granted with note permissions by default, until the Permissions4Note are set. With grantOperatorPermissions4Note, users can restrict permissions on individual notes, for example: I authorize bob to set uri for my notes, but only for my third notes(noteId = 3).
+     * @dev Every bit in permissionBitMap stands for a single note that this character posted.
+     * The notes are open to all operators who are granted with note permissions by default, until the Permissions4Note are set.
+     * With grantOperatorPermissions4Note, users can restrict permissions on individual notes,
+     * for example: I authorize bob to set uri for my notes, but only for my third notes(noteId = 3).
      */
     function grantOperatorPermissions4Note(
         uint256 characterId,
@@ -52,27 +55,27 @@ contract Web3Entry is Web3EntryBase {
     ) external override {
         _validateCallerIsCharacterOwner(characterId);
         _validateNoteExists(characterId, noteId);
-        operatorsPermission4NoteBitMap[characterId][noteId][operator] = permissionBitMap;
+        _operatorsPermission4NoteBitMap[characterId][noteId][operator] = permissionBitMap;
         emit Events.GrantOperatorPermissions4Note(characterId, noteId, operator, permissionBitMap);
     }
 
     /**
-        * @notice Get operator list of a character. This operatorList has only a sole purpose, whic is
-        keeping records of keys of `operatorsPermissionBitMap`. Thus, addresses queried by this function
-        not always have operator permissions. Keep in mind don't use this function to check
-        authorizations!!!
-        * @param characterId ID of your character that you want to check.
-        * @return All keys of operatorsPermission4NoteBitMap.
+     * @notice Get operator list of a character. This operatorList has only a sole purpose, which is
+     * keeping records of keys of `operatorsPermissionBitMap`. Thus, addresses queried by this function
+     * not always have operator permissions. Keep in mind don't use this function to check
+     * authorizations!!!
+     * @param characterId ID of your character that you want to check.
+     * @return All keys of operatorsPermission4NoteBitMap.
      */
     function getOperators(uint256 characterId) external view override returns (address[] memory) {
         return _operatorsByCharacter[characterId].values();
     }
 
     /**
-         * @notice Migrates operators permissions to operatorsAuthBitMap
-         * @param characterIds List of characters to migrate.
-         * @dev `addOpertor`, `removeOperator`, `setOperator` will all be deprecated soon. We recommand to use 
-                `migrateOperator` to grant OPERATOR_SIGN_PERMISSION_BITMAP to all previous operators.
+     * @notice Migrates operators permissions to operatorsAuthBitMap
+     * @param characterIds List of characters to migrate.
+     * @dev `addOperator`, `removeOperator`, `setOperator` will all be deprecated soon. We recommend to use
+     *  `migrateOperator` to grant OPERATOR_SIGN_PERMISSION_BITMAP to all previous operators.
      */
     function migrateOperator(uint256[] calldata characterIds) external {
         // set default permissions bitmap
@@ -95,6 +98,22 @@ contract Web3Entry is Web3EntryBase {
     }
 
     /**
+     * @notice Check if an address is the operator of a character.
+     * @param characterId  ID of character to query.
+     * @param operator operator address to query.
+     * @return true if the address is the operator of a character, otherwise false.
+     */
+    function isOperator(uint256 characterId, address operator)
+        external
+        view
+        override
+        returns (bool)
+    {
+        uint256 bitMap = _operatorsPermissionBitMap[characterId][operator];
+        return (bitMap == 0) ? false : true;
+    }
+
+    /**
      * @notice Get permission bitmap of an opertor.
      * @param characterId ID of character that you want to check.
      * @param operator Address to grant operator permissions to.
@@ -106,11 +125,11 @@ contract Web3Entry is Web3EntryBase {
         override
         returns (uint256)
     {
-        return operatorsPermissionBitMap[characterId][operator];
+        return _operatorsPermissionBitMap[characterId][operator];
     }
 
     /**
-     * @notice Get permission bitmap of an opertor for a note.
+     * @notice Get permission bitmap of an operator for a note.
      * @param characterId ID of character that you want to check.
      * @param noteId ID of note that you want to authorize.
      * @param operator Address to grant operator permissions to.
@@ -121,7 +140,7 @@ contract Web3Entry is Web3EntryBase {
         uint256 noteId,
         address operator
     ) external view override returns (uint256) {
-        return operatorsPermission4NoteBitMap[characterId][noteId][operator];
+        return _operatorsPermission4NoteBitMap[characterId][noteId][operator];
     }
 
     // owner permission
@@ -529,7 +548,7 @@ contract Web3Entry is Web3EntryBase {
         require(
             msg.sender == owner ||
                 (tx.origin == owner && msg.sender == periphery) ||
-                ((operatorsPermissionBitMap[characterId][msg.sender] >> permissionId) & 1) == 1,
+                ((_operatorsPermissionBitMap[characterId][msg.sender] >> permissionId) & 1) == 1,
             "NotEnoughPermission"
         );
     }
@@ -543,10 +562,10 @@ contract Web3Entry is Web3EntryBase {
         require(
             msg.sender == owner ||
                 (tx.origin == owner && msg.sender == periphery) ||
-                (((operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] >>
+                (((_operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] >>
                     permissionId) & 1) ==
                     1 ||
-                    operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] == 0),
+                    _operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] == 0),
             "NotEnoughPermissionForThisNote"
         );
     }
@@ -556,14 +575,14 @@ contract Web3Entry is Web3EntryBase {
         address operator,
         uint256 permissionBitMap
     ) internal {
-        operatorsPermissionBitMap[characterId][operator] = permissionBitMap;
+        _operatorsPermissionBitMap[characterId][operator] = permissionBitMap;
         emit Events.GrantOperatorPermissions(characterId, operator, permissionBitMap);
     }
 
     /**
      * @dev Operator lists will be reset to blank before the characters are transferred in order to grant the
-      whole control power to receivers of character transfers.
-      Permissions4Note is left unset, because permissions for notes are always stricter than default. 
+     * whole control power to receivers of character transfers.
+     * Permissions4Note is left unset, because permissions for notes are always stricter than default.
      */
     function _beforeTokenTransfer(
         address from,
@@ -573,7 +592,7 @@ contract Web3Entry is Web3EntryBase {
         uint256 len = _operatorsByCharacter[tokenId].length();
         address[] memory operators = _operatorsByCharacter[tokenId].values();
         for (uint256 i = 0; i < len; i++) {
-            operatorsPermissionBitMap[tokenId][operators[i]] = 0;
+            _operatorsPermissionBitMap[tokenId][operators[i]] = 0;
             _operatorsByCharacter[tokenId].remove(operators[i]);
         }
 
