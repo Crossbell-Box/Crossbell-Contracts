@@ -131,8 +131,8 @@ contract Web3Entry is Web3EntryBase {
     function setOperator(uint256 characterId, address operator) external override {
         _validateCallerIsCharacterOwner(characterId);
         if (operator == address(0)) {
-            _operatorsByCharacter[characterId].remove(operator);
-            _setOperatorPermissions(characterId, operator, 0);
+            _operatorsByCharacter[characterId].remove(_operatorByCharacter[characterId]);
+            _setOperatorPermissions(characterId, _operatorByCharacter[characterId], 0);
         } else {
             _operatorsByCharacter[characterId].add(operator);
             _setOperatorPermissions(characterId, operator, OP.OPERATOR_SIGN_PERMISSION_BITMAP);

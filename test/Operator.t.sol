@@ -579,4 +579,78 @@ contract OperatorTest is Test, SetUp, Utils {
         // vm.startPrank(bob);
         // web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
     }
+
+    function testSetOperator() public {
+        vm.startPrank(alice);
+        // add an operator
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        emit Events.GrantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, bob);
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
+            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
+
+        // it's difficult to test remove but if you really want to you can add operator in operatorByCharacter storage at web3entry.
+        // remove an operator
+        // expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        // emit Events.GrantOperatorPermissions(
+        //     Const.FIRST_CHARACTER_ID,
+        //     address(1029),
+        //     uint256(0)
+        // );
+        // web3Entry.setOperator(Const.FIRST_CHARACTER_ID, address(0));
+        // assertEq(
+        //     web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, address(1029)),
+        //     uint(0)
+        // );
+    }
+
+    function testSetOperatorFail() public {
+        vm.startPrank(carol);
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
+    }
+
+    function testAddOperator() public {
+        vm.startPrank(alice);
+
+        // add operator
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        emit Events.GrantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            carol,
+            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, carol);
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, carol),
+            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
+        );
+    }
+
+    function testAddOperatorFail() public {
+        vm.startPrank(carol);
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, bob);
+    }
+
+    function testRemoveOperator() public {
+        vm.startPrank(alice);
+        // remove operator
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        emit Events.GrantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, uint256(0));
+        web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, bob);
+        assertEq(web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob), uint256(0));
+    }
+
+    function testRemoveOperatorFail() public {
+        vm.startPrank(carol);
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, bob);
+    }
 }
