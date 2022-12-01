@@ -15,10 +15,8 @@ library OP {
     // [0,20] for owner permission
     uint8 internal constant SET_HANDLE = 0;
     uint8 internal constant SET_PRIMARY_CHARACTER_ID = 1;
-    uint8 internal constant ADD_OPERATOR = 2;
-    uint8 internal constant REMOVE_OPERATOR = 3;
-    uint8 internal constant SET_SOCIAL_TOKEN = 4;
-    uint8 internal constant GRANT_OPERATOR_PERMISSIONS = 5;
+    uint8 internal constant SET_SOCIAL_TOKEN = 2;
+    uint8 internal constant GRANT_OPERATOR_PERMISSIONS = 3;
 
     // [21, 175] are reserved for future
 

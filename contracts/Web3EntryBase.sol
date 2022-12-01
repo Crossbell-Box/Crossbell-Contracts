@@ -86,32 +86,17 @@ contract Web3EntryBase is
     }
 
     // owner permission
-    function setHandle(uint256 characterId, string calldata newHandle) external {
-        _validateCallerIsCharacterOwner(characterId);
-
-        CharacterLogic.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
-    }
+    function setHandle(uint256 characterId, string calldata newHandle) external virtual {}
 
     // owner permission
-    function setSocialToken(uint256 characterId, address tokenAddress) external {
-        _validateCallerIsCharacterOwner(characterId);
+    function setSocialToken(uint256 characterId, address tokenAddress) external virtual {}
 
-        CharacterLogic.setSocialToken(characterId, tokenAddress, _characterById);
-    }
+    // owner permission
+    function setPrimaryCharacterId(uint256 characterId) external virtual {}
 
-    // opSign permission id = 176
+    // opSign permission
     function setCharacterUri(uint256 characterId, string calldata newUri) external {
         _setCharacterUri(characterId, newUri);
-    }
-
-    // owner permission
-    function setPrimaryCharacterId(uint256 characterId) external {
-        _validateCallerIsCharacterOwner(characterId);
-
-        uint256 oldCharacterId = _primaryCharacterByAddress[msg.sender];
-        _primaryCharacterByAddress[msg.sender] = characterId;
-
-        emit Events.SetPrimaryCharacterId(msg.sender, characterId, oldCharacterId);
     }
 
     function grantOperatorPermissions(
@@ -410,7 +395,7 @@ contract Web3EntryBase is
         address owner = ownerOf(characterId);
         require(
             msg.sender == owner || (tx.origin == owner && msg.sender == periphery),
-            "Web3Entry: Not Character Owner"
+            "NotCharacterOwner"
         );
     }
 

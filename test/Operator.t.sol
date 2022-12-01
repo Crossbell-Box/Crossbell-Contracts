@@ -52,7 +52,7 @@ contract OperatorTest is Test, SetUp, Utils {
     function testGrantNoteOpertorPermissionsFail() public {
         // only only owner can grant operator
         vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
@@ -420,24 +420,28 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // default operator can't setHandle
         vm.startPrank(bob);
-        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
         web3Entry.setHandle(Const.FIRST_CHARACTER_ID, "new-handle");
 
         // set primary character id
         // user can only set primary character id to himself
-        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
         web3Entry.setPrimaryCharacterId(Const.FIRST_CHARACTER_ID);
 
-        // add operator
-        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
+        // set social token
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        web3Entry.setSocialToken(Const.FIRST_CHARACTER_ID, address(0x132414));
+
+        // grant operator
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             carol,
             DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
 
-        // add operator for note
-        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
+        // grant operator for note
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         web3Entry.grantOperatorPermissions4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
@@ -445,11 +449,7 @@ contract OperatorTest is Test, SetUp, Utils {
             DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
 
-        // set social token
-        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
-        web3Entry.setSocialToken(Const.FIRST_CHARACTER_ID, address(0x132414));
-
-        vm.expectRevert(abi.encodePacked("Web3Entry: Not Character Owner"));
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
@@ -467,7 +467,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, 0);
         vm.stopPrank();
         vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("Web3Entry: Not Enough Perssion"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
     }
 
@@ -554,7 +554,7 @@ contract OperatorTest is Test, SetUp, Utils {
         // // operator can't operate note without grant
         // // operate note 2
         // vm.prank(bob);
-        // vm.expectRevert(abi.encodePacked("Web3Entry: Not Enough PerssionForThisNote"));
+        // vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
         // // setNoteUri
         // web3Entry.setNoteUri(
         //     Const.FIRST_CHARACTER_ID,
@@ -564,7 +564,7 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // granted operator can't operator without note permission
         vm.prank(carol);
-        vm.expectRevert(abi.encodePacked("Web3Entry: Not Enough Perssion"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
         // setNoteUri
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
@@ -581,7 +581,7 @@ contract OperatorTest is Test, SetUp, Utils {
             ~(~uint256(0) << 4)
         );
 
-        vm.expectRevert(abi.encodePacked("Web3Entry: Not Enough PerssionForThisNote"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
         vm.prank(bob);
         web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
     }

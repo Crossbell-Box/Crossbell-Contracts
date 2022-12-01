@@ -143,7 +143,7 @@ contract Web3Entry is Web3EntryBase {
     }
 
     /**
-     * @notice Check permission bitmap of an opertor.
+     * @notice Get permission bitmap of an opertor.
      * @return The permission bitmap of this operator.
      */
     function getOperatorPermissions(uint256 characterId, address operator)
@@ -152,6 +152,30 @@ contract Web3Entry is Web3EntryBase {
         returns (uint256)
     {
         return operatorsPermissionBitMap[characterId][operator];
+    }
+
+    // owner permission
+    function setHandle(uint256 characterId, string calldata newHandle) external override {
+        _validateCallerPermission(characterId, OP.SET_HANDLE);
+
+        CharacterLogic.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
+    }
+
+    // owner permission
+    function setSocialToken(uint256 characterId, address tokenAddress) external override {
+        _validateCallerPermission(characterId, OP.SET_SOCIAL_TOKEN);
+
+        CharacterLogic.setSocialToken(characterId, tokenAddress, _characterById);
+    }
+
+    // owner permission
+    function setPrimaryCharacterId(uint256 characterId) external override {
+        _validateCallerPermission(characterId, OP.SET_PRIMARY_CHARACTER_ID);
+
+        uint256 oldCharacterId = _primaryCharacterByAddress[msg.sender];
+        _primaryCharacterByAddress[msg.sender] = characterId;
+
+        emit Events.SetPrimaryCharacterId(msg.sender, characterId, oldCharacterId);
     }
 
     function _setCharacterUri(uint256 profileId, string memory newUri) public override {
@@ -544,7 +568,7 @@ contract Web3Entry is Web3EntryBase {
             msg.sender == owner ||
                 (tx.origin == owner && msg.sender == periphery) ||
                 checkPermissionByPermissionId(characterId, msg.sender, permissionId),
-            "Web3Entry: Not Enough Perssion"
+            "NotEnoughPerssion"
         );
     }
 
@@ -558,7 +582,7 @@ contract Web3Entry is Web3EntryBase {
             msg.sender == owner ||
                 (tx.origin == owner && msg.sender == periphery) ||
                 checkPermission4NoteByPermissionId(characterId, noteId, msg.sender, permissionId),
-            "Web3Entry: Not Enough PerssionForThisNote"
+            "NotEnoughPerssionForThisNote"
         );
     }
 

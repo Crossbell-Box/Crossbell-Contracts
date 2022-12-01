@@ -39,7 +39,7 @@ contract ApprovalLinkModule4Character is ILinkModule4Character, ModuleBase {
     ) external {
         require(addresses.length == toApprove.length, "InitParamsInvalid");
         address owner = IERC721(Web3Entry).ownerOf(characterId);
-        require(msg.sender == owner, "Web3Entry: Not Character Owner");
+        require(msg.sender == owner, "NotCharacterOwner");
 
         uint256 addressesLength = addresses.length;
         for (uint256 i = 0; i < addressesLength; ) {
