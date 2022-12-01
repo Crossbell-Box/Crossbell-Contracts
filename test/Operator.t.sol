@@ -14,7 +14,7 @@ import "./helpers/utils.sol";
 import "./helpers/SetUp.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "../contracts/libraries/OP.sol";
-import "./helpers/DEFAULT_OP.sol";
+import "./helpers/DefaultOP.sol";
 
 contract OperatorTest is Test, SetUp, Utils {
     address public alice = address(0x1111);

@@ -166,12 +166,6 @@ function linkLinklist(struct DataTypes.linkLinklistData) external virtual
 function unlinkLinklist(struct DataTypes.unlinkLinklistData) external virtual
 ```
 
-### setLinkModule4Character
-
-```solidity
-function setLinkModule4Character(struct DataTypes.setLinkModule4CharacterData) external virtual
-```
-
 ### setLinkModule4Linklist
 
 ```solidity
