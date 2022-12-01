@@ -479,14 +479,16 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // setLinkModule4Note
         vm.startPrank(bob);
-        web3Entry.setLinkModule4Note(
-            DataTypes.setLinkModule4NoteData(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_NOTE_ID,
-                address(linkModule4Note),
-                new bytes(0)
-            )
-        );
+        /*
+      web3Entry.setLinkModule4Note(
+          DataTypes.setLinkModule4NoteData(
+              Const.FIRST_CHARACTER_ID,
+              Const.FIRST_NOTE_ID,
+              address(linkModule4Note),
+              new bytes(0)
+          )
+      );
+      */
 
         // setMintModule4Note
         ApprovalMintModule mintModule = new ApprovalMintModule(address(web3Entry));

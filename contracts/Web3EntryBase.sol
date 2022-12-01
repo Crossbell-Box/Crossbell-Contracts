@@ -202,7 +202,7 @@ contract Web3EntryBase is
         virtual
     {}
 
-    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata) external virtual {}
+    //    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata) external virtual {}
 
     function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata)
         external
@@ -214,17 +214,19 @@ contract Web3EntryBase is
      * @dev Operators can't setLinkModule4ERC721, because operators are set for 
      characters but erc721 tokens belong to address and not characters.
      */
-    function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external {
-        require(msg.sender == ERC721(vars.tokenAddress).ownerOf(vars.tokenId), "NotERC721Owner");
+    /*
+   function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external {
+       require(msg.sender == ERC721(vars.tokenAddress).ownerOf(vars.tokenId), "NotERC721Owner");
 
-        LinkModuleLogic.setLinkModule4ERC721(
-            vars.tokenAddress,
-            vars.tokenId,
-            vars.linkModule,
-            vars.linkModuleInitData,
-            _linkModules4ERC721
-        );
-    }
+       LinkModuleLogic.setLinkModule4ERC721(
+           vars.tokenAddress,
+           vars.tokenId,
+           vars.linkModule,
+           vars.linkModuleInitData,
+           _linkModules4ERC721
+       );
+   }
+   */
 
     /**
      * @notice Set linkModule for an address.
@@ -437,4 +439,10 @@ contract Web3EntryBase is
         virtual
         returns (bool)
     {}
+
+    function addOperator(uint256 characterId, address operator) external virtual {}
+
+    function removeOperator(uint256 characterId, address operator) external virtual {}
+
+    function setOperator(uint256 characterId, address operator) external virtual {}
 }

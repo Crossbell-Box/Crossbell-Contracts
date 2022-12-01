@@ -113,6 +113,32 @@ contract Web3Entry is Web3EntryBase {
         return (bitMap == 0) ? false : true;
     }
 
+    function addOperator(uint256 characterId, address operator) external override {
+        _validateCallerIsCharacterOwner(characterId);
+        _operatorsByCharacter[characterId].add(operator);
+        _setOperatorPermissions(characterId, operator, OP.OPERATOR_SIGN_PERMISSION_BITMAP);
+    }
+
+    /**
+     * @notice Cancel authorization on operators and remove them from operator list.
+     */
+    function removeOperator(uint256 characterId, address operator) external override {
+        _validateCallerIsCharacterOwner(characterId);
+        _operatorsByCharacter[characterId].remove(operator);
+        _setOperatorPermissions(characterId, operator, 0);
+    }
+
+    function setOperator(uint256 characterId, address operator) external override {
+        _validateCallerIsCharacterOwner(characterId);
+        if (operator == address(0)) {
+            _operatorsByCharacter[characterId].remove(operator);
+            _setOperatorPermissions(characterId, operator, 0);
+        } else {
+            _operatorsByCharacter[characterId].add(operator);
+            _setOperatorPermissions(characterId, operator, OP.OPERATOR_SIGN_PERMISSION_BITMAP);
+        }
+    }
+
     /**
      * @notice Get permission bitmap of an opertor.
      * @param characterId ID of character that you want to check.
@@ -304,6 +330,7 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
+    /*
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external override {
         _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE);
         _validateCallerPermission4Note(
@@ -322,7 +349,7 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
-    /*
+
     function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars)
         external
         override

@@ -81,11 +81,11 @@ interface IWeb3Entry {
 
     function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external;
 
-    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external;
+    //    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external;
 
     //    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external;
 
-    function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external;
+    //    function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external;
 
     function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external;
 
@@ -183,6 +183,12 @@ interface IWeb3Entry {
 
     function getRevision() external pure returns (uint256);
 
-    // this function should be removed in further
+    // these functions should be removed in further
     function isOperator(uint256 characterId, address operator) external view returns (bool);
+
+    function addOperator(uint256 characterId, address operator) external;
+
+    function removeOperator(uint256 characterId, address operator) external;
+
+    function setOperator(uint256 characterId, address operator) external;
 }
