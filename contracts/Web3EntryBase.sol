@@ -92,7 +92,14 @@ contract Web3EntryBase is
     function setSocialToken(uint256 characterId, address tokenAddress) external virtual {}
 
     // owner permission
-    function setPrimaryCharacterId(uint256 characterId) external virtual {}
+    function setPrimaryCharacterId(uint256 characterId) external {
+        _validateCallerIsCharacterOwner(characterId);
+
+        uint256 oldCharacterId = _primaryCharacterByAddress[msg.sender];
+        _primaryCharacterByAddress[msg.sender] = characterId;
+
+        emit Events.SetPrimaryCharacterId(msg.sender, characterId, oldCharacterId);
+    }
 
     // opSign permission
     function setCharacterUri(uint256 characterId, string calldata newUri) external {

@@ -62,7 +62,7 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, bob));
 
         // UserTwo should fail to set the primary character as a character owned by user 1
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         vm.prank(carol);
         web3Entry.setPrimaryCharacterId(Const.FIRST_CHARACTER_ID);
     }
@@ -92,7 +92,7 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         assertEq(web3Entry.getPrimaryCharacterId(carol), 2);
 
         // UserTwo should fail to set handle as a character owned by user 1
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         web3Entry.setPrimaryCharacterId(1);
 
         //UserTwo should burn primary character

@@ -14,9 +14,8 @@ so the bitmap looks like this:
 library OP {
     // [0,20] for owner permission
     uint8 internal constant SET_HANDLE = 0;
-    uint8 internal constant SET_PRIMARY_CHARACTER_ID = 1;
-    uint8 internal constant SET_SOCIAL_TOKEN = 2;
-    uint8 internal constant GRANT_OPERATOR_PERMISSIONS = 3;
+    uint8 internal constant SET_SOCIAL_TOKEN = 1;
+    uint8 internal constant GRANT_OPERATOR_PERMISSIONS = 2;
 
     // [21, 175] are reserved for future
 
@@ -54,9 +53,9 @@ library OP {
     uint8 internal constant POST_NOTE = 236;
 
     // below are permissions for note
-    uint8 internal constant NOTE_SET_LINK_MODULE_FOR_NOTE = 1;
-    uint8 internal constant NOTE_SET_MINT_MODULE_FOR_NOTE = 2;
-    uint8 internal constant NOTE_SET_NOTE_URI = 3;
-    uint8 internal constant NOTE_LOCK_NOTE = 4;
-    uint8 internal constant NOTE_DELETE_NOTE = 5;
+    uint8 internal constant NOTE_SET_LINK_MODULE_FOR_NOTE = 0;
+    uint8 internal constant NOTE_SET_MINT_MODULE_FOR_NOTE = 1;
+    uint8 internal constant NOTE_SET_NOTE_URI = 2;
+    uint8 internal constant NOTE_LOCK_NOTE = 3;
+    uint8 internal constant NOTE_DELETE_NOTE = 4;
 }

@@ -168,16 +168,6 @@ contract Web3Entry is Web3EntryBase {
         CharacterLogic.setSocialToken(characterId, tokenAddress, _characterById);
     }
 
-    // owner permission
-    function setPrimaryCharacterId(uint256 characterId) external override {
-        _validateCallerPermission(characterId, OP.SET_PRIMARY_CHARACTER_ID);
-
-        uint256 oldCharacterId = _primaryCharacterByAddress[msg.sender];
-        _primaryCharacterByAddress[msg.sender] = characterId;
-
-        emit Events.SetPrimaryCharacterId(msg.sender, characterId, oldCharacterId);
-    }
-
     function _setCharacterUri(uint256 profileId, string memory newUri) public override {
         _validateCallerPermission(profileId, OP.SET_CHARACTER_URI);
         _characterById[profileId].uri = newUri;

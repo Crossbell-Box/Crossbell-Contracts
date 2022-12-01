@@ -49,7 +49,7 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
-    function testGrantNoteOpertorPermissionsFail() public {
+    function testGrantOpertorPermissionsFail() public {
         // only only owner can grant operator
         vm.prank(bob);
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
@@ -90,6 +90,17 @@ contract OperatorTest is Test, SetUp, Utils {
             Const.FIRST_NOTE_ID,
             bob,
             DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
+        );
+    }
+
+    function testGrantNoteOpertorPermissionFail() public {
+        // only only owner can grant note operator
+        vm.prank(bob);
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
     }
 
@@ -226,6 +237,13 @@ contract OperatorTest is Test, SetUp, Utils {
             bob,
             DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
         );
+
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            carol,
+            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
+        );
+
         vm.stopPrank();
 
         vm.startPrank(bob);
@@ -407,6 +425,16 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // postNote4AnyUri
         web3Entry.postNote4AnyUri(makePostNoteData(Const.FIRST_CHARACTER_ID), "ipfs://anyURI");
+
+        vm.stopPrank();
+
+        // operator with owner permissions can:
+        // alice grant bob all permissions including owner permissions
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, ~uint256(0));
+        vm.startPrank(bob);
+        web3Entry.setHandle(Const.FIRST_CHARACTER_ID, "mynewhandle");
+        web3Entry.setSocialToken(Const.FIRST_CHARACTER_ID, address(0x1234567));
     }
 
     function testOperatorFail() public {
@@ -425,7 +453,7 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // set primary character id
         // user can only set primary character id to himself
-        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         web3Entry.setPrimaryCharacterId(Const.FIRST_CHARACTER_ID);
 
         // set social token
@@ -469,6 +497,21 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.prank(bob);
         vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+
+        // operator with sync permission can't sign
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
+        );
+        vm.prank(bob);
+        vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
     }
 
     function testOperator4NoteCan() public {
@@ -501,6 +544,7 @@ contract OperatorTest is Test, SetUp, Utils {
             )
         );
 
+        // setMintModule4Note
         ApprovalMintModule mintModule = new ApprovalMintModule(address(web3Entry));
         web3Entry.setMintModule4Note(
             DataTypes.setMintModule4NoteData(
@@ -551,17 +595,6 @@ contract OperatorTest is Test, SetUp, Utils {
         );
         vm.stopPrank();
 
-        // // operator can't operate note without grant
-        // // operate note 2
-        // vm.prank(bob);
-        // vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
-        // // setNoteUri
-        // web3Entry.setNoteUri(
-        //     Const.FIRST_CHARACTER_ID,
-        //     Const.SECOND_NOTE_ID,
-        //     Const.MOCK_NEW_NOTE_URI
-        // );
-
         // granted operator can't operator without note permission
         vm.prank(carol);
         vm.expectRevert(abi.encodePacked("NotEnoughPerssion"));
@@ -583,7 +616,7 @@ contract OperatorTest is Test, SetUp, Utils {
 
         vm.expectRevert(abi.encodePacked("NotEnoughPerssionForThisNote"));
         vm.prank(bob);
-        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
     }
 
     function testMigrate() public {
