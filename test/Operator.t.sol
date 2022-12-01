@@ -14,7 +14,7 @@ import "./helpers/utils.sol";
 import "./helpers/SetUp.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "../contracts/libraries/OP.sol";
-import "../contracts/libraries/DEFAULT_OP.sol";
+import "./helpers/DEFAULT_OP.sol";
 
 contract OperatorTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
@@ -36,8 +36,7 @@ contract OperatorTest is Test, SetUp, Utils {
         emit Events.GrantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP,
-            block.timestamp
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
 
         // alice set bob as her operator with DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
@@ -65,8 +64,7 @@ contract OperatorTest is Test, SetUp, Utils {
         emit Events.GrantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP,
-            block.timestamp
+            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
 
         vm.startPrank(alice);
@@ -81,8 +79,7 @@ contract OperatorTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             bob,
-            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP,
-            block.timestamp
+            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
         );
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.grantOperatorPermissions4Note(
@@ -142,77 +139,24 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
-    function testCheckPermissionByPermissionId() public {
+    function testgetOperatorPermissions4Note() public {
         // alice grant bob DEFAULT_OP.DEFAULT_PERMISSION_BITMAP permission
-        vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
+        vm.startPrank(alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.grantOperatorPermissions4Note(
             Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
             bob,
-            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
+            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
         );
-        bool permission = web3Entry.checkPermissionByPermissionId(
-            Const.FIRST_CHARACTER_ID,
-            bob,
-            OP.SET_HANDLE
+        assertEq(
+            web3Entry.getOperatorPermissions4Note(
+                Const.FIRST_CHARACTER_ID,
+                Const.FIRST_NOTE_ID,
+                bob
+            ),
+            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
         );
-        assert(!permission);
-
-        // check [0, 20] is set to false, which means `default` doesn't hava owner permission
-        for (uint256 i = 0; i < 20; i++) {
-            assert(!web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
-        }
-
-        // check [21, 255] is set to true
-        for (uint256 i = 20; i < 256; i++) {
-            assert(web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
-        }
-
-        // alice grant bob DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP permission
-        vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            Const.FIRST_CHARACTER_ID,
-            bob,
-            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
-        );
-
-        /** 
-        check [0, 174] is set to false, which means `operator-sign` doesn't have owner
-        permission nor future permission
-        */
-        for (uint256 i = 0; i < 176; i++) {
-            assert(!web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
-        }
-
-        /** 
-        check [175, 255] is set to true, which means `operator-sign` has both operator-sign
-        and operator-sync permission
-        */
-        for (uint256 i = 176; i < 256; i++) {
-            assert(web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
-        }
-
-        // alice grant bob DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP permission
-        vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            Const.FIRST_CHARACTER_ID,
-            bob,
-            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
-        );
-
-        /**
-        check [0, 174] is set to false, which means `operator-sign` doesn't have owner 
-        permission or future permission
-        */
-        for (uint256 i = 0; i < 236; i++) {
-            assert(!web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
-        }
-
-        /** check [175, 255] is set to true, which means `operator-sign` has both 
-        operator-sign and operator-sync permission
-        */
-        for (uint256 i = 236; i < 256; i++) {
-            assert(web3Entry.checkPermissionByPermissionId(Const.FIRST_CHARACTER_ID, bob, i));
-        }
     }
 
     function testOperatorSyncCan() public {

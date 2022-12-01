@@ -323,6 +323,26 @@ contract Web3EntryBase is
         super.burn(tokenId);
     }
 
+    function getOperatorList(uint256 characterId)
+        external
+        view
+        virtual
+        returns (address[] memory)
+    {}
+
+    function getOperatorPermissions4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address operator
+    ) external view virtual returns (uint256) {}
+
+    function getOperatorPermissions(uint256 characterId, address operator)
+        external
+        view
+        virtual
+        returns (uint256)
+    {}
+
     function getPrimaryCharacterId(address account) external view returns (uint256) {
         return _primaryCharacterByAddress[account];
     }

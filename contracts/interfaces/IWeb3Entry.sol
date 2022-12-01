@@ -131,6 +131,19 @@ interface IWeb3Entry {
         external
         returns (uint256);
 
+    function getOperatorList(uint256 characterId) external view returns (address[] memory);
+
+    function getOperatorPermissions(uint256 characterId, address operator)
+        external
+        view
+        returns (uint256);
+
+    function getOperatorPermissions4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address operator
+    ) external view returns (uint256);
+
     function getPrimaryCharacterId(address account) external view returns (uint256);
 
     function isPrimaryCharacter(uint256 characterId) external view returns (bool);
