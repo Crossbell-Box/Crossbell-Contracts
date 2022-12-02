@@ -410,19 +410,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         return _getTokenUri(tokenId);
     }
 
-    function migrate(uint256 start, uint256 limit) public {
-        for (uint256 i = start; i < limit; i++) {
-            uint256 characterId = currentTakeOver[i];
-            if (characterId > 0 && _linklistOwners[i] == 0) {
-                // set owner and balances
-                _linklistOwners[i] = characterId;
-                _linklistBalances[characterId] += 1;
-                // update token count
-                _tokenCount += 1;
-            }
-        }
-    }
-
     function _transfer(
         address,
         address,

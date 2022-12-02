@@ -14,6 +14,10 @@ interface IWeb3Entry {
         address resolver
     ) external;
 
+    ////////////////////////////////////////////////////////
+    ///     EXTERNAL VIEW FUNCTIONS
+    ////////////////////////////////////////////////////////
+
     function createCharacter(DataTypes.CreateCharacterData calldata vars) external;
 
     function setHandle(uint256 characterId, string calldata newHandle) external;
@@ -79,13 +83,15 @@ interface IWeb3Entry {
 
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external;
 
+    /*
+     * These functions are temporarily commented out, in order to limit the contract code size within 24K.
+     * These functions will be restored when necessary in the future.
+     */
     //    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external;
-
     //    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external;
-
-    //    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external;
-
     //    function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external;
+
+    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external;
 
     function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external;
 
@@ -131,6 +137,9 @@ interface IWeb3Entry {
         external
         returns (uint256);
 
+    ////////////////////////////////////////////////////////
+    ///      VIEW FUNCTIONS
+    ////////////////////////////////////////////////////////
     function getOperators(uint256 characterId) external view returns (address[] memory);
 
     function getOperatorPermissions(uint256 characterId, address operator)
@@ -183,7 +192,9 @@ interface IWeb3Entry {
 
     function getRevision() external pure returns (uint256);
 
-    // these functions should be removed in further
+    ////////////////////////////////////////////////////////
+    // these functions are overridden in web3Entry,
+    // and should be removed in next upgrade
     function isOperator(uint256 characterId, address operator) external view returns (bool);
 
     function addOperator(uint256 characterId, address operator) external;
@@ -191,4 +202,5 @@ interface IWeb3Entry {
     function removeOperator(uint256 characterId, address operator) external;
 
     function setOperator(uint256 characterId, address operator) external;
+    ////////////////////////////////////////////////////////
 }

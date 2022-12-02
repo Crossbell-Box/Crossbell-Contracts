@@ -89,7 +89,6 @@ library LinkModuleLogic {
         }
     }
 
-    /*
     function setLinkModule4Linklist(
         uint256 linklistId,
         address linkModule,
@@ -109,7 +108,6 @@ library LinkModuleLogic {
             );
         }
     }
-    */
 
     function setLinkModule4ERC721(
         address tokenAddress,

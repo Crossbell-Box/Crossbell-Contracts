@@ -16,6 +16,7 @@ import "./libraries/CharacterLogic.sol";
 import "./libraries/PostLogic.sol";
 import "./libraries/LinkModuleLogic.sol";
 import "./libraries/LinkLogic.sol";
+import "./libraries/OP.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
@@ -50,7 +51,20 @@ contract Web3EntryBase is
         emit Events.Web3EntryInitialized(block.timestamp);
     }
 
-    function _setCharacterUri(uint256, string memory) public virtual {}
+    // overridden in web3Entry
+    function grantOperatorPermissions(
+        uint256,
+        address,
+        uint256
+    ) external virtual {}
+
+    // overridden in web3Entry
+    function grantOperatorPermissions4Note(
+        uint256,
+        uint256,
+        address,
+        uint256
+    ) external virtual {}
 
     /**
      * This method creates a character with the given parameters to the given address.
@@ -86,10 +100,18 @@ contract Web3EntryBase is
     }
 
     // owner permission
-    function setHandle(uint256, string calldata) external virtual {}
+    function setHandle(uint256 characterId, string calldata newHandle) external {
+        _validateCallerPermission(characterId, OP.SET_HANDLE);
+
+        CharacterLogic.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
+    }
 
     // owner permission
-    function setSocialToken(uint256, address) external virtual {}
+    function setSocialToken(uint256 characterId, address tokenAddress) external {
+        _validateCallerPermission(characterId, OP.SET_SOCIAL_TOKEN);
+
+        CharacterLogic.setSocialToken(characterId, tokenAddress, _characterById);
+    }
 
     // owner permission
     function setPrimaryCharacterId(uint256 characterId) external {
@@ -103,33 +125,51 @@ contract Web3EntryBase is
 
     // opSign permission
     function setCharacterUri(uint256 characterId, string calldata newUri) external {
-        _setCharacterUri(characterId, newUri);
+        _validateCallerPermission(characterId, OP.SET_CHARACTER_URI);
+        _characterById[characterId].uri = newUri;
+
+        emit Events.SetCharacterUri(characterId, newUri);
     }
 
-    function grantOperatorPermissions(
-        uint256,
-        address,
-        uint256
-    ) external virtual {}
-
-    function grantOperatorPermissions4Note(
-        uint256,
-        uint256,
-        address,
-        uint256
-    ) external virtual {}
-
     // opSign permission
-    function setLinklistUri(uint256, string calldata) external virtual {}
+    function setLinklistUri(uint256 linklistId, string calldata uri) external {
+        uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
+        _validateCallerPermission(ownerCharacterId, OP.SET_LINK_LIST_URI);
 
-    function linkCharacter(DataTypes.linkCharacterData calldata) external virtual {}
+        ILinklist(_linklist).setUri(linklistId, uri);
+    }
 
-    function unlinkCharacter(DataTypes.unlinkCharacterData calldata) external virtual {}
+    function linkCharacter(DataTypes.linkCharacterData calldata vars) external {
+        _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
+        _validateCharacterExists(vars.toCharacterId);
 
-    function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata)
-        external
-        virtual
-    {}
+        LinkLogic.linkCharacter(
+            vars.fromCharacterId,
+            vars.toCharacterId,
+            vars.linkType,
+            vars.data,
+            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
+            _linklist,
+            _characterById[vars.toCharacterId].linkModule,
+            _attachedLinklists
+        );
+    }
+
+    function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external {
+        _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
+
+        LinkLogic.unlinkCharacter(
+            vars,
+            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
+            _linklist,
+            _attachedLinklists[vars.fromCharacterId][vars.linkType]
+        );
+    }
+
+    function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars) external {
+        _validateCallerPermission(vars.fromCharacterId, OP.CREATE_THEN_LINK_CHARACTER);
+        _createThenLinkCharacter(vars.fromCharacterId, vars.to, vars.linkType, "0x");
+    }
 
     function _createThenLinkCharacter(
         uint256 fromCharacterId,
@@ -176,38 +216,131 @@ contract Web3EntryBase is
         );
     }
 
-    function linkNote(DataTypes.linkNoteData calldata) external virtual {}
+    function linkNote(DataTypes.linkNoteData calldata vars) external {
+        _validateCallerPermission(vars.fromCharacterId, OP.LINK_NOTE);
+        _validateNoteExists(vars.toCharacterId, vars.toNoteId);
 
-    function unlinkNote(DataTypes.unlinkNoteData calldata) external virtual {}
+        LinkLogic.linkNote(
+            vars,
+            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
+            _linklist,
+            _noteByIdByCharacter,
+            _attachedLinklists
+        );
+    }
 
-    function linkERC721(DataTypes.linkERC721Data calldata) external virtual {}
+    function unlinkNote(DataTypes.unlinkNoteData calldata vars) external {
+        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_NOTE);
 
-    function unlinkERC721(DataTypes.unlinkERC721Data calldata) external virtual {}
+        LinkLogic.unlinkNote(vars, _linklist, _attachedLinklists);
+    }
 
-    function linkAddress(DataTypes.linkAddressData calldata) external virtual {}
+    function linkERC721(DataTypes.linkERC721Data calldata vars) external {
+        _validateCallerPermission(vars.fromCharacterId, OP.LINK_ERC721);
+        _validateERC721Exists(vars.tokenAddress, vars.tokenId);
 
-    function unlinkAddress(DataTypes.unlinkAddressData calldata) external virtual {}
+        LinkLogic.linkERC721(vars, _linklist, _attachedLinklists);
+    }
 
-    function linkAnyUri(DataTypes.linkAnyUriData calldata) external virtual {}
+    function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external {
+        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ERC721);
 
-    function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata) external virtual {}
+        LinkLogic.unlinkERC721(
+            vars,
+            _linklist,
+            _attachedLinklists[vars.fromCharacterId][vars.linkType]
+        );
+    }
 
-    function linkLinklist(DataTypes.linkLinklistData calldata) external virtual {}
+    function linkAddress(DataTypes.linkAddressData calldata vars) external {
+        _validateCallerPermission(vars.fromCharacterId, OP.LINK_ADDRESS);
 
-    function unlinkLinklist(DataTypes.unlinkLinklistData calldata) external virtual {}
+        LinkLogic.linkAddress(vars, _linklist, _attachedLinklists);
+    }
 
-    // set link module for his character
-    //    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata)
-    //        external
-    //        virtual
-    //    {}
+    function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external {
+        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ADDRESS);
 
-    //    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata) external virtual {}
+        LinkLogic.unlinkAddress(
+            vars,
+            _linklist,
+            _attachedLinklists[vars.fromCharacterId][vars.linkType]
+        );
+    }
 
-    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata)
+    function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external {
+        _validateCallerPermission(vars.fromCharacterId, OP.LINK_ANY_URI);
+
+        LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists);
+    }
+
+    function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external {
+        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ANY_URI);
+
+        LinkLogic.unlinkAnyUri(
+            vars,
+            _linklist,
+            _attachedLinklists[vars.fromCharacterId][vars.linkType]
+        );
+    }
+
+    function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
+        _validateCallerPermission(vars.fromCharacterId, OP.LINK_LINK_LIST);
+
+        LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists);
+    }
+
+    function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external {
+        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_LINK_LIST);
+
+        LinkLogic.unlinkLinklist(
+            vars,
+            _linklist,
+            _attachedLinklists[vars.fromCharacterId][vars.linkType]
+        );
+    }
+
+    //////////////////////////////////////////////////////////////
+    /*
+     * These functions are temporarily commented out, in order to limit the contract code size within 24K.
+     * These functions will be restored when necessary in the future.
+     */
+    /**
+     * @notice set link module for his character
+     */
+    /*
+        function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars)
         external
-        virtual
-    {}
+
+    {
+        _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_CHARACTER);
+
+        CharacterLogic.setCharacterLinkModule(
+            vars.characterId,
+            vars.linkModule,
+            vars.linkModuleInitData,
+            _characterById[vars.characterId]
+        );
+    }
+
+        function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external  {
+        _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE);
+        _validateCallerPermission4Note(
+            vars.characterId,
+            vars.noteId,
+            OP.NOTE_SET_LINK_MODULE_FOR_NOTE
+        );
+        _validateNoteExists(vars.characterId, vars.noteId);
+
+        LinkModuleLogic.setLinkModule4Note(
+            vars.characterId,
+            vars.noteId,
+            vars.linkModule,
+            vars.linkModuleInitData,
+            _noteByIdByCharacter
+        );
+    }
+    */
 
     /**
      * @notice Set linkModule for a ERC721 token that you own.
@@ -226,7 +359,22 @@ contract Web3EntryBase is
            _linkModules4ERC721
        );
    }
-   */
+     */
+    //////////////////////////////////////////////////////////////
+
+    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external {
+        // get character id of the owner of this linklist
+        uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(vars.linklistId);
+
+        _validateCallerPermission(ownerCharacterId, OP.SET_LINK_MODULE_FOR_LINK_LIST);
+
+        LinkModuleLogic.setLinkModule4Linklist(
+            vars.linklistId,
+            vars.linkModule,
+            vars.linkModuleInitData,
+            _linkModules4Linklist
+        );
+    }
 
     /**
      * @notice Set linkModule for an address.
@@ -257,59 +405,204 @@ contract Web3EntryBase is
             );
     }
 
-    function setMintModule4Note(DataTypes.setMintModule4NoteData calldata) external virtual {}
+    function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external {
+        _validateCallerPermission(vars.characterId, OP.SET_MINT_MODULE_FOR_NOTE);
+        _validateCallerPermission4Note(
+            vars.characterId,
+            vars.noteId,
+            OP.NOTE_SET_MINT_MODULE_FOR_NOTE
+        );
+        _validateNoteExists(vars.characterId, vars.noteId);
 
-    function postNote(DataTypes.PostNoteData calldata) external virtual returns (uint256) {}
+        LinkModuleLogic.setMintModule4Note(
+            vars.characterId,
+            vars.noteId,
+            vars.mintModule,
+            vars.mintModuleInitData,
+            _noteByIdByCharacter
+        );
+    }
+
+    function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256) {
+        _validateCallerPermission(vars.characterId, OP.POST_NOTE);
+
+        uint256 noteId = ++_characterById[vars.characterId].noteCount;
+
+        PostLogic.postNoteWithLink(vars, noteId, 0, 0, "", _noteByIdByCharacter);
+        return noteId;
+    }
 
     function setNoteUri(
-        uint256,
-        uint256,
-        string calldata
-    ) external virtual {}
+        uint256 characterId,
+        uint256 noteId,
+        string calldata newUri
+    ) external {
+        _validateCallerPermission(characterId, OP.SET_NOTE_URI);
+        _validateCallerPermission4Note(characterId, noteId, OP.NOTE_SET_NOTE_URI);
+        _validateNoteExists(characterId, noteId);
+        PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
+    }
 
     /**
      * @notice lockNote put a note into a immutable state where no modifications are 
      allowed. You should call this method to announce that this is the final version.
      */
-    function lockNote(uint256, uint256) external virtual {}
+    function lockNote(uint256 characterId, uint256 noteId) external {
+        _validateCallerPermission(characterId, OP.LOCK_NOTE);
+        _validateCallerPermission4Note(characterId, noteId, OP.NOTE_LOCK_NOTE);
+        _validateNoteExists(characterId, noteId);
 
-    function deleteNote(uint256, uint256) external virtual {}
+        _noteByIdByCharacter[characterId][noteId].locked = true;
 
-    function postNote4Character(DataTypes.PostNoteData calldata, uint256)
+        emit Events.LockNote(characterId, noteId);
+    }
+
+    function deleteNote(uint256 characterId, uint256 noteId) external {
+        _validateCallerPermission(characterId, OP.DELETE_NOTE);
+        _validateCallerPermission4Note(characterId, noteId, OP.NOTE_DELETE_NOTE);
+        _validateNoteExists(characterId, noteId);
+
+        _noteByIdByCharacter[characterId][noteId].deleted = true;
+
+        emit Events.DeleteNote(characterId, noteId);
+    }
+
+    function postNote4Character(DataTypes.PostNoteData calldata postNoteData, uint256 toCharacterId)
         external
-        virtual
         returns (uint256)
-    {}
+    {
+        _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_CHARACTER);
 
-    function postNote4Address(DataTypes.PostNoteData calldata, address)
-        external
-        virtual
-        returns (uint256)
-    {}
+        bytes32 linkItemType = Constants.NoteLinkTypeCharacter;
+        bytes32 linkKey = bytes32(toCharacterId);
+        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
 
-    function postNote4Linklist(DataTypes.PostNoteData calldata, uint256)
-        external
-        virtual
-        returns (uint256)
-    {}
+        PostLogic.postNoteWithLink(
+            postNoteData,
+            noteId,
+            linkItemType,
+            linkKey,
+            abi.encodePacked(toCharacterId),
+            _noteByIdByCharacter
+        );
 
-    function postNote4Note(DataTypes.PostNoteData calldata, DataTypes.NoteStruct calldata)
-        external
-        virtual
-        returns (uint256)
-    {}
+        return noteId;
+    }
 
-    function postNote4ERC721(DataTypes.PostNoteData calldata, DataTypes.ERC721Struct calldata)
+    function postNote4Address(DataTypes.PostNoteData calldata noteData, address ethAddress)
         external
-        virtual
         returns (uint256)
-    {}
+    {
+        _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_ADDRESS);
 
-    function postNote4AnyUri(DataTypes.PostNoteData calldata, string calldata)
+        bytes32 linkItemType = Constants.NoteLinkTypeAddress;
+        bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
+        uint256 noteId = ++_characterById[noteData.characterId].noteCount;
+
+        PostLogic.postNoteWithLink(
+            noteData,
+            noteId,
+            linkItemType,
+            linkKey,
+            abi.encodePacked(ethAddress),
+            _noteByIdByCharacter
+        );
+
+        return noteId;
+    }
+
+    function postNote4Linklist(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
         external
-        virtual
         returns (uint256)
-    {}
+    {
+        _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_LINK_LIST);
+
+        bytes32 linkItemType = Constants.NoteLinkTypeLinklist;
+        bytes32 linkKey = bytes32(toLinklistId);
+        uint256 noteId = ++_characterById[noteData.characterId].noteCount;
+
+        PostLogic.postNoteWithLink(
+            noteData,
+            noteId,
+            linkItemType,
+            linkKey,
+            abi.encodePacked(toLinklistId),
+            _noteByIdByCharacter
+        );
+
+        return noteId;
+    }
+
+    function postNote4Note(
+        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.NoteStruct calldata note
+    ) external returns (uint256) {
+        _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_NOTE);
+
+        bytes32 linkItemType = Constants.NoteLinkTypeNote;
+        bytes32 linkKey = ILinklist(_linklist).addLinkingNote(0, note.characterId, note.noteId);
+        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
+
+        PostLogic.postNoteWithLink(
+            postNoteData,
+            noteId,
+            linkItemType,
+            linkKey,
+            abi.encodePacked(note.characterId, note.noteId),
+            _noteByIdByCharacter
+        );
+
+        return noteId;
+    }
+
+    function postNote4ERC721(
+        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.ERC721Struct calldata erc721
+    ) external returns (uint256) {
+        _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_ERC721);
+        _validateERC721Exists(erc721.tokenAddress, erc721.erc721TokenId);
+
+        bytes32 linkItemType = Constants.NoteLinkTypeERC721;
+        bytes32 linkKey = ILinklist(_linklist).addLinkingERC721(
+            0,
+            erc721.tokenAddress,
+            erc721.erc721TokenId
+        );
+        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
+
+        PostLogic.postNoteWithLink(
+            postNoteData,
+            noteId,
+            linkItemType,
+            linkKey,
+            abi.encodePacked(erc721.tokenAddress, erc721.erc721TokenId),
+            _noteByIdByCharacter
+        );
+
+        return noteId;
+    }
+
+    function postNote4AnyUri(DataTypes.PostNoteData calldata postNoteData, string calldata uri)
+        external
+        returns (uint256)
+    {
+        _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_ANY_URI);
+
+        bytes32 linkItemType = Constants.NoteLinkTypeAnyUri;
+        bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
+        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
+
+        PostLogic.postNoteWithLink(
+            postNoteData,
+            noteId,
+            linkItemType,
+            linkKey,
+            abi.encodePacked(uri),
+            _noteByIdByCharacter
+        );
+
+        return noteId;
+    }
 
     function burn(uint256 tokenId) public override {
         // clear handle
@@ -323,15 +616,31 @@ contract Web3EntryBase is
         super.burn(tokenId);
     }
 
-    function getOperators(uint256) external view virtual returns (address[] memory) {}
+    /**
+     * @notice Get operator list of a character. This operator list has only a sole purpose, which is
+     * keeping records of keys of `operatorsPermissionBitMap`. Thus, addresses queried by this function
+     * not always have operator permissions. Keep in mind don't use this function to check
+     * authorizations!!!
+     * @param characterId ID of your character that you want to check.
+     * @return All keys of operatorsPermission4NoteBitMap.
+     */
+    function getOperators(uint256 characterId) external view override returns (address[] memory) {
+        return _operatorsByCharacter[characterId].values();
+    }
 
+    // overridden in web3Entry
     function getOperatorPermissions4Note(
         uint256,
         uint256,
         address
-    ) external view virtual returns (uint256) {}
+    ) external view virtual returns (uint256) {
+        return 0;
+    }
 
-    function getOperatorPermissions(uint256, address) external view virtual returns (uint256) {}
+    // overridden in web3Entry
+    function getOperatorPermissions(uint256, address) external view virtual returns (uint256) {
+        return 0;
+    }
 
     function getPrimaryCharacterId(address account) external view returns (uint256) {
         return _primaryCharacterByAddress[account];
@@ -416,6 +725,16 @@ contract Web3EntryBase is
         );
     }
 
+    // overridden in web3Entry
+    function _validateCallerPermission(uint256, uint256) internal view virtual {}
+
+    // overridden in web3Entry
+    function _validateCallerPermission4Note(
+        uint256,
+        uint256,
+        uint256
+    ) internal view virtual {}
+
     function _validateCharacterExists(uint256 characterId) internal view {
         require(_exists(characterId), "CharacterNotExists");
     }
@@ -433,16 +752,13 @@ contract Web3EntryBase is
         return REVISION;
     }
 
-    function isOperator(uint256 characterId, address operator)
-        external
-        view
-        virtual
-        returns (bool)
-    {}
+    function isOperator(uint256, address) external view virtual returns (bool) {
+        return false;
+    }
 
-    function addOperator(uint256 characterId, address operator) external virtual {}
+    function addOperator(uint256, address) external virtual {}
 
-    function removeOperator(uint256 characterId, address operator) external virtual {}
+    function removeOperator(uint256, address) external virtual {}
 
-    function setOperator(uint256 characterId, address operator) external virtual {}
+    function setOperator(uint256, address) external virtual {}
 }
