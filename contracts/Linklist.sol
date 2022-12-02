@@ -415,7 +415,18 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         address,
         uint256
     ) internal pure override {
-        revert("non-transferable");
+        // this function will do nothing, as linklist is a character bounded token
+        // users should never transfer a linklist directly
+    }
+
+    function _safeTransfer(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) internal pure override {
+        // this function will do nothing, as linklist is a character bounded token
+        // users should never transfer a linklist directly
     }
 
     function _getTokenUri(uint256 tokenId) internal view returns (string memory) {
