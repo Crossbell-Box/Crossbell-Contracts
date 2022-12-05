@@ -3,14 +3,23 @@
 pragma solidity 0.8.10;
 
 /**
-Permissions are laid out in a increasing order of power.
-so the bitmap looks like this:
+* @dev every uint8 stands for a single method in Web3Entry.sol.
+* For most cases, we recommend simply granting operators the OPERATOR_SIGN_PERMISSION_BITMAP,
+* which gives operator full permissions aside from owner permissions and future permissions, but for
+* those who're more aware of access control, the custom permission bitmap is all yours,
+* and you can find every customizable methods below.
 
-|   opSync   |   opSign   |   future   |  owner   |
-|------------|------------|------------|----------|
-|255------236|235------176|175-------21|20-------0|
-    * @notice every uint8 stands for a single method in Web3Entry.sol.
+* `OPERATOR_SIGN_PERMISSION_BITMAP` have access to all methods in `OPERATOR_SYNC_PERMISSION_BITMAP`
+* plus more permissions for signing.
+
+* Permissions are laid out in a increasing order of power.
+* so the bitmap looks like this:
+
+* |   opSync   |   opSign   |   future   |  owner   |
+* |------------|------------|------------|----------|
+* |255------236|235------176|175-------21|20-------0|
 */
+
 library OP {
     // [0,20] for owner permission
     uint8 internal constant SET_HANDLE = 0;
@@ -52,7 +61,7 @@ library OP {
 
     // [236, 255] for operator sync permission
     uint8 internal constant POST_NOTE = 236;
-    uint256 internal constant OPERATOR_SYNC_PERMISSION_BITMAP = uint256(1) << 236;
+    uint256 internal constant OPERATOR_SYNC_PERMISSION_BITMAP = ~uint256(0) << 236;
 
     // below are permissions for note
     uint8 internal constant NOTE_SET_LINK_MODULE_FOR_NOTE = 0;

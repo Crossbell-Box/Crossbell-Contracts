@@ -122,6 +122,7 @@ contract Web3Entry is Web3EntryBase {
         emit Events.RemoveOperator(characterId, operator, block.timestamp);
     }
 
+    // @notice users can't remove an operator by setOperator
     function setOperator(uint256 characterId, address operator) external override {
         _validateCallerIsCharacterOwner(characterId);
         if (operator == address(0)) {
@@ -138,7 +139,7 @@ contract Web3Entry is Web3EntryBase {
     }
 
     /**
-     * @notice Get permission bitmap of an opertor.
+     * @notice Get permission bitmap of an operator.
      * @param characterId ID of character that you want to check.
      * @param operator Address to grant operator permissions to.
      * @return Permission bitmap of this operator.

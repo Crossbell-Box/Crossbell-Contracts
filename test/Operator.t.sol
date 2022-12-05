@@ -48,7 +48,7 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
-    function testGrantOpertorPermissionsFail() public {
+    function testGrantOperatorPermissionsFail() public {
         // only only owner can grant operator
         vm.prank(bob);
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
@@ -59,7 +59,7 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
-    function testGrantNoteOpertorPermission() public {
+    function testGrantNoteOperatorPermission() public {
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Events.GrantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
@@ -90,7 +90,7 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
-    function testGrantNoteOpertorPermissionFail() public {
+    function testGrantNoteOperatorPermissionFail() public {
         // only only owner can grant note operator
         vm.prank(bob);
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
@@ -101,7 +101,7 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
-    function testgetOperatorPermissions() public {
+    function testGetOperatorPermissions() public {
         // alice grant bob DEFAULT_OP.DEFAULT_PERMISSION_BITMAP permission
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
@@ -114,32 +114,32 @@ contract OperatorTest is Test, SetUp, Utils {
             DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
         );
 
-        // alice grant bob DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP permission
+        // alice grant bob OP.OPERATOR_SIGN_PERMISSION_BITMAP permission
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
+            OP.OPERATOR_SIGN_PERMISSION_BITMAP
         );
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
-            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
+            OP.OPERATOR_SIGN_PERMISSION_BITMAP
         );
 
-        // alice grant bob DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP permission
+        // alice grant bob OP.OPERATOR_SYNC_PERMISSION_BITMAP permission
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
+            OP.OPERATOR_SYNC_PERMISSION_BITMAP
         );
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
-            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
+            OP.OPERATOR_SYNC_PERMISSION_BITMAP
         );
     }
 
-    function testgetOperatorPermissions4Note() public {
+    function testGetOperatorPermissions4Note() public {
         // alice grant bob DEFAULT_OP.DEFAULT_PERMISSION_BITMAP permission
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
@@ -160,12 +160,12 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testOperatorSyncCan() public {
-        // alice grant bob as DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP permission
+        // alice grant bob as OP.OPERATOR_SYNC_PERMISSION_BITMAP permission
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
+            OP.OPERATOR_SYNC_PERMISSION_BITMAP
         );
 
         vm.startPrank(bob);
@@ -174,18 +174,18 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testOperatorSignCan() public {
-        // alice grant bob as DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP permission
+        // alice grant bob as OP.OPERATOR_SIGN_PERMISSION_BITMAP permission
         vm.startPrank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
+            OP.OPERATOR_SIGN_PERMISSION_BITMAP
         );
 
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             carol,
-            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
+            OP.OPERATOR_SYNC_PERMISSION_BITMAP
         );
 
         vm.stopPrank();
@@ -434,7 +434,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
+            OP.OPERATOR_SYNC_PERMISSION_BITMAP
         );
         web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, 0);
         vm.stopPrank();
@@ -447,7 +447,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DEFAULT_OP.OPERATORSYNC_PERMISSION_BITMAP
+            OP.OPERATOR_SYNC_PERMISSION_BITMAP
         );
         vm.prank(bob);
         vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
@@ -459,7 +459,7 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testOperator4NoteCan() public {
-        // alice grant bob as DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP permission
+        // alice grant bob as OP.OPERATOR_SIGN_PERMISSION_BITMAP permission
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         //        ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
@@ -467,7 +467,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
+            OP.OPERATOR_SIGN_PERMISSION_BITMAP
         );
         web3Entry.grantOperatorPermissions4Note(
             Const.FIRST_CHARACTER_ID,
@@ -516,7 +516,7 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testOperator4NoteFail() public {
-        // alice grant bob as DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP permission
+        // alice grant bob as OP.OPERATOR_SIGN_PERMISSION_BITMAP permission
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
@@ -524,7 +524,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
+            OP.OPERATOR_SIGN_PERMISSION_BITMAP
         );
         web3Entry.grantOperatorPermissions4Note(
             Const.FIRST_CHARACTER_ID,
@@ -582,75 +582,169 @@ contract OperatorTest is Test, SetUp, Utils {
 
     function testSetOperator() public {
         vm.startPrank(alice);
-        // add an operator
+        // expect event GrantOperatorPermissions
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Events.GrantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
-        );
-        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, bob);
-        assertEq(
-            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
-            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
+            OP.OPERATOR_SIGN_PERMISSION_BITMAP
         );
 
-        // it's difficult to test remove but if you really want to you can add operator in operatorByCharacter storage at web3entry.
-        // remove an operator
-        // expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        // emit Events.GrantOperatorPermissions(
-        //     Const.FIRST_CHARACTER_ID,
-        //     address(1029),
-        //     uint256(0)
-        // );
-        // web3Entry.setOperator(Const.FIRST_CHARACTER_ID, address(0));
-        // assertEq(
-        //     web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, address(1029)),
-        //     uint(0)
-        // );
+        // expect event SetOperator
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckData);
+        emit Events.SetOperator(Const.FIRST_CHARACTER_ID, bob, block.timestamp);
+
+        // add an operator
+        web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
+            OP.OPERATOR_SIGN_PERMISSION_BITMAP
+        );
+
+        // users can't remove an operator by setOperator
+        web3Entry.setOperator(Const.FIRST_CHARACTER_ID, address(0));
+        uint256 bitmap = web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob);
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
+            OP.OPERATOR_SIGN_PERMISSION_BITMAP
+        );
+        vm.stopPrank();
     }
 
     function testSetOperatorFail() public {
         vm.startPrank(carol);
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
+        vm.stopPrank();
     }
 
     function testAddOperator() public {
         vm.startPrank(alice);
 
-        // add operator
+        // expect event GrantOperatorPermissions
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Events.GrantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             carol,
-            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
+            OP.OPERATOR_SIGN_PERMISSION_BITMAP
         );
+
+        // expect event SetOperator
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckData);
+        emit Events.AddOperator(Const.FIRST_CHARACTER_ID, carol, block.timestamp);
+
+        // add operator
         web3Entry.addOperator(Const.FIRST_CHARACTER_ID, carol);
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, carol),
-            DEFAULT_OP.OPERATORSIGN_PERMISSION_BITMAP
+            OP.OPERATOR_SIGN_PERMISSION_BITMAP
         );
+        vm.stopPrank();
     }
 
     function testAddOperatorFail() public {
         vm.startPrank(carol);
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         web3Entry.addOperator(Const.FIRST_CHARACTER_ID, bob);
+        vm.stopPrank();
     }
 
     function testRemoveOperator() public {
         vm.startPrank(alice);
+
+        // add operator
+        web3Entry.addOperator(Const.FIRST_CHARACTER_ID, bob);
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
+            OP.OPERATOR_SIGN_PERMISSION_BITMAP
+        );
+
         // remove operator
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Events.GrantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, uint256(0));
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckData);
+        emit Events.RemoveOperator(Const.FIRST_CHARACTER_ID, bob, block.timestamp);
         web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, bob);
         assertEq(web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob), uint256(0));
+        vm.stopPrank();
     }
 
     function testRemoveOperatorFail() public {
         vm.startPrank(carol);
         vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
         web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, bob);
+        vm.stopPrank();
+    }
+
+    function testGetOperators() public {
+        address[4] memory accounts = [bob, carol, dick, erik];
+
+        // case 1. use addOperator to test getOperators
+        vm.startPrank(alice);
+        for (uint256 i = 0; i < accounts.length; i++) {
+            web3Entry.addOperator(Const.FIRST_CHARACTER_ID, accounts[i]);
+        }
+
+        //  check operators
+        _checkOperators(Const.FIRST_CHARACTER_ID, accounts, OP.OPERATOR_SIGN_PERMISSION_BITMAP);
+
+        // remove all operators
+        for (uint256 i = 0; i < accounts.length; i++) {
+            web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, accounts[i]);
+        }
+        address[] memory operators = web3Entry.getOperators(Const.FIRST_CHARACTER_ID);
+        assertEq(operators.length, 0);
+
+        // case 2. use setOperator to test getOperators
+        for (uint256 i = 0; i < accounts.length; i++) {
+            web3Entry.setOperator(Const.FIRST_CHARACTER_ID, accounts[i]);
+        }
+
+        //  check operators
+        _checkOperators(Const.FIRST_CHARACTER_ID, accounts, OP.OPERATOR_SIGN_PERMISSION_BITMAP);
+
+        // remove all operators
+        for (uint256 i = 0; i < accounts.length; i++) {
+            web3Entry.removeOperator(Const.FIRST_CHARACTER_ID, accounts[i]);
+        }
+        operators = web3Entry.getOperators(Const.FIRST_CHARACTER_ID);
+        assertEq(operators.length, 0);
+
+        // case 3. use grantOperatorPermissions to test getOperators
+        for (uint256 i = 0; i < accounts.length; i++) {
+            web3Entry.grantOperatorPermissions(
+                Const.FIRST_CHARACTER_ID,
+                accounts[i],
+                OP.OPERATOR_SIGN_PERMISSION_BITMAP
+            );
+        }
+        _checkOperators(Const.FIRST_CHARACTER_ID, accounts, OP.OPERATOR_SIGN_PERMISSION_BITMAP);
+
+        // remove all operators
+        for (uint256 i = 0; i < accounts.length; i++) {
+            web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, accounts[i], 0);
+        }
+        operators = web3Entry.getOperators(Const.FIRST_CHARACTER_ID);
+        assertEq(operators.length, 0);
+
+        vm.stopPrank();
+    }
+
+    function _checkOperators(
+        uint256 characterId,
+        address[4] memory expectedOperators,
+        uint256 expectedPermission
+    ) internal {
+        address[] memory operators = web3Entry.getOperators(characterId);
+        for (uint256 i = 0; i < operators.length; i++) {
+            assertEq(operators[i], expectedOperators[i]);
+            // check Operator permission
+            assertEq(
+                web3Entry.getOperatorPermissions(characterId, expectedOperators[i]),
+                expectedPermission
+            );
+            // check isOperator
+            assertTrue(web3Entry.isOperator(characterId, expectedOperators[i]));
+        }
     }
 }
