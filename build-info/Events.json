@@ -165,6 +165,62 @@
         {
           "indexed": true,
           "internalType": "uint256",
+          "name": "characterId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "permissionBitMap",
+          "type": "uint256"
+        }
+      ],
+      "name": "GrantOperatorPermissions",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "characterId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "noteId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "permissionBitMap",
+          "type": "uint256"
+        }
+      ],
+      "name": "GrantOperatorPermissions4Note",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
           "name": "fromCharacterId",
           "type": "uint256"
         },
@@ -1141,8 +1197,8 @@
       "type": "event"
     }
   ],
-  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122099ea12d939754f4a22cc874b7c010179ff3a07ac36d71ebbe525dbc4b102191164736f6c634300080a0033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122099ea12d939754f4a22cc874b7c010179ff3a07ac36d71ebbe525dbc4b102191164736f6c634300080a0033",
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220eef6deb3bf349f961e977f73d434d52a5b25fede8a6f0667fad771619605038664736f6c634300080a0033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220eef6deb3bf349f961e977f73d434d52a5b25fede8a6f0667fad771619605038664736f6c634300080a0033",
   "linkReferences": {},
   "deployedLinkReferences": {}
 }

@@ -20,3 +20,9 @@ mapping(uint256 => address) _operatorByCharacter
 address resolver
 ```
 
+### _operatorsByCharacter
+
+```solidity
+mapping(uint256 => struct EnumerableSet.AddressSet) _operatorsByCharacter
+```
+

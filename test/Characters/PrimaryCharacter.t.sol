@@ -13,6 +13,11 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
     address public bob = address(0x2222);
     address public carol = address(0x3333);
 
+    uint256 DEFAULT_PERMISSION_BITMAP = ~uint256(0) << 20;
+    uint256 OPERATORSIGN_PERMISSION_BITMAP = ~uint256(0) << 176;
+    uint256 OPERATORSYNC_PERMISSION_BITMAP = ~uint256(0) << 236;
+    uint256 DEFAULT_NOTE_PERMISSION_BITMAP = ~uint256(0) >> 250;
+
     function setUp() public {
         _setUp();
     }
@@ -35,11 +40,20 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         assertEq(web3Entry.getPrimaryCharacterId(bob), 1);
 
         // User should transfer the primary character, and then their primary character and operator should be unset
-        web3Entry.setOperator(Const.FIRST_CHARACTER_ID, carol);
-        assertEq(web3Entry.getOperator(Const.FIRST_NOTE_ID), carol);
+        // web3Entry.setOperator(Const.FIRST_CHARACTER_ID, carol);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            carol,
+            DEFAULT_NOTE_PERMISSION_BITMAP
+        );
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, carol),
+            DEFAULT_NOTE_PERMISSION_BITMAP
+        );
         web3Entry.transferFrom(bob, alice, Const.FIRST_NOTE_ID);
         assertEq(web3Entry.getPrimaryCharacterId(bob), 0);
-        assertEq(web3Entry.getOperator(Const.FIRST_NOTE_ID), address(0));
+        assertEq(web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, carol), 0);
+        assertEq(web3Entry.getOperators(Const.FIRST_CHARACTER_ID).length, 0);
         vm.stopPrank();
     }
 
@@ -85,7 +99,8 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         web3Entry.burn(2);
         assertEq(web3Entry.getPrimaryCharacterId(carol), 0);
         assertEq(web3Entry.getHandle(2), "");
-        assertEq(web3Entry.getOperator(2), address(0));
+        // assertEq(web3Entry.getOperator(2), address(0));
+        // TODO get operators
         DataTypes.Character memory userCharacter = web3Entry.getCharacter(2);
         assertEq(userCharacter.noteCount, 0);
         assertEq(userCharacter.characterId, 0);

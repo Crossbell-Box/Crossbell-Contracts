@@ -90,7 +90,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     }
 
     function setUri(uint256 tokenId, string memory _uri) external {
-        require(_exists(tokenId), "Linklist: setUri for nonexistent token");
+        require(_linklistOwners[tokenId] != 0, "Linklist: setUri for nonexistent token");
         _validateCallerIsWeb3EntryOrOwner(tokenId);
 
         _uris[tokenId] = _uri;
@@ -410,25 +410,23 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         return _getTokenUri(tokenId);
     }
 
-    function migrate(uint256 start, uint256 limit) public {
-        for (uint256 i = start; i < limit; i++) {
-            uint256 characterId = currentTakeOver[i];
-            if (characterId > 0 && _linklistOwners[i] == 0) {
-                // set owner and balances
-                _linklistOwners[i] = characterId;
-                _linklistBalances[characterId] += 1;
-                // update token count
-                _tokenCount += 1;
-            }
-        }
-    }
-
     function _transfer(
         address,
         address,
         uint256
     ) internal pure override {
-        revert("non-transferable");
+        // this function will do nothing, as linklist is a character bounded token
+        // users should never transfer a linklist directly
+    }
+
+    function _safeTransfer(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) internal pure override {
+        // this function will do nothing, as linklist is a character bounded token
+        // users should never transfer a linklist directly
     }
 
     function _getTokenUri(uint256 tokenId) internal view returns (string memory) {

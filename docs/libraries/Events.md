@@ -68,6 +68,18 @@ event AddOperator(uint256 characterId, address operator, uint256 timestamp)
 event RemoveOperator(uint256 characterId, address operator, uint256 timestamp)
 ```
 
+### GrantOperatorPermissions
+
+```solidity
+event GrantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap)
+```
+
+### GrantOperatorPermissions4Note
+
+```solidity
+event GrantOperatorPermissions4Note(uint256 characterId, uint256 noteId, address operator, uint256 permissionBitMap)
+```
+
 ### SetCharacterUri
 
 ```solidity

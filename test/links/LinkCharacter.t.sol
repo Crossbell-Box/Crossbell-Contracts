@@ -69,9 +69,9 @@ contract LinkProfileTest is Test, SetUp, Utils {
     }
 
     function testLinkCharacterFail() public {
-        // NotCharacterOwner
+        // NotEnoughPermission
         vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
                 Const.FIRST_CHARACTER_ID,
@@ -166,7 +166,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
         );
 
         // unlink
-        vm.expectRevert(abi.encodePacked("NotCharacterOwnerNorOperator"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
         vm.prank(bob);
         web3Entry.unlinkCharacter(
             DataTypes.unlinkCharacterData(

@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "../interfaces/IWeb3Entry.sol";
+import "../libraries/OP.sol";
 
 /**
  * @dev Implementation of a contract to keep characters for others. The address with
@@ -139,13 +140,26 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
         require(msg.sender == web3Entry, "NewbieVilla: receive unknown token");
         // Only admin role could send character to this contract
         require(hasRole(ADMIN_ROLE, operator), "NewbieVilla: receive unknown character");
+
         if (data.length == 0) {
-            IWeb3Entry(web3Entry).addOperator(tokenId, operator);
+            IWeb3Entry(web3Entry).grantOperatorPermissions(
+                tokenId,
+                operator,
+                OP.OPERATOR_SIGN_PERMISSION_BITMAP
+            );
         } else {
             address selectedOperator = abi.decode(data, (address));
-            IWeb3Entry(web3Entry).addOperator(tokenId, selectedOperator);
+            IWeb3Entry(web3Entry).grantOperatorPermissions(
+                tokenId,
+                selectedOperator,
+                OP.OPERATOR_SIGN_PERMISSION_BITMAP
+            );
         }
-        IWeb3Entry(web3Entry).addOperator(tokenId, xsyncOperator);
+        IWeb3Entry(web3Entry).grantOperatorPermissions(
+            tokenId,
+            xsyncOperator,
+            OP.OPERATOR_SYNC_PERMISSION_BITMAP
+        );
         return IERC721Receiver.onERC721Received.selector;
     }
 }
