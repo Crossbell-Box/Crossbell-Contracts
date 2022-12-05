@@ -71,6 +71,7 @@ contract Web3Entry is Web3EntryBase {
             uint256 characterId = characterIds[i];
             address operator = _operatorByCharacter[characterId];
             if (operator != address(0)) {
+                _operatorsByCharacter[characterId].add(operator);
                 _setOperatorPermissions(characterId, operator, OP.OPERATOR_SIGN_PERMISSION_BITMAP);
             }
 
