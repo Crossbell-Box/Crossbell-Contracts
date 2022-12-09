@@ -603,7 +603,6 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // users can't remove an operator by setOperator
         web3Entry.setOperator(Const.FIRST_CHARACTER_ID, address(0));
-        uint256 bitmap = web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob);
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
             OP.OPERATOR_SIGN_PERMISSION_BITMAP

@@ -134,7 +134,7 @@ contract Web3EntryBase is
     // opSign permission
     function setLinklistUri(uint256 linklistId, string calldata uri) external {
         uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
-        _validateCallerPermission(ownerCharacterId, OP.SET_LINK_LIST_URI);
+        _validateCallerPermission(ownerCharacterId, OP.SET_LINKLIST_URI);
 
         ILinklist(_linklist).setUri(linklistId, uri);
     }
@@ -269,13 +269,13 @@ contract Web3EntryBase is
     }
 
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external {
-        _validateCallerPermission(vars.fromCharacterId, OP.LINK_ANY_URI);
+        _validateCallerPermission(vars.fromCharacterId, OP.LINK_ANYURI);
 
         LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external {
-        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ANY_URI);
+        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ANYURI);
 
         LinkLogic.unlinkAnyUri(
             vars,
@@ -285,13 +285,13 @@ contract Web3EntryBase is
     }
 
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
-        _validateCallerPermission(vars.fromCharacterId, OP.LINK_LINK_LIST);
+        _validateCallerPermission(vars.fromCharacterId, OP.LINK_LINKLIST);
 
         LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external {
-        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_LINK_LIST);
+        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_LINKLIST);
 
         LinkLogic.unlinkLinklist(
             vars,
@@ -366,7 +366,7 @@ contract Web3EntryBase is
         // get character id of the owner of this linklist
         uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(vars.linklistId);
 
-        _validateCallerPermission(ownerCharacterId, OP.SET_LINK_MODULE_FOR_LINK_LIST);
+        _validateCallerPermission(ownerCharacterId, OP.SET_LINK_MODULE_FOR_LINKLIST);
 
         LinkModuleLogic.setLinkModule4Linklist(
             vars.linklistId,
@@ -515,7 +515,7 @@ contract Web3EntryBase is
         external
         returns (uint256)
     {
-        _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_LINK_LIST);
+        _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_LINKLIST);
 
         bytes32 linkItemType = Constants.NoteLinkTypeLinklist;
         bytes32 linkKey = bytes32(toLinklistId);
@@ -586,7 +586,7 @@ contract Web3EntryBase is
         external
         returns (uint256)
     {
-        _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_ANY_URI);
+        _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_ANYURI);
 
         bytes32 linkItemType = Constants.NoteLinkTypeAnyUri;
         bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);

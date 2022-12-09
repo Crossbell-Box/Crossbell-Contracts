@@ -60,7 +60,7 @@ contract Web3Entry is Web3EntryBase {
     }
 
     /**
-     * @notice Migrates operators permissions to operatorsAuthBitMap
+     * @notice Migrates operators permissions to operatorsSignBitMap
      * @param characterIds List of characters to migrate.
      * @dev `addOperator`, `removeOperator`, `setOperator` will all be deprecated soon. We recommend to use
      *  `migrateOperator` to grant OPERATOR_SIGN_PERMISSION_BITMAP to all previous operators.

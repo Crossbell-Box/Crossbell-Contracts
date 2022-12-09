@@ -30,7 +30,7 @@ library OP {
 
     // [176, 235] for operator sign permissions
     uint8 internal constant SET_CHARACTER_URI = 176;
-    uint8 internal constant SET_LINK_LIST_URI = 177;
+    uint8 internal constant SET_LINKLIST_URI = 177;
     uint8 internal constant LINK_CHARACTER = 178;
     uint8 internal constant UNLINK_CHARACTER = 179;
     uint8 internal constant CREATE_THEN_LINK_CHARACTER = 180;
@@ -40,23 +40,23 @@ library OP {
     uint8 internal constant UNLINK_ERC721 = 184;
     uint8 internal constant LINK_ADDRESS = 185;
     uint8 internal constant UNLINK_ADDRESS = 186;
-    uint8 internal constant LINK_ANY_URI = 187;
-    uint8 internal constant UNLINK_ANY_URI = 188;
-    uint8 internal constant LINK_LINK_LIST = 189;
-    uint8 internal constant UNLINK_LINK_LIST = 190;
+    uint8 internal constant LINK_ANYURI = 187;
+    uint8 internal constant UNLINK_ANYURI = 188;
+    uint8 internal constant LINK_LINKLIST = 189;
+    uint8 internal constant UNLINK_LINKLIST = 190;
     uint8 internal constant SET_LINK_MODULE_FOR_CHARACTER = 191;
     uint8 internal constant SET_LINK_MODULE_FOR_NOTE = 192;
-    uint8 internal constant SET_LINK_MODULE_FOR_LINK_LIST = 193;
+    uint8 internal constant SET_LINK_MODULE_FOR_LINKLIST = 193;
     uint8 internal constant SET_MINT_MODULE_FOR_NOTE = 194;
     uint8 internal constant SET_NOTE_URI = 195;
     uint8 internal constant LOCK_NOTE = 196;
     uint8 internal constant DELETE_NOTE = 197;
     uint8 internal constant POST_NOTE_FOR_CHARACTER = 198;
     uint8 internal constant POST_NOTE_FOR_ADDRESS = 199;
-    uint8 internal constant POST_NOTE_FOR_LINK_LIST = 200;
+    uint8 internal constant POST_NOTE_FOR_LINKLIST = 200;
     uint8 internal constant POST_NOTE_FOR_NOTE = 201;
     uint8 internal constant POST_NOTE_FOR_ERC721 = 202;
-    uint8 internal constant POST_NOTE_FOR_ANY_URI = 203;
+    uint8 internal constant POST_NOTE_FOR_ANYURI = 203;
     uint256 internal constant OPERATOR_SIGN_PERMISSION_BITMAP = ~uint256(0) << 176;
 
     // [236, 255] for operator sync permission
