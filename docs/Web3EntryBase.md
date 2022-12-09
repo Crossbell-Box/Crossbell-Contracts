@@ -14,10 +14,16 @@ uint256 REVISION
 function initialize(string _name, string _symbol, address _linklistContract, address _mintNFTImpl, address _periphery, address _resolver) external
 ```
 
-### _setCharacterUri
+### grantOperatorPermissions
 
 ```solidity
-function _setCharacterUri(uint256, string) public virtual
+function grantOperatorPermissions(uint256, address, uint256) external virtual
+```
+
+### grantOperatorPermissions4Note
+
+```solidity
+function grantOperatorPermissions4Note(uint256, uint256, address, uint256) external virtual
 ```
 
 ### createCharacter
@@ -43,13 +49,13 @@ function _createCharacter(struct DataTypes.CreateCharacterData vars) internal
 ### setHandle
 
 ```solidity
-function setHandle(uint256, string) external virtual
+function setHandle(uint256 characterId, string newHandle) external
 ```
 
 ### setSocialToken
 
 ```solidity
-function setSocialToken(uint256, address) external virtual
+function setSocialToken(uint256 characterId, address tokenAddress) external
 ```
 
 ### setPrimaryCharacterId
@@ -64,40 +70,28 @@ function setPrimaryCharacterId(uint256 characterId) external
 function setCharacterUri(uint256 characterId, string newUri) external
 ```
 
-### grantOperatorPermissions
-
-```solidity
-function grantOperatorPermissions(uint256, address, uint256) external virtual
-```
-
-### grantOperatorPermissions4Note
-
-```solidity
-function grantOperatorPermissions4Note(uint256, uint256, address, uint256) external virtual
-```
-
 ### setLinklistUri
 
 ```solidity
-function setLinklistUri(uint256, string) external virtual
+function setLinklistUri(uint256 linklistId, string uri) external
 ```
 
 ### linkCharacter
 
 ```solidity
-function linkCharacter(struct DataTypes.linkCharacterData) external virtual
+function linkCharacter(struct DataTypes.linkCharacterData vars) external
 ```
 
 ### unlinkCharacter
 
 ```solidity
-function unlinkCharacter(struct DataTypes.unlinkCharacterData) external virtual
+function unlinkCharacter(struct DataTypes.unlinkCharacterData vars) external
 ```
 
 ### createThenLinkCharacter
 
 ```solidity
-function createThenLinkCharacter(struct DataTypes.createThenLinkCharacterData) external virtual
+function createThenLinkCharacter(struct DataTypes.createThenLinkCharacterData vars) external
 ```
 
 ### _createThenLinkCharacter
@@ -109,68 +103,73 @@ function _createThenLinkCharacter(uint256 fromCharacterId, address to, bytes32 l
 ### linkNote
 
 ```solidity
-function linkNote(struct DataTypes.linkNoteData) external virtual
+function linkNote(struct DataTypes.linkNoteData vars) external
 ```
 
 ### unlinkNote
 
 ```solidity
-function unlinkNote(struct DataTypes.unlinkNoteData) external virtual
+function unlinkNote(struct DataTypes.unlinkNoteData vars) external
 ```
 
 ### linkERC721
 
 ```solidity
-function linkERC721(struct DataTypes.linkERC721Data) external virtual
+function linkERC721(struct DataTypes.linkERC721Data vars) external
 ```
 
 ### unlinkERC721
 
 ```solidity
-function unlinkERC721(struct DataTypes.unlinkERC721Data) external virtual
+function unlinkERC721(struct DataTypes.unlinkERC721Data vars) external
 ```
 
 ### linkAddress
 
 ```solidity
-function linkAddress(struct DataTypes.linkAddressData) external virtual
+function linkAddress(struct DataTypes.linkAddressData vars) external
 ```
 
 ### unlinkAddress
 
 ```solidity
-function unlinkAddress(struct DataTypes.unlinkAddressData) external virtual
+function unlinkAddress(struct DataTypes.unlinkAddressData vars) external
 ```
 
 ### linkAnyUri
 
 ```solidity
-function linkAnyUri(struct DataTypes.linkAnyUriData) external virtual
+function linkAnyUri(struct DataTypes.linkAnyUriData vars) external
 ```
 
 ### unlinkAnyUri
 
 ```solidity
-function unlinkAnyUri(struct DataTypes.unlinkAnyUriData) external virtual
+function unlinkAnyUri(struct DataTypes.unlinkAnyUriData vars) external
 ```
 
 ### linkLinklist
 
 ```solidity
-function linkLinklist(struct DataTypes.linkLinklistData) external virtual
+function linkLinklist(struct DataTypes.linkLinklistData vars) external
 ```
 
 ### unlinkLinklist
 
 ```solidity
-function unlinkLinklist(struct DataTypes.unlinkLinklistData) external virtual
+function unlinkLinklist(struct DataTypes.unlinkLinklistData vars) external
 ```
 
 ### setLinkModule4Linklist
 
 ```solidity
-function setLinkModule4Linklist(struct DataTypes.setLinkModule4LinklistData) external virtual
+function setLinkModule4Linklist(struct DataTypes.setLinkModule4LinklistData vars) external
 ```
+
+Set linkModule for a ERC721 token that you own.
+
+_Operators can't setLinkModule4ERC721, because operators are set for 
+     characters but erc721 tokens belong to address and not characters._
 
 ### setLinkModule4Address
 
@@ -192,25 +191,25 @@ function mintNote(struct DataTypes.MintNoteData vars) external returns (uint256)
 ### setMintModule4Note
 
 ```solidity
-function setMintModule4Note(struct DataTypes.setMintModule4NoteData) external virtual
+function setMintModule4Note(struct DataTypes.setMintModule4NoteData vars) external
 ```
 
 ### postNote
 
 ```solidity
-function postNote(struct DataTypes.PostNoteData) external virtual returns (uint256)
+function postNote(struct DataTypes.PostNoteData vars) external returns (uint256)
 ```
 
 ### setNoteUri
 
 ```solidity
-function setNoteUri(uint256, uint256, string) external virtual
+function setNoteUri(uint256 characterId, uint256 noteId, string newUri) external
 ```
 
 ### lockNote
 
 ```solidity
-function lockNote(uint256, uint256) external virtual
+function lockNote(uint256 characterId, uint256 noteId) external
 ```
 
 lockNote put a note into a immutable state where no modifications are 
@@ -219,43 +218,43 @@ lockNote put a note into a immutable state where no modifications are
 ### deleteNote
 
 ```solidity
-function deleteNote(uint256, uint256) external virtual
+function deleteNote(uint256 characterId, uint256 noteId) external
 ```
 
 ### postNote4Character
 
 ```solidity
-function postNote4Character(struct DataTypes.PostNoteData, uint256) external virtual returns (uint256)
+function postNote4Character(struct DataTypes.PostNoteData postNoteData, uint256 toCharacterId) external returns (uint256)
 ```
 
 ### postNote4Address
 
 ```solidity
-function postNote4Address(struct DataTypes.PostNoteData, address) external virtual returns (uint256)
+function postNote4Address(struct DataTypes.PostNoteData noteData, address ethAddress) external returns (uint256)
 ```
 
 ### postNote4Linklist
 
 ```solidity
-function postNote4Linklist(struct DataTypes.PostNoteData, uint256) external virtual returns (uint256)
+function postNote4Linklist(struct DataTypes.PostNoteData noteData, uint256 toLinklistId) external returns (uint256)
 ```
 
 ### postNote4Note
 
 ```solidity
-function postNote4Note(struct DataTypes.PostNoteData, struct DataTypes.NoteStruct) external virtual returns (uint256)
+function postNote4Note(struct DataTypes.PostNoteData postNoteData, struct DataTypes.NoteStruct note) external returns (uint256)
 ```
 
 ### postNote4ERC721
 
 ```solidity
-function postNote4ERC721(struct DataTypes.PostNoteData, struct DataTypes.ERC721Struct) external virtual returns (uint256)
+function postNote4ERC721(struct DataTypes.PostNoteData postNoteData, struct DataTypes.ERC721Struct erc721) external returns (uint256)
 ```
 
 ### postNote4AnyUri
 
 ```solidity
-function postNote4AnyUri(struct DataTypes.PostNoteData, string) external virtual returns (uint256)
+function postNote4AnyUri(struct DataTypes.PostNoteData postNoteData, string uri) external returns (uint256)
 ```
 
 ### burn
@@ -267,8 +266,25 @@ function burn(uint256 tokenId) public
 ### getOperators
 
 ```solidity
-function getOperators(uint256) external view virtual returns (address[])
+function getOperators(uint256 characterId) external view returns (address[])
 ```
+
+Get operator list of a character. This operator list has only a sole purpose, which is
+keeping records of keys of `operatorsPermissionBitMap`. Thus, addresses queried by this function
+not always have operator permissions. Keep in mind don't use this function to check
+authorizations!!!
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | ID of your character that you want to check. |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | address[] | All keys of operatorsPermission4NoteBitMap. |
 
 ### getOperatorPermissions4Note
 
@@ -378,6 +394,18 @@ function getLinklistContract() external view returns (address)
 function _validateCallerIsCharacterOwner(uint256 characterId) internal view
 ```
 
+### _validateCallerPermission
+
+```solidity
+function _validateCallerPermission(uint256, uint256) internal view virtual
+```
+
+### _validateCallerPermission4Note
+
+```solidity
+function _validateCallerPermission4Note(uint256, uint256, uint256) internal view virtual
+```
+
 ### _validateCharacterExists
 
 ```solidity
@@ -405,24 +433,24 @@ function getRevision() external pure returns (uint256)
 ### isOperator
 
 ```solidity
-function isOperator(uint256 characterId, address operator) external view virtual returns (bool)
+function isOperator(uint256, address) external view virtual returns (bool)
 ```
 
 ### addOperator
 
 ```solidity
-function addOperator(uint256 characterId, address operator) external virtual
+function addOperator(uint256, address) external virtual
 ```
 
 ### removeOperator
 
 ```solidity
-function removeOperator(uint256 characterId, address operator) external virtual
+function removeOperator(uint256, address) external virtual
 ```
 
 ### setOperator
 
 ```solidity
-function setOperator(uint256 characterId, address operator) external virtual
+function setOperator(uint256, address) external virtual
 ```
 

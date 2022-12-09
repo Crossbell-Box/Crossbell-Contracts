@@ -14,6 +14,8 @@ function initialize(string _name, string _symbol, address _linklistContract, add
 function createCharacter(struct DataTypes.CreateCharacterData vars) external
 ```
 
+EXTERNAL VIEW FUNCTIONS
+
 ### setHandle
 
 ```solidity
@@ -134,6 +136,12 @@ function linkLinklist(struct DataTypes.linkLinklistData vars) external
 function unlinkLinklist(struct DataTypes.unlinkLinklistData vars) external
 ```
 
+### setLinkModule4Linklist
+
+```solidity
+function setLinkModule4Linklist(struct DataTypes.setLinkModule4LinklistData vars) external
+```
+
 ### setLinkModule4Address
 
 ```solidity
@@ -217,6 +225,8 @@ function postNote4AnyUri(struct DataTypes.PostNoteData postNoteData, string uri)
 ```solidity
 function getOperators(uint256 characterId) external view returns (address[])
 ```
+
+VIEW FUNCTIONS
 
 ### getOperatorPermissions
 

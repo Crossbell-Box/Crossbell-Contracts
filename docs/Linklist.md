@@ -290,16 +290,16 @@ function getLinkType(uint256 tokenId) external view returns (bytes32)
 function Uri(uint256 tokenId) external view returns (string)
 ```
 
-### migrate
-
-```solidity
-function migrate(uint256 start, uint256 limit) public
-```
-
 ### _transfer
 
 ```solidity
 function _transfer(address, address, uint256) internal pure
+```
+
+### _safeTransfer
+
+```solidity
+function _safeTransfer(address, address, uint256, bytes) internal pure
 ```
 
 ### _getTokenUri
