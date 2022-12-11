@@ -328,7 +328,7 @@ contract Web3EntryBase is
         _validateCallerPermission4Note(
             vars.characterId,
             vars.noteId,
-            OP.NOTE_SET_LINK_MODULE_FOR_NOTE
+            OP.SET_LINK_MODULE_FOR_NOTE
         );
         _validateNoteExists(vars.characterId, vars.noteId);
 
@@ -406,12 +406,7 @@ contract Web3EntryBase is
     }
 
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external {
-        _validateCallerPermission(vars.characterId, OP.SET_MINT_MODULE_FOR_NOTE);
-        _validateCallerPermission4Note(
-            vars.characterId,
-            vars.noteId,
-            OP.NOTE_SET_MINT_MODULE_FOR_NOTE
-        );
+        _validateCallerPermission4Note(vars.characterId, vars.noteId, OP.SET_LINK_MODULE_FOR_NOTE);
         _validateNoteExists(vars.characterId, vars.noteId);
 
         LinkModuleLogic.setMintModule4Note(
@@ -437,8 +432,7 @@ contract Web3EntryBase is
         uint256 noteId,
         string calldata newUri
     ) external {
-        _validateCallerPermission(characterId, OP.SET_NOTE_URI);
-        _validateCallerPermission4Note(characterId, noteId, OP.NOTE_SET_NOTE_URI);
+        _validateCallerPermission4Note(characterId, noteId, OP.SET_NOTE_URI);
         _validateNoteExists(characterId, noteId);
         PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
     }
@@ -448,8 +442,7 @@ contract Web3EntryBase is
      allowed. You should call this method to announce that this is the final version.
      */
     function lockNote(uint256 characterId, uint256 noteId) external {
-        _validateCallerPermission(characterId, OP.LOCK_NOTE);
-        _validateCallerPermission4Note(characterId, noteId, OP.NOTE_LOCK_NOTE);
+        _validateCallerPermission4Note(characterId, noteId, OP.LOCK_NOTE);
         _validateNoteExists(characterId, noteId);
 
         _noteByIdByCharacter[characterId][noteId].locked = true;
@@ -458,8 +451,7 @@ contract Web3EntryBase is
     }
 
     function deleteNote(uint256 characterId, uint256 noteId) external {
-        _validateCallerPermission(characterId, OP.DELETE_NOTE);
-        _validateCallerPermission4Note(characterId, noteId, OP.NOTE_DELETE_NOTE);
+        _validateCallerPermission4Note(characterId, noteId, OP.DELETE_NOTE);
         _validateNoteExists(characterId, noteId);
 
         _noteByIdByCharacter[characterId][noteId].deleted = true;

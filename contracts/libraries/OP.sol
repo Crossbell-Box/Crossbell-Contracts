@@ -25,6 +25,7 @@ library OP {
     uint8 internal constant SET_HANDLE = 0;
     uint8 internal constant SET_SOCIAL_TOKEN = 1;
     uint8 internal constant GRANT_OPERATOR_PERMISSIONS = 2;
+    uint8 internal constant GRANT_OPERATOR_PERMISSIONS_FOR_NOTE = 3;
 
     // [21, 175] are reserved for future
 
@@ -62,11 +63,4 @@ library OP {
     // [236, 255] for operator sync permission
     uint8 internal constant POST_NOTE = 236;
     uint256 internal constant OPERATOR_SYNC_PERMISSION_BITMAP = ~uint256(0) << 236;
-
-    // below are permissions for note
-    uint8 internal constant NOTE_SET_LINK_MODULE_FOR_NOTE = 0;
-    uint8 internal constant NOTE_SET_MINT_MODULE_FOR_NOTE = 1;
-    uint8 internal constant NOTE_SET_NOTE_URI = 2;
-    uint8 internal constant NOTE_LOCK_NOTE = 3;
-    uint8 internal constant NOTE_DELETE_NOTE = 4;
 }

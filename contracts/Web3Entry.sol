@@ -27,7 +27,7 @@ contract Web3Entry is Web3EntryBase {
         address operator,
         uint256 permissionBitMap
     ) external override {
-        _validateCallerIsCharacterOwner(characterId);
+        _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS);
         if (permissionBitMap == 0) {
             _operatorsByCharacter[characterId].remove(operator);
         } else {
@@ -53,7 +53,7 @@ contract Web3Entry is Web3EntryBase {
         address operator,
         uint256 permissionBitMap
     ) external override {
-        _validateCallerIsCharacterOwner(characterId);
+        _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS_FOR_NOTE);
         _validateNoteExists(characterId, noteId);
         _operatorsPermission4NoteBitMap[characterId][noteId][operator] = permissionBitMap;
         emit Events.GrantOperatorPermissions4Note(characterId, noteId, operator, permissionBitMap);
@@ -193,9 +193,8 @@ contract Web3Entry is Web3EntryBase {
             msg.sender == owner ||
                 (tx.origin == owner && msg.sender == periphery) ||
                 (((_operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] >>
-                    permissionId) & 1) ==
-                    1 ||
-                    _operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] == 0),
+                    permissionId) & 1) == 1) ||
+                (((_operatorsPermissionBitMap[characterId][msg.sender] >> permissionId) & 1) == 1),
             "NotEnoughPermissionForThisNote"
         );
     }

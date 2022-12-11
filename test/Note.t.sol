@@ -98,7 +98,7 @@ contract NoteTest is Test, SetUp, Utils {
 
     function testUpdateNoteFail() public {
         // NotEnoughPermission
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPermissionForThisNote"));
         vm.prank(bob);
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
@@ -166,7 +166,7 @@ contract NoteTest is Test, SetUp, Utils {
 
     function testLockNoteFail() public {
         // NotEnoughPermission
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPermissionForThisNote"));
         vm.prank(bob);
         web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 
@@ -238,7 +238,7 @@ contract NoteTest is Test, SetUp, Utils {
 
     function testDeleteNoteFail() public {
         // NotEnoughPermission
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPermissionForThisNote"));
         vm.prank(bob);
         web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 
