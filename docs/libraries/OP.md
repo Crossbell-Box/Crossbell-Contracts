@@ -36,6 +36,12 @@ uint8 SET_SOCIAL_TOKEN
 uint8 GRANT_OPERATOR_PERMISSIONS
 ```
 
+### GRANT_OPERATOR_PERMISSIONS_FOR_NOTE
+
+```solidity
+uint8 GRANT_OPERATOR_PERMISSIONS_FOR_NOTE
+```
+
 ### SET_CHARACTER_URI
 
 ```solidity
@@ -220,35 +226,5 @@ uint8 POST_NOTE
 
 ```solidity
 uint256 OPERATOR_SYNC_PERMISSION_BITMAP
-```
-
-### NOTE_SET_LINK_MODULE_FOR_NOTE
-
-```solidity
-uint8 NOTE_SET_LINK_MODULE_FOR_NOTE
-```
-
-### NOTE_SET_MINT_MODULE_FOR_NOTE
-
-```solidity
-uint8 NOTE_SET_MINT_MODULE_FOR_NOTE
-```
-
-### NOTE_SET_NOTE_URI
-
-```solidity
-uint8 NOTE_SET_NOTE_URI
-```
-
-### NOTE_LOCK_NOTE
-
-```solidity
-uint8 NOTE_LOCK_NOTE
-```
-
-### NOTE_DELETE_NOTE
-
-```solidity
-uint8 NOTE_DELETE_NOTE
 ```
 

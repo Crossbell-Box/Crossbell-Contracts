@@ -193,8 +193,9 @@ contract Web3Entry is Web3EntryBase {
             msg.sender == owner ||
                 (tx.origin == owner && msg.sender == periphery) ||
                 (((_operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] >>
-                    permissionId) & 1) == 1) ||
-                (((_operatorsPermissionBitMap[characterId][msg.sender] >> permissionId) & 1) == 1),
+                    permissionId) & 1) == 1 ||
+                    (_operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] == 0 &&
+                        ((_operatorsPermissionBitMap[characterId][msg.sender] >> permissionId) & 1) == 1)),
             "NotEnoughPermissionForThisNote"
         );
     }
