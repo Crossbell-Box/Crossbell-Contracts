@@ -167,11 +167,23 @@ function _validateCallerPermission(uint256 characterId, uint256 permissionId) in
 function _validateCallerPermission4Note(uint256 characterId, uint256 noteId, uint256 permissionId) internal view
 ```
 
-### _validateBitmap
+### _bitmapFilter
 
 ```solidity
-function _validateBitmap(uint256 bitmap) internal
+function _bitmapFilter(uint256 bitmap) internal returns (uint256)
 ```
+
+__bitmapFilter unsets bits of non-existent permission IDs to zero. These unset permission IDs are 
+     meaningless now, but they are reserved for future use, so it's best to leave them blank and avoid messing
+      up with future methods._
+
+### _checkBit
+
+```solidity
+function _checkBit(uint256 x, uint256 i) internal view returns (bool)
+```
+
+__checkBit checks if the value of the i'th bit of x is 1_
 
 ### _setOperatorPermissions
 

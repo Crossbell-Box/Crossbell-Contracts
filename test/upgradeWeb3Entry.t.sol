@@ -164,7 +164,7 @@ contract UpgradeWeb3Entry is Test, Utils {
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DefaultOP.DEFAULT_PERMISSION_BITMAP
+            OP.DEFAULT_PERMISSION_BITMAP
         );
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
@@ -188,7 +188,7 @@ contract UpgradeWeb3Entry is Test, Utils {
             )
         );
         bytes32 valueAtOperatorBitmapSlot = vm.load(address(proxyWeb3Entry), operatorBitmapSlot);
-        assertEq32(valueAtOperatorBitmapSlot, bytes32(DefaultOP.DEFAULT_PERMISSION_BITMAP));
+        assertEq32(valueAtOperatorBitmapSlot, bytes32(OP.DEFAULT_PERMISSION_BITMAP));
 
         // check carol
         operatorBitmapSlot = keccak256(

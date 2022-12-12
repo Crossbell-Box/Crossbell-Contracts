@@ -226,7 +226,7 @@ contract Web3Entry is Web3EntryBase {
       up with future methods.
      */
     function _bitmapFilter(uint256 bitmap) internal returns (uint256) {
-        uint256 filteredBitmap = bitmap & OP.ALLOWED_PERMISSION_BITMAP;
+        uint256 filteredBitmap = bitmap & OP.ALLOWED_PERMISSION_BITMAP_MASK;
         return filteredBitmap;
     }
 
