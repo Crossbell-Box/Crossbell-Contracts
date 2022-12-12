@@ -566,7 +566,7 @@ contract OperatorTest is Test, SetUp, Utils {
             (1 << 192) | (1 << 194) | (1 << 195) | (1 << 196)
         );
 
-        // alice grant bob all note permission except LOCK_NOTE permission (access to all notes)
+        // alice grant carol all note permission except LOCK_NOTE permission (access to the first note only)
         web3Entry.grantOperatorPermissions4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
@@ -590,6 +590,22 @@ contract OperatorTest is Test, SetUp, Utils {
         );
 
         // carol can't lock note
+        vm.prank(carol);
+        vm.expectRevert(abi.encodePacked("NotEnoughPermissionForThisNote"));
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+
+        // grant carol with operator permission will not be effective until you revoke the previous note permissions.
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            carol,
+            OP.OPERATOR_SIGN_PERMISSION_BITMAP
+        );
+        // now carol has permission to all notes
+        vm.prank(carol);
+        vm.expectRevert(abi.encodePacked("NotEnoughPermissionForThisNote"));
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        // but carol still have no access to lock note 1, because note permissions always go first before operator permissions
         vm.prank(carol);
         vm.expectRevert(abi.encodePacked("NotEnoughPermissionForThisNote"));
         web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
@@ -803,7 +819,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.OWNER_PERMISSION_BITMAP & OP.ALLOWED_PERMISSION_BITMAP
+            OP.OPERATOR_SYNC_PERMISSION_BITMAP
         );
 
         // carol can not
@@ -811,9 +827,13 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.expectRevert("NotEnoughPermission");
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
-        // // bob can not
-        // vm.prank(bob);
-        // vm.expectRevert("NotEnoughPermission");
-        // web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        // bob can not
+        vm.prank(bob);
+        vm.expectRevert("NotEnoughPermissionForThisNote");
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
     }
 }

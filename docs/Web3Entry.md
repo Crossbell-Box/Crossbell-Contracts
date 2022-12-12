@@ -167,6 +167,12 @@ function _validateCallerPermission(uint256 characterId, uint256 permissionId) in
 function _validateCallerPermission4Note(uint256 characterId, uint256 noteId, uint256 permissionId) internal view
 ```
 
+### _validateBitmap
+
+```solidity
+function _validateBitmap(uint256 bitmap) internal
+```
+
 ### _setOperatorPermissions
 
 ```solidity

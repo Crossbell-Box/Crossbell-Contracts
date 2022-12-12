@@ -65,10 +65,6 @@ library OP {
     uint8 internal constant POST_NOTE = 236;
     uint256 internal constant OPERATOR_SYNC_PERMISSION_BITMAP = 1 << 236;
 
-    uint256 internal constant OWNER_PERMISSION_BITMAP = ~uint256(0) << 4;
-    uint256 internal constant OP_SIGN_PERMISSION_BITMAP =
-        ((~uint256(0) << 176) & (~uint256(0) >> 52)) | (1 << 236);
-    uint256 internal constant OP_SYNC_PERMISION_BITMAP = 1 << 236;
     uint256 internal constant ALLOWED_PERMISSION_BITMAP =
         (~uint256(0) >> 252) | ((~uint256(0) << 176) & (~uint256(0) >> 52)) | (1 << 236);
 }
