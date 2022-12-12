@@ -28,13 +28,12 @@ contract Web3Entry is Web3EntryBase {
         uint256 permissionBitMap
     ) external override {
         _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS);
-        _validateBitmap(permissionBitMap);
         if (permissionBitMap == 0) {
             _operatorsByCharacter[characterId].remove(operator);
         } else {
             _operatorsByCharacter[characterId].add(operator);
         }
-        _setOperatorPermissions(characterId, operator, permissionBitMap);
+        _setOperatorPermissions(characterId, operator, _bitmapFilter(permissionBitMap));
     }
 
     /**
@@ -55,10 +54,14 @@ contract Web3Entry is Web3EntryBase {
         uint256 permissionBitMap
     ) external override {
         _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS_FOR_NOTE);
-        _validateBitmap(permissionBitMap);
         _validateNoteExists(characterId, noteId);
         _operatorsPermission4NoteBitMap[characterId][noteId][operator] = permissionBitMap;
-        emit Events.GrantOperatorPermissions4Note(characterId, noteId, operator, permissionBitMap);
+        emit Events.GrantOperatorPermissions4Note(
+            characterId,
+            noteId,
+            operator,
+            _bitmapFilter(permissionBitMap)
+        );
     }
 
     /**
@@ -177,22 +180,17 @@ contract Web3Entry is Web3EntryBase {
         override
     {
         address owner = ownerOf(characterId);
-        // if msg.sender is not owner,
-        if (msg.sender != owner) {
-            // check if it's periphery,
-            if (!(tx.origin == owner && msg.sender == periphery)) {
-                // if it's not periphery either
-                // check if it has operator permission for this method,
-                if (
-                    ((_operatorsPermissionBitMap[characterId][msg.sender] >> permissionId) & 1) == 1
-                ) {
-                    // validation passed
-                } else {
-                    // if it doesn't have corresponding permission,
-                    revert("NotEnoughPermission"); // then this caller is nothing, we need to revert.
-                }
-            }
-        } else {} // if msg.sender is owner, validation passed
+
+        if (msg.sender == owner) {
+            // check if it's owner
+        } else if (tx.origin == owner && msg.sender == periphery) {
+            // check if it's periphery
+        } else if (
+            _checkBit(_operatorsPermissionBitMap[characterId][msg.sender], permissionId)
+        ) {} else {
+            // if it doesn't have corresponding permission,
+            revert("NotEnoughPermission"); // then this caller is nothing, we need to revert.
+        }
     }
 
     function _validateCallerPermission4Note(
@@ -201,33 +199,42 @@ contract Web3Entry is Web3EntryBase {
         uint256 permissionId
     ) internal view override {
         address owner = ownerOf(characterId);
-
-        if (msg.sender != owner) {
-            // check if it's periphery,
-            if (!(tx.origin == owner && msg.sender == periphery)) {
-                // if it's not periphery either
+        if (msg.sender == owner) {
+            // check if it's owner
+        } else if (tx.origin == owner && msg.sender == periphery) {
+            // check if it's periphery
+        } else if (_operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] == 0) {
+            if (_checkBit(_operatorsPermissionBitMap[characterId][msg.sender], permissionId)) {
                 // check if it has operator permission for this method and if it's open to all notes
-                if (
-                    _operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] == 0 &&
-                    ((_operatorsPermissionBitMap[characterId][msg.sender] >> permissionId) & 1) == 1
-                ) {
-                    // validation passed
-                } else {
-                    // check if it has note permission
-                    if (
-                        ((_operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] >>
-                            permissionId) & 1) == 1
-                    ) {} else {
-                        // if it doesn't have corresponding permission,
-                        revert("NotEnoughPermissionForThisNote"); // then this caller is nothing, we need to revert.
-                    }
-                }
+            } else {
+                revert("NotEnoughPermissionForThisNote");
             }
-        } else {} // if msg.sender is owner, validation passed
+        } else if (
+            ((_operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] >> permissionId) &
+                1) == 1
+        ) {
+            // check if it has note permission
+        } else {
+            // if it doesn't have corresponding permission,
+            revert("NotEnoughPermissionForThisNote"); // then this caller is nothing, we need to revert.
+        }
     }
 
-    function _validateBitmap(uint256 bitmap) internal {
-        require(bitmap == (bitmap & OP.ALLOWED_PERMISSION_BITMAP), "InvalidPermissionBitmap");
+    /**
+     * @dev _bitmapFilter unsets bits of non-existent permission IDs to zero. These unset permission IDs are 
+     meaningless now, but they are reserved for future use, so it's best to leave them blank and avoid messing
+      up with future methods.
+     */
+    function _bitmapFilter(uint256 bitmap) internal returns (uint256) {
+        uint256 filteredBitmap = bitmap & OP.ALLOWED_PERMISSION_BITMAP;
+        return filteredBitmap;
+    }
+
+    /**
+     * @dev _checkBit checks if the value of the i'th bit of x is 1
+     */
+    function _checkBit(uint256 x, uint256 i) internal view returns (bool) {
+        return (x >> i) & 1 == 1;
     }
 
     function _setOperatorPermissions(
