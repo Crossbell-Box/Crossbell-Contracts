@@ -107,7 +107,7 @@ contract UpgradeWeb3Entry is Test, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             bob,
-            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
+            DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP
         );
         assertEq(
             Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions4Note(
@@ -115,7 +115,7 @@ contract UpgradeWeb3Entry is Test, Utils {
                 Const.FIRST_NOTE_ID,
                 bob
             ),
-            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
+            DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP
         );
 
         vm.stopPrank();
@@ -164,7 +164,7 @@ contract UpgradeWeb3Entry is Test, Utils {
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
+            DefaultOP.DEFAULT_PERMISSION_BITMAP
         );
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
@@ -175,7 +175,7 @@ contract UpgradeWeb3Entry is Test, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             bob,
-            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
+            DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP
         );
         vm.stopPrank();
 
@@ -188,7 +188,7 @@ contract UpgradeWeb3Entry is Test, Utils {
             )
         );
         bytes32 valueAtOperatorBitmapSlot = vm.load(address(proxyWeb3Entry), operatorBitmapSlot);
-        assertEq32(valueAtOperatorBitmapSlot, bytes32(DEFAULT_OP.DEFAULT_PERMISSION_BITMAP));
+        assertEq32(valueAtOperatorBitmapSlot, bytes32(DefaultOP.DEFAULT_PERMISSION_BITMAP));
 
         // check carol
         operatorBitmapSlot = keccak256(
@@ -217,6 +217,6 @@ contract UpgradeWeb3Entry is Test, Utils {
             )
         );
         bytes32 valueAtNoteBitmapSlot = vm.load(address(proxyWeb3Entry), noteBitmapSlot);
-        assertEq32(valueAtNoteBitmapSlot, bytes32(DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP));
+        assertEq32(valueAtNoteBitmapSlot, bytes32(DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP));
     }
 }

@@ -58,9 +58,17 @@ library OP {
     uint8 internal constant POST_NOTE_FOR_NOTE = 201;
     uint8 internal constant POST_NOTE_FOR_ERC721 = 202;
     uint8 internal constant POST_NOTE_FOR_ANYURI = 203;
-    uint256 internal constant OPERATOR_SIGN_PERMISSION_BITMAP = ~uint256(0) << 176;
+    uint256 internal constant OPERATOR_SIGN_PERMISSION_BITMAP =
+        ((~uint256(0) << 176) & (~uint256(0) >> 52)) | (1 << 236);
 
     // [236, 255] for operator sync permission
     uint8 internal constant POST_NOTE = 236;
-    uint256 internal constant OPERATOR_SYNC_PERMISSION_BITMAP = ~uint256(0) << 236;
+    uint256 internal constant OPERATOR_SYNC_PERMISSION_BITMAP = 1 << 236;
+
+    uint256 internal constant OWNER_PERMISSION_BITMAP = ~uint256(0) << 4;
+    uint256 internal constant OP_SIGN_PERMISSION_BITMAP =
+        ((~uint256(0) << 176) & (~uint256(0) >> 52)) | (1 << 236);
+    uint256 internal constant OP_SYNC_PERMISION_BITMAP = 1 << 236;
+    uint256 internal constant ALLOWED_PERMISSION_BITMAP =
+        (~uint256(0) >> 252) | ((~uint256(0) << 176) & (~uint256(0) >> 52)) | (1 << 236);
 }

@@ -28,6 +28,7 @@ contract Web3Entry is Web3EntryBase {
         uint256 permissionBitMap
     ) external override {
         _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS);
+        _validateBitmap(permissionBitMap);
         if (permissionBitMap == 0) {
             _operatorsByCharacter[characterId].remove(operator);
         } else {
@@ -54,6 +55,7 @@ contract Web3Entry is Web3EntryBase {
         uint256 permissionBitMap
     ) external override {
         _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS_FOR_NOTE);
+        _validateBitmap(permissionBitMap);
         _validateNoteExists(characterId, noteId);
         _operatorsPermission4NoteBitMap[characterId][noteId][operator] = permissionBitMap;
         emit Events.GrantOperatorPermissions4Note(characterId, noteId, operator, permissionBitMap);
@@ -175,12 +177,22 @@ contract Web3Entry is Web3EntryBase {
         override
     {
         address owner = ownerOf(characterId);
-        require(
-            msg.sender == owner ||
-                (tx.origin == owner && msg.sender == periphery) ||
-                ((_operatorsPermissionBitMap[characterId][msg.sender] >> permissionId) & 1) == 1,
-            "NotEnoughPermission"
-        );
+        // if msg.sender is not owner,
+        if (msg.sender != owner) {
+            // check if it's periphery,
+            if (!(tx.origin == owner && msg.sender == periphery)) {
+                // if it's not periphery either
+                // check if it has operator permission for this method,
+                if (
+                    ((_operatorsPermissionBitMap[characterId][msg.sender] >> permissionId) & 1) == 1
+                ) {
+                    // validation passed
+                } else {
+                    // if it doesn't have corresponding permission,
+                    revert("NotEnoughPermission"); // then this caller is nothing, we need to revert.
+                }
+            }
+        } else {} // if msg.sender is owner, validation passed
     }
 
     function _validateCallerPermission4Note(
@@ -189,15 +201,33 @@ contract Web3Entry is Web3EntryBase {
         uint256 permissionId
     ) internal view override {
         address owner = ownerOf(characterId);
-        require(
-            msg.sender == owner ||
-                (tx.origin == owner && msg.sender == periphery) ||
-                (((_operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] >>
-                    permissionId) & 1) == 1 ||
-                    (_operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] == 0 &&
-                        ((_operatorsPermissionBitMap[characterId][msg.sender] >> permissionId) & 1) == 1)),
-            "NotEnoughPermissionForThisNote"
-        );
+
+        if (msg.sender != owner) {
+            // check if it's periphery,
+            if (!(tx.origin == owner && msg.sender == periphery)) {
+                // if it's not periphery either
+                // check if it has operator permission for this method and if it's open to all notes
+                if (
+                    _operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] == 0 &&
+                    ((_operatorsPermissionBitMap[characterId][msg.sender] >> permissionId) & 1) == 1
+                ) {
+                    // validation passed
+                } else {
+                    // check if it has note permission
+                    if (
+                        ((_operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] >>
+                            permissionId) & 1) == 1
+                    ) {} else {
+                        // if it doesn't have corresponding permission,
+                        revert("NotEnoughPermissionForThisNote"); // then this caller is nothing, we need to revert.
+                    }
+                }
+            }
+        } else {} // if msg.sender is owner, validation passed
+    }
+
+    function _validateBitmap(uint256 bitmap) internal {
+        require(bitmap == (bitmap & OP.ALLOWED_PERMISSION_BITMAP), "InvalidPermissionBitmap");
     }
 
     function _setOperatorPermissions(
