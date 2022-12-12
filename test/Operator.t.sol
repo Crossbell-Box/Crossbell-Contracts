@@ -126,8 +126,76 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testEdgeCases() public {
-        // TODO
+        // make sure that note permissions always go before operator permissions
+        // case 1. grant operator permissions first, then grant note permissions
+        // grant operator permission first
+        vm.startPrank(alice);
+        web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        vm.stopPrank();
+
+        // now bob has permissions for all notes
+        vm.prank(bob);
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
+        vm.prank(bob);
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.SECOND_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
+        
+        // then grant bob a note bitmap with less permissons (all default note permissions except setNoteUri)
         vm.prank(alice);
+        web3Entry.grantOperatorPermissions4Note(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, (1 << 192) | (1 << 194) | (1 << 196) | (1 << 197));
+        vm.startPrank(bob);
+        vm.expectRevert("NotEnoughPermissionForThisNote");
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
+        // but bob still can do other things for this note
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        // and bob still have permissions for note 2
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.SECOND_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
+        vm.stopPrank();
+
+        // case 2. grant note permissions first, then grant operator permissions
+        // grant bob a note bitmap with some permissons (all default note permissions except DELETE_NOTE) for note 2
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions4Note(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID, bob, (1 << 192) | (1 << 194) | (1 << 196) | (1 << 195));
+
+        // now bob has some note permission for note 2
+        vm.startPrank(bob);
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.SECOND_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
+        // but bob can't delete note 2
+        vm.expectRevert("NotEnoughPermissionForThisNote");
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID);
+        vm.stopPrank();
+
+        // then grant bob operator permissions
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        vm.startPrank(bob);
+        // now bob has permissions for all notes
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, 3);
+        // but bob still can't delete note 2
+        vm.expectRevert("NotEnoughPermissionForThisNote");
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID);
     }
 
     function testGetOperatorPermissions4Note() public {

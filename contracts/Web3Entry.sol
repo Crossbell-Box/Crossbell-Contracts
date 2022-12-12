@@ -225,15 +225,14 @@ contract Web3Entry is Web3EntryBase {
      meaningless now, but they are reserved for future use, so it's best to leave them blank and avoid messing
       up with future methods.
      */
-    function _bitmapFilter(uint256 bitmap) internal returns (uint256) {
-        uint256 filteredBitmap = bitmap & OP.ALLOWED_PERMISSION_BITMAP_MASK;
-        return filteredBitmap;
+    function _bitmapFilter(uint256 bitmap) internal pure returns (uint256) {
+        return bitmap & OP.ALLOWED_PERMISSION_BITMAP_MASK;
     }
 
     /**
      * @dev _checkBit checks if the value of the i'th bit of x is 1
      */
-    function _checkBit(uint256 x, uint256 i) internal view returns (bool) {
+    function _checkBit(uint256 x, uint256 i) internal pure returns (bool) {
         return (x >> i) & 1 == 1;
     }
 

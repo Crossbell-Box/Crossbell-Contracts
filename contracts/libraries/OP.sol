@@ -21,13 +21,15 @@ pragma solidity 0.8.10;
 */
 
 library OP {
+    uint256 internal constant UINT256_MAX = ~uint256(0);
+    
     // [0,20] for owner permissions
     uint8 internal constant SET_HANDLE = 0;
     uint8 internal constant SET_SOCIAL_TOKEN = 1;
     uint8 internal constant GRANT_OPERATOR_PERMISSIONS = 2;
     uint8 internal constant GRANT_OPERATOR_PERMISSIONS_FOR_NOTE = 3;
     // set [0, 3] bit index
-    uint256 internal constant OWNER_PERMISSION_BITMAP = ~(~uint256(0) << 4);
+    uint256 internal constant OWNER_PERMISSION_BITMAP = ~(UINT256_MAX << 4);
 
     // [21, 175] are reserved for future
 
@@ -61,8 +63,8 @@ library OP {
     uint8 internal constant POST_NOTE_FOR_ERC721 = 202;
     uint8 internal constant POST_NOTE_FOR_ANYURI = 203;
     // set [176,204] bit index
-    uint256 internal constant OPERATOR_SIGN_PERMISSION_BITMAP = ((~uint256(0) << 176) &
-        ~(~uint256(0) << 204));
+    uint256 internal constant OPERATOR_SIGN_PERMISSION_BITMAP = ((UINT256_MAX << 176) &
+        ~(UINT256_MAX << 204));
 
     // [236, 255] for operator sync permissions
     uint8 internal constant POST_NOTE = 236;
