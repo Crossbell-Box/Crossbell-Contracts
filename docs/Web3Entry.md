@@ -170,7 +170,7 @@ function _validateCallerPermission4Note(uint256 characterId, uint256 noteId, uin
 ### _bitmapFilter
 
 ```solidity
-function _bitmapFilter(uint256 bitmap) internal returns (uint256)
+function _bitmapFilter(uint256 bitmap) internal pure returns (uint256)
 ```
 
 __bitmapFilter unsets bits of non-existent permission IDs to zero. These unset permission IDs are 
@@ -180,7 +180,7 @@ __bitmapFilter unsets bits of non-existent permission IDs to zero. These unset p
 ### _checkBit
 
 ```solidity
-function _checkBit(uint256 x, uint256 i) internal view returns (bool)
+function _checkBit(uint256 x, uint256 i) internal pure returns (bool)
 ```
 
 __checkBit checks if the value of the i'th bit of x is 1_

@@ -43,7 +43,7 @@ contract Web3Entry is Web3EntryBase {
      * @param operator Address to grant operator permissions to.
      * @param permissionBitMap an uint256 bitmap used for finer grained operator permissions controls over notes
      * @dev Every bit in permissionBitMap stands for a single note that this character posted.
-     * The notes are open to all operators who are granted with note permissions by default, until the Permissions4Note are set.
+     * The level of note permissions is above operator permissions. When both note permissions and operator permissions exist at the same time, note permissions prevail.
      * With grantOperatorPermissions4Note, users can restrict permissions on individual notes,
      * for example: I authorize bob to set uri for my notes, but only for my third notes(noteId = 3).
      */
@@ -74,11 +74,6 @@ contract Web3Entry is Web3EntryBase {
         // set default permissions bitmap
         for (uint256 i = 0; i < characterIds.length; ++i) {
             uint256 characterId = characterIds[i];
-            address operator = _operatorByCharacter[characterId];
-            if (operator != address(0)) {
-                _operatorsByCharacter[characterId].add(operator);
-                _setOperatorPermissions(characterId, operator, OP.OPERATOR_SIGN_PERMISSION_BITMAP);
-            }
 
             address[] memory operators = _operatorsByCharacter[characterId].values();
             for (uint256 j = 0; j < operators.length; ++j) {

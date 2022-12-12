@@ -22,7 +22,7 @@ pragma solidity 0.8.10;
 
 library OP {
     uint256 internal constant UINT256_MAX = ~uint256(0);
-    
+
     // [0,20] for owner permissions
     uint8 internal constant SET_HANDLE = 0;
     uint8 internal constant SET_SOCIAL_TOKEN = 1;

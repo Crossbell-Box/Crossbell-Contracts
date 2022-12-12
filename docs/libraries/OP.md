@@ -18,6 +18,12 @@ so the bitmap looks like this:
 |------------|------------|------------|----------|
 |255------236|235------176|175-------21|20-------0|_
 
+### UINT256_MAX
+
+```solidity
+uint256 UINT256_MAX
+```
+
 ### SET_HANDLE
 
 ```solidity

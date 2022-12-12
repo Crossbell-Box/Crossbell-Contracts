@@ -130,7 +130,11 @@ contract OperatorTest is Test, SetUp, Utils {
         // case 1. grant operator permissions first, then grant note permissions
         // grant operator permission first
         vm.startPrank(alice);
-        web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
@@ -149,10 +153,15 @@ contract OperatorTest is Test, SetUp, Utils {
             Const.SECOND_NOTE_ID,
             Const.MOCK_NEW_NOTE_URI
         );
-        
+
         // then grant bob a note bitmap with less permissons (all default note permissions except setNoteUri)
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions4Note(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, (1 << 192) | (1 << 194) | (1 << 196) | (1 << 197));
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob,
+            (1 << 192) | (1 << 194) | (1 << 196) | (1 << 197)
+        );
         vm.startPrank(bob);
         vm.expectRevert("NotEnoughPermissionForThisNote");
         web3Entry.setNoteUri(
@@ -173,7 +182,12 @@ contract OperatorTest is Test, SetUp, Utils {
         // case 2. grant note permissions first, then grant operator permissions
         // grant bob a note bitmap with some permissons (all default note permissions except DELETE_NOTE) for note 2
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions4Note(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID, bob, (1 << 192) | (1 << 194) | (1 << 196) | (1 << 195));
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.SECOND_NOTE_ID,
+            bob,
+            (1 << 192) | (1 << 194) | (1 << 196) | (1 << 195)
+        );
 
         // now bob has some note permission for note 2
         vm.startPrank(bob);
@@ -189,7 +203,11 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // then grant bob operator permissions
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
         vm.startPrank(bob);
         // now bob has permissions for all notes
         web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, 3);
