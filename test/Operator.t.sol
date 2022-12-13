@@ -214,6 +214,34 @@ contract OperatorTest is Test, SetUp, Utils {
         // but bob still can't delete note 2
         vm.expectRevert("NotEnoughPermissionForThisNote");
         web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID);
+        vm.stopPrank();
+
+        // case 3. grant dick some note operator permissions, then unset dick's all
+        // permission over note 2
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            dick,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+
+        // now dick have right for all notes
+        vm.prank(dick);
+        web3Entry.setNoteUri(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID, Const.MOCK_NOTE_URI);
+
+        // now unset dick's all note permissions
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.SECOND_NOTE_ID,
+            dick,
+            0
+        );
+
+        // now dick has no permissions over note 2
+        vm.prank(dick);
+        vm.expectRevert("NotEnoughPermissionForThisNote");
+        web3Entry.setNoteUri(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID, Const.MOCK_NOTE_URI);
     }
 
     function testGetOperatorPermissions4Note() public {
