@@ -160,7 +160,7 @@ contract OperatorTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             bob,
-            (1 << 192) | (1 << 194) | (1 << 196) | (1 << 197)
+            (1 << 0) | (1 << 1) | (1 << 3) | (1 << 4)
         );
         vm.startPrank(bob);
         vm.expectRevert("NotEnoughPermissionForThisNote");
@@ -186,7 +186,7 @@ contract OperatorTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.SECOND_NOTE_ID,
             bob,
-            (1 << 192) | (1 << 194) | (1 << 196) | (1 << 195)
+            (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3)
         );
 
         // now bob has some note permission for note 2
@@ -662,7 +662,7 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            (1 << 192) | (1 << 194) | (1 << 195) | (1 << 196)
+            (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3)
         );
 
         // alice grant carol all note permission except LOCK_NOTE permission (access to the first note only)
@@ -670,7 +670,7 @@ contract OperatorTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             carol,
-            (1 << 192) | (1 << 194) | (1 << 195) | (1 << 197)
+            (1 << 0) | (1 << 1) | (1 << 2) | (1 << 4)
         );
         vm.stopPrank();
 

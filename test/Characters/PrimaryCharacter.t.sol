@@ -41,11 +41,11 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             carol,
-            DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP
+            OP.DEFAULT_PERMISSION_BITMAP
         );
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, carol),
-            DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP
+            OP.DEFAULT_PERMISSION_BITMAP
         );
         web3Entry.transferFrom(bob, alice, Const.FIRST_NOTE_ID);
         assertEq(web3Entry.getPrimaryCharacterId(bob), 0);

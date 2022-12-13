@@ -41,7 +41,7 @@ function grantOperatorPermissions4Note(uint256 characterId, uint256 noteId, addr
 Grant an address as an operator and authorize it with custom permissions for a single note.
 
 _Every bit in permissionBitMap stands for a single note that this character posted.
-The notes are open to all operators who are granted with note permissions by default, until the Permissions4Note are set.
+The level of note permissions is above operator permissions. When both note permissions and operator permissions exist at the same time, note permissions prevail.
 With grantOperatorPermissions4Note, users can restrict permissions on individual notes,
 for example: I authorize bob to set uri for my notes, but only for my third notes(noteId = 3)._
 

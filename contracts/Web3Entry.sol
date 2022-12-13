@@ -55,12 +55,14 @@ contract Web3Entry is Web3EntryBase {
     ) external override {
         _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS_FOR_NOTE);
         _validateNoteExists(characterId, noteId);
-        _operatorsPermission4NoteBitMap[characterId][noteId][operator] = permissionBitMap;
+        _operatorsPermission4NoteBitMap[characterId][noteId][operator] = _noteBitmapFilter(
+            permissionBitMap
+        );
         emit Events.GrantOperatorPermissions4Note(
             characterId,
             noteId,
             operator,
-            _bitmapFilter(permissionBitMap)
+            _noteBitmapFilter(permissionBitMap)
         );
     }
 
@@ -191,7 +193,8 @@ contract Web3Entry is Web3EntryBase {
     function _validateCallerPermission4Note(
         uint256 characterId,
         uint256 noteId,
-        uint256 permissionId
+        uint256 permissionId,
+        uint256 notePermissionId
     ) internal view override {
         address owner = ownerOf(characterId);
         if (msg.sender == owner) {
@@ -205,8 +208,10 @@ contract Web3Entry is Web3EntryBase {
                 revert("NotEnoughPermissionForThisNote");
             }
         } else if (
-            ((_operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] >> permissionId) &
-                1) == 1
+            _checkBit(
+                _operatorsPermission4NoteBitMap[characterId][noteId][msg.sender],
+                notePermissionId
+            )
         ) {
             // check if it has note permission
         } else {
@@ -222,6 +227,12 @@ contract Web3Entry is Web3EntryBase {
      */
     function _bitmapFilter(uint256 bitmap) internal pure returns (uint256) {
         return bitmap & OP.ALLOWED_PERMISSION_BITMAP_MASK;
+    }
+
+    function _noteBitmapFilter(uint256 noteBitmap) internal pure returns (uint256) {
+        return
+            (noteBitmap & OP.ALLOWED_NOTE_PERMISSION_BITMAP_MASK) |
+            OP.RESERVED_NOTE_PERMISSION_BITMAP;
     }
 
     /**
