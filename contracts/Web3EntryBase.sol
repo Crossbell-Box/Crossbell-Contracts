@@ -66,6 +66,12 @@ contract Web3EntryBase is
         uint256
     ) external virtual {}
 
+    function disableNotePermission(
+        uint256 characterId,
+        uint256 noteId,
+        address operator
+    ) external virtual {}
+
     /**
      * This method creates a character with the given parameters to the given address.
      *

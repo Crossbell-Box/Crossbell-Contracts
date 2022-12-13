@@ -52,6 +52,12 @@ library Events {
         uint256 permissionBitMap
     );
 
+    event DisableNotePermission(
+        uint256 indexed characterId,
+        uint256 indexed noteId,
+        address indexed operator
+    );
+
     event SetCharacterUri(uint256 indexed characterId, string newUri);
 
     event PostNote(

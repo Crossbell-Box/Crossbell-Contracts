@@ -41,6 +41,12 @@ interface IWeb3Entry {
         uint256 permissionBitMap
     ) external;
 
+    function disableNotePermission(
+        uint256 characterId,
+        uint256 noteId,
+        address operator
+    ) external;
+
     function setLinklistUri(uint256 linkListId, string calldata uri) external;
 
     function linkAddress(DataTypes.linkAddressData calldata vars) external;

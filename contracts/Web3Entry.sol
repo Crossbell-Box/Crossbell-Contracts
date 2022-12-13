@@ -65,7 +65,12 @@ contract Web3Entry is Web3EntryBase {
             true,
             uint128(_noteBitmapFilter(permissionBitMap))
         );
-        emit Events.GrantOperatorPermissions4Note(characterId, noteId, operator, _noteBitmapFilter(permissionBitMap));
+        emit Events.GrantOperatorPermissions4Note(
+            characterId,
+            noteId,
+            operator,
+            _noteBitmapFilter(permissionBitMap)
+        );
     }
 
     /**
@@ -217,7 +222,7 @@ contract Web3Entry is Web3EntryBase {
             } else {
                 revert("NotEnoughPermissionForThisNote");
             }
-        }  else if (_checkBit(_operatorsPermissionBitMap[characterId][msg.sender], permissionId)) {
+        } else if (_checkBit(_operatorsPermissionBitMap[characterId][msg.sender], permissionId)) {
             // the operator permission is allowed
         } else {
             // then this caller is nothing, we need to revert.
@@ -229,9 +234,14 @@ contract Web3Entry is Web3EntryBase {
     * @dev disableNotePermission sets the `enable` to false in NotePermissionBitMap, which means turning off 
     the note permission control for this note and sticking with operator permission control.
      */
-    function disableNotePermission(uint256 characterId, uint256 noteId, address operator) external {
+    function disableNotePermission(
+        uint256 characterId,
+        uint256 noteId,
+        address operator
+    ) external override {
         _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS_FOR_NOTE);
         _operatorsPermission4NoteBitMap[characterId][noteId][operator].enabled = false;
+        emit Events.DisableNotePermission(characterId, noteId, operator);
     }
 
     /**
@@ -247,8 +257,7 @@ contract Web3Entry is Web3EntryBase {
      * @dev _noteBitmapFilter unsets bits of non-existent permission IDs to zero and sets the reserve bitmap(ID = 255) to 1.
      */
     function _noteBitmapFilter(uint256 noteBitmap) internal pure returns (uint256) {
-        return
-            (noteBitmap & OP.ALLOWED_NOTE_PERMISSION_BITMAP_MASK);
+        return (noteBitmap & OP.ALLOWED_NOTE_PERMISSION_BITMAP_MASK);
     }
 
     /**
