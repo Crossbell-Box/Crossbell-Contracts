@@ -8,11 +8,16 @@ import "./libraries/OP.sol";
 contract Web3Entry is Web3EntryBase {
     using EnumerableSet for EnumerableSet.AddressSet;
 
+    struct NotePermissionBitMap {
+        bool enabled;
+        uint128 bitmap;
+    }
+
     // characterId => operator => permissionsBitMap
     mapping(uint256 => mapping(address => uint256)) internal _operatorsPermissionBitMap; // slot 25
 
     // characterId => noteId => operator => permissionsBitMap4Note
-    mapping(uint256 => mapping(uint256 => mapping(address => uint256)))
+    mapping(uint256 => mapping(uint256 => mapping(address => NotePermissionBitMap)))
         internal _operatorsPermission4NoteBitMap; // slot 26
 
     /**
@@ -55,15 +60,12 @@ contract Web3Entry is Web3EntryBase {
     ) external override {
         _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS_FOR_NOTE);
         _validateNoteExists(characterId, noteId);
-        _operatorsPermission4NoteBitMap[characterId][noteId][operator] = _noteBitmapFilter(
-            permissionBitMap
+
+        _operatorsPermission4NoteBitMap[characterId][noteId][operator] = NotePermissionBitMap(
+            true,
+            uint128(_noteBitmapFilter(permissionBitMap))
         );
-        emit Events.GrantOperatorPermissions4Note(
-            characterId,
-            noteId,
-            operator,
-            _noteBitmapFilter(permissionBitMap)
-        );
+        emit Events.GrantOperatorPermissions4Note(characterId, noteId, operator, _noteBitmapFilter(permissionBitMap));
     }
 
     /**
@@ -168,7 +170,7 @@ contract Web3Entry is Web3EntryBase {
         uint256 noteId,
         address operator
     ) external view override returns (uint256) {
-        return _operatorsPermission4NoteBitMap[characterId][noteId][operator];
+        return _operatorsPermission4NoteBitMap[characterId][noteId][operator].bitmap;
     }
 
     function _validateCallerPermission(uint256 characterId, uint256 permissionId)
@@ -198,26 +200,38 @@ contract Web3Entry is Web3EntryBase {
     ) internal view override {
         address owner = ownerOf(characterId);
         if (msg.sender == owner) {
-            // check if it's owner
+            // caller is character owner
         } else if (tx.origin == owner && msg.sender == periphery) {
-            // check if it's periphery
-        } else if (_operatorsPermission4NoteBitMap[characterId][noteId][msg.sender] == 0) {
-            if (_checkBit(_operatorsPermissionBitMap[characterId][msg.sender], permissionId)) {
-                // check if it has operator permission for this method and if it's open to all notes
+            // caller is periphery
+        } else if (
+            _operatorsPermission4NoteBitMap[characterId][noteId][msg.sender].enabled == true
+        ) {
+            // the note permissions bitmap is enabled
+            if (
+                _checkBit(
+                    _operatorsPermission4NoteBitMap[characterId][noteId][msg.sender].bitmap,
+                    notePermissionId
+                )
+            ) {
+                // the method for this note is allowed
             } else {
                 revert("NotEnoughPermissionForThisNote");
             }
-        } else if (
-            _checkBit(
-                _operatorsPermission4NoteBitMap[characterId][noteId][msg.sender],
-                notePermissionId
-            )
-        ) {
-            // check if it has note permission
+        }  else if (_checkBit(_operatorsPermissionBitMap[characterId][msg.sender], permissionId)) {
+            // the operator permission is allowed
         } else {
-            // if it doesn't have corresponding permission,
-            revert("NotEnoughPermissionForThisNote"); // then this caller is nothing, we need to revert.
+            // then this caller is nothing, we need to revert.
+            revert("NotEnoughPermissionForThisNote");
         }
+    }
+
+    /**
+    * @dev disableNotePermission sets the `enable` to false in NotePermissionBitMap, which means turning off 
+    the note permission control for this note and sticking with operator permission control.
+     */
+    function disableNotePermission(uint256 characterId, uint256 noteId, address operator) external {
+        _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS_FOR_NOTE);
+        _operatorsPermission4NoteBitMap[characterId][noteId][operator].enabled = false;
     }
 
     /**
@@ -229,10 +243,12 @@ contract Web3Entry is Web3EntryBase {
         return bitmap & OP.ALLOWED_PERMISSION_BITMAP_MASK;
     }
 
+    /**
+     * @dev _noteBitmapFilter unsets bits of non-existent permission IDs to zero and sets the reserve bitmap(ID = 255) to 1.
+     */
     function _noteBitmapFilter(uint256 noteBitmap) internal pure returns (uint256) {
         return
-            (noteBitmap & OP.ALLOWED_NOTE_PERMISSION_BITMAP_MASK) |
-            OP.RESERVED_NOTE_PERMISSION_BITMAP;
+            (noteBitmap & OP.ALLOWED_NOTE_PERMISSION_BITMAP_MASK);
     }
 
     /**

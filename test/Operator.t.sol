@@ -57,6 +57,9 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testGrantNoteOperatorPermission() public {
+        vm.startPrank(alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Events.GrantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
@@ -64,7 +67,6 @@ contract OperatorTest is Test, SetUp, Utils {
             OP.DEFAULT_PERMISSION_BITMAP
         );
 
-        vm.startPrank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
@@ -78,12 +80,28 @@ contract OperatorTest is Test, SetUp, Utils {
             bob,
             DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP
         );
-        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+
         web3Entry.grantOperatorPermissions4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             bob,
             DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP
+        );
+
+        // test note bitmap is correctly filtered
+        web3Entry.grantOperatorPermissions4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob,
+            UINT256_MAX
+        );
+        assertEq(
+            web3Entry.getOperatorPermissions4Note(
+                Const.FIRST_CHARACTER_ID,
+                Const.FIRST_NOTE_ID,
+                bob
+            ),
+            OP.ALLOWED_NOTE_PERMISSION_BITMAP_MASK
         );
     }
 
@@ -730,8 +748,7 @@ contract OperatorTest is Test, SetUp, Utils {
         );
         // now carol has permission to all notes
         vm.prank(carol);
-        vm.expectRevert(abi.encodePacked("NotEnoughPermissionForThisNote"));
-        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID);
         // but carol still have no access to lock note 1, because note permissions always go first before operator permissions
         vm.prank(carol);
         vm.expectRevert(abi.encodePacked("NotEnoughPermissionForThisNote"));

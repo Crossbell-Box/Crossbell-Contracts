@@ -86,15 +86,6 @@ library OP {
     uint8 internal constant NOTE_LOCK_NOTE = 3;
     uint8 internal constant NOTE_DELETE_NOTE = 4;
 
-    /** This reserved index doesn't present any method permissions, but it's neccesary to 
-    differentiate 2 scenarios below:
-    1. the note permissions are unset
-    2. the note permissions are set, but all methods are disabled
-    */
-    uint8 internal constant RESERVE_INDEX = 255;
-    uint256 internal constant RESERVED_NOTE_PERMISSION_BITMAP = 1 << 255;
-
     // bitmap mask with all current-in-use note methods to 1
-    uint256 internal constant ALLOWED_NOTE_PERMISSION_BITMAP_MASK =
-        (UINT256_MAX >> 251) | (1 << 255);
+    uint256 internal constant ALLOWED_NOTE_PERMISSION_BITMAP_MASK = (UINT256_MAX >> 251);
 }
