@@ -20,7 +20,7 @@ contract Web3Entry is Web3EntryBase {
     }
     // characterId => noteId => Operators4Note
     // only for set note uri
-    mapping(uint256 => mapping(uint256 => Operators4Note)) internal _operators4Note;
+    mapping(uint256 => mapping(uint256 => Operators4Note)) internal _operators4Note; // slot 27
 
     function hasNotePermission(
         uint256 characterId,
