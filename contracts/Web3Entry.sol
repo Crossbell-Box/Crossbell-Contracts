@@ -251,13 +251,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     /**
-     * @dev _noteBitmapFilter unsets bits of non-existent permission IDs to zero and sets the reserve bitmap(ID = 255) to 1.
-     */
-    function _noteBitmapFilter(uint256 noteBitmap) internal pure returns (uint256) {
-        return (noteBitmap & OP.ALLOWED_NOTE_PERMISSION_BITMAP_MASK);
-    }
-
-    /**
      * @dev _checkBit checks if the value of the i'th bit of x is 1
      */
     function _checkBit(uint256 x, uint256 i) internal pure returns (bool) {

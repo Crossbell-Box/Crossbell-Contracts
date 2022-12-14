@@ -14,7 +14,6 @@ import "./helpers/utils.sol";
 import "./helpers/SetUp.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "../contracts/libraries/OP.sol";
-import "./helpers/DefaultOP.sol";
 
 contract OperatorTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
@@ -608,112 +607,85 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
-    // function testOperator4NoteCan() public {
-    //     // alice grant bob as OP.OPERATOR_SIGN_PERMISSION_BITMAP permission
-    //     vm.startPrank(alice);
-    //     web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
-    //     web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
-    //     web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
-    //     // ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
+    function testOperator4NoteCan() public {
+        // alice grant bob as OP.OPERATOR_SIGN_PERMISSION_BITMAP permission
+        vm.startPrank(alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        // ApprovalLinkModule4Note linkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
 
-    //     web3Entry.grantOperatorPermissions(
-    //         Const.FIRST_CHARACTER_ID,
-    //         bob,
-    //         OP.OPERATOR_SIGN_PERMISSION_BITMAP
-    //     );
-    //     web3Entry.grantOperatorPermissions4Note(
-    //         Const.FIRST_CHARACTER_ID,
-    //         Const.SECOND_NOTE_ID,
-    //         carol,
-    //         DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP
-    //     );
-    //     vm.stopPrank();
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.OPERATOR_SIGN_PERMISSION_BITMAP
+        );
+        vm.stopPrank();
 
-    //     // setLinkModule4Note
-    //     vm.startPrank(bob);
-    //     /*
-    //   web3Entry.setLinkModule4Note(
-    //       DataTypes.setLinkModule4NoteData(
-    //           Const.FIRST_CHARACTER_ID,
-    //           Const.FIRST_NOTE_ID,
-    //           address(linkModule4Note),
-    //           new bytes(0)
-    //       )
-    //   );
-    //   */
+        // setLinkModule4Note
+        vm.startPrank(bob);
+        /*
+      web3Entry.setLinkModule4Note(
+          DataTypes.setLinkModule4NoteData(
+              Const.FIRST_CHARACTER_ID,
+              Const.FIRST_NOTE_ID,
+              address(linkModule4Note),
+              new bytes(0)
+          )
+      );
+      */
 
-    //     // setMintModule4Note
-    //     ApprovalMintModule mintModule = new ApprovalMintModule(address(web3Entry));
-    //     web3Entry.setMintModule4Note(
-    //         DataTypes.setMintModule4NoteData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             Const.FIRST_NOTE_ID,
-    //             address(mintModule),
-    //             new bytes(0)
-    //         )
-    //     );
+        // setMintModule4Note
+        ApprovalMintModule mintModule = new ApprovalMintModule(address(web3Entry));
+        web3Entry.setMintModule4Note(
+            DataTypes.setMintModule4NoteData(
+                Const.FIRST_CHARACTER_ID,
+                Const.FIRST_NOTE_ID,
+                address(mintModule),
+                new bytes(0)
+            )
+        );
 
-    //     // setNoteUri
-    //     web3Entry.setNoteUri(
-    //         Const.FIRST_CHARACTER_ID,
-    //         Const.FIRST_NOTE_ID,
-    //         Const.MOCK_NEW_NOTE_URI
-    //     );
+        // setNoteUri
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
 
-    //     // lockNote
-    //     web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        // lockNote
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 
-    //     // delete note
-    //     web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
-    //     vm.stopPrank();
+        // delete note
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        vm.stopPrank();
 
-    //     vm.startPrank(carol);
+        vm.prank(alice);
+        web3Entry.addOperators4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.SECOND_NOTE_ID,
+            blacklist,
+            whitelist
+        );
 
-    //     // setNoteUri
-    //     web3Entry.setNoteUri(
-    //         Const.FIRST_CHARACTER_ID,
-    //         Const.SECOND_NOTE_ID,
-    //         Const.MOCK_NEW_NOTE_URI
-    //     );
+        vm.prank(carol);
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.SECOND_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
 
-    //     // setMintModule4Note
-    //     web3Entry.setMintModule4Note(
-    //         DataTypes.setMintModule4NoteData(
-    //             Const.FIRST_CHARACTER_ID,
-    //             Const.SECOND_NOTE_ID,
-    //             address(mintModule),
-    //             new bytes(0)
-    //         )
-    //     );
-
-    //     // lockNote
-    //     web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID);
-
-    //     // delete note
-    //     web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID);
-
-    //     vm.stopPrank();
-
-    //     // alice grant all permission to bob(including owner permissions)
-    //     vm.prank(alice);
-    //     web3Entry.grantOperatorPermissions(
-    //         Const.FIRST_CHARACTER_ID,
-    //         bob,
-    //         OP.ALLOWED_PERMISSION_BITMAP_MASK
-    //     );
-    //     vm.startPrank(bob);
-    //     web3Entry.grantOperatorPermissions(
-    //         Const.FIRST_CHARACTER_ID,
-    //         carol,
-    //         OP.OPERATOR_SIGN_PERMISSION_BITMAP
-    //     );
-    //     web3Entry.grantOperatorPermissions4Note(
-    //         Const.FIRST_CHARACTER_ID,
-    //         3,
-    //         carol,
-    //         DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP
-    //     );
-    // }
+        // alice grant all permission to bob(including owner permissions)
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            dick,
+            OP.ALLOWED_PERMISSION_BITMAP_MASK
+        );
+        vm.startPrank(dick);
+        web3Entry.addOperators4Note(Const.FIRST_CHARACTER_ID, 3, blacklist, whitelist);
+        web3Entry.removeOperators4Note(Const.FIRST_CHARACTER_ID, 3, blacklist, whitelist);
+    }
 
     function testOperator4NoteFail() public {
         // case 1. bob's operator permission is on, but bob is in blacklist

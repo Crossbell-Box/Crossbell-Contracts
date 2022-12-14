@@ -14,7 +14,6 @@ import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import "./helpers/Const.sol";
 import "./helpers/SetUp.sol";
 import "./helpers/utils.sol";
-import "./helpers/DefaultOP.sol";
 
 contract UpgradeWeb3Entry is Test, Utils {
     Web3EntryBase web3EntryBaseImpl;
