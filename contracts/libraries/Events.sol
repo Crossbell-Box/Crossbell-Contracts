@@ -45,17 +45,18 @@ library Events {
         uint256 permissionBitMap
     );
 
-    event GrantOperatorPermissions4Note(
-        uint256 indexed characterId,
-        uint256 indexed noteId,
-        address indexed operator,
-        uint256 permissionBitMap
+    event AddOperators4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address[] blacklist,
+        address[] whitelist
     );
 
-    event DisableNotePermission(
-        uint256 indexed characterId,
-        uint256 indexed noteId,
-        address indexed operator
+    event RemoveOperators4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address[] blacklist,
+        address[] whitelist
     );
 
     event SetCharacterUri(uint256 indexed characterId, string newUri);

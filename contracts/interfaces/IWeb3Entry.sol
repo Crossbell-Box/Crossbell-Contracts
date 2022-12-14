@@ -34,17 +34,18 @@ interface IWeb3Entry {
         uint256 permissionBitMap
     ) external;
 
-    function grantOperatorPermissions4Note(
+    function addOperators4Note(
         uint256 characterId,
         uint256 noteId,
-        address operator,
-        uint256 permissionBitMap
+        address[] calldata blacklist,
+        address[] calldata whitelist
     ) external;
 
-    function disableNotePermission(
+    function removeOperators4Note(
         uint256 characterId,
         uint256 noteId,
-        address operator
+        address[] calldata blacklist,
+        address[] calldata whitelist
     ) external;
 
     function setLinklistUri(uint256 linkListId, string calldata uri) external;
@@ -153,11 +154,10 @@ interface IWeb3Entry {
         view
         returns (uint256);
 
-    function getOperatorPermissions4Note(
-        uint256 characterId,
-        uint256 noteId,
-        address operator
-    ) external view returns (uint256);
+    function getOperators4Note(uint256 characterId, uint256 noteId)
+        external
+        view
+        returns (address[] memory blacklist, address[] memory whitelist);
 
     function getPrimaryCharacterId(address account) external view returns (uint256);
 

@@ -58,68 +58,68 @@ contract UpgradeWeb3Entry is Test, Utils {
         vm.stopPrank();
     }
 
-    function testCheckStorage() public {
-        // use web3entryBase to generate some data
-        Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice)
-        );
-        Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob)
-        );
+    // function testCheckStorage() public {
+    //     // use web3entryBase to generate some data
+    //     Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
+    //         makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice)
+    //     );
+    //     Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
+    //         makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob)
+    //     );
 
-        // upgrade web3Entry
-        web3EntryImpl = new Web3Entry();
-        vm.prank(admin);
-        proxyWeb3Entry.upgradeTo(address(web3EntryImpl));
+    //     // upgrade web3Entry
+    //     web3EntryImpl = new Web3Entry();
+    //     vm.prank(admin);
+    //     proxyWeb3Entry.upgradeTo(address(web3EntryImpl));
 
-        vm.startPrank(alice);
-        Web3Entry(address(proxyWeb3Entry)).postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
-        // grant operator sign permission to bob
-        Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
-            Const.FIRST_CHARACTER_ID,
-            bob,
-            OP.OPERATOR_SIGN_PERMISSION_BITMAP
-        );
-        assertEq(
-            Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions(
-                Const.FIRST_CHARACTER_ID,
-                bob
-            ),
-            OP.OPERATOR_SIGN_PERMISSION_BITMAP
-        );
+    //     vm.startPrank(alice);
+    //     Web3Entry(address(proxyWeb3Entry)).postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+    //     // grant operator sign permission to bob
+    //     Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
+    //         Const.FIRST_CHARACTER_ID,
+    //         bob,
+    //         OP.OPERATOR_SIGN_PERMISSION_BITMAP
+    //     );
+    //     assertEq(
+    //         Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions(
+    //             Const.FIRST_CHARACTER_ID,
+    //             bob
+    //         ),
+    //         OP.OPERATOR_SIGN_PERMISSION_BITMAP
+    //     );
 
-        // grant operator sync permission to carol
-        Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
-            Const.FIRST_CHARACTER_ID,
-            carol,
-            OP.OPERATOR_SYNC_PERMISSION_BITMAP
-        );
-        assertEq(
-            Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions(
-                Const.FIRST_CHARACTER_ID,
-                carol
-            ),
-            OP.OPERATOR_SYNC_PERMISSION_BITMAP
-        );
+    //     // grant operator sync permission to carol
+    //     Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
+    //         Const.FIRST_CHARACTER_ID,
+    //         carol,
+    //         OP.OPERATOR_SYNC_PERMISSION_BITMAP
+    //     );
+    //     assertEq(
+    //         Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions(
+    //             Const.FIRST_CHARACTER_ID,
+    //             carol
+    //         ),
+    //         OP.OPERATOR_SYNC_PERMISSION_BITMAP
+    //     );
 
-        // grant NOTE_SET_NOTE_URI permission to bob
-        Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            bob,
-            DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP
-        );
-        assertEq(
-            Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions4Note(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_NOTE_ID,
-                bob
-            ),
-            DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP
-        );
+    //     // grant NOTE_SET_NOTE_URI permission to bob
+    //     Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions4Note(
+    //         Const.FIRST_CHARACTER_ID,
+    //         Const.FIRST_NOTE_ID,
+    //         bob,
+    //         DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP
+    //     );
+    //     assertEq(
+    //         Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions4Note(
+    //             Const.FIRST_CHARACTER_ID,
+    //             Const.FIRST_NOTE_ID,
+    //             bob
+    //         ),
+    //         DefaultOP.DEFAULT_NOTE_PERMISSION_BITMAP
+    //     );
 
-        vm.stopPrank();
-    }
+    //     vm.stopPrank();
+    // }
 
     // TODO test upgrade
     // function testSlot() public {

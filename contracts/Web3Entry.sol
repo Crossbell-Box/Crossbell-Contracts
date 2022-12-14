@@ -1,24 +1,102 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity 0.8.10;
-
 import "./Web3EntryBase.sol";
 import "./libraries/OP.sol";
 
 contract Web3Entry is Web3EntryBase {
     using EnumerableSet for EnumerableSet.AddressSet;
-
     struct NotePermissionBitMap {
         bool enabled;
         uint128 bitmap;
     }
-
     // characterId => operator => permissionsBitMap
     mapping(uint256 => mapping(address => uint256)) internal _operatorsPermissionBitMap; // slot 25
-
     // characterId => noteId => operator => permissionsBitMap4Note
     mapping(uint256 => mapping(uint256 => mapping(address => NotePermissionBitMap)))
         internal _operatorsPermission4NoteBitMap; // slot 26
+    struct Operators4Note {
+        EnumerableSet.AddressSet blacklist;
+        EnumerableSet.AddressSet whitelist;
+    }
+    // characterId => noteId => Operators4Note
+    // only for set note uri
+    mapping(uint256 => mapping(uint256 => Operators4Note)) internal _operators4Note;
+
+    function hasNotePermission(
+        uint256 characterId,
+        uint256 noteId,
+        address operator
+    ) external view returns (bool) {
+        return _hasNotePermission(characterId, noteId, operator);
+    }
+
+    function _hasNotePermission(
+        uint256 characterId,
+        uint256 noteId,
+        address operator
+    ) internal view returns (bool) {
+        // check blacklist
+        if (_operators4Note[characterId][noteId].blacklist.contains(operator)) {
+            return false;
+        }
+        // check whitelist
+        if (_operators4Note[characterId][noteId].whitelist.contains(operator)) {
+            return true;
+        }
+        // check character operator permission
+        return _checkBit(_operatorsPermissionBitMap[characterId][operator], OP.SET_NOTE_URI);
+    }
+
+    function addOperators4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address[] calldata blacklist,
+        address[] calldata whitelist
+    ) external override {
+        _validateCallerPermission(characterId, OP.ADD_OPERATORS_FOR_NOTE);
+        _validateNoteExists(characterId, noteId);
+        // add blacklist
+        for (uint256 i = 0; i < blacklist.length; i++) {
+            _operators4Note[characterId][noteId].blacklist.add(blacklist[i]);
+        }
+        // add whitelist
+        for (uint256 i = 0; i < whitelist.length; i++) {
+            _operators4Note[characterId][noteId].whitelist.add(whitelist[i]);
+        }
+
+        emit Events.AddOperators4Note(characterId, noteId, blacklist, whitelist);
+    }
+
+    function removeOperators4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address[] calldata blacklist,
+        address[] calldata whitelist
+    ) external override {
+        _validateCallerPermission(characterId, OP.REMOVE_OPERATORS_FOR_NOTE);
+        _validateNoteExists(characterId, noteId);
+        // remove blacklist
+        for (uint256 i = 0; i < blacklist.length; i++) {
+            _operators4Note[characterId][noteId].blacklist.remove(blacklist[i]);
+        }
+        // remove whitelist
+        for (uint256 i = 0; i < whitelist.length; i++) {
+            _operators4Note[characterId][noteId].whitelist.remove(whitelist[i]);
+        }
+
+        emit Events.RemoveOperators4Note(characterId, noteId, blacklist, whitelist);
+    }
+
+    function getOperators4Note(uint256 characterId, uint256 noteId)
+        external
+        view
+        override
+        returns (address[] memory blacklist, address[] memory whitelist)
+    {
+        blacklist = _operators4Note[characterId][noteId].blacklist.values();
+        whitelist = _operators4Note[characterId][noteId].whitelist.values();
+        return (blacklist, whitelist);
+    }
 
     /**
      * @notice Grant an address as an operator and authorize it with custom permissions.
@@ -42,38 +120,6 @@ contract Web3Entry is Web3EntryBase {
     }
 
     /**
-     * @notice Grant an address as an operator and authorize it with custom permissions for a single note.
-     * @param characterId ID of your character that you want to authorize.
-     * @param noteId ID of your note that you want to authorize.
-     * @param operator Address to grant operator permissions to.
-     * @param permissionBitMap an uint256 bitmap used for finer grained operator permissions controls over notes
-     * @dev Every bit in permissionBitMap stands for a single note that this character posted.
-     * The level of note permissions is above operator permissions. When both note permissions and operator permissions exist at the same time, note permissions prevail.
-     * With grantOperatorPermissions4Note, users can restrict permissions on individual notes,
-     * for example: I authorize bob to set uri for my notes, but only for my third notes(noteId = 3).
-     */
-    function grantOperatorPermissions4Note(
-        uint256 characterId,
-        uint256 noteId,
-        address operator,
-        uint256 permissionBitMap
-    ) external override {
-        _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS_FOR_NOTE);
-        _validateNoteExists(characterId, noteId);
-
-        _operatorsPermission4NoteBitMap[characterId][noteId][operator] = NotePermissionBitMap(
-            true,
-            uint128(_noteBitmapFilter(permissionBitMap))
-        );
-        emit Events.GrantOperatorPermissions4Note(
-            characterId,
-            noteId,
-            operator,
-            _noteBitmapFilter(permissionBitMap)
-        );
-    }
-
-    /**
      * @notice Migrates operators permissions to operatorsSignBitMap
      * @param characterIds List of characters to migrate.
      * @dev `addOperator`, `removeOperator`, `setOperator` will all be deprecated soon. We recommend to use
@@ -83,7 +129,6 @@ contract Web3Entry is Web3EntryBase {
         // set default permissions bitmap
         for (uint256 i = 0; i < characterIds.length; ++i) {
             uint256 characterId = characterIds[i];
-
             address[] memory operators = _operatorsByCharacter[characterId].values();
             for (uint256 j = 0; j < operators.length; ++j) {
                 _setOperatorPermissions(
@@ -115,7 +160,6 @@ contract Web3Entry is Web3EntryBase {
         _validateCallerIsCharacterOwner(characterId);
         _operatorsByCharacter[characterId].add(operator);
         _setOperatorPermissions(characterId, operator, OP.OPERATOR_SIGN_PERMISSION_BITMAP);
-
         // emit AddOperator
         emit Events.AddOperator(characterId, operator, block.timestamp);
     }
@@ -127,7 +171,6 @@ contract Web3Entry is Web3EntryBase {
         _validateCallerIsCharacterOwner(characterId);
         _operatorsByCharacter[characterId].remove(operator);
         _setOperatorPermissions(characterId, operator, 0);
-
         // emit RemoveOperator
         emit Events.RemoveOperator(characterId, operator, block.timestamp);
     }
@@ -143,7 +186,6 @@ contract Web3Entry is Web3EntryBase {
             _operatorsByCharacter[characterId].add(operator);
             _setOperatorPermissions(characterId, operator, OP.OPERATOR_SIGN_PERMISSION_BITMAP);
         }
-
         // emit SetOperator
         emit Events.SetOperator(characterId, operator, block.timestamp);
     }
@@ -163,28 +205,12 @@ contract Web3Entry is Web3EntryBase {
         return _operatorsPermissionBitMap[characterId][operator];
     }
 
-    /**
-     * @notice Get permission bitmap of an operator for a note.
-     * @param characterId ID of character that you want to check.
-     * @param noteId ID of note that you want to authorize.
-     * @param operator Address to grant operator permissions to.
-     * @return Permission bitmap of this operator.
-     */
-    function getOperatorPermissions4Note(
-        uint256 characterId,
-        uint256 noteId,
-        address operator
-    ) external view override returns (uint256) {
-        return _operatorsPermission4NoteBitMap[characterId][noteId][operator].bitmap;
-    }
-
     function _validateCallerPermission(uint256 characterId, uint256 permissionId)
         internal
         view
         override
     {
         address owner = ownerOf(characterId);
-
         if (msg.sender == owner) {
             // check if it's owner
         } else if (tx.origin == owner && msg.sender == periphery) {
@@ -197,51 +223,22 @@ contract Web3Entry is Web3EntryBase {
         }
     }
 
-    function _validateCallerPermission4Note(
-        uint256 characterId,
-        uint256 noteId,
-        uint256 permissionId,
-        uint256 notePermissionId
-    ) internal view override {
+    function _validateCallerPermission4Note(uint256 characterId, uint256 noteId)
+        internal
+        view
+        override
+    {
         address owner = ownerOf(characterId);
         if (msg.sender == owner) {
             // caller is character owner
         } else if (tx.origin == owner && msg.sender == periphery) {
             // caller is periphery
-        } else if (
-            _operatorsPermission4NoteBitMap[characterId][noteId][msg.sender].enabled == true
-        ) {
-            // the note permissions bitmap is enabled
-            if (
-                _checkBit(
-                    _operatorsPermission4NoteBitMap[characterId][noteId][msg.sender].bitmap,
-                    notePermissionId
-                )
-            ) {
-                // the method for this note is allowed
-            } else {
-                revert("NotEnoughPermissionForThisNote");
-            }
-        } else if (_checkBit(_operatorsPermissionBitMap[characterId][msg.sender], permissionId)) {
-            // the operator permission is allowed
+        } else if (_hasNotePermission(characterId, noteId, msg.sender)) {
+            // caller has note permission
         } else {
             // then this caller is nothing, we need to revert.
             revert("NotEnoughPermissionForThisNote");
         }
-    }
-
-    /**
-    * @dev disableNotePermission sets the `enable` to false in NotePermissionBitMap, which means turning off 
-    the note permission control for this note and sticking with operator permission control.
-     */
-    function disableNotePermission(
-        uint256 characterId,
-        uint256 noteId,
-        address operator
-    ) external override {
-        _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS_FOR_NOTE);
-        _operatorsPermission4NoteBitMap[characterId][noteId][operator].enabled = false;
-        emit Events.DisableNotePermission(characterId, noteId, operator);
     }
 
     /**
@@ -292,11 +289,9 @@ contract Web3Entry is Web3EntryBase {
             _operatorsPermissionBitMap[tokenId][operators[i]] = 0;
             _operatorsByCharacter[tokenId].remove(operators[i]);
         }
-
         if (_primaryCharacterByAddress[from] != 0) {
             _primaryCharacterByAddress[from] = 0;
         }
-
         super._beforeTokenTransfer(from, to, tokenId);
     }
 }
