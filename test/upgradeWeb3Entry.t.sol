@@ -231,18 +231,43 @@ contract UpgradeWeb3Entry is Test, Utils {
         bytes32 blacklistLengthSlot = keccak256(
             abi.encodePacked(
                 Const.FIRST_NOTE_ID,
-                (keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(27)))))
+                (keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(26)))))
             )
         );
         bytes32 valueAtBlacklistLengthSlot = vm.load(address(proxyWeb3Entry), blacklistLengthSlot);
         // the length of blacklist is 2
         assertEq(valueAtBlacklistLengthSlot, bytes32(uint256(2)));
 
+        uint256 blacklistMapSlot = uint256(bytes32(blacklistLengthSlot)) + uint256(1);
+
+        // admin is the second address in blacklist
+        bytes32 blacklistAdminIndexSlot = keccak256(
+            abi.encodePacked(
+                bytes32((uint256(uint160(admin)))),
+                blacklistMapSlot
+            )
+        );
+        bytes32 adminIndex = vm.load(address(proxyWeb3Entry), blacklistAdminIndexSlot);
+        assertEq(adminIndex, bytes32(uint256(2)));
+
+        // the length of whitelist is 3
         uint256 whitelistLengthSlot = uint256(bytes32(blacklistLengthSlot)) + uint256(2);
         bytes32 valueAtWhitelistLengthSlot = vm.load(
             address(proxyWeb3Entry),
             bytes32(whitelistLengthSlot)
         );
         assertEq(valueAtWhitelistLengthSlot, bytes32(uint256(3)));
+
+        uint256 whitelistMapSlot = uint256(bytes32(blacklistLengthSlot)) + uint256(3);
+        // carol is the first address in whitelist
+        bytes32 whitelistCarolIndexSlot = keccak256(
+            abi.encodePacked(
+                bytes32carol,
+                whitelistMapSlot
+            )
+        );
+        bytes32 carolIndex = vm.load(address(proxyWeb3Entry), whitelistCarolIndexSlot);
+        assertEq(carolIndex, bytes32(uint256(1)));
+
     }
 }

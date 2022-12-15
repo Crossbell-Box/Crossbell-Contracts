@@ -12,15 +12,13 @@ contract Web3Entry is Web3EntryBase {
     // characterId => operator => permissionsBitMap
     mapping(uint256 => mapping(address => uint256)) internal _operatorsPermissionBitMap; // slot 25
     // characterId => noteId => operator => permissionsBitMap4Note
-    mapping(uint256 => mapping(uint256 => mapping(address => NotePermissionBitMap)))
-        internal _operatorsPermission4NoteBitMap; // slot 26
     struct Operators4Note {
         EnumerableSet.AddressSet blacklist;
         EnumerableSet.AddressSet whitelist;
     }
     // characterId => noteId => Operators4Note
     // only for set note uri
-    mapping(uint256 => mapping(uint256 => Operators4Note)) internal _operators4Note; // slot 27
+    mapping(uint256 => mapping(uint256 => Operators4Note)) internal _operators4Note; // slot 26
 
     function hasNotePermission(
         uint256 characterId,
@@ -134,7 +132,7 @@ contract Web3Entry is Web3EntryBase {
                 _setOperatorPermissions(
                     characterId,
                     operators[j],
-                    OP.OPERATOR_SIGN_PERMISSION_BITMAP
+                    OP.OPERATOR_SYNC_PERMISSION_BITMAP
                 );
             }
         }
