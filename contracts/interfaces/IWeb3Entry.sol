@@ -197,16 +197,4 @@ interface IWeb3Entry {
     function getLinklistContract() external view returns (address);
 
     function getRevision() external pure returns (uint256);
-
-    ////////////////////////////////////////////////////////
-    // these functions are overridden in web3Entry,
-    // and should be removed in next upgrade
-    function isOperator(uint256 characterId, address operator) external view returns (bool);
-
-    function addOperator(uint256 characterId, address operator) external;
-
-    function removeOperator(uint256 characterId, address operator) external;
-
-    function setOperator(uint256 characterId, address operator) external;
-    ////////////////////////////////////////////////////////
 }

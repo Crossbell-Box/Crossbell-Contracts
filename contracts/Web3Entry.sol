@@ -2,23 +2,18 @@
 pragma solidity 0.8.10;
 import "./Web3EntryBase.sol";
 import "./libraries/OP.sol";
+import "./libraries/OperatorLogic.sol";
 
 contract Web3Entry is Web3EntryBase {
     using EnumerableSet for EnumerableSet.AddressSet;
-    struct NotePermissionBitMap {
-        bool enabled;
-        uint128 bitmap;
-    }
+
     // characterId => operator => permissionsBitMap
     mapping(uint256 => mapping(address => uint256)) internal _operatorsPermissionBitMap; // slot 25
     // characterId => noteId => operator => permissionsBitMap4Note
-    struct Operators4Note {
-        EnumerableSet.AddressSet blacklist;
-        EnumerableSet.AddressSet whitelist;
-    }
+
     // characterId => noteId => Operators4Note
     // only for set note uri
-    mapping(uint256 => mapping(uint256 => Operators4Note)) internal _operators4Note; // slot 26
+    mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) internal _operators4Note; // slot 26
 
     function hasNotePermission(
         uint256 characterId,
@@ -53,16 +48,8 @@ contract Web3Entry is Web3EntryBase {
     ) external override {
         _validateCallerPermission(characterId, OP.ADD_OPERATORS_FOR_NOTE);
         _validateNoteExists(characterId, noteId);
-        // add blacklist
-        for (uint256 i = 0; i < blacklist.length; i++) {
-            _operators4Note[characterId][noteId].blacklist.add(blacklist[i]);
-        }
-        // add whitelist
-        for (uint256 i = 0; i < whitelist.length; i++) {
-            _operators4Note[characterId][noteId].whitelist.add(whitelist[i]);
-        }
 
-        emit Events.AddOperators4Note(characterId, noteId, blacklist, whitelist);
+        OperatorLogic.addOperators4Note(characterId, noteId, blacklist, whitelist, _operators4Note);
     }
 
     function removeOperators4Note(
@@ -73,16 +60,13 @@ contract Web3Entry is Web3EntryBase {
     ) external override {
         _validateCallerPermission(characterId, OP.REMOVE_OPERATORS_FOR_NOTE);
         _validateNoteExists(characterId, noteId);
-        // remove blacklist
-        for (uint256 i = 0; i < blacklist.length; i++) {
-            _operators4Note[characterId][noteId].blacklist.remove(blacklist[i]);
-        }
-        // remove whitelist
-        for (uint256 i = 0; i < whitelist.length; i++) {
-            _operators4Note[characterId][noteId].whitelist.remove(whitelist[i]);
-        }
-
-        emit Events.RemoveOperators4Note(characterId, noteId, blacklist, whitelist);
+        OperatorLogic.removeOperators4Note(
+            characterId,
+            noteId,
+            blacklist,
+            whitelist,
+            _operators4Note
+        );
     }
 
     function getOperators4Note(uint256 characterId, uint256 noteId)
@@ -109,12 +93,13 @@ contract Web3Entry is Web3EntryBase {
         uint256 permissionBitMap
     ) external override {
         _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS);
-        if (permissionBitMap == 0) {
-            _operatorsByCharacter[characterId].remove(operator);
-        } else {
-            _operatorsByCharacter[characterId].add(operator);
-        }
-        _setOperatorPermissions(characterId, operator, _bitmapFilter(permissionBitMap));
+        OperatorLogic.grantOperatorPermissions(
+            characterId,
+            operator,
+            permissionBitMap,
+            _operatorsByCharacter,
+            _operatorsPermissionBitMap
+        );
     }
 
     /**
@@ -129,63 +114,15 @@ contract Web3Entry is Web3EntryBase {
             uint256 characterId = characterIds[i];
             address[] memory operators = _operatorsByCharacter[characterId].values();
             for (uint256 j = 0; j < operators.length; ++j) {
-                _setOperatorPermissions(
+                OperatorLogic.grantOperatorPermissions(
                     characterId,
                     operators[j],
-                    OP.OPERATOR_SYNC_PERMISSION_BITMAP
+                    OP.OPERATOR_SYNC_PERMISSION_BITMAP,
+                    _operatorsByCharacter,
+                    _operatorsPermissionBitMap
                 );
             }
         }
-    }
-
-    /**
-     * @notice Check if an address is the operator of a character.
-     * @param characterId  ID of character to query.
-     * @param operator operator address to query.
-     * @return true if the address is the operator of a character, otherwise false.
-     */
-    function isOperator(uint256 characterId, address operator)
-        external
-        view
-        override
-        returns (bool)
-    {
-        uint256 bitMap = _operatorsPermissionBitMap[characterId][operator];
-        return (bitMap == 0) ? false : true;
-    }
-
-    function addOperator(uint256 characterId, address operator) external override {
-        _validateCallerIsCharacterOwner(characterId);
-        _operatorsByCharacter[characterId].add(operator);
-        _setOperatorPermissions(characterId, operator, OP.OPERATOR_SIGN_PERMISSION_BITMAP);
-        // emit AddOperator
-        emit Events.AddOperator(characterId, operator, block.timestamp);
-    }
-
-    /**
-     * @notice Cancel authorization on operators and remove them from operator list.
-     */
-    function removeOperator(uint256 characterId, address operator) external override {
-        _validateCallerIsCharacterOwner(characterId);
-        _operatorsByCharacter[characterId].remove(operator);
-        _setOperatorPermissions(characterId, operator, 0);
-        // emit RemoveOperator
-        emit Events.RemoveOperator(characterId, operator, block.timestamp);
-    }
-
-    // @notice users can't remove an operator by setOperator
-    function setOperator(uint256 characterId, address operator) external override {
-        _validateCallerIsCharacterOwner(characterId);
-        if (operator == address(0)) {
-            address oldOperator = _operatorByCharacter[characterId];
-            _operatorsByCharacter[characterId].remove(oldOperator);
-            _setOperatorPermissions(characterId, oldOperator, 0);
-        } else {
-            _operatorsByCharacter[characterId].add(operator);
-            _setOperatorPermissions(characterId, operator, OP.OPERATOR_SIGN_PERMISSION_BITMAP);
-        }
-        // emit SetOperator
-        emit Events.SetOperator(characterId, operator, block.timestamp);
     }
 
     /**
@@ -240,28 +177,10 @@ contract Web3Entry is Web3EntryBase {
     }
 
     /**
-     * @dev _bitmapFilter unsets bits of non-existent permission IDs to zero. These unset permission IDs are 
-     meaningless now, but they are reserved for future use, so it's best to leave them blank and avoid messing
-      up with future methods.
-     */
-    function _bitmapFilter(uint256 bitmap) internal pure returns (uint256) {
-        return bitmap & OP.ALLOWED_PERMISSION_BITMAP_MASK;
-    }
-
-    /**
      * @dev _checkBit checks if the value of the i'th bit of x is 1
      */
     function _checkBit(uint256 x, uint256 i) internal pure returns (bool) {
         return (x >> i) & 1 == 1;
-    }
-
-    function _setOperatorPermissions(
-        uint256 characterId,
-        address operator,
-        uint256 permissionBitMap
-    ) internal {
-        _operatorsPermissionBitMap[characterId][operator] = permissionBitMap;
-        emit Events.GrantOperatorPermissions(characterId, operator, permissionBitMap);
     }
 
     /**

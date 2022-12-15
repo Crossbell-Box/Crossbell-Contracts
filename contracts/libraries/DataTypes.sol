@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.10;
 
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+
 library DataTypes {
     struct MigrateData {
         address account;
@@ -216,5 +218,10 @@ library DataTypes {
     struct ERC721Struct {
         address tokenAddress;
         uint256 erc721TokenId;
+    }
+
+    struct Operators4Note {
+        EnumerableSet.AddressSet blacklist;
+        EnumerableSet.AddressSet whitelist;
     }
 }

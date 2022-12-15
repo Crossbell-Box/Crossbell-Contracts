@@ -58,14 +58,6 @@ contract Web3EntryBase is
         uint256
     ) external virtual {}
 
-    // // overridden in web3Entry
-    // function grantOperatorPermissions4Note(
-    //     uint256,
-    //     uint256,
-    //     address,
-    //     uint256
-    // ) external virtual {}
-
     function addOperators4Note(
         uint256 characterId,
         uint256 noteId,
@@ -755,14 +747,4 @@ contract Web3EntryBase is
     function getRevision() external pure returns (uint256) {
         return REVISION;
     }
-
-    function isOperator(uint256, address) external view virtual returns (bool) {
-        return false;
-    }
-
-    function addOperator(uint256, address) external virtual {}
-
-    function removeOperator(uint256, address) external virtual {}
-
-    function setOperator(uint256, address) external virtual {}
 }
