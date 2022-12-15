@@ -631,12 +631,20 @@ contract Web3EntryBase is
         return 0;
     }
 
+    // overridden in web3Entry
     function getOperators4Note(uint256 characterId, uint256 noteId)
         external
         view
         virtual
         returns (address[] memory blacklist, address[] memory whitelist)
     {}
+
+    // overridden in web3Entry
+    function hasNotePermission(
+        uint256 characterId,
+        uint256 noteId,
+        address operator
+    ) external view virtual returns (bool) {}
 
     function getPrimaryCharacterId(address account) external view returns (uint256) {
         return _primaryCharacterByAddress[account];

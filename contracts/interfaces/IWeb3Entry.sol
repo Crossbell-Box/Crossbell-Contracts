@@ -159,6 +159,12 @@ interface IWeb3Entry {
         view
         returns (address[] memory blacklist, address[] memory whitelist);
 
+    function hasNotePermission(
+        uint256 characterId,
+        uint256 noteId,
+        address operator
+    ) external view returns (bool);
+
     function getPrimaryCharacterId(address account) external view returns (uint256);
 
     function isPrimaryCharacter(uint256 characterId) external view returns (bool);

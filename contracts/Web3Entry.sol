@@ -14,31 +14,13 @@ contract Web3Entry is Web3EntryBase {
     // only for set note uri
     mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) internal _operators4Note; // slot 26
 
-    function hasNotePermission(
-        uint256 characterId,
-        uint256 noteId,
-        address operator
-    ) external view returns (bool) {
-        return _hasNotePermission(characterId, noteId, operator);
-    }
-
-    function _hasNotePermission(
-        uint256 characterId,
-        uint256 noteId,
-        address operator
-    ) internal view returns (bool) {
-        // check blacklist
-        if (_operators4Note[characterId][noteId].blacklist.contains(operator)) {
-            return false;
-        }
-        // check whitelist
-        if (_operators4Note[characterId][noteId].whitelist.contains(operator)) {
-            return true;
-        }
-        // check character operator permission
-        return _checkBit(_operatorsPermissionBitMap[characterId][operator], OP.SET_NOTE_URI);
-    }
-
+    /**
+     * @notice Add operators blacklist and whitelist for a note.
+     * @param characterId ID of character that you want to set.
+     * @param noteId ID of note that you want to set.
+     * @param blacklist Blacklist addresses that you want to add.
+     * @param whitelist Whitelist addresses that you want to add.
+     */
     function addOperators4Note(
         uint256 characterId,
         uint256 noteId,
@@ -50,6 +32,13 @@ contract Web3Entry is Web3EntryBase {
         OperatorLogic.addOperators4Note(characterId, noteId, blacklist, whitelist, _operators4Note);
     }
 
+    /**
+     * @notice Remove operators blacklist and whitelist for a note.
+     * @param characterId ID of character that you want to set.
+     * @param noteId ID of note that you want to set.
+     * @param blacklist Blacklist addresses that you want to remove.
+     * @param whitelist Whitelist addresses that you want to remove.
+     */
     function removeOperators4Note(
         uint256 characterId,
         uint256 noteId,
@@ -65,17 +54,6 @@ contract Web3Entry is Web3EntryBase {
             whitelist,
             _operators4Note
         );
-    }
-
-    function getOperators4Note(uint256 characterId, uint256 noteId)
-        external
-        view
-        override
-        returns (address[] memory blacklist, address[] memory whitelist)
-    {
-        blacklist = _operators4Note[characterId][noteId].blacklist.values();
-        whitelist = _operators4Note[characterId][noteId].whitelist.values();
-        return (blacklist, whitelist);
     }
 
     /**
@@ -136,6 +114,54 @@ contract Web3Entry is Web3EntryBase {
         returns (uint256)
     {
         return _operatorsPermissionBitMap[characterId][operator];
+    }
+
+    /**
+     * @notice Get operators blacklist and whitelist for a note.
+     * @param characterId ID of character to query.
+     * @param noteId ID of note to query.
+     */
+    function getOperators4Note(uint256 characterId, uint256 noteId)
+        external
+        view
+        override
+        returns (address[] memory blacklist, address[] memory whitelist)
+    {
+        blacklist = _operators4Note[characterId][noteId].blacklist.values();
+        whitelist = _operators4Note[characterId][noteId].whitelist.values();
+        return (blacklist, whitelist);
+    }
+
+    /**
+     * @notice Query if a operator has permission for a note.
+     * @param characterId ID of character that you want to query.
+     * @param noteId ID of note that you want to query.
+     * @param operator Address to query.
+     * @return true if Operator has permission for a note, otherwise false.
+     */
+    function hasNotePermission(
+        uint256 characterId,
+        uint256 noteId,
+        address operator
+    ) external view override returns (bool) {
+        return _hasNotePermission(characterId, noteId, operator);
+    }
+
+    function _hasNotePermission(
+        uint256 characterId,
+        uint256 noteId,
+        address operator
+    ) internal view returns (bool) {
+        // check blacklist
+        if (_operators4Note[characterId][noteId].blacklist.contains(operator)) {
+            return false;
+        }
+        // check whitelist
+        if (_operators4Note[characterId][noteId].whitelist.contains(operator)) {
+            return true;
+        }
+        // check character operator permission
+        return _checkBit(_operatorsPermissionBitMap[characterId][operator], OP.SET_NOTE_URI);
     }
 
     function _validateCallerPermission(uint256 characterId, uint256 permissionId)
