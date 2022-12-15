@@ -9,7 +9,6 @@ contract Web3Entry is Web3EntryBase {
 
     // characterId => operator => permissionsBitMap
     mapping(uint256 => mapping(address => uint256)) internal _operatorsPermissionBitMap; // slot 25
-    // characterId => noteId => operator => permissionsBitMap4Note
 
     // characterId => noteId => Operators4Note
     // only for set note uri
@@ -48,7 +47,6 @@ contract Web3Entry is Web3EntryBase {
     ) external override {
         _validateCallerPermission(characterId, OP.ADD_OPERATORS_FOR_NOTE);
         _validateNoteExists(characterId, noteId);
-
         OperatorLogic.addOperators4Note(characterId, noteId, blacklist, whitelist, _operators4Note);
     }
 
@@ -147,14 +145,14 @@ contract Web3Entry is Web3EntryBase {
     {
         address owner = ownerOf(characterId);
         if (msg.sender == owner) {
-            // check if it's owner
+            // caller is character owner
         } else if (tx.origin == owner && msg.sender == periphery) {
-            // check if it's periphery
-        } else if (
-            _checkBit(_operatorsPermissionBitMap[characterId][msg.sender], permissionId)
-        ) {} else {
-            // if it doesn't have corresponding permission,
-            revert("NotEnoughPermission"); // then this caller is nothing, we need to revert.
+            // caller is periphery
+        } else if (_checkBit(_operatorsPermissionBitMap[characterId][msg.sender], permissionId)) {
+            // caller has operator permission
+        } else {
+            // caller doesn't have corresponding permission,
+            revert("NotEnoughPermission");
         }
     }
 
@@ -171,7 +169,7 @@ contract Web3Entry is Web3EntryBase {
         } else if (_hasNotePermission(characterId, noteId, msg.sender)) {
             // caller has note permission
         } else {
-            // then this caller is nothing, we need to revert.
+            // caller doesn't have corresponding permission,
             revert("NotEnoughPermissionForThisNote");
         }
     }
