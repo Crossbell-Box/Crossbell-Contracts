@@ -15,6 +15,8 @@ contract Web3Entry is Web3EntryBase {
     // only for set note uri
     mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) internal _operators4Note; // slot 26
 
+    address internal constant migrateOwner = 0xda2423ceA4f1047556e7a142F81a7ED50e93e160;
+
     /**
      * @notice Grant an address as an operator and authorize it with custom permissions.
      * @param characterId ID of your character that you want to authorize.
@@ -86,7 +88,7 @@ contract Web3Entry is Web3EntryBase {
      * This function should be removed in the next release.
      */
     function migrateOperator(address newbieVilla, uint256[] calldata characterIds) external {
-        require(msg.sender == 0xda2423ceA4f1047556e7a142F81a7ED50e93e160, "onlyOwner");
+        require(msg.sender == migrateOwner, "onlyOwner");
 
         for (uint256 i = 0; i < characterIds.length; ++i) {
             uint256 characterId = characterIds[i];
