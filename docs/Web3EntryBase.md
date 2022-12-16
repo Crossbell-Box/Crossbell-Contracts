@@ -20,10 +20,16 @@ function initialize(string _name, string _symbol, address _linklistContract, add
 function grantOperatorPermissions(uint256, address, uint256) external virtual
 ```
 
-### grantOperatorPermissions4Note
+### addOperators4Note
 
 ```solidity
-function grantOperatorPermissions4Note(uint256, uint256, address, uint256) external virtual
+function addOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external virtual
+```
+
+### removeOperators4Note
+
+```solidity
+function removeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external virtual
 ```
 
 ### createCharacter
@@ -286,16 +292,22 @@ authorizations!!!
 | ---- | ---- | ----------- |
 | [0] | address[] | All keys of operatorsPermission4NoteBitMap. |
 
-### getOperatorPermissions4Note
-
-```solidity
-function getOperatorPermissions4Note(uint256, uint256, address) external view virtual returns (uint256)
-```
-
 ### getOperatorPermissions
 
 ```solidity
 function getOperatorPermissions(uint256, address) external view virtual returns (uint256)
+```
+
+### getOperators4Note
+
+```solidity
+function getOperators4Note(uint256 characterId, uint256 noteId) external view virtual returns (address[] blacklist, address[] whitelist)
+```
+
+### hasNotePermission
+
+```solidity
+function hasNotePermission(uint256 characterId, uint256 noteId, address operator) external view virtual returns (bool)
 ```
 
 ### getPrimaryCharacterId
@@ -403,7 +415,7 @@ function _validateCallerPermission(uint256, uint256) internal view virtual
 ### _validateCallerPermission4Note
 
 ```solidity
-function _validateCallerPermission4Note(uint256, uint256, uint256) internal view virtual
+function _validateCallerPermission4Note(uint256 characterId, uint256 noteId) internal view virtual
 ```
 
 ### _validateCharacterExists
@@ -428,29 +440,5 @@ function _validateNoteExists(uint256 characterId, uint256 noteId) internal view
 
 ```solidity
 function getRevision() external pure returns (uint256)
-```
-
-### isOperator
-
-```solidity
-function isOperator(uint256, address) external view virtual returns (bool)
-```
-
-### addOperator
-
-```solidity
-function addOperator(uint256, address) external virtual
-```
-
-### removeOperator
-
-```solidity
-function removeOperator(uint256, address) external virtual
-```
-
-### setOperator
-
-```solidity
-function setOperator(uint256, address) external virtual
 ```
 

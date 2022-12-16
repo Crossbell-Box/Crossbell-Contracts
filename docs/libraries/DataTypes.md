@@ -335,3 +335,12 @@ struct ERC721Struct {
 }
 ```
 
+### Operators4Note
+
+```solidity
+struct Operators4Note {
+  struct EnumerableSet.AddressSet blacklist;
+  struct EnumerableSet.AddressSet whitelist;
+}
+```
+

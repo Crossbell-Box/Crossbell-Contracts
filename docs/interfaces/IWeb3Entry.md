@@ -46,10 +46,16 @@ function setPrimaryCharacterId(uint256 characterId) external
 function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) external
 ```
 
-### grantOperatorPermissions4Note
+### addOperators4Note
 
 ```solidity
-function grantOperatorPermissions4Note(uint256 characterId, uint256 noteId, address operator, uint256 permissionBitMap) external
+function addOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
+```
+
+### removeOperators4Note
+
+```solidity
+function removeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
 ```
 
 ### setLinklistUri
@@ -234,10 +240,16 @@ VIEW FUNCTIONS
 function getOperatorPermissions(uint256 characterId, address operator) external view returns (uint256)
 ```
 
-### getOperatorPermissions4Note
+### getOperators4Note
 
 ```solidity
-function getOperatorPermissions4Note(uint256 characterId, uint256 noteId, address operator) external view returns (uint256)
+function getOperators4Note(uint256 characterId, uint256 noteId) external view returns (address[] blacklist, address[] whitelist)
+```
+
+### hasNotePermission
+
+```solidity
+function hasNotePermission(uint256 characterId, uint256 noteId, address operator) external view returns (bool)
 ```
 
 ### getPrimaryCharacterId
@@ -328,29 +340,5 @@ function getLinklistContract() external view returns (address)
 
 ```solidity
 function getRevision() external pure returns (uint256)
-```
-
-### isOperator
-
-```solidity
-function isOperator(uint256 characterId, address operator) external view returns (bool)
-```
-
-### addOperator
-
-```solidity
-function addOperator(uint256 characterId, address operator) external
-```
-
-### removeOperator
-
-```solidity
-function removeOperator(uint256 characterId, address operator) external
-```
-
-### setOperator
-
-```solidity
-function setOperator(uint256 characterId, address operator) external
 ```
 

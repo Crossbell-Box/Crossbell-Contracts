@@ -8,11 +8,45 @@
 mapping(uint256 => mapping(address => uint256)) _operatorsPermissionBitMap
 ```
 
-### _operatorsPermission4NoteBitMap
+### _operators4Note
 
 ```solidity
-mapping(uint256 => mapping(uint256 => mapping(address => uint256))) _operatorsPermission4NoteBitMap
+mapping(uint256 => mapping(uint256 => struct DataTypes.Operators4Note)) _operators4Note
 ```
+
+### addOperators4Note
+
+```solidity
+function addOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
+```
+
+Add operators blacklist and whitelist for a note.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | ID of character that you want to set. |
+| noteId | uint256 | ID of note that you want to set. |
+| blacklist | address[] | Blacklist addresses that you want to add. |
+| whitelist | address[] | Whitelist addresses that you want to add. |
+
+### removeOperators4Note
+
+```solidity
+function removeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
+```
+
+Remove operators blacklist and whitelist for a note.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | ID of character that you want to set. |
+| noteId | uint256 | ID of note that you want to set. |
+| blacklist | address[] | Blacklist addresses that you want to remove. |
+| whitelist | address[] | Whitelist addresses that you want to remove. |
 
 ### grantOperatorPermissions
 
@@ -32,28 +66,6 @@ _Every bit in permissionBitMap stands for a corresponding method in Web3Entry. m
 | operator | address | Address to grant operator permissions to. |
 | permissionBitMap | uint256 | Bitmap used for finer grained operator permissions controls. |
 
-### grantOperatorPermissions4Note
-
-```solidity
-function grantOperatorPermissions4Note(uint256 characterId, uint256 noteId, address operator, uint256 permissionBitMap) external
-```
-
-Grant an address as an operator and authorize it with custom permissions for a single note.
-
-_Every bit in permissionBitMap stands for a single note that this character posted.
-The level of note permissions is above operator permissions. When both note permissions and operator permissions exist at the same time, note permissions prevail.
-With grantOperatorPermissions4Note, users can restrict permissions on individual notes,
-for example: I authorize bob to set uri for my notes, but only for my third notes(noteId = 3)._
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| characterId | uint256 | ID of your character that you want to authorize. |
-| noteId | uint256 | ID of your note that you want to authorize. |
-| operator | address | Address to grant operator permissions to. |
-| permissionBitMap | uint256 | an uint256 bitmap used for finer grained operator permissions controls over notes |
-
 ### migrateOperator
 
 ```solidity
@@ -70,47 +82,6 @@ _`addOperator`, `removeOperator`, `setOperator` will all be deprecated soon. We 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | characterIds | uint256[] | List of characters to migrate. |
-
-### isOperator
-
-```solidity
-function isOperator(uint256 characterId, address operator) external view returns (bool)
-```
-
-Check if an address is the operator of a character.
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| characterId | uint256 | ID of character to query. |
-| operator | address | operator address to query. |
-
-#### Return Values
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| [0] | bool | true if the address is the operator of a character, otherwise false. |
-
-### addOperator
-
-```solidity
-function addOperator(uint256 characterId, address operator) external
-```
-
-### removeOperator
-
-```solidity
-function removeOperator(uint256 characterId, address operator) external
-```
-
-Cancel authorization on operators and remove them from operator list.
-
-### setOperator
-
-```solidity
-function setOperator(uint256 characterId, address operator) external
-```
 
 ### getOperatorPermissions
 
@@ -133,27 +104,48 @@ Get permission bitmap of an operator.
 | ---- | ---- | ----------- |
 | [0] | uint256 | Permission bitmap of this operator. |
 
-### getOperatorPermissions4Note
+### getOperators4Note
 
 ```solidity
-function getOperatorPermissions4Note(uint256 characterId, uint256 noteId, address operator) external view returns (uint256)
+function getOperators4Note(uint256 characterId, uint256 noteId) external view returns (address[] blacklist, address[] whitelist)
 ```
 
-Get permission bitmap of an operator for a note.
+Get operators blacklist and whitelist for a note.
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| characterId | uint256 | ID of character that you want to check. |
-| noteId | uint256 | ID of note that you want to authorize. |
-| operator | address | Address to grant operator permissions to. |
+| characterId | uint256 | ID of character to query. |
+| noteId | uint256 | ID of note to query. |
+
+### hasNotePermission
+
+```solidity
+function hasNotePermission(uint256 characterId, uint256 noteId, address operator) external view returns (bool)
+```
+
+Query if a operator has permission for a note.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | ID of character that you want to query. |
+| noteId | uint256 | ID of note that you want to query. |
+| operator | address | Address to query. |
 
 #### Return Values
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| [0] | uint256 | Permission bitmap of this operator. |
+| [0] | bool | true if Operator has permission for a note, otherwise false. |
+
+### _hasNotePermission
+
+```solidity
+function _hasNotePermission(uint256 characterId, uint256 noteId, address operator) internal view returns (bool)
+```
 
 ### _validateCallerPermission
 
@@ -164,18 +156,8 @@ function _validateCallerPermission(uint256 characterId, uint256 permissionId) in
 ### _validateCallerPermission4Note
 
 ```solidity
-function _validateCallerPermission4Note(uint256 characterId, uint256 noteId, uint256 permissionId) internal view
+function _validateCallerPermission4Note(uint256 characterId, uint256 noteId) internal view
 ```
-
-### _bitmapFilter
-
-```solidity
-function _bitmapFilter(uint256 bitmap) internal pure returns (uint256)
-```
-
-__bitmapFilter unsets bits of non-existent permission IDs to zero. These unset permission IDs are 
-     meaningless now, but they are reserved for future use, so it's best to leave them blank and avoid messing
-      up with future methods._
 
 ### _checkBit
 
@@ -184,12 +166,6 @@ function _checkBit(uint256 x, uint256 i) internal pure returns (bool)
 ```
 
 __checkBit checks if the value of the i'th bit of x is 1_
-
-### _setOperatorPermissions
-
-```solidity
-function _setOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) internal
-```
 
 ### _beforeTokenTransfer
 

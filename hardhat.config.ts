@@ -31,7 +31,7 @@ module.exports = {
     networks: {
         crossbell: {
             url: "https://rpc.crossbell.io",
-            accounts: [process.env.PRIVATE_KEY]
+            // accounts: [process.env.PRIVATE_KEY]
         },
     },
 
