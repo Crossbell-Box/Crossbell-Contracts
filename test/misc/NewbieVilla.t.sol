@@ -50,7 +50,7 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         );
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, xsyncOperator),
-            OP.OPERATOR_SYNC_PERMISSION_BITMAP
+            OP.POST_NOTE_PERMISSION_BITMAP
         );
     }
 
@@ -86,7 +86,7 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         );
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, xsyncOperator),
-            OP.OPERATOR_SYNC_PERMISSION_BITMAP
+            OP.POST_NOTE_PERMISSION_BITMAP
         );
     }
 

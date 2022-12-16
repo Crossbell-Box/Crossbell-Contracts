@@ -65,19 +65,17 @@ library OP {
     uint8 internal constant POST_NOTE_FOR_ERC721 = 202;
     uint8 internal constant POST_NOTE_FOR_ANYURI = 203;
     // set [176,204] bit index
-    uint256 internal constant OPERATOR_SIGN_PERMISSION_BITMAP = ((UINT256_MAX << 176) &
-        ~(UINT256_MAX << 204));
 
     // [236, 255] for operator sync permissions
     uint8 internal constant POST_NOTE = 236;
     // set 236 bit index
-    uint256 internal constant OPERATOR_SYNC_PERMISSION_BITMAP = 1 << 236;
+    uint256 internal constant POST_NOTE_PERMISSION_BITMAP = 1 << POST_NOTE;
 
     // DEFAULT_PERMISSION_BITMAP has operator sign permissions and operator sync permissions
     uint256 internal constant DEFAULT_PERMISSION_BITMAP =
-        OPERATOR_SIGN_PERMISSION_BITMAP | OPERATOR_SYNC_PERMISSION_BITMAP;
+        ((UINT256_MAX << 176) & ~(UINT256_MAX << 204)) | POST_NOTE_PERMISSION_BITMAP;
 
     // bitmap mask with all current-in-use methods to 1
     uint256 internal constant ALLOWED_PERMISSION_BITMAP_MASK =
-        OWNER_PERMISSION_BITMAP | OPERATOR_SIGN_PERMISSION_BITMAP | OPERATOR_SYNC_PERMISSION_BITMAP;
+        OWNER_PERMISSION_BITMAP | DEFAULT_PERMISSION_BITMAP;
 }

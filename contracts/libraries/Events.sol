@@ -40,15 +40,15 @@ library Events {
     );
 
     event AddOperators4Note(
-        uint256 characterId,
-        uint256 noteId,
+        uint256 indexed characterId,
+        uint256 indexed noteId,
         address[] blacklist,
         address[] whitelist
     );
 
     event RemoveOperators4Note(
-        uint256 characterId,
-        uint256 noteId,
+        uint256 indexed characterId,
+        uint256 indexed noteId,
         address[] blacklist,
         address[] whitelist
     );

@@ -86,13 +86,14 @@ contract Web3Entry is Web3EntryBase {
      * This function should be removed in the next release.
      */
     function migrateOperator(address newbieVilla, uint256[] calldata characterIds) external {
-        //        address newbieVilla = "0xD0c83f0BB2c61D55B3d33950b70C59ba2f131caA";
+        require(msg.sender == 0xda2423ceA4f1047556e7a142F81a7ED50e93e160, "onlyOwner");
+
         for (uint256 i = 0; i < characterIds.length; ++i) {
             uint256 characterId = characterIds[i];
             address characterOwner = ownerOf(characterId);
             uint256 permissionBitMap = (characterOwner == newbieVilla)
                 ? OP.DEFAULT_PERMISSION_BITMAP
-                : OP.OPERATOR_SYNC_PERMISSION_BITMAP;
+                : OP.POST_NOTE_PERMISSION_BITMAP;
 
             address[] memory operators = _operatorsByCharacter[characterId].values();
             for (uint256 j = 0; j < operators.length; ++j) {

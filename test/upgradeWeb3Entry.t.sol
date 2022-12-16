@@ -87,28 +87,28 @@ contract UpgradeWeb3Entry is Test, Utils {
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.OPERATOR_SIGN_PERMISSION_BITMAP
+            OP.DEFAULT_PERMISSION_BITMAP
         );
         assertEq(
             Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions(
                 Const.FIRST_CHARACTER_ID,
                 bob
             ),
-            OP.OPERATOR_SIGN_PERMISSION_BITMAP
+            OP.DEFAULT_PERMISSION_BITMAP
         );
 
         // grant operator sync permission to carol
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             carol,
-            OP.OPERATOR_SYNC_PERMISSION_BITMAP
+            OP.POST_NOTE_PERMISSION_BITMAP
         );
         assertEq(
             Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions(
                 Const.FIRST_CHARACTER_ID,
                 carol
             ),
-            OP.OPERATOR_SYNC_PERMISSION_BITMAP
+            OP.POST_NOTE_PERMISSION_BITMAP
         );
 
         // grant NOTE_SET_NOTE_URI permission to bob
@@ -196,7 +196,7 @@ contract UpgradeWeb3Entry is Test, Utils {
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             carol,
-            OP.OPERATOR_SIGN_PERMISSION_BITMAP
+            OP.DEFAULT_PERMISSION_BITMAP
         );
         Web3Entry(address(proxyWeb3Entry)).addOperators4Note(
             Const.FIRST_CHARACTER_ID,
@@ -225,7 +225,7 @@ contract UpgradeWeb3Entry is Test, Utils {
             )
         );
         valueAtOperatorBitmapSlot = vm.load(address(proxyWeb3Entry), operatorBitmapSlot);
-        assertEq32(valueAtOperatorBitmapSlot, bytes32(OP.OPERATOR_SIGN_PERMISSION_BITMAP));
+        assertEq32(valueAtOperatorBitmapSlot, bytes32(OP.DEFAULT_PERMISSION_BITMAP));
 
         // check note 1 operators
         bytes32 blacklistLengthSlot = keccak256(
