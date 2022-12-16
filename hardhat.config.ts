@@ -29,17 +29,14 @@ module.exports = {
         artifacts: "./artifacts_hardhat",
     },
     networks: {
-        ropsten: {
-            url: process.env.ROPSTEN_URL || "",
-        },
         crossbell: {
             url: "https://rpc.crossbell.io",
+            accounts: [process.env.PRIVATE_KEY]
         },
     },
 
     etherscan: {
         apiKey: {
-            ropsten: process.env.ROPSTEN_API_KEY,
             crossbell: "your API key",
         },
         customChains: [

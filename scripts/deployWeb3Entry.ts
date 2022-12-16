@@ -14,6 +14,10 @@ async function main() {
     // await hre.run('compile');
 
     const [owner] = await ethers.getSigners();
+    const linklist = "0xFc8C75bD5c26F50798758f387B698f207a016b6A";
+    const mintNFTImpl = "0x7bB160FAbC629a8B288499cE9B48eEabD46CF3e1";
+    const periphery = "0x96e96b7AF62D628cE7eb2016D2c1D2786614eA73";
+    const resolver = "0xa5fa5302Be191fA9f8e7C35Cf5758D8bfDF4C90f";
 
     // We get the contract to deploy
 
@@ -29,22 +33,34 @@ async function main() {
     const LinkLogic = await ethers.getContractFactory("LinkLogic");
     const linkLogic = await LinkLogic.deploy();
 
+    const OperatorLogic = await ethers.getContractFactory("OperatorLogic");
+    const operatorLogic = await OperatorLogic.deploy();
+
     const Web3Entry = await ethers.getContractFactory("Web3Entry", {
         libraries: {
             LinkModuleLogic: linkModuleLogic.address,
             CharacterLogic: characterLogic.address,
             PostLogic: postLogic.address,
             LinkLogic: linkLogic.address,
+            OperatorLogic: operatorLogic.address,
         },
     });
     const web3Entry = await Web3Entry.deploy();
     await web3Entry.deployed();
-
+    await web3Entry.initialize(
+        "Web3 Entry Character",
+        "WEC",
+        linklist,
+        mintNFTImpl,
+        periphery,
+        resolver
+    );
 
     console.log("LinkModuleLogic deployed to:", linkModuleLogic.address);
     console.log("CharacterLogic deployed to:", characterLogic.address);
     console.log("PostLogic deployed to:", postLogic.address);
     console.log("LinkLogic deployed to:", linkLogic.address);
+    console.log("OperatorLogic deployed to:", operatorLogic.address);
     console.log("Web3Entry deployed to:", web3Entry.address);
 }
 

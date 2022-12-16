@@ -242,10 +242,7 @@ contract UpgradeWeb3Entry is Test, Utils {
 
         // admin is the second address in blacklist
         bytes32 blacklistAdminIndexSlot = keccak256(
-            abi.encodePacked(
-                bytes32((uint256(uint160(admin)))),
-                blacklistMapSlot
-            )
+            abi.encodePacked(bytes32((uint256(uint160(admin)))), blacklistMapSlot)
         );
         bytes32 adminIndex = vm.load(address(proxyWeb3Entry), blacklistAdminIndexSlot);
         assertEq(adminIndex, bytes32(uint256(2)));
@@ -261,13 +258,9 @@ contract UpgradeWeb3Entry is Test, Utils {
         uint256 whitelistMapSlot = uint256(bytes32(blacklistLengthSlot)) + uint256(3);
         // carol is the first address in whitelist
         bytes32 whitelistCarolIndexSlot = keccak256(
-            abi.encodePacked(
-                bytes32carol,
-                whitelistMapSlot
-            )
+            abi.encodePacked(bytes32carol, whitelistMapSlot)
         );
         bytes32 carolIndex = vm.load(address(proxyWeb3Entry), whitelistCarolIndexSlot);
         assertEq(carolIndex, bytes32(uint256(1)));
-
     }
 }

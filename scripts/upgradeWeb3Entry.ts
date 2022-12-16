@@ -29,12 +29,16 @@ async function main() {
     const LinkLogic = await ethers.getContractFactory("LinkLogic");
     const linkLogic = await LinkLogic.deploy();
 
+    const OperatorLogic = await ethers.getContractFactory("OperatorLogic");
+    const operatorLogic = await OperatorLogic.deploy();
+
     const Web3Entry = await ethers.getContractFactory("Web3Entry", {
         libraries: {
             LinkModuleLogic: linkModuleLogic.address,
             CharacterLogic: characterLogic.address,
             PostLogic: postLogic.address,
             LinkLogic: linkLogic.address,
+            OperatorLogic: operatorLogic.address,
         },
     });
     const web3Entry = await Web3Entry.deploy();
@@ -49,6 +53,7 @@ async function main() {
     console.log("CharacterLogic deployed to:", characterLogic.address);
     console.log("PostLogic deployed to:", postLogic.address);
     console.log("LinkLogic deployed to:", linkLogic.address);
+    console.log("OperatorLogic deployed to:", operatorLogic.address);
     console.log("Web3Entry deployed to:", web3Entry.address);
 }
 
