@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.10;
+
 import "./Web3EntryBase.sol";
 import "./libraries/OP.sol";
 import "./libraries/OperatorLogic.sol";
@@ -13,6 +14,28 @@ contract Web3Entry is Web3EntryBase {
     // characterId => noteId => Operators4Note
     // only for set note uri
     mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) internal _operators4Note; // slot 26
+
+    /**
+     * @notice Grant an address as an operator and authorize it with custom permissions.
+     * @param characterId ID of your character that you want to authorize.
+     * @param operator Address to grant operator permissions to.
+     * @param permissionBitMap Bitmap used for finer grained operator permissions controls.
+     * @dev Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol.
+     */
+    function grantOperatorPermissions(
+        uint256 characterId,
+        address operator,
+        uint256 permissionBitMap
+    ) external override {
+        _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS);
+        OperatorLogic.grantOperatorPermissions(
+            characterId,
+            operator,
+            permissionBitMap,
+            _operatorsByCharacter,
+            _operatorsPermissionBitMap
+        );
+    }
 
     /**
      * @notice Add operators blacklist and whitelist for a note.
@@ -57,43 +80,26 @@ contract Web3Entry is Web3EntryBase {
     }
 
     /**
-     * @notice Grant an address as an operator and authorize it with custom permissions.
-     * @param characterId ID of your character that you want to authorize.
-     * @param operator Address to grant operator permissions to.
-     * @param permissionBitMap Bitmap used for finer grained operator permissions controls.
-     * @dev Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol.
-     */
-    function grantOperatorPermissions(
-        uint256 characterId,
-        address operator,
-        uint256 permissionBitMap
-    ) external override {
-        _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS);
-        OperatorLogic.grantOperatorPermissions(
-            characterId,
-            operator,
-            permissionBitMap,
-            _operatorsByCharacter,
-            _operatorsPermissionBitMap
-        );
-    }
-
-    /**
-     * @notice Migrates operators permissions to operatorsSignBitMap
+     * @notice Migrates old operators permissions.
      * @param characterIds List of characters to migrate.
-     * @dev `addOperator`, `removeOperator`, `setOperator` will all be deprecated soon. We recommend to use
-     *  `migrateOperator` to grant OPERATOR_SIGN_PERMISSION_BITMAP to all previous operators.
+     * @dev set operators of newbieVilla DEFAULT_PERMISSION, and others OPERATOR_SYNC_PERMISSION.
+     * This function should be removed in the next release.
      */
-    function migrateOperator(uint256[] calldata characterIds) external {
-        // set default permissions bitmap
+    function migrateOperator(address newbieVilla, uint256[] calldata characterIds) external {
+        //        address newbieVilla = "0xD0c83f0BB2c61D55B3d33950b70C59ba2f131caA";
         for (uint256 i = 0; i < characterIds.length; ++i) {
             uint256 characterId = characterIds[i];
+            address characterOwner = ownerOf(characterId);
+            uint256 permissionBitMap = (characterOwner == newbieVilla)
+                ? OP.DEFAULT_PERMISSION_BITMAP
+                : OP.OPERATOR_SYNC_PERMISSION_BITMAP;
+
             address[] memory operators = _operatorsByCharacter[characterId].values();
             for (uint256 j = 0; j < operators.length; ++j) {
                 OperatorLogic.grantOperatorPermissions(
                     characterId,
                     operators[j],
-                    OP.OPERATOR_SYNC_PERMISSION_BITMAP,
+                    permissionBitMap,
                     _operatorsByCharacter,
                     _operatorsPermissionBitMap
                 );

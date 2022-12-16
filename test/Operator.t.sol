@@ -3,19 +3,23 @@ pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
 import "forge-std/console2.sol";
+import "./helpers/Const.sol";
+import "./helpers/utils.sol";
+import "./helpers/SetUp.sol";
+import "../contracts/libraries/OP.sol";
+import "../contracts/misc/NewbieVilla.sol";
 import "../contracts/Web3Entry.sol";
 import "../contracts/libraries/DataTypes.sol";
 import "../contracts/Web3Entry.sol";
 import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import "../contracts/modules/link/ApprovalLinkModule4Character.sol";
 import "../contracts/modules/link/ApprovalLinkModule4Note.sol";
-import "./helpers/Const.sol";
-import "./helpers/utils.sol";
-import "./helpers/SetUp.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "../contracts/libraries/OP.sol";
 
 contract OperatorTest is Test, SetUp, Utils {
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+    address public xsyncOperator = address(0x6666);
+
     address public alice = address(0x1111);
     address public bob = address(0x2222);
     address public carol = address(0x3333);
@@ -25,8 +29,17 @@ contract OperatorTest is Test, SetUp, Utils {
     address[] public blacklist = [bob];
     address[] public whitelist = [carol];
 
+    NewbieVilla public newbieVilla;
+
     function setUp() public {
         _setUp();
+
+        // setup newbieVilla
+        newbieVilla = new NewbieVilla();
+        newbieVilla.initialize(address(web3Entry), xsyncOperator);
+        // grant mint role
+        newbieVilla.grantRole(ADMIN_ROLE, alice);
+        newbieVilla.grantRole(ADMIN_ROLE, bob);
 
         // create character
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
@@ -42,20 +55,35 @@ contract OperatorTest is Test, SetUp, Utils {
         );
 
         // alice set bob as her operator with OP.DEFAULT_PERMISSION_BITMAP
-        vm.prank(alice);
+        vm.startPrank(alice);
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
             OP.DEFAULT_PERMISSION_BITMAP
         );
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+
+        // grant operator sync permission
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.OPERATOR_SYNC_PERMISSION_BITMAP
+        );
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
+            OP.OPERATOR_SYNC_PERMISSION_BITMAP
+        );
 
         // test bitmap is correctly filtered
-        vm.prank(alice);
-        web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, ~uint256(0));
+        web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, UINT256_MAX);
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
             OP.ALLOWED_PERMISSION_BITMAP_MASK
         );
+        vm.stopPrank();
     }
 
     function testAddOperators4Note() public {
@@ -733,18 +761,33 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testMigrate() public {
-        // TODO how to test migrate?
-        // vm.startPrank(alice);
-        // web3Entry.setOperator(Const.FIRST_CHARACTER_ID, bob);
-        // web3Entry.addOperator(Const.FIRST_CHARACTER_ID, carol);
-        // web3Entry.addOperator(Const.FIRST_CHARACTER_ID, dick);
-        // web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
-        // vm.stopPrank();
-        // uint256[] memory characters = new uint256[](1);
-        // characters[0] = 1;
-        // web3Entry.migrateOperator(characters);
-        // vm.startPrank(bob);
-        // web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        // alice set bob as operator
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, carol, UINT256_MAX);
+
+        // bob transfer character to newbieVilla
+        vm.prank(bob);
+        Web3Entry(address(web3Entry)).safeTransferFrom(
+            address(bob),
+            address(newbieVilla),
+            Const.SECOND_CHARACTER_ID
+        );
+
+        // migrate
+        uint256[] memory characterIds = new uint256[](2);
+        characterIds[0] = Const.FIRST_CHARACTER_ID;
+        characterIds[1] = Const.SECOND_CHARACTER_ID;
+        web3Entry.migrateOperator(address(newbieVilla), characterIds);
+
+        // check Operator permission
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, carol),
+            OP.OPERATOR_SYNC_PERMISSION_BITMAP
+        );
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.SECOND_CHARACTER_ID, bob),
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
     }
 
     function testGetOperators() public {
