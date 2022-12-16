@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.10;
 
-import "../../contracts/libraries/DataTypes.sol";
 import "../helpers/Const.sol";
 import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
+import "../../contracts/libraries/DataTypes.sol";
 import "../../contracts/misc/NewbieVilla.sol";
 
 contract NewbieVillaTest is Test, SetUp, Utils {
@@ -23,6 +23,7 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         newbieVilla = new NewbieVilla();
         newbieVilla.initialize(address(web3Entry), xsyncOperator);
 
+        // grant mint role to alice
         newbieVilla.grantRole(ADMIN_ROLE, alice);
     }
 
@@ -36,31 +37,57 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         Web3Entry(address(web3Entry)).createCharacter(
             makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbieVilla))
         );
-        // assert(Web3Entry(address(web3Entry)).isOperator(Const.FIRST_CHARACTER_ID, alice));
-        // assert(Web3Entry(address(web3Entry)).isOperator(Const.FIRST_CHARACTER_ID, xsyncOperator));
+
+        // check operators
+        address[] memory operators = web3Entry.getOperators(Const.FIRST_CHARACTER_ID);
+        assertEq(operators[0], alice);
+        assertEq(operators[1], xsyncOperator);
+
+        // check operator permission bitmap
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, alice),
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, xsyncOperator),
+            OP.OPERATOR_SYNC_PERMISSION_BITMAP
+        );
     }
 
     function testNewbieCreateCharacterFail() public {
-        // vm.prank(bob);
-        // vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
-        // Web3Entry(address(web3Entry)).createCharacter(
-        //     makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbieVilla))
-        // );
+        // bob has no mint role, so he can't send character to newbieVilla contract
+        vm.prank(bob);
+        vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
+        Web3Entry(address(web3Entry)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbieVilla))
+        );
     }
 
     function testTransferNewbieIn() public {
-        // vm.prank(alice);
-        // Web3Entry(address(web3Entry)).createCharacter(
-        //     makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(alice))
-        // );
-        // vm.prank(alice);
-        // Web3Entry(address(web3Entry)).safeTransferFrom(
-        //     address(alice),
-        //     address(newbieVilla),
-        //     Const.FIRST_CHARACTER_ID
-        // );
-        // assert(Web3Entry(address(web3Entry)).isOperator(Const.FIRST_CHARACTER_ID, alice));
-        // assert(Web3Entry(address(web3Entry)).isOperator(Const.FIRST_CHARACTER_ID, xsyncOperator));
+        vm.prank(alice);
+        Web3Entry(address(web3Entry)).createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(alice))
+        );
+        vm.prank(alice);
+        Web3Entry(address(web3Entry)).safeTransferFrom(
+            address(alice),
+            address(newbieVilla),
+            Const.FIRST_CHARACTER_ID
+        );
+        // check operators
+        address[] memory operators = web3Entry.getOperators(Const.FIRST_CHARACTER_ID);
+        assertEq(operators[0], alice);
+        assertEq(operators[1], xsyncOperator);
+
+        // check operator permission bitmap
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, alice),
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+        assertEq(
+            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, xsyncOperator),
+            OP.OPERATOR_SYNC_PERMISSION_BITMAP
+        );
     }
 
     function testTransferNewbieInFail() public {

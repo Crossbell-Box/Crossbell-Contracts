@@ -145,14 +145,14 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
             IWeb3Entry(web3Entry).grantOperatorPermissions(
                 tokenId,
                 operator,
-                OP.OPERATOR_SIGN_PERMISSION_BITMAP
+                OP.DEFAULT_PERMISSION_BITMAP
             );
         } else {
             address selectedOperator = abi.decode(data, (address));
             IWeb3Entry(web3Entry).grantOperatorPermissions(
                 tokenId,
                 selectedOperator,
-                OP.OPERATOR_SIGN_PERMISSION_BITMAP
+                OP.DEFAULT_PERMISSION_BITMAP
             );
         }
         IWeb3Entry(web3Entry).grantOperatorPermissions(
