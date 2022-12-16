@@ -14,6 +14,24 @@ mapping(uint256 => mapping(address => uint256)) _operatorsPermissionBitMap
 mapping(uint256 => mapping(uint256 => struct DataTypes.Operators4Note)) _operators4Note
 ```
 
+### grantOperatorPermissions
+
+```solidity
+function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) external
+```
+
+Grant an address as an operator and authorize it with custom permissions.
+
+_Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | ID of your character that you want to authorize. |
+| operator | address | Address to grant operator permissions to. |
+| permissionBitMap | uint256 | Bitmap used for finer grained operator permissions controls. |
+
 ### addOperators4Note
 
 ```solidity
@@ -48,39 +66,22 @@ Remove operators blacklist and whitelist for a note.
 | blacklist | address[] | Blacklist addresses that you want to remove. |
 | whitelist | address[] | Whitelist addresses that you want to remove. |
 
-### grantOperatorPermissions
-
-```solidity
-function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) external
-```
-
-Grant an address as an operator and authorize it with custom permissions.
-
-_Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol._
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| characterId | uint256 | ID of your character that you want to authorize. |
-| operator | address | Address to grant operator permissions to. |
-| permissionBitMap | uint256 | Bitmap used for finer grained operator permissions controls. |
-
 ### migrateOperator
 
 ```solidity
-function migrateOperator(uint256[] characterIds) external
+function migrateOperator(address newbieVilla, uint256[] characterIds) external
 ```
 
-Migrates operators permissions to operatorsSignBitMap
+Migrates old operators permissions.
 
-_`addOperator`, `removeOperator`, `setOperator` will all be deprecated soon. We recommend to use
- `migrateOperator` to grant OPERATOR_SIGN_PERMISSION_BITMAP to all previous operators._
+_set operators of newbieVilla DEFAULT_PERMISSION, and others OPERATOR_SYNC_PERMISSION.
+This function should be removed in the next release._
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| newbieVilla | address |  |
 | characterIds | uint256[] | List of characters to migrate. |
 
 ### getOperatorPermissions

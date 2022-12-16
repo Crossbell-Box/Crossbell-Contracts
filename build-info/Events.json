@@ -7,25 +7,31 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "uint256",
           "name": "characterId",
           "type": "uint256"
         },
         {
-          "indexed": true,
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "noteId",
+          "type": "uint256"
         },
         {
           "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
+          "internalType": "address[]",
+          "name": "blacklist",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "whitelist",
+          "type": "address[]"
         }
       ],
-      "name": "AddOperator",
+      "name": "AddOperators4Note",
       "type": "event"
     },
     {
@@ -182,37 +188,6 @@
         }
       ],
       "name": "GrantOperatorPermissions",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "characterId",
-          "type": "uint256"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "noteId",
-          "type": "uint256"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "permissionBitMap",
-          "type": "uint256"
-        }
-      ],
-      "name": "GrantOperatorPermissions4Note",
       "type": "event"
     },
     {
@@ -591,25 +566,31 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "uint256",
           "name": "characterId",
           "type": "uint256"
         },
         {
-          "indexed": true,
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "noteId",
+          "type": "uint256"
         },
         {
           "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
+          "internalType": "address[]",
+          "name": "blacklist",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "whitelist",
+          "type": "address[]"
         }
       ],
-      "name": "RemoveOperator",
+      "name": "RemoveOperators4Note",
       "type": "event"
     },
     {
@@ -883,31 +864,6 @@
         }
       ],
       "name": "SetNoteUri",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "characterId",
-          "type": "uint256"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
-        }
-      ],
-      "name": "SetOperator",
       "type": "event"
     },
     {
@@ -1197,8 +1153,8 @@
       "type": "event"
     }
   ],
-  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220eef6deb3bf349f961e977f73d434d52a5b25fede8a6f0667fad771619605038664736f6c634300080a0033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220eef6deb3bf349f961e977f73d434d52a5b25fede8a6f0667fad771619605038664736f6c634300080a0033",
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122045a12eb2160b827118455d440a07ab9993187dfa8882cd36efca699db3e4c1b164736f6c634300080a0033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122045a12eb2160b827118455d440a07ab9993187dfa8882cd36efca699db3e4c1b164736f6c634300080a0033",
   "linkReferences": {},
   "deployedLinkReferences": {}
 }
