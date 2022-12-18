@@ -14,6 +14,12 @@ mapping(uint256 => mapping(address => uint256)) _operatorsPermissionBitMap
 mapping(uint256 => mapping(uint256 => struct DataTypes.Operators4Note)) _operators4Note
 ```
 
+### migrateOwner
+
+```solidity
+address migrateOwner
+```
+
 ### grantOperatorPermissions
 
 ```solidity
@@ -32,13 +38,13 @@ _Every bit in permissionBitMap stands for a corresponding method in Web3Entry. m
 | operator | address | Address to grant operator permissions to. |
 | permissionBitMap | uint256 | Bitmap used for finer grained operator permissions controls. |
 
-### addOperators4Note
+### grantOperators4Note
 
 ```solidity
-function addOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
+function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
 ```
 
-Add operators blacklist and whitelist for a note.
+Grant operators whitelist and blacklist roles of a note.
 
 #### Parameters
 
@@ -46,16 +52,16 @@ Add operators blacklist and whitelist for a note.
 | ---- | ---- | ----------- |
 | characterId | uint256 | ID of character that you want to set. |
 | noteId | uint256 | ID of note that you want to set. |
-| blacklist | address[] | Blacklist addresses that you want to add. |
-| whitelist | address[] | Whitelist addresses that you want to add. |
+| blacklist | address[] | Blacklist addresses that you want to grant. |
+| whitelist | address[] | Whitelist addresses that you want to grant. |
 
-### removeOperators4Note
+### revokeOperators4Note
 
 ```solidity
-function removeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
+function revokeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
 ```
 
-Remove operators blacklist and whitelist for a note.
+Remove operators's blacklist and whitelist roles of a note.
 
 #### Parameters
 

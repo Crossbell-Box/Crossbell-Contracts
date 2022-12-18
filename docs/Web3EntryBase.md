@@ -20,16 +20,16 @@ function initialize(string _name, string _symbol, address _linklistContract, add
 function grantOperatorPermissions(uint256, address, uint256) external virtual
 ```
 
-### addOperators4Note
+### grantOperators4Note
 
 ```solidity
-function addOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external virtual
+function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external virtual
 ```
 
-### removeOperators4Note
+### revokeOperators4Note
 
 ```solidity
-function removeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external virtual
+function revokeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external virtual
 ```
 
 ### createCharacter

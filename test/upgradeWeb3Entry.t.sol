@@ -112,7 +112,7 @@ contract UpgradeWeb3Entry is Test, Utils {
         );
 
         // grant NOTE_SET_NOTE_URI permission to bob
-        Web3Entry(address(proxyWeb3Entry)).addOperators4Note(
+        Web3Entry(address(proxyWeb3Entry)).grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             blacklist,
@@ -130,7 +130,7 @@ contract UpgradeWeb3Entry is Test, Utils {
         assertEq(_blacklist, blacklist);
         assertEq(_whitelist, whitelist);
 
-        Web3Entry(address(proxyWeb3Entry)).removeOperators4Note(
+        Web3Entry(address(proxyWeb3Entry)).revokeOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             blacklist,
@@ -198,7 +198,7 @@ contract UpgradeWeb3Entry is Test, Utils {
             carol,
             OP.DEFAULT_PERMISSION_BITMAP
         );
-        Web3Entry(address(proxyWeb3Entry)).addOperators4Note(
+        Web3Entry(address(proxyWeb3Entry)).grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             blacklist,

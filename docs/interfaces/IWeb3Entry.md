@@ -46,16 +46,16 @@ function setPrimaryCharacterId(uint256 characterId) external
 function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) external
 ```
 
-### addOperators4Note
+### grantOperators4Note
 
 ```solidity
-function addOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
+function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
 ```
 
-### removeOperators4Note
+### revokeOperators4Note
 
 ```solidity
-function removeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
+function revokeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
 ```
 
 ### setLinklistUri

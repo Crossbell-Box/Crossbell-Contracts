@@ -39,14 +39,14 @@ library Events {
         uint256 permissionBitMap
     );
 
-    event AddOperators4Note(
+    event GrantOperators4Note(
         uint256 indexed characterId,
         uint256 indexed noteId,
         address[] blacklist,
         address[] whitelist
     );
 
-    event RemoveOperators4Note(
+    event RevokeOperators4Note(
         uint256 indexed characterId,
         uint256 indexed noteId,
         address[] blacklist,

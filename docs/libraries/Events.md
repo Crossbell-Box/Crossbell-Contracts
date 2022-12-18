@@ -56,16 +56,16 @@ event SetSocialToken(address account, uint256 characterId, address tokenAddress)
 event GrantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap)
 ```
 
-### AddOperators4Note
+### GrantOperators4Note
 
 ```solidity
-event AddOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist)
+event GrantOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist)
 ```
 
-### RemoveOperators4Note
+### RevokeOperators4Note
 
 ```solidity
-event RemoveOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist)
+event RevokeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist)
 ```
 
 ### SetCharacterUri

@@ -27,42 +27,42 @@ library OperatorLogic {
         emit Events.GrantOperatorPermissions(characterId, operator, bitmap);
     }
 
-    function addOperators4Note(
+    function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
         address[] calldata blacklist,
         address[] calldata whitelist,
         mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
     ) external {
-        // add blacklist
+        // grant blacklist roles
         for (uint256 i = 0; i < blacklist.length; i++) {
             _operators4Note[characterId][noteId].blacklist.add(blacklist[i]);
         }
-        // add whitelist
+        // grant whitelist roles
         for (uint256 i = 0; i < whitelist.length; i++) {
             _operators4Note[characterId][noteId].whitelist.add(whitelist[i]);
         }
 
-        emit Events.AddOperators4Note(characterId, noteId, blacklist, whitelist);
+        emit Events.GrantOperators4Note(characterId, noteId, blacklist, whitelist);
     }
 
-    function removeOperators4Note(
+    function revokeOperators4Note(
         uint256 characterId,
         uint256 noteId,
         address[] calldata blacklist,
         address[] calldata whitelist,
         mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
     ) external {
-        // remove blacklist
+        // revoke blacklist roles
         for (uint256 i = 0; i < blacklist.length; i++) {
             _operators4Note[characterId][noteId].blacklist.remove(blacklist[i]);
         }
-        // remove whitelist
+        // revoke whitelist roles
         for (uint256 i = 0; i < whitelist.length; i++) {
             _operators4Note[characterId][noteId].whitelist.remove(whitelist[i]);
         }
 
-        emit Events.RemoveOperators4Note(characterId, noteId, blacklist, whitelist);
+        emit Events.RevokeOperators4Note(characterId, noteId, blacklist, whitelist);
     }
 
     /**

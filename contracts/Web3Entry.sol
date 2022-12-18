@@ -40,13 +40,13 @@ contract Web3Entry is Web3EntryBase {
     }
 
     /**
-     * @notice Add operators blacklist and whitelist for a note.
+     * @notice Grant operators whitelist and blacklist roles of a note.
      * @param characterId ID of character that you want to set.
      * @param noteId ID of note that you want to set.
-     * @param blacklist Blacklist addresses that you want to add.
-     * @param whitelist Whitelist addresses that you want to add.
+     * @param blacklist Blacklist addresses that you want to grant.
+     * @param whitelist Whitelist addresses that you want to grant.
      */
-    function addOperators4Note(
+    function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
         address[] calldata blacklist,
@@ -54,17 +54,23 @@ contract Web3Entry is Web3EntryBase {
     ) external override {
         _validateCallerPermission(characterId, OP.ADD_OPERATORS_FOR_NOTE);
         _validateNoteExists(characterId, noteId);
-        OperatorLogic.addOperators4Note(characterId, noteId, blacklist, whitelist, _operators4Note);
+        OperatorLogic.grantOperators4Note(
+            characterId,
+            noteId,
+            blacklist,
+            whitelist,
+            _operators4Note
+        );
     }
 
     /**
-     * @notice Remove operators blacklist and whitelist for a note.
+     * @notice Remove operators's blacklist and whitelist roles of a note.
      * @param characterId ID of character that you want to set.
      * @param noteId ID of note that you want to set.
      * @param blacklist Blacklist addresses that you want to remove.
      * @param whitelist Whitelist addresses that you want to remove.
      */
-    function removeOperators4Note(
+    function revokeOperators4Note(
         uint256 characterId,
         uint256 noteId,
         address[] calldata blacklist,
@@ -72,7 +78,7 @@ contract Web3Entry is Web3EntryBase {
     ) external override {
         _validateCallerPermission(characterId, OP.REMOVE_OPERATORS_FOR_NOTE);
         _validateNoteExists(characterId, noteId);
-        OperatorLogic.removeOperators4Note(
+        OperatorLogic.revokeOperators4Note(
             characterId,
             noteId,
             blacklist,

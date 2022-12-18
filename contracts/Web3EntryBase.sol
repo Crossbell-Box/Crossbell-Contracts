@@ -58,14 +58,14 @@ contract Web3EntryBase is
         uint256
     ) external virtual {}
 
-    function addOperators4Note(
+    function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
         address[] calldata blacklist,
         address[] calldata whitelist
     ) external virtual {}
 
-    function removeOperators4Note(
+    function revokeOperators4Note(
         uint256 characterId,
         uint256 noteId,
         address[] calldata blacklist,

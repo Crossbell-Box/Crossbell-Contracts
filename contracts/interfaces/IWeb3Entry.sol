@@ -34,14 +34,14 @@ interface IWeb3Entry {
         uint256 permissionBitMap
     ) external;
 
-    function addOperators4Note(
+    function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
         address[] calldata blacklist,
         address[] calldata whitelist
     ) external;
 
-    function removeOperators4Note(
+    function revokeOperators4Note(
         uint256 characterId,
         uint256 noteId,
         address[] calldata blacklist,
