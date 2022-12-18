@@ -14,7 +14,6 @@ import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import "./helpers/Const.sol";
 import "./helpers/SetUp.sol";
 import "./helpers/utils.sol";
-import "./helpers/DefaultOP.sol";
 
 contract UpgradeWeb3Entry is Test, Utils {
     Web3EntryBase web3EntryBaseImpl;
@@ -27,10 +26,20 @@ contract UpgradeWeb3Entry is Test, Utils {
     address public bob = address(0x2222);
     address public carol = address(0x3333);
 
+    address[] public blacklist = [bob, admin];
+    address[] public whitelist = [carol, bob, alice];
+
     address public linkList = address(0x111);
     address public periphery = address(0x222);
     address public mintNFT = address(0x333);
     address public resolver = address(0x444);
+
+    using EnumerableSet for EnumerableSet.AddressSet;
+
+    struct Operators4Note {
+        EnumerableSet.AddressSet blacklist;
+        EnumerableSet.AddressSet whitelist;
+    }
 
     function setUp() public {
         web3EntryBaseImpl = new Web3EntryBase();
@@ -78,45 +87,63 @@ contract UpgradeWeb3Entry is Test, Utils {
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            OP.OPERATOR_SIGN_PERMISSION_BITMAP
+            OP.DEFAULT_PERMISSION_BITMAP
         );
         assertEq(
             Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions(
                 Const.FIRST_CHARACTER_ID,
                 bob
             ),
-            OP.OPERATOR_SIGN_PERMISSION_BITMAP
+            OP.DEFAULT_PERMISSION_BITMAP
         );
 
         // grant operator sync permission to carol
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             carol,
-            OP.OPERATOR_SYNC_PERMISSION_BITMAP
+            OP.POST_NOTE_PERMISSION_BITMAP
         );
         assertEq(
             Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions(
                 Const.FIRST_CHARACTER_ID,
                 carol
             ),
-            OP.OPERATOR_SYNC_PERMISSION_BITMAP
+            OP.POST_NOTE_PERMISSION_BITMAP
         );
 
         // grant NOTE_SET_NOTE_URI permission to bob
-        Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions4Note(
+        Web3Entry(address(proxyWeb3Entry)).grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            bob,
-            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
+            blacklist,
+            whitelist
         );
-        assertEq(
-            Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions4Note(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_NOTE_ID,
-                bob
-            ),
-            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
+
+        address[] memory _blacklist;
+        address[] memory _whitelist;
+
+        (_blacklist, _whitelist) = Web3Entry(address(proxyWeb3Entry)).getOperators4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
         );
+
+        assertEq(_blacklist, blacklist);
+        assertEq(_whitelist, whitelist);
+
+        Web3Entry(address(proxyWeb3Entry)).revokeOperators4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            blacklist,
+            whitelist
+        );
+
+        (_blacklist, _whitelist) = Web3Entry(address(proxyWeb3Entry)).getOperators4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+
+        assertEq(_blacklist.length, 0);
+        assertEq(_whitelist.length, 0);
 
         vm.stopPrank();
     }
@@ -133,8 +160,8 @@ contract UpgradeWeb3Entry is Test, Utils {
         bytes32 bytes32carol = bytes32((uint256(uint160(carol))));
 
         // get storage slot before the upgrade
-        bytes32[] memory prevSlotArr = new bytes32[](26);
-        for (uint256 i = 0; i < 26; i++) {
+        bytes32[] memory prevSlotArr = new bytes32[](27);
+        for (uint256 i = 0; i < 27; i++) {
             bytes32 value = vm.load(address(proxyWeb3Entry), bytes32(uint256(i)));
             prevSlotArr[i] = value;
         }
@@ -149,13 +176,13 @@ contract UpgradeWeb3Entry is Test, Utils {
         assertEq(impl, address(web3EntryImpl));
         vm.stopPrank();
 
-        bytes32[] memory newSlotArr = new bytes32[](26);
-        for (uint256 i = 0; i < 26; i++) {
+        bytes32[] memory newSlotArr = new bytes32[](27);
+        for (uint256 i = 0; i < 27; i++) {
             bytes32 value = vm.load(address(proxyWeb3Entry), bytes32(uint256(i)));
             newSlotArr[i] = value;
         }
         // check slots
-        for (uint256 i = 0; i < 26; i++) {
+        for (uint256 i = 0; i < 27; i++) {
             assertEq(prevSlotArr[i], newSlotArr[i]);
         }
 
@@ -164,18 +191,18 @@ contract UpgradeWeb3Entry is Test, Utils {
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
-            DEFAULT_OP.DEFAULT_PERMISSION_BITMAP
+            OP.DEFAULT_PERMISSION_BITMAP
         );
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             carol,
-            OP.OPERATOR_SIGN_PERMISSION_BITMAP
+            OP.DEFAULT_PERMISSION_BITMAP
         );
-        Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions4Note(
+        Web3Entry(address(proxyWeb3Entry)).grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            bob,
-            DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP
+            blacklist,
+            whitelist
         );
         vm.stopPrank();
 
@@ -188,7 +215,7 @@ contract UpgradeWeb3Entry is Test, Utils {
             )
         );
         bytes32 valueAtOperatorBitmapSlot = vm.load(address(proxyWeb3Entry), operatorBitmapSlot);
-        assertEq32(valueAtOperatorBitmapSlot, bytes32(DEFAULT_OP.DEFAULT_PERMISSION_BITMAP));
+        assertEq32(valueAtOperatorBitmapSlot, bytes32(OP.DEFAULT_PERMISSION_BITMAP));
 
         // check carol
         operatorBitmapSlot = keccak256(
@@ -198,25 +225,42 @@ contract UpgradeWeb3Entry is Test, Utils {
             )
         );
         valueAtOperatorBitmapSlot = vm.load(address(proxyWeb3Entry), operatorBitmapSlot);
-        assertEq32(valueAtOperatorBitmapSlot, bytes32(OP.OPERATOR_SIGN_PERMISSION_BITMAP));
+        assertEq32(valueAtOperatorBitmapSlot, bytes32(OP.DEFAULT_PERMISSION_BITMAP));
 
-        // check bob note permission
-        bytes32 noteBitmapSlot = keccak256(
+        // check note 1 operators
+        bytes32 blacklistLengthSlot = keccak256(
             abi.encodePacked(
-                bytes32bob,
-                keccak256(
-                    abi.encodePacked(
-                        Const.FIRST_NOTE_ID,
-                        (
-                            keccak256(
-                                abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(26)))
-                            )
-                        )
-                    )
-                )
+                Const.FIRST_NOTE_ID,
+                (keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(26)))))
             )
         );
-        bytes32 valueAtNoteBitmapSlot = vm.load(address(proxyWeb3Entry), noteBitmapSlot);
-        assertEq32(valueAtNoteBitmapSlot, bytes32(DEFAULT_OP.DEFAULT_NOTE_PERMISSION_BITMAP));
+        bytes32 valueAtBlacklistLengthSlot = vm.load(address(proxyWeb3Entry), blacklistLengthSlot);
+        // the length of blacklist is 2
+        assertEq(valueAtBlacklistLengthSlot, bytes32(uint256(2)));
+
+        uint256 blacklistMapSlot = uint256(bytes32(blacklistLengthSlot)) + uint256(1);
+
+        // admin is the second address in blacklist
+        bytes32 blacklistAdminIndexSlot = keccak256(
+            abi.encodePacked(bytes32((uint256(uint160(admin)))), blacklistMapSlot)
+        );
+        bytes32 adminIndex = vm.load(address(proxyWeb3Entry), blacklistAdminIndexSlot);
+        assertEq(adminIndex, bytes32(uint256(2)));
+
+        // the length of whitelist is 3
+        uint256 whitelistLengthSlot = uint256(bytes32(blacklistLengthSlot)) + uint256(2);
+        bytes32 valueAtWhitelistLengthSlot = vm.load(
+            address(proxyWeb3Entry),
+            bytes32(whitelistLengthSlot)
+        );
+        assertEq(valueAtWhitelistLengthSlot, bytes32(uint256(3)));
+
+        uint256 whitelistMapSlot = uint256(bytes32(blacklistLengthSlot)) + uint256(3);
+        // carol is the first address in whitelist
+        bytes32 whitelistCarolIndexSlot = keccak256(
+            abi.encodePacked(bytes32carol, whitelistMapSlot)
+        );
+        bytes32 carolIndex = vm.load(address(proxyWeb3Entry), whitelistCarolIndexSlot);
+        assertEq(carolIndex, bytes32(uint256(1)));
     }
 }

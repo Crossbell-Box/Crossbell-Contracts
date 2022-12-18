@@ -32,7 +32,7 @@ check :; solhint "{contracts,test,scripts}/**/*.sol"
 slither :; slither .
 
 # Lints
-lint :; prettier --write "{contracts,test,scripts}/**/*.sol"
+lint :; prettier --write "{contracts,test,scripts}/**/*.{sol,ts}"
 
 # Generate Gas Snapshots
 snapshot :; forge clean && forge snapshot

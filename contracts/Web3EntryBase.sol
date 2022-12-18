@@ -58,12 +58,18 @@ contract Web3EntryBase is
         uint256
     ) external virtual {}
 
-    // overridden in web3Entry
-    function grantOperatorPermissions4Note(
-        uint256,
-        uint256,
-        address,
-        uint256
+    function grantOperators4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address[] calldata blacklist,
+        address[] calldata whitelist
+    ) external virtual {}
+
+    function revokeOperators4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address[] calldata blacklist,
+        address[] calldata whitelist
     ) external virtual {}
 
     /**
@@ -134,7 +140,7 @@ contract Web3EntryBase is
     // opSign permission
     function setLinklistUri(uint256 linklistId, string calldata uri) external {
         uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
-        _validateCallerPermission(ownerCharacterId, OP.SET_LINK_LIST_URI);
+        _validateCallerPermission(ownerCharacterId, OP.SET_LINKLIST_URI);
 
         ILinklist(_linklist).setUri(linklistId, uri);
     }
@@ -269,13 +275,13 @@ contract Web3EntryBase is
     }
 
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external {
-        _validateCallerPermission(vars.fromCharacterId, OP.LINK_ANY_URI);
+        _validateCallerPermission(vars.fromCharacterId, OP.LINK_ANYURI);
 
         LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external {
-        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ANY_URI);
+        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ANYURI);
 
         LinkLogic.unlinkAnyUri(
             vars,
@@ -285,13 +291,13 @@ contract Web3EntryBase is
     }
 
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external {
-        _validateCallerPermission(vars.fromCharacterId, OP.LINK_LINK_LIST);
+        _validateCallerPermission(vars.fromCharacterId, OP.LINK_LINKLIST);
 
         LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists);
     }
 
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external {
-        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_LINK_LIST);
+        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_LINKLIST);
 
         LinkLogic.unlinkLinklist(
             vars,
@@ -366,7 +372,7 @@ contract Web3EntryBase is
         // get character id of the owner of this linklist
         uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(vars.linklistId);
 
-        _validateCallerPermission(ownerCharacterId, OP.SET_LINK_MODULE_FOR_LINK_LIST);
+        _validateCallerPermission(ownerCharacterId, OP.SET_LINK_MODULE_FOR_LINKLIST);
 
         LinkModuleLogic.setLinkModule4Linklist(
             vars.linklistId,
@@ -406,12 +412,7 @@ contract Web3EntryBase is
     }
 
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external {
-        _validateCallerPermission(vars.characterId, OP.SET_MINT_MODULE_FOR_NOTE);
-        _validateCallerPermission4Note(
-            vars.characterId,
-            vars.noteId,
-            OP.NOTE_SET_MINT_MODULE_FOR_NOTE
-        );
+        _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE);
         _validateNoteExists(vars.characterId, vars.noteId);
 
         LinkModuleLogic.setMintModule4Note(
@@ -437,8 +438,7 @@ contract Web3EntryBase is
         uint256 noteId,
         string calldata newUri
     ) external {
-        _validateCallerPermission(characterId, OP.SET_NOTE_URI);
-        _validateCallerPermission4Note(characterId, noteId, OP.NOTE_SET_NOTE_URI);
+        _validateCallerPermission4Note(characterId, noteId);
         _validateNoteExists(characterId, noteId);
         PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
     }
@@ -449,7 +449,6 @@ contract Web3EntryBase is
      */
     function lockNote(uint256 characterId, uint256 noteId) external {
         _validateCallerPermission(characterId, OP.LOCK_NOTE);
-        _validateCallerPermission4Note(characterId, noteId, OP.NOTE_LOCK_NOTE);
         _validateNoteExists(characterId, noteId);
 
         _noteByIdByCharacter[characterId][noteId].locked = true;
@@ -459,7 +458,6 @@ contract Web3EntryBase is
 
     function deleteNote(uint256 characterId, uint256 noteId) external {
         _validateCallerPermission(characterId, OP.DELETE_NOTE);
-        _validateCallerPermission4Note(characterId, noteId, OP.NOTE_DELETE_NOTE);
         _validateNoteExists(characterId, noteId);
 
         _noteByIdByCharacter[characterId][noteId].deleted = true;
@@ -515,7 +513,7 @@ contract Web3EntryBase is
         external
         returns (uint256)
     {
-        _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_LINK_LIST);
+        _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_LINKLIST);
 
         bytes32 linkItemType = Constants.NoteLinkTypeLinklist;
         bytes32 linkKey = bytes32(toLinklistId);
@@ -586,7 +584,7 @@ contract Web3EntryBase is
         external
         returns (uint256)
     {
-        _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_ANY_URI);
+        _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_ANYURI);
 
         bytes32 linkItemType = Constants.NoteLinkTypeAnyUri;
         bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
@@ -629,18 +627,24 @@ contract Web3EntryBase is
     }
 
     // overridden in web3Entry
-    function getOperatorPermissions4Note(
-        uint256,
-        uint256,
-        address
-    ) external view virtual returns (uint256) {
+    function getOperatorPermissions(uint256, address) external view virtual returns (uint256) {
         return 0;
     }
 
     // overridden in web3Entry
-    function getOperatorPermissions(uint256, address) external view virtual returns (uint256) {
-        return 0;
-    }
+    function getOperators4Note(uint256 characterId, uint256 noteId)
+        external
+        view
+        virtual
+        returns (address[] memory blacklist, address[] memory whitelist)
+    {}
+
+    // overridden in web3Entry
+    function hasNotePermission(
+        uint256 characterId,
+        uint256 noteId,
+        address operator
+    ) external view virtual returns (bool) {}
 
     function getPrimaryCharacterId(address account) external view returns (uint256) {
         return _primaryCharacterByAddress[account];
@@ -729,11 +733,11 @@ contract Web3EntryBase is
     function _validateCallerPermission(uint256, uint256) internal view virtual {}
 
     // overridden in web3Entry
-    function _validateCallerPermission4Note(
-        uint256,
-        uint256,
-        uint256
-    ) internal view virtual {}
+    function _validateCallerPermission4Note(uint256 characterId, uint256 noteId)
+        internal
+        view
+        virtual
+    {}
 
     function _validateCharacterExists(uint256 characterId) internal view {
         require(_exists(characterId), "CharacterNotExists");
@@ -751,14 +755,4 @@ contract Web3EntryBase is
     function getRevision() external pure returns (uint256) {
         return REVISION;
     }
-
-    function isOperator(uint256, address) external view virtual returns (bool) {
-        return false;
-    }
-
-    function addOperator(uint256, address) external virtual {}
-
-    function removeOperator(uint256, address) external virtual {}
-
-    function setOperator(uint256, address) external virtual {}
 }

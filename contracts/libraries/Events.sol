@@ -33,23 +33,24 @@ library Events {
         address indexed tokenAddress
     );
 
-    event SetOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
-
-    event AddOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
-
-    event RemoveOperator(uint256 indexed characterId, address indexed operator, uint256 timestamp);
-
     event GrantOperatorPermissions(
         uint256 indexed characterId,
         address indexed operator,
         uint256 permissionBitMap
     );
 
-    event GrantOperatorPermissions4Note(
+    event GrantOperators4Note(
         uint256 indexed characterId,
         uint256 indexed noteId,
-        address indexed operator,
-        uint256 permissionBitMap
+        address[] blacklist,
+        address[] whitelist
+    );
+
+    event RevokeOperators4Note(
+        uint256 indexed characterId,
+        uint256 indexed noteId,
+        address[] blacklist,
+        address[] whitelist
     );
 
     event SetCharacterUri(uint256 indexed characterId, string newUri);

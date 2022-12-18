@@ -14,6 +14,8 @@ function initialize(string _name, string _symbol, address _linklistContract, add
 function createCharacter(struct DataTypes.CreateCharacterData vars) external
 ```
 
+EXTERNAL VIEW FUNCTIONS
+
 ### setHandle
 
 ```solidity
@@ -44,10 +46,16 @@ function setPrimaryCharacterId(uint256 characterId) external
 function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) external
 ```
 
-### grantOperatorPermissions4Note
+### grantOperators4Note
 
 ```solidity
-function grantOperatorPermissions4Note(uint256 characterId, uint256 noteId, address operator, uint256 permissionBitMap) external
+function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
+```
+
+### revokeOperators4Note
+
+```solidity
+function revokeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
 ```
 
 ### setLinklistUri
@@ -134,6 +142,12 @@ function linkLinklist(struct DataTypes.linkLinklistData vars) external
 function unlinkLinklist(struct DataTypes.unlinkLinklistData vars) external
 ```
 
+### setLinkModule4Linklist
+
+```solidity
+function setLinkModule4Linklist(struct DataTypes.setLinkModule4LinklistData vars) external
+```
+
 ### setLinkModule4Address
 
 ```solidity
@@ -218,16 +232,24 @@ function postNote4AnyUri(struct DataTypes.PostNoteData postNoteData, string uri)
 function getOperators(uint256 characterId) external view returns (address[])
 ```
 
+VIEW FUNCTIONS
+
 ### getOperatorPermissions
 
 ```solidity
 function getOperatorPermissions(uint256 characterId, address operator) external view returns (uint256)
 ```
 
-### getOperatorPermissions4Note
+### getOperators4Note
 
 ```solidity
-function getOperatorPermissions4Note(uint256 characterId, uint256 noteId, address operator) external view returns (uint256)
+function getOperators4Note(uint256 characterId, uint256 noteId) external view returns (address[] blacklist, address[] whitelist)
+```
+
+### hasNotePermission
+
+```solidity
+function hasNotePermission(uint256 characterId, uint256 noteId, address operator) external view returns (bool)
 ```
 
 ### getPrimaryCharacterId
@@ -318,29 +340,5 @@ function getLinklistContract() external view returns (address)
 
 ```solidity
 function getRevision() external pure returns (uint256)
-```
-
-### isOperator
-
-```solidity
-function isOperator(uint256 characterId, address operator) external view returns (bool)
-```
-
-### addOperator
-
-```solidity
-function addOperator(uint256 characterId, address operator) external
-```
-
-### removeOperator
-
-```solidity
-function removeOperator(uint256 characterId, address operator) external
-```
-
-### setOperator
-
-```solidity
-function setOperator(uint256 characterId, address operator) external
 ```
 

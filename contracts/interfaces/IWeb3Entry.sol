@@ -34,11 +34,18 @@ interface IWeb3Entry {
         uint256 permissionBitMap
     ) external;
 
-    function grantOperatorPermissions4Note(
+    function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
-        address operator,
-        uint256 permissionBitMap
+        address[] calldata blacklist,
+        address[] calldata whitelist
+    ) external;
+
+    function revokeOperators4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address[] calldata blacklist,
+        address[] calldata whitelist
     ) external;
 
     function setLinklistUri(uint256 linkListId, string calldata uri) external;
@@ -147,11 +154,16 @@ interface IWeb3Entry {
         view
         returns (uint256);
 
-    function getOperatorPermissions4Note(
+    function getOperators4Note(uint256 characterId, uint256 noteId)
+        external
+        view
+        returns (address[] memory blacklist, address[] memory whitelist);
+
+    function hasNotePermission(
         uint256 characterId,
         uint256 noteId,
         address operator
-    ) external view returns (uint256);
+    ) external view returns (bool);
 
     function getPrimaryCharacterId(address account) external view returns (uint256);
 
@@ -191,16 +203,4 @@ interface IWeb3Entry {
     function getLinklistContract() external view returns (address);
 
     function getRevision() external pure returns (uint256);
-
-    ////////////////////////////////////////////////////////
-    // these functions are overridden in web3Entry,
-    // and should be removed in next upgrade
-    function isOperator(uint256 characterId, address operator) external view returns (bool);
-
-    function addOperator(uint256 characterId, address operator) external;
-
-    function removeOperator(uint256 characterId, address operator) external;
-
-    function setOperator(uint256 characterId, address operator) external;
-    ////////////////////////////////////////////////////////
 }

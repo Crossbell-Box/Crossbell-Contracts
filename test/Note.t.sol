@@ -98,7 +98,7 @@ contract NoteTest is Test, SetUp, Utils {
 
     function testUpdateNoteFail() public {
         // NotEnoughPermission
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodePacked("NotEnoughPermissionForThisNote"));
         vm.prank(bob);
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,

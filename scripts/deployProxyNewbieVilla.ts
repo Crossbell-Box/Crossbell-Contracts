@@ -16,7 +16,7 @@ async function main() {
     const [owner] = await ethers.getSigners();
 
     const newbieVilla = "0xcE9950c48d0E955833d1297a35F5579Cf4E1a6c2";
-    const proxyAdminMultisig = "0x2CD6eA7DE6B33C663a669158c70800BAba17a951"
+    const proxyAdminMultisig = "0x2CD6eA7DE6B33C663a669158c70800BAba17a951";
 
     const Proxy = await ethers.getContractFactory("TransparentUpgradeableProxy");
     const proxyNewbieVilla = await Proxy.deploy(newbieVilla, proxyAdminMultisig, "0x");
