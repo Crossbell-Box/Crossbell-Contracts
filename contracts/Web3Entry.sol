@@ -52,7 +52,7 @@ contract Web3Entry is Web3EntryBase {
         address[] calldata blacklist,
         address[] calldata whitelist
     ) external override {
-        _validateCallerPermission(characterId, OP.ADD_OPERATORS_FOR_NOTE);
+        _validateCallerPermission(characterId, OP.GRANT_OPERATORS_FOR_NOTE);
         _validateNoteExists(characterId, noteId);
         OperatorLogic.grantOperators4Note(
             characterId,
@@ -76,7 +76,7 @@ contract Web3Entry is Web3EntryBase {
         address[] calldata blacklist,
         address[] calldata whitelist
     ) external override {
-        _validateCallerPermission(characterId, OP.REMOVE_OPERATORS_FOR_NOTE);
+        _validateCallerPermission(characterId, OP.REVOKE_OPERATORS_FOR_NOTE);
         _validateNoteExists(characterId, noteId);
         OperatorLogic.revokeOperators4Note(
             characterId,
