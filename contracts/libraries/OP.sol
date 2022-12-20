@@ -28,8 +28,8 @@ library OP {
     uint8 internal constant SET_SOCIAL_TOKEN = 1;
     uint8 internal constant GRANT_OPERATOR_PERMISSIONS = 2;
     // uint8 internal constant GRANT_OPERATOR_PERMISSIONS_FOR_NOTE = 3;
-    uint8 internal constant ADD_OPERATORS_FOR_NOTE = 3;
-    uint8 internal constant REMOVE_OPERATORS_FOR_NOTE = 4;
+    uint8 internal constant GRANT_OPERATORS_FOR_NOTE = 3;
+    uint8 internal constant REVOKE_OPERATORS_FOR_NOTE = 4;
     // set [0, 3] bit index
     uint256 internal constant OWNER_PERMISSION_BITMAP = ~(UINT256_MAX << 5);
 
