@@ -612,21 +612,20 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.stopPrank();
 
         // case 2. bob's in blacklist and also whitelist
-        vm.prank(alice);
-        // i just switch whitelist and blacklist here for convenience
-        web3Entry.grantOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            whitelist,
-            blacklist
-        );
-        vm.prank(bob);
-        vm.expectRevert("NotEnoughPermissionForThisNote");
-        web3Entry.setNoteUri(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            Const.MOCK_NEW_NOTE_URI
-        );
+        // vm.prank(alice);
+        // web3Entry.grantOperators4Note(
+        //     Const.FIRST_CHARACTER_ID,
+        //     Const.FIRST_NOTE_ID,
+        //     whitelist,
+        //     whitelist
+        // );
+        // vm.prank(bob);
+        // vm.expectRevert("NotEnoughPermissionForThisNote");
+        // web3Entry.setNoteUri(
+        //     Const.FIRST_CHARACTER_ID,
+        //     Const.FIRST_NOTE_ID,
+        //     Const.MOCK_NEW_NOTE_URI
+        // );
     }
 
     // function testMigrate() public {

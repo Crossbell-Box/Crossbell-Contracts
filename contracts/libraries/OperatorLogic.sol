@@ -30,20 +30,38 @@ library OperatorLogic {
     function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
-        address[] calldata blocklist,
-        address[] calldata allowlist,
+        address[] calldata _blocklist,
+        address[] calldata _allowlist,
         mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
     ) external {
-        // grant blocklist roles
-        for (uint256 i = 0; i < blocklist.length; i++) {
-            _operators4Note[characterId][noteId].blocklist.add(blocklist[i]);
+        // clear the blocklist first
+        uint256 length = _operators4Note[characterId][noteId].blocklist.length();
+        if (length > 0) {
+            for (uint256 i = length; i > 0;  --i) {
+                _operators4Note[characterId][noteId].blocklist.remove( _operators4Note[characterId][noteId].blocklist.at(i));
+            }
         }
-        // grant allowlist roles
-        for (uint256 i = 0; i < allowlist.length; i++) {
-            _operators4Note[characterId][noteId].allowlist.add(allowlist[i]);
+        uint256 blocklistLength = _blocklist.length;
+        // grant blocklist roles
+        for (uint256 i = 0; i < blocklistLength; i++) {
+            _operators4Note[characterId][noteId].blocklist.add(_blocklist[i]);
         }
 
-        emit Events.GrantOperators4Note(characterId, noteId, blocklist, allowlist);
+        // clear the allowlist first
+        length = _operators4Note[characterId][noteId].allowlist.length();
+        if (length > 0) {
+            for (uint256 i = length; i > 0;  --i) {
+                _operators4Note[characterId][noteId].allowlist.remove( _operators4Note[characterId][noteId].allowlist.at(i));
+            }
+        }
+        
+        uint256 allowlistLength = _allowlist.length;
+        // grant allowlist roles
+        for (uint256 i = 0; i < allowlistLength; i++) {
+            _operators4Note[characterId][noteId].allowlist.add(_allowlist[i]);
+        }
+
+        emit Events.GrantOperators4Note(characterId, noteId, _blocklist, _allowlist);
     }
 
     function revokeOperators4Note(
