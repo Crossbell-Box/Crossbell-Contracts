@@ -764,7 +764,7 @@
           "type": "address"
         }
       ],
-      "name": "hasNotePermission",
+      "name": "isOperatorAllowedForNote",
       "outputs": [
         {
           "internalType": "bool",

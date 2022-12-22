@@ -640,7 +640,7 @@ contract Web3EntryBase is
     {}
 
     // overridden in web3Entry
-    function hasNotePermission(
+    function isOperatorAllowedForNote(
         uint256 characterId,
         uint256 noteId,
         address operator

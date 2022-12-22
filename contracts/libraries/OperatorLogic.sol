@@ -37,8 +37,10 @@ library OperatorLogic {
         // clear the blocklist first
         uint256 length = _operators4Note[characterId][noteId].blocklist.length();
         if (length > 0) {
-            for (uint256 i = length; i > 0;  --i) {
-                _operators4Note[characterId][noteId].blocklist.remove( _operators4Note[characterId][noteId].blocklist.at(i));
+            for (uint256 i = length; i > 0; --i) {
+                _operators4Note[characterId][noteId].blocklist.remove(
+                    _operators4Note[characterId][noteId].blocklist.at(i)
+                );
             }
         }
         uint256 blocklistLength = _blocklist.length;
@@ -50,11 +52,13 @@ library OperatorLogic {
         // clear the allowlist first
         length = _operators4Note[characterId][noteId].allowlist.length();
         if (length > 0) {
-            for (uint256 i = length; i > 0;  --i) {
-                _operators4Note[characterId][noteId].allowlist.remove( _operators4Note[characterId][noteId].allowlist.at(i));
+            for (uint256 i = length; i > 0; --i) {
+                _operators4Note[characterId][noteId].allowlist.remove(
+                    _operators4Note[characterId][noteId].allowlist.at(i)
+                );
             }
         }
-        
+
         uint256 allowlistLength = _allowlist.length;
         // grant allowlist roles
         for (uint256 i = 0; i < allowlistLength; i++) {

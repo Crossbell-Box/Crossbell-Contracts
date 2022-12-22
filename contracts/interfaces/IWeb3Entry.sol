@@ -159,7 +159,7 @@ interface IWeb3Entry {
         view
         returns (address[] memory blocklist, address[] memory allowlist);
 
-    function hasNotePermission(
+    function isOperatorAllowedForNote(
         uint256 characterId,
         uint256 noteId,
         address operator

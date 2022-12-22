@@ -130,15 +130,15 @@ contract Web3Entry is Web3EntryBase {
      * @param operator Address to query.
      * @return true if Operator has permission for a note, otherwise false.
      */
-    function hasNotePermission(
+    function isOperatorAllowedForNote(
         uint256 characterId,
         uint256 noteId,
         address operator
     ) external view override returns (bool) {
-        return _hasNotePermission(characterId, noteId, operator);
+        return _isOperatorAllowedForNote(characterId, noteId, operator);
     }
 
-    function _hasNotePermission(
+    function _isOperatorAllowedForNote(
         uint256 characterId,
         uint256 noteId,
         address operator
@@ -183,7 +183,7 @@ contract Web3Entry is Web3EntryBase {
             // caller is character owner
         } else if (tx.origin == owner && msg.sender == periphery) {
             // caller is periphery
-        } else if (_hasNotePermission(characterId, noteId, msg.sender)) {
+        } else if (_isOperatorAllowedForNote(characterId, noteId, msg.sender)) {
             // caller has note permission
         } else {
             // caller doesn't have corresponding permission,
