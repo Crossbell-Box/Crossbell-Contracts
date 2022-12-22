@@ -651,12 +651,12 @@
       "outputs": [
         {
           "internalType": "address[]",
-          "name": "blacklist",
+          "name": "blocklist",
           "type": "address[]"
         },
         {
           "internalType": "address[]",
-          "name": "whitelist",
+          "name": "allowlist",
           "type": "address[]"
         }
       ],
@@ -732,12 +732,12 @@
         },
         {
           "internalType": "address[]",
-          "name": "blacklist",
+          "name": "blocklist",
           "type": "address[]"
         },
         {
           "internalType": "address[]",
-          "name": "whitelist",
+          "name": "allowlist",
           "type": "address[]"
         }
       ],
@@ -1658,12 +1658,12 @@
         },
         {
           "internalType": "address[]",
-          "name": "blacklist",
+          "name": "blocklist",
           "type": "address[]"
         },
         {
           "internalType": "address[]",
-          "name": "whitelist",
+          "name": "allowlist",
           "type": "address[]"
         }
       ],

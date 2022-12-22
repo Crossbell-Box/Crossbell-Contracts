@@ -21,9 +21,9 @@ contract LinkModuleTest is Test, SetUp, Utils {
 
     function testLinkCharacterWithLinkModule() public {
         // User not in approval list should not fail to link a character
-        address[] memory whitelist = new address[](2);
-        whitelist[0] = carol;
-        whitelist[1] = bob;
+        address[] memory allowlist = new address[](2);
+        allowlist[0] = carol;
+        allowlist[1] = bob;
 
         // create character
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
@@ -33,7 +33,7 @@ contract LinkModuleTest is Test, SetUp, Utils {
                 Const.MOCK_CHARACTER_HANDLE2,
                 Const.MOCK_CHARACTER_URI,
                 address(linkModule4Character),
-                abi.encode(whitelist)
+                abi.encode(allowlist)
             )
         );
 

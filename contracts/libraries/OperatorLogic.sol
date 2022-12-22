@@ -30,39 +30,39 @@ library OperatorLogic {
     function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
-        address[] calldata blacklist,
-        address[] calldata whitelist,
+        address[] calldata blocklist,
+        address[] calldata allowlist,
         mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
     ) external {
-        // grant blacklist roles
-        for (uint256 i = 0; i < blacklist.length; i++) {
-            _operators4Note[characterId][noteId].blacklist.add(blacklist[i]);
+        // grant blocklist roles
+        for (uint256 i = 0; i < blocklist.length; i++) {
+            _operators4Note[characterId][noteId].blocklist.add(blocklist[i]);
         }
-        // grant whitelist roles
-        for (uint256 i = 0; i < whitelist.length; i++) {
-            _operators4Note[characterId][noteId].whitelist.add(whitelist[i]);
+        // grant allowlist roles
+        for (uint256 i = 0; i < allowlist.length; i++) {
+            _operators4Note[characterId][noteId].allowlist.add(allowlist[i]);
         }
 
-        emit Events.GrantOperators4Note(characterId, noteId, blacklist, whitelist);
+        emit Events.GrantOperators4Note(characterId, noteId, blocklist, allowlist);
     }
 
     function revokeOperators4Note(
         uint256 characterId,
         uint256 noteId,
-        address[] calldata blacklist,
-        address[] calldata whitelist,
+        address[] calldata blocklist,
+        address[] calldata allowlist,
         mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
     ) external {
-        // revoke blacklist roles
-        for (uint256 i = 0; i < blacklist.length; i++) {
-            _operators4Note[characterId][noteId].blacklist.remove(blacklist[i]);
+        // revoke blocklist roles
+        for (uint256 i = 0; i < blocklist.length; i++) {
+            _operators4Note[characterId][noteId].blocklist.remove(blocklist[i]);
         }
-        // revoke whitelist roles
-        for (uint256 i = 0; i < whitelist.length; i++) {
-            _operators4Note[characterId][noteId].whitelist.remove(whitelist[i]);
+        // revoke allowlist roles
+        for (uint256 i = 0; i < allowlist.length; i++) {
+            _operators4Note[characterId][noteId].allowlist.remove(allowlist[i]);
         }
 
-        emit Events.RevokeOperators4Note(characterId, noteId, blacklist, whitelist);
+        emit Events.RevokeOperators4Note(characterId, noteId, blocklist, allowlist);
     }
 
     /**

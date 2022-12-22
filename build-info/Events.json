@@ -177,13 +177,13 @@
         {
           "indexed": false,
           "internalType": "address[]",
-          "name": "blacklist",
+          "name": "blocklist",
           "type": "address[]"
         },
         {
           "indexed": false,
           "internalType": "address[]",
-          "name": "whitelist",
+          "name": "allowlist",
           "type": "address[]"
         }
       ],
@@ -580,13 +580,13 @@
         {
           "indexed": false,
           "internalType": "address[]",
-          "name": "blacklist",
+          "name": "blocklist",
           "type": "address[]"
         },
         {
           "indexed": false,
           "internalType": "address[]",
-          "name": "whitelist",
+          "name": "allowlist",
           "type": "address[]"
         }
       ],

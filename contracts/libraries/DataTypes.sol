@@ -221,7 +221,7 @@ library DataTypes {
     }
 
     struct Operators4Note {
-        EnumerableSet.AddressSet blacklist;
-        EnumerableSet.AddressSet whitelist;
+        EnumerableSet.AddressSet blocklist;
+        EnumerableSet.AddressSet allowlist;
     }
 }

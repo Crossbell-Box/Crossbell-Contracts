@@ -151,65 +151,6 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
-    function revokeOperators4Note() public {
-        vm.startPrank(alice);
-        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
-        web3Entry.grantOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.RevokeOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-
-        web3Entry.revokeOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-
-        address[] memory _blacklist;
-        address[] memory _whitelist;
-
-        (_blacklist, _whitelist) = web3Entry.getOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID
-        );
-
-        assertEq(_blacklist.length, 0);
-        assertEq(_whitelist.length, 0);
-    }
-
-    function testRevokeOperators4NoteFail() public {
-        // bob is not owner of FIRST_CHARACTER_ID, can't grant
-        vm.prank(bob);
-        vm.expectRevert("NotEnoughPermission");
-        web3Entry.revokeOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-
-        // note doesn't exist
-        vm.prank(alice);
-        vm.expectRevert("NoteNotExists");
-        web3Entry.revokeOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-    }
-
     function testGetOperatorPermissions() public {
         // alice grant bob OP.DEFAULT_PERMISSION_BITMAP permission
         vm.prank(alice);
@@ -524,12 +465,6 @@ contract OperatorTest is Test, SetUp, Utils {
             blacklist,
             whitelist
         );
-        web3Entry.revokeOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
         vm.stopPrank();
     }
 
@@ -569,15 +504,6 @@ contract OperatorTest is Test, SetUp, Utils {
         // can't add operator for note
         vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
         web3Entry.grantOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-
-        // can't remove operator for note
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
-        web3Entry.revokeOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             blacklist,
@@ -703,36 +629,36 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
-    function testMigrate() public {
-        // alice sets carol as operator
-        vm.prank(alice);
-        web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, carol, UINT256_MAX);
+    // function testMigrate() public {
+    //     // alice sets carol as operator
+    //     vm.prank(alice);
+    //     web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, carol, UINT256_MAX);
 
-        // bob transfers character to newbieVilla
-        vm.prank(bob);
-        Web3Entry(address(web3Entry)).safeTransferFrom(
-            address(bob),
-            address(newbieVilla),
-            Const.SECOND_CHARACTER_ID
-        );
+    //     // bob transfers character to newbieVilla
+    //     vm.prank(bob);
+    //     Web3Entry(address(web3Entry)).safeTransferFrom(
+    //         address(bob),
+    //         address(newbieVilla),
+    //         Const.SECOND_CHARACTER_ID
+    //     );
 
-        // migrate
-        uint256[] memory characterIds = new uint256[](2);
-        characterIds[0] = Const.FIRST_CHARACTER_ID;
-        characterIds[1] = Const.SECOND_CHARACTER_ID;
-        vm.prank(migrateOwner);
-        web3Entry.migrateOperator(address(newbieVilla), characterIds);
+    //     // migrate
+    //     uint256[] memory characterIds = new uint256[](2);
+    //     characterIds[0] = Const.FIRST_CHARACTER_ID;
+    //     characterIds[1] = Const.SECOND_CHARACTER_ID;
+    //     vm.prank(migrateOwner);
+    //     web3Entry.migrateOperator(address(newbieVilla), characterIds);
 
-        // check Operator permission
-        assertEq(
-            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, carol),
-            OP.POST_NOTE_PERMISSION_BITMAP
-        );
-        assertEq(
-            web3Entry.getOperatorPermissions(Const.SECOND_CHARACTER_ID, bob),
-            OP.DEFAULT_PERMISSION_BITMAP
-        );
-    }
+    //     // check Operator permission
+    //     assertEq(
+    //         web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, carol),
+    //         OP.POST_NOTE_PERMISSION_BITMAP
+    //     );
+    //     assertEq(
+    //         web3Entry.getOperatorPermissions(Const.SECOND_CHARACTER_ID, bob),
+    //         OP.DEFAULT_PERMISSION_BITMAP
+    //     );
+    // }
 
     function testGetOperators() public {
         address[4] memory accounts = [bob, carol, dick, erik];

@@ -23,13 +23,13 @@ function grantOperatorPermissions(uint256, address, uint256) external virtual
 ### grantOperators4Note
 
 ```solidity
-function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external virtual
+function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blocklist, address[] allowlist) external virtual
 ```
 
 ### revokeOperators4Note
 
 ```solidity
-function revokeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external virtual
+function revokeOperators4Note(uint256 characterId, uint256 noteId, address[] blocklist, address[] allowlist) external virtual
 ```
 
 ### createCharacter
@@ -301,7 +301,7 @@ function getOperatorPermissions(uint256, address) external view virtual returns 
 ### getOperators4Note
 
 ```solidity
-function getOperators4Note(uint256 characterId, uint256 noteId) external view virtual returns (address[] blacklist, address[] whitelist)
+function getOperators4Note(uint256 characterId, uint256 noteId) external view virtual returns (address[] blocklist, address[] allowlist)
 ```
 
 ### hasNotePermission

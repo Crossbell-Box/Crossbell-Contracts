@@ -49,13 +49,13 @@ function grantOperatorPermissions(uint256 characterId, address operator, uint256
 ### grantOperators4Note
 
 ```solidity
-function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
+function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blocklist, address[] allowlist) external
 ```
 
 ### revokeOperators4Note
 
 ```solidity
-function revokeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
+function revokeOperators4Note(uint256 characterId, uint256 noteId, address[] blocklist, address[] allowlist) external
 ```
 
 ### setLinklistUri
@@ -243,7 +243,7 @@ function getOperatorPermissions(uint256 characterId, address operator) external 
 ### getOperators4Note
 
 ```solidity
-function getOperators4Note(uint256 characterId, uint256 noteId) external view returns (address[] blacklist, address[] whitelist)
+function getOperators4Note(uint256 characterId, uint256 noteId) external view returns (address[] blocklist, address[] allowlist)
 ```
 
 ### hasNotePermission

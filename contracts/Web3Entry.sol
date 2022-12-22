@@ -40,81 +40,57 @@ contract Web3Entry is Web3EntryBase {
     }
 
     /**
-     * @notice Grant operators whitelist and blacklist roles of a note.
+     * @notice Grant operators allowlist and blocklist roles of a note.
      * @param characterId ID of character that you want to set.
      * @param noteId ID of note that you want to set.
-     * @param blacklist Blacklist addresses that you want to grant.
-     * @param whitelist Whitelist addresses that you want to grant.
+     * @param blocklist blocklist addresses that you want to grant.
+     * @param allowlist allowlist addresses that you want to grant.
      */
     function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
-        address[] calldata blacklist,
-        address[] calldata whitelist
+        address[] calldata blocklist,
+        address[] calldata allowlist
     ) external override {
         _validateCallerPermission(characterId, OP.GRANT_OPERATORS_FOR_NOTE);
         _validateNoteExists(characterId, noteId);
         OperatorLogic.grantOperators4Note(
             characterId,
             noteId,
-            blacklist,
-            whitelist,
+            blocklist,
+            allowlist,
             _operators4Note
         );
     }
 
-    /**
-     * @notice Remove operators's blacklist and whitelist roles of a note.
-     * @param characterId ID of character that you want to set.
-     * @param noteId ID of note that you want to set.
-     * @param blacklist Blacklist addresses that you want to remove.
-     * @param whitelist Whitelist addresses that you want to remove.
-     */
-    function revokeOperators4Note(
-        uint256 characterId,
-        uint256 noteId,
-        address[] calldata blacklist,
-        address[] calldata whitelist
-    ) external override {
-        _validateCallerPermission(characterId, OP.REVOKE_OPERATORS_FOR_NOTE);
-        _validateNoteExists(characterId, noteId);
-        OperatorLogic.revokeOperators4Note(
-            characterId,
-            noteId,
-            blacklist,
-            whitelist,
-            _operators4Note
-        );
-    }
+    // /**
+    //  * @notice Migrates old operators permissions.
+    //  * @param characterIds List of characters to migrate.
+    //  * @dev set operators of newbieVilla DEFAULT_PERMISSION, and others OPERATOR_SYNC_PERMISSION.
+    //  * This function should be removed in the next release.
+    //  */
+    // function migrateOperator(address newbieVilla, uint256[] calldata characterIds) external {
+    //     require(msg.sender == migrateOwner, "onlyOwner");
 
-    /**
-     * @notice Migrates old operators permissions.
-     * @param characterIds List of characters to migrate.
-     * @dev set operators of newbieVilla DEFAULT_PERMISSION, and others OPERATOR_SYNC_PERMISSION.
-     * This function should be removed in the next release.
-     */
-    function migrateOperator(address newbieVilla, uint256[] calldata characterIds) external {
-        require(msg.sender == migrateOwner, "onlyOwner");
+    //     for (uint256 i = 0; i < characterIds.length; ++i) {
+    //         uint256 characterId = characterIds[i];
+    //         address characterOwner = ownerOf(characterId);
+    //         uint256 permissionBitMap = (characterOwner == newbieVilla)
+    //             ? OP.DEFAULT_PERMISSION_BITMAP
+    //             : OP.POST_NOTE_PERMISSION_BITMAP;
 
-        for (uint256 i = 0; i < characterIds.length; ++i) {
-            uint256 characterId = characterIds[i];
-            address characterOwner = ownerOf(characterId);
-            uint256 permissionBitMap = (characterOwner == newbieVilla)
-                ? OP.DEFAULT_PERMISSION_BITMAP
-                : OP.POST_NOTE_PERMISSION_BITMAP;
-
-            address[] memory operators = _operatorsByCharacter[characterId].values();
-            for (uint256 j = 0; j < operators.length; ++j) {
-                OperatorLogic.grantOperatorPermissions(
-                    characterId,
-                    operators[j],
-                    permissionBitMap,
-                    _operatorsByCharacter,
-                    _operatorsPermissionBitMap
-                );
-            }
-        }
-    }
+    //         address[] memory operators = _operatorsByCharacter[characterId].values();
+    //         for (uint256 j = 0; j < operators.length; ++j) {
+    //             OperatorLogic.grantOperatorPermissions(
+    //                 characterId,
+    //                 operators[j],
+    //                 permissionBitMap,
+    //                 _operatorsByCharacter,
+    //                 _operatorsPermissionBitMap
+    //             );
+    //         }
+    //     }
+    // }
 
     /**
      * @notice Get permission bitmap of an operator.
@@ -132,7 +108,7 @@ contract Web3Entry is Web3EntryBase {
     }
 
     /**
-     * @notice Get operators blacklist and whitelist for a note.
+     * @notice Get operators blocklist and allowlist for a note.
      * @param characterId ID of character to query.
      * @param noteId ID of note to query.
      */
@@ -140,11 +116,11 @@ contract Web3Entry is Web3EntryBase {
         external
         view
         override
-        returns (address[] memory blacklist, address[] memory whitelist)
+        returns (address[] memory blocklist, address[] memory allowlist)
     {
-        blacklist = _operators4Note[characterId][noteId].blacklist.values();
-        whitelist = _operators4Note[characterId][noteId].whitelist.values();
-        return (blacklist, whitelist);
+        blocklist = _operators4Note[characterId][noteId].blocklist.values();
+        allowlist = _operators4Note[characterId][noteId].allowlist.values();
+        return (blocklist, allowlist);
     }
 
     /**
@@ -167,12 +143,12 @@ contract Web3Entry is Web3EntryBase {
         uint256 noteId,
         address operator
     ) internal view returns (bool) {
-        // check blacklist
-        if (_operators4Note[characterId][noteId].blacklist.contains(operator)) {
+        // check blocklist
+        if (_operators4Note[characterId][noteId].blocklist.contains(operator)) {
             return false;
         }
-        // check whitelist
-        if (_operators4Note[characterId][noteId].whitelist.contains(operator)) {
+        // check allowlist
+        if (_operators4Note[characterId][noteId].allowlist.contains(operator)) {
             return true;
         }
         // check character operator permission

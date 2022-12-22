@@ -41,10 +41,10 @@ _Every bit in permissionBitMap stands for a corresponding method in Web3Entry. m
 ### grantOperators4Note
 
 ```solidity
-function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
+function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blocklist, address[] allowlist) external
 ```
 
-Grant operators whitelist and blacklist roles of a note.
+Grant operators allowlist and blocklist roles of a note.
 
 #### Parameters
 
@@ -52,16 +52,16 @@ Grant operators whitelist and blacklist roles of a note.
 | ---- | ---- | ----------- |
 | characterId | uint256 | ID of character that you want to set. |
 | noteId | uint256 | ID of note that you want to set. |
-| blacklist | address[] | Blacklist addresses that you want to grant. |
-| whitelist | address[] | Whitelist addresses that you want to grant. |
+| blocklist | address[] | blocklist addresses that you want to grant. |
+| allowlist | address[] | allowlist addresses that you want to grant. |
 
 ### revokeOperators4Note
 
 ```solidity
-function revokeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
+function revokeOperators4Note(uint256 characterId, uint256 noteId, address[] blocklist, address[] allowlist) external
 ```
 
-Remove operators's blacklist and whitelist roles of a note.
+Remove operators's blocklist and allowlist roles of a note.
 
 #### Parameters
 
@@ -69,8 +69,8 @@ Remove operators's blacklist and whitelist roles of a note.
 | ---- | ---- | ----------- |
 | characterId | uint256 | ID of character that you want to set. |
 | noteId | uint256 | ID of note that you want to set. |
-| blacklist | address[] | Blacklist addresses that you want to remove. |
-| whitelist | address[] | Whitelist addresses that you want to remove. |
+| blocklist | address[] | blocklist addresses that you want to remove. |
+| allowlist | address[] | allowlist addresses that you want to remove. |
 
 ### migrateOperator
 
@@ -114,10 +114,10 @@ Get permission bitmap of an operator.
 ### getOperators4Note
 
 ```solidity
-function getOperators4Note(uint256 characterId, uint256 noteId) external view returns (address[] blacklist, address[] whitelist)
+function getOperators4Note(uint256 characterId, uint256 noteId) external view returns (address[] blocklist, address[] allowlist)
 ```
 
-Get operators blacklist and whitelist for a note.
+Get operators blocklist and allowlist for a note.
 
 #### Parameters
 
