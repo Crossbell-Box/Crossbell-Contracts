@@ -14,12 +14,6 @@ mapping(uint256 => mapping(address => uint256)) _operatorsPermissionBitMap
 mapping(uint256 => mapping(uint256 => struct DataTypes.Operators4Note)) _operators4Note
 ```
 
-### migrateOwner
-
-```solidity
-address migrateOwner
-```
-
 ### grantOperatorPermissions
 
 ```solidity
