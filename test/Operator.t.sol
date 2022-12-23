@@ -127,6 +127,22 @@ contract OperatorTest is Test, SetUp, Utils {
 
         assertEq(_blocklist, blocklist);
         assertEq(_allowlist, allowlist);
+
+        // blocklist and allowlist are overwritten correctly
+        // i swap blocklist and allowlist here for convenience.
+        web3Entry.grantOperators4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            allowlist,
+            blocklist
+        );
+        (_blocklist, _allowlist) = web3Entry.getOperators4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+
+        assertEq(_blocklist, allowlist);
+        assertEq(_allowlist, blocklist);
     }
 
     function testGrantOperators4NoteFail() public {
