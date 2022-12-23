@@ -644,37 +644,6 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
-    // function testMigrate() public {
-    //     // alice sets carol as operator
-    //     vm.prank(alice);
-    //     web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, carol, UINT256_MAX);
-
-    //     // bob transfers character to newbieVilla
-    //     vm.prank(bob);
-    //     Web3Entry(address(web3Entry)).safeTransferFrom(
-    //         address(bob),
-    //         address(newbieVilla),
-    //         Const.SECOND_CHARACTER_ID
-    //     );
-
-    //     // migrate
-    //     uint256[] memory characterIds = new uint256[](2);
-    //     characterIds[0] = Const.FIRST_CHARACTER_ID;
-    //     characterIds[1] = Const.SECOND_CHARACTER_ID;
-    //     vm.prank(migrateOwner);
-    //     web3Entry.migrateOperator(address(newbieVilla), characterIds);
-
-    //     // check Operator permission
-    //     assertEq(
-    //         web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, carol),
-    //         OP.POST_NOTE_PERMISSION_BITMAP
-    //     );
-    //     assertEq(
-    //         web3Entry.getOperatorPermissions(Const.SECOND_CHARACTER_ID, bob),
-    //         OP.DEFAULT_PERMISSION_BITMAP
-    //     );
-    // }
-
     function testGetOperators() public {
         address[4] memory accounts = [bob, carol, dick, erik];
 

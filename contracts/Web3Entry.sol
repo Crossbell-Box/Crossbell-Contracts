@@ -63,35 +63,6 @@ contract Web3Entry is Web3EntryBase {
         );
     }
 
-    // /**
-    //  * @notice Migrates old operators permissions.
-    //  * @param characterIds List of characters to migrate.
-    //  * @dev set operators of newbieVilla DEFAULT_PERMISSION, and others OPERATOR_SYNC_PERMISSION.
-    //  * This function should be removed in the next release.
-    //  */
-    // function migrateOperator(address newbieVilla, uint256[] calldata characterIds) external {
-    //     require(msg.sender == migrateOwner, "onlyOwner");
-
-    //     for (uint256 i = 0; i < characterIds.length; ++i) {
-    //         uint256 characterId = characterIds[i];
-    //         address characterOwner = ownerOf(characterId);
-    //         uint256 permissionBitMap = (characterOwner == newbieVilla)
-    //             ? OP.DEFAULT_PERMISSION_BITMAP
-    //             : OP.POST_NOTE_PERMISSION_BITMAP;
-
-    //         address[] memory operators = _operatorsByCharacter[characterId].values();
-    //         for (uint256 j = 0; j < operators.length; ++j) {
-    //             OperatorLogic.grantOperatorPermissions(
-    //                 characterId,
-    //                 operators[j],
-    //                 permissionBitMap,
-    //                 _operatorsByCharacter,
-    //                 _operatorsPermissionBitMap
-    //             );
-    //         }
-    //     }
-    // }
-
     /**
      * @notice Get permission bitmap of an operator.
      * @param characterId ID of character that you want to check.
