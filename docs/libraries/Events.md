@@ -62,12 +62,6 @@ event GrantOperatorPermissions(uint256 characterId, address operator, uint256 pe
 event GrantOperators4Note(uint256 characterId, uint256 noteId, address[] blocklist, address[] allowlist)
 ```
 
-### RevokeOperators4Note
-
-```solidity
-event RevokeOperators4Note(uint256 characterId, uint256 noteId, address[] blocklist, address[] allowlist)
-```
-
 ### SetCharacterUri
 
 ```solidity

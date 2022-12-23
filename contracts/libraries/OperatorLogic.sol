@@ -43,17 +43,19 @@ library OperatorLogic {
         mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
     ) external {
         uint256 blocklistLength = _blocklist.length;
-        _operators4Note[characterId][noteId]._blocklistSetIndex ++;
+        _operators4Note[characterId][noteId].blocklistSetIndex++;
+        uint256 currentIndex = _operators4Note[characterId][noteId].blocklistSetIndex; // the current index of blocklistSet
         // grant blocklist roles
         for (uint256 i = 0; i < blocklistLength; i++) {
-            _operators4Note[characterId][noteId]._blocklistSet[_operators4Note[characterId][noteId]._blocklistSetIndex].add(_blocklist[i]);
+            _operators4Note[characterId][noteId].blocklistSet[currentIndex].add(_blocklist[i]);
         }
-        
+
         uint256 allowlistLength = _allowlist.length;
-        _operators4Note[characterId][noteId]._allowlistSetIndex ++;
+        _operators4Note[characterId][noteId].allowlistSetIndex++;
+        currentIndex = _operators4Note[characterId][noteId].allowlistSetIndex; // the current index of allowlistSet
         // grant blocklist roles
         for (uint256 i = 0; i < allowlistLength; i++) {
-            _operators4Note[characterId][noteId]._allowlistSet[_operators4Note[characterId][noteId]._allowlistSetIndex].add(_allowlist[i]);
+            _operators4Note[characterId][noteId].allowlistSet[currentIndex].add(_allowlist[i]);
         }
         emit Events.GrantOperators4Note(characterId, noteId, _blocklist, _allowlist);
     }

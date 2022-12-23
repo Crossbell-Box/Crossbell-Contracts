@@ -572,37 +572,6 @@
           "type": "uint256"
         },
         {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "noteId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "address[]",
-          "name": "blocklist",
-          "type": "address[]"
-        },
-        {
-          "indexed": false,
-          "internalType": "address[]",
-          "name": "allowlist",
-          "type": "address[]"
-        }
-      ],
-      "name": "RevokeOperators4Note",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "characterId",
-          "type": "uint256"
-        },
-        {
           "indexed": false,
           "internalType": "string",
           "name": "newUri",
@@ -1153,8 +1122,8 @@
       "type": "event"
     }
   ],
-  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122070abd94a3296cde18a0606829a8b112ffcaa5e95ae04ab7c04f34612196379c464736f6c634300080a0033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122070abd94a3296cde18a0606829a8b112ffcaa5e95ae04ab7c04f34612196379c464736f6c634300080a0033",
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220958989960141755ee6ef7b6efcc57a9485549ec6f1b6ef5a46f4c41dd175900f64736f6c634300080a0033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220958989960141755ee6ef7b6efcc57a9485549ec6f1b6ef5a46f4c41dd175900f64736f6c634300080a0033",
   "linkReferences": {},
   "deployedLinkReferences": {}
 }

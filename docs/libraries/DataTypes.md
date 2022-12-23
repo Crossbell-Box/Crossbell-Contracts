@@ -339,8 +339,10 @@ struct ERC721Struct {
 
 ```solidity
 struct Operators4Note {
-  struct EnumerableSet.AddressSet blocklist;
-  struct EnumerableSet.AddressSet allowlist;
+  uint256 blocklistSetIndex;
+  mapping(uint256 => struct EnumerableSet.AddressSet) blocklistSet;
+  uint256 allowlistSetIndex;
+  mapping(uint256 => struct EnumerableSet.AddressSet) allowlistSet;
 }
 ```
 

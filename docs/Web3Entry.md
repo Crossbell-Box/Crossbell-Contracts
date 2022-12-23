@@ -55,41 +55,6 @@ Grant operators allowlist and blocklist roles of a note.
 | blocklist | address[] | blocklist addresses that you want to grant. |
 | allowlist | address[] | allowlist addresses that you want to grant. |
 
-### revokeOperators4Note
-
-```solidity
-function revokeOperators4Note(uint256 characterId, uint256 noteId, address[] blocklist, address[] allowlist) external
-```
-
-Remove operators's blocklist and allowlist roles of a note.
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| characterId | uint256 | ID of character that you want to set. |
-| noteId | uint256 | ID of note that you want to set. |
-| blocklist | address[] | blocklist addresses that you want to remove. |
-| allowlist | address[] | allowlist addresses that you want to remove. |
-
-### migrateOperator
-
-```solidity
-function migrateOperator(address newbieVilla, uint256[] characterIds) external
-```
-
-Migrates old operators permissions.
-
-_set operators of newbieVilla DEFAULT_PERMISSION, and others OPERATOR_SYNC_PERMISSION.
-This function should be removed in the next release._
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| newbieVilla | address |  |
-| characterIds | uint256[] | List of characters to migrate. |
-
 ### getOperatorPermissions
 
 ```solidity
@@ -126,10 +91,10 @@ Get operators blocklist and allowlist for a note.
 | characterId | uint256 | ID of character to query. |
 | noteId | uint256 | ID of note to query. |
 
-### hasNotePermission
+### isOperatorAllowedForNote
 
 ```solidity
-function hasNotePermission(uint256 characterId, uint256 noteId, address operator) external view returns (bool)
+function isOperatorAllowedForNote(uint256 characterId, uint256 noteId, address operator) external view returns (bool)
 ```
 
 Query if a operator has permission for a note.
@@ -148,10 +113,10 @@ Query if a operator has permission for a note.
 | ---- | ---- | ----------- |
 | [0] | bool | true if Operator has permission for a note, otherwise false. |
 
-### _hasNotePermission
+### _isOperatorAllowedForNote
 
 ```solidity
-function _hasNotePermission(uint256 characterId, uint256 noteId, address operator) internal view returns (bool)
+function _isOperatorAllowedForNote(uint256 characterId, uint256 noteId, address operator) internal view returns (bool)
 ```
 
 ### _validateCallerPermission

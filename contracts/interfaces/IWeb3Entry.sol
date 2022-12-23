@@ -41,13 +41,6 @@ interface IWeb3Entry {
         address[] calldata allowlist
     ) external;
 
-    function revokeOperators4Note(
-        uint256 characterId,
-        uint256 noteId,
-        address[] calldata blocklist,
-        address[] calldata allowlist
-    ) external;
-
     function setLinklistUri(uint256 linkListId, string calldata uri) external;
 
     function linkAddress(DataTypes.linkAddressData calldata vars) external;

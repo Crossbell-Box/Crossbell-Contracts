@@ -46,13 +46,6 @@ library Events {
         address[] allowlist
     );
 
-    event RevokeOperators4Note(
-        uint256 indexed characterId,
-        uint256 indexed noteId,
-        address[] blocklist,
-        address[] allowlist
-    );
-
     event SetCharacterUri(uint256 indexed characterId, string newUri);
 
     event PostNote(

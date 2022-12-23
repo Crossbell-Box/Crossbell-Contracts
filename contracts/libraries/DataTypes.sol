@@ -222,16 +222,15 @@ library DataTypes {
 
     /**
      @dev The _blocklistSetIndex and _allowlistSetIndex increase by 1 evrey time `grantOperators4Note` is called. This is a safer way to overwrite addressSets, if you want to learn more about the details check this issue: https://github.com/OpenZeppelin/openzeppelin-contracts/issues/3256.
-     @param _blocklistSetIndex The current index of blocklistSet.
-     @param _blocklistSet The list of blocklist addresses.
-     @param _allowlistSetIndex The current index of allowlistSet.
-     @param _allowlistSet The list of allowlist addresses.
+     @param blocklistSetIndex The current index of blocklistSet.
+     @param blocklistSet The list of blocklist addresses.
+     @param allowlistSetIndex The current index of allowlistSet.
+     @param allowlistSet The list of allowlist addresses.
      */
-    struct Operators4Note { 
-        uint256 _blocklistSetIndex;
-        mapping (uint256 => EnumerableSet.AddressSet) _blocklistSet;
-
-        uint256 _allowlistSetIndex;
-        mapping (uint256 => EnumerableSet.AddressSet) _allowlistSet;
+    struct Operators4Note {
+        uint256 blocklistSetIndex;
+        mapping(uint256 => EnumerableSet.AddressSet) blocklistSet;
+        uint256 allowlistSetIndex;
+        mapping(uint256 => EnumerableSet.AddressSet) allowlistSet;
     }
 }

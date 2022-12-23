@@ -118,8 +118,12 @@ contract Web3Entry is Web3EntryBase {
         override
         returns (address[] memory blocklist, address[] memory allowlist)
     {
-        blocklist = _operators4Note[characterId][noteId]._blocklistSet[_operators4Note[characterId][noteId]._blocklistSetIndex].values();
-        allowlist = _operators4Note[characterId][noteId]._allowlistSet[_operators4Note[characterId][noteId]._allowlistSetIndex].values();
+        blocklist = _operators4Note[characterId][noteId]
+            .blocklistSet[_operators4Note[characterId][noteId].blocklistSetIndex]
+            .values();
+        allowlist = _operators4Note[characterId][noteId]
+            .allowlistSet[_operators4Note[characterId][noteId].allowlistSetIndex]
+            .values();
         return (blocklist, allowlist);
     }
 
@@ -144,11 +148,13 @@ contract Web3Entry is Web3EntryBase {
         address operator
     ) internal view returns (bool) {
         // check blocklist
-        if (_operators4Note[characterId][noteId]._blocklistSet[_operators4Note[characterId][noteId]._blocklistSetIndex].contains(operator)) {
+        uint256 currentIndex = _operators4Note[characterId][noteId].blocklistSetIndex; // the current index of blocklistSet
+        if (_operators4Note[characterId][noteId].blocklistSet[currentIndex].contains(operator)) {
             return false;
         }
         // check allowlist
-        if (_operators4Note[characterId][noteId]._allowlistSet[_operators4Note[characterId][noteId]._allowlistSetIndex].contains(operator)) {
+        currentIndex = _operators4Note[characterId][noteId].allowlistSetIndex; // the current index of allowlistSet
+        if (_operators4Note[characterId][noteId].allowlistSet[currentIndex].contains(operator)) {
             return true;
         }
         // check character operator permission

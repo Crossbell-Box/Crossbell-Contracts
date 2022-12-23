@@ -65,13 +65,6 @@ contract Web3EntryBase is
         address[] calldata allowlist
     ) external virtual {}
 
-    function revokeOperators4Note(
-        uint256 characterId,
-        uint256 noteId,
-        address[] calldata blocklist,
-        address[] calldata allowlist
-    ) external virtual {}
-
     /**
      * This method creates a character with the given parameters to the given address.
      *
