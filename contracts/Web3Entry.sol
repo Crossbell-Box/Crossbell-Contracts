@@ -15,8 +15,6 @@ contract Web3Entry is Web3EntryBase {
     // only for set note uri
     mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) internal _operators4Note; // slot 26
 
-    address internal constant migrateOwner = 0xda2423ceA4f1047556e7a142F81a7ED50e93e160;
-
     /**
      * @notice Grant an address as an operator and authorize it with custom permissions.
      * @param characterId ID of your character that you want to authorize.
@@ -90,10 +88,10 @@ contract Web3Entry is Web3EntryBase {
         returns (address[] memory blocklist, address[] memory allowlist)
     {
         blocklist = _operators4Note[characterId][noteId]
-            .blocklistSet[_operators4Note[characterId][noteId].blocklistSetIndex]
+            .blocklists[_operators4Note[characterId][noteId].blocklistId]
             .values();
         allowlist = _operators4Note[characterId][noteId]
-            .allowlistSet[_operators4Note[characterId][noteId].allowlistSetIndex]
+            .allowlists[_operators4Note[characterId][noteId].allowlistId]
             .values();
         return (blocklist, allowlist);
     }
@@ -119,13 +117,13 @@ contract Web3Entry is Web3EntryBase {
         address operator
     ) internal view returns (bool) {
         // check blocklist
-        uint256 currentIndex = _operators4Note[characterId][noteId].blocklistSetIndex; // the current index of blocklistSet
-        if (_operators4Note[characterId][noteId].blocklistSet[currentIndex].contains(operator)) {
+        uint256 currentIndex = _operators4Note[characterId][noteId].blocklistId; // the current index of blocklistSet
+        if (_operators4Note[characterId][noteId].blocklists[currentIndex].contains(operator)) {
             return false;
         }
         // check allowlist
-        currentIndex = _operators4Note[characterId][noteId].allowlistSetIndex; // the current index of allowlistSet
-        if (_operators4Note[characterId][noteId].allowlistSet[currentIndex].contains(operator)) {
+        currentIndex = _operators4Note[characterId][noteId].allowlistId; // the current index of allowlistSet
+        if (_operators4Note[characterId][noteId].allowlists[currentIndex].contains(operator)) {
             return true;
         }
         // check character operator permission
