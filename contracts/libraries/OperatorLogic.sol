@@ -27,42 +27,39 @@ library OperatorLogic {
         emit Events.GrantOperatorPermissions(characterId, operator, bitmap);
     }
 
+    /**
+     @notice Set blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.
+     @dev The blocklistId and allowlistId increase by 1 everytime this function is called.
+     @param characterId The character Id of the note owner.
+     @param  noteId The note Id to grant.
+     @param blocklist The addresses list of blocked operators.
+     @param allowlist The addresses list of allowed operators.
+     */
     function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
-        address[] calldata blacklist,
-        address[] calldata whitelist,
+        address[] calldata blocklist,
+        address[] calldata allowlist,
         mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
     ) external {
-        // grant blacklist roles
-        for (uint256 i = 0; i < blacklist.length; i++) {
-            _operators4Note[characterId][noteId].blacklist.add(blacklist[i]);
-        }
-        // grant whitelist roles
-        for (uint256 i = 0; i < whitelist.length; i++) {
-            _operators4Note[characterId][noteId].whitelist.add(whitelist[i]);
+        DataTypes.Operators4Note storage operators4Note = _operators4Note[characterId][noteId];
+
+        uint256 blocklistLength = blocklist.length;
+        operators4Note.blocklistId++;
+        uint256 currentId = operators4Note.blocklistId; // the current id of blocklists
+        // grant blocklist roles
+        for (uint256 i = 0; i < blocklistLength; i++) {
+            operators4Note.blocklists[currentId].add(blocklist[i]);
         }
 
-        emit Events.GrantOperators4Note(characterId, noteId, blacklist, whitelist);
-    }
-
-    function revokeOperators4Note(
-        uint256 characterId,
-        uint256 noteId,
-        address[] calldata blacklist,
-        address[] calldata whitelist,
-        mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
-    ) external {
-        // revoke blacklist roles
-        for (uint256 i = 0; i < blacklist.length; i++) {
-            _operators4Note[characterId][noteId].blacklist.remove(blacklist[i]);
+        uint256 allowlistLength = allowlist.length;
+        operators4Note.allowlistId++;
+        currentId = operators4Note.allowlistId; // the current id of allowlists
+        // grant blocklist roles
+        for (uint256 i = 0; i < allowlistLength; i++) {
+            operators4Note.allowlists[currentId].add(allowlist[i]);
         }
-        // revoke whitelist roles
-        for (uint256 i = 0; i < whitelist.length; i++) {
-            _operators4Note[characterId][noteId].whitelist.remove(whitelist[i]);
-        }
-
-        emit Events.RevokeOperators4Note(characterId, noteId, blacklist, whitelist);
+        emit Events.GrantOperators4Note(characterId, noteId, blocklist, allowlist);
     }
 
     /**

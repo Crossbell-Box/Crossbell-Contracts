@@ -26,8 +26,8 @@ contract OperatorTest is Test, SetUp, Utils {
     address public dick = address(0x4444);
     address public erik = address(0x5555);
 
-    address[] public blacklist = [bob];
-    address[] public whitelist = [carol, dick];
+    address[] public blocklist = [bob];
+    address[] public allowlist = [carol, dick];
 
     NewbieVilla public newbieVilla;
     address public migrateOwner = 0xda2423ceA4f1047556e7a142F81a7ED50e93e160;
@@ -106,27 +106,43 @@ contract OperatorTest is Test, SetUp, Utils {
         emit Events.GrantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
+            blocklist,
+            allowlist
         );
 
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
+            blocklist,
+            allowlist
         );
 
-        address[] memory _blacklist;
-        address[] memory _whitelist;
+        address[] memory _blocklist;
+        address[] memory _allowlist;
 
-        (_blacklist, _whitelist) = web3Entry.getOperators4Note(
+        (_blocklist, _allowlist) = web3Entry.getOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
 
-        assertEq(_blacklist, blacklist);
-        assertEq(_whitelist, whitelist);
+        assertEq(_blocklist, blocklist);
+        assertEq(_allowlist, allowlist);
+
+        // blocklist and allowlist are overwritten correctly
+        // i swap blocklist and allowlist here for convenience.
+        web3Entry.grantOperators4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            allowlist,
+            blocklist
+        );
+        (_blocklist, _allowlist) = web3Entry.getOperators4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+
+        assertEq(_blocklist, allowlist);
+        assertEq(_allowlist, blocklist);
     }
 
     function testGrantOperators4NoteFail() public {
@@ -136,8 +152,8 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
+            blocklist,
+            allowlist
         );
 
         // note doesn't exist
@@ -146,67 +162,8 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.SECOND_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-    }
-
-    function revokeOperators4Note() public {
-        vm.startPrank(alice);
-        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
-        web3Entry.grantOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.RevokeOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-
-        web3Entry.revokeOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-
-        address[] memory _blacklist;
-        address[] memory _whitelist;
-
-        (_blacklist, _whitelist) = web3Entry.getOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID
-        );
-
-        assertEq(_blacklist.length, 0);
-        assertEq(_whitelist.length, 0);
-    }
-
-    function testRevokeOperators4NoteFail() public {
-        // bob is not owner of FIRST_CHARACTER_ID, can't grant
-        vm.prank(bob);
-        vm.expectRevert("NotEnoughPermission");
-        web3Entry.revokeOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-
-        // note doesn't exist
-        vm.prank(alice);
-        vm.expectRevert("NoteNotExists");
-        web3Entry.revokeOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
+            blocklist,
+            allowlist
         );
     }
 
@@ -265,13 +222,13 @@ contract OperatorTest is Test, SetUp, Utils {
             Const.MOCK_NEW_NOTE_URI
         );
 
-        // then put bob into blacklist of note 1
+        // then put bob into blocklist of note 1
         vm.prank(alice);
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
+            blocklist,
+            allowlist
         );
         vm.startPrank(bob);
         vm.expectRevert("NotEnoughPermissionForThisNote");
@@ -290,16 +247,16 @@ contract OperatorTest is Test, SetUp, Utils {
         );
         vm.stopPrank();
 
-        // case 2. put carol into whitelist, then disable carol's operator permission
+        // case 2. put carol into allowlist, then disable carol's operator permission
         vm.prank(alice);
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.SECOND_NOTE_ID,
-            blacklist,
-            whitelist
+            blocklist,
+            allowlist
         );
 
-        // now carol is in whitelist for note 2
+        // now carol is in allowlist for note 2
         vm.prank(carol);
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
@@ -521,14 +478,8 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-        web3Entry.revokeOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
+            blocklist,
+            allowlist
         );
         vm.stopPrank();
     }
@@ -571,17 +522,8 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-
-        // can't remove operator for note
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
-        web3Entry.revokeOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
+            blocklist,
+            allowlist
         );
         vm.stopPrank();
 
@@ -642,12 +584,12 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.stopPrank();
 
         vm.prank(alice);
-        // add carol as whitelist
+        // add carol as allowlist
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.SECOND_NOTE_ID,
-            blacklist,
-            whitelist
+            blocklist,
+            allowlist
         );
 
         vm.prank(carol);
@@ -659,7 +601,7 @@ contract OperatorTest is Test, SetUp, Utils {
     }
 
     function testOperator4NoteFail() public {
-        // case 1. bob's operator permission is on, but bob is in blacklist
+        // case 1. bob's operator permission is on, but bob is in blocklist
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
@@ -671,8 +613,8 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
+            blocklist,
+            allowlist
         );
         vm.stopPrank();
 
@@ -685,14 +627,13 @@ contract OperatorTest is Test, SetUp, Utils {
         );
         vm.stopPrank();
 
-        // case 2. bob's in blacklist and also whitelist
+        // case 2. bob's in blocklist and also allowlist
         vm.prank(alice);
-        // i just switch whitelist and blacklist here for convenience
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            whitelist,
-            blacklist
+            blocklist,
+            blocklist
         );
         vm.prank(bob);
         vm.expectRevert("NotEnoughPermissionForThisNote");
@@ -700,37 +641,6 @@ contract OperatorTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             Const.MOCK_NEW_NOTE_URI
-        );
-    }
-
-    function testMigrate() public {
-        // alice sets carol as operator
-        vm.prank(alice);
-        web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, carol, UINT256_MAX);
-
-        // bob transfers character to newbieVilla
-        vm.prank(bob);
-        Web3Entry(address(web3Entry)).safeTransferFrom(
-            address(bob),
-            address(newbieVilla),
-            Const.SECOND_CHARACTER_ID
-        );
-
-        // migrate
-        uint256[] memory characterIds = new uint256[](2);
-        characterIds[0] = Const.FIRST_CHARACTER_ID;
-        characterIds[1] = Const.SECOND_CHARACTER_ID;
-        vm.prank(migrateOwner);
-        web3Entry.migrateOperator(address(newbieVilla), characterIds);
-
-        // check Operator permission
-        assertEq(
-            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, carol),
-            OP.POST_NOTE_PERMISSION_BITMAP
-        );
-        assertEq(
-            web3Entry.getOperatorPermissions(Const.SECOND_CHARACTER_ID, bob),
-            OP.DEFAULT_PERMISSION_BITMAP
         );
     }
 
@@ -765,20 +675,20 @@ contract OperatorTest is Test, SetUp, Utils {
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
+            blocklist,
+            allowlist
         );
 
-        address[] memory _blacklist;
-        address[] memory _whitelist;
+        address[] memory _blocklist;
+        address[] memory _allowlist;
 
-        (_blacklist, _whitelist) = web3Entry.getOperators4Note(
+        (_blocklist, _allowlist) = web3Entry.getOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
 
-        assertEq(_blacklist, blacklist);
-        assertEq(_whitelist, whitelist);
+        assertEq(_blocklist, blocklist);
+        assertEq(_allowlist, allowlist);
     }
 
     function _checkOperators(

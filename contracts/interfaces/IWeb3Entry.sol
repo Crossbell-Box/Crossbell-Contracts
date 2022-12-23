@@ -37,15 +37,8 @@ interface IWeb3Entry {
     function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
-        address[] calldata blacklist,
-        address[] calldata whitelist
-    ) external;
-
-    function revokeOperators4Note(
-        uint256 characterId,
-        uint256 noteId,
-        address[] calldata blacklist,
-        address[] calldata whitelist
+        address[] calldata blocklist,
+        address[] calldata allowlist
     ) external;
 
     function setLinklistUri(uint256 linkListId, string calldata uri) external;
@@ -157,9 +150,9 @@ interface IWeb3Entry {
     function getOperators4Note(uint256 characterId, uint256 noteId)
         external
         view
-        returns (address[] memory blacklist, address[] memory whitelist);
+        returns (address[] memory blocklist, address[] memory allowlist);
 
-    function hasNotePermission(
+    function isOperatorAllowedForNote(
         uint256 characterId,
         uint256 noteId,
         address operator

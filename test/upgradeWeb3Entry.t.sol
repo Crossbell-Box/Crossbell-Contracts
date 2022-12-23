@@ -26,8 +26,8 @@ contract UpgradeWeb3Entry is Test, Utils {
     address public bob = address(0x2222);
     address public carol = address(0x3333);
 
-    address[] public blacklist = [bob, admin];
-    address[] public whitelist = [carol, bob, alice];
+    address[] public blocklist = [bob, admin];
+    address[] public allowlist = [carol, bob, alice];
 
     address public linkList = address(0x111);
     address public periphery = address(0x222);
@@ -37,8 +37,8 @@ contract UpgradeWeb3Entry is Test, Utils {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     struct Operators4Note {
-        EnumerableSet.AddressSet blacklist;
-        EnumerableSet.AddressSet whitelist;
+        EnumerableSet.AddressSet blocklist;
+        EnumerableSet.AddressSet allowlist;
     }
 
     function setUp() public {
@@ -115,35 +115,20 @@ contract UpgradeWeb3Entry is Test, Utils {
         Web3Entry(address(proxyWeb3Entry)).grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
+            blocklist,
+            allowlist
         );
 
-        address[] memory _blacklist;
-        address[] memory _whitelist;
+        address[] memory _blocklist;
+        address[] memory _allowlist;
 
-        (_blacklist, _whitelist) = Web3Entry(address(proxyWeb3Entry)).getOperators4Note(
+        (_blocklist, _allowlist) = Web3Entry(address(proxyWeb3Entry)).getOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
 
-        assertEq(_blacklist, blacklist);
-        assertEq(_whitelist, whitelist);
-
-        Web3Entry(address(proxyWeb3Entry)).revokeOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
-        );
-
-        (_blacklist, _whitelist) = Web3Entry(address(proxyWeb3Entry)).getOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID
-        );
-
-        assertEq(_blacklist.length, 0);
-        assertEq(_whitelist.length, 0);
+        assertEq(_blocklist, blocklist);
+        assertEq(_allowlist, allowlist);
 
         vm.stopPrank();
     }
@@ -201,8 +186,8 @@ contract UpgradeWeb3Entry is Test, Utils {
         Web3Entry(address(proxyWeb3Entry)).grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            blacklist,
-            whitelist
+            blocklist,
+            allowlist
         );
         vm.stopPrank();
 
@@ -228,39 +213,50 @@ contract UpgradeWeb3Entry is Test, Utils {
         assertEq32(valueAtOperatorBitmapSlot, bytes32(OP.DEFAULT_PERMISSION_BITMAP));
 
         // check note 1 operators
-        bytes32 blacklistLengthSlot = keccak256(
+        bytes32 blocklistIndexSlot = keccak256(
             abi.encodePacked(
                 Const.FIRST_NOTE_ID,
                 (keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(26)))))
             )
         );
-        bytes32 valueAtBlacklistLengthSlot = vm.load(address(proxyWeb3Entry), blacklistLengthSlot);
-        // the length of blacklist is 2
-        assertEq(valueAtBlacklistLengthSlot, bytes32(uint256(2)));
+        bytes32 valueAtblocklistIndexSlot = vm.load(address(proxyWeb3Entry), blocklistIndexSlot);
+        // the _blocklistSetIndex is 1
+        assertEq(valueAtblocklistIndexSlot, bytes32(uint256(1)));
 
-        uint256 blacklistMapSlot = uint256(bytes32(blacklistLengthSlot)) + uint256(1);
-
-        // admin is the second address in blacklist
-        bytes32 blacklistAdminIndexSlot = keccak256(
-            abi.encodePacked(bytes32((uint256(uint160(admin)))), blacklistMapSlot)
-        );
-        bytes32 adminIndex = vm.load(address(proxyWeb3Entry), blacklistAdminIndexSlot);
-        assertEq(adminIndex, bytes32(uint256(2)));
-
-        // the length of whitelist is 3
-        uint256 whitelistLengthSlot = uint256(bytes32(blacklistLengthSlot)) + uint256(2);
-        bytes32 valueAtWhitelistLengthSlot = vm.load(
+        uint256 blocklistMapSlot = uint256(bytes32(blocklistIndexSlot)) + uint256(1);
+        bytes32 valueAtblocklistMapSlot = vm.load(
             address(proxyWeb3Entry),
-            bytes32(whitelistLengthSlot)
+            bytes32(blocklistMapSlot)
         );
-        assertEq(valueAtWhitelistLengthSlot, bytes32(uint256(3)));
+        // there should be nothing at blocklistMapSlot
+        assertEq(valueAtblocklistMapSlot, bytes32(uint256(0)));
 
-        uint256 whitelistMapSlot = uint256(bytes32(blacklistLengthSlot)) + uint256(3);
-        // carol is the first address in whitelist
-        bytes32 whitelistCarolIndexSlot = keccak256(
-            abi.encodePacked(bytes32carol, whitelistMapSlot)
+        // the blocklist at index 1
+        bytes32 blocklist1Slot = keccak256(abi.encodePacked(uint256(1), blocklistMapSlot));
+        bytes32 valueAtblocklist1Slot = vm.load(address(proxyWeb3Entry), blocklist1Slot);
+        // the length of blocklist at index 1  is 2
+        assertEq(valueAtblocklist1Slot, bytes32(uint256(2)));
+
+        // the allowlistSetIndex slot
+        uint256 allowlistSetIndexSlot = uint256(bytes32(blocklistIndexSlot)) + uint256(2);
+        bytes32 valueAtallowlistSetIndexSlot = vm.load(
+            address(proxyWeb3Entry),
+            bytes32(allowlistSetIndexSlot)
         );
-        bytes32 carolIndex = vm.load(address(proxyWeb3Entry), whitelistCarolIndexSlot);
-        assertEq(carolIndex, bytes32(uint256(1)));
+        assertEq(valueAtallowlistSetIndexSlot, bytes32(uint256(1)));
+
+        uint256 allowlistMapSlot = uint256(bytes32(allowlistSetIndexSlot)) + uint256(1);
+        bytes32 valueAtAllowlistMapSlot = vm.load(
+            address(proxyWeb3Entry),
+            bytes32(allowlistMapSlot)
+        );
+        // there should be nothing at blocklistMapSlot
+        assertEq(valueAtAllowlistMapSlot, bytes32(uint256(0)));
+
+        // the allowlist at index 1
+        bytes32 allowlist1Slot = keccak256(abi.encodePacked(uint256(1), allowlistMapSlot));
+        bytes32 valueAtAllowlist1Slot = vm.load(address(proxyWeb3Entry), allowlist1Slot);
+        // the length of allowlist at index 1  is 3
+        assertEq(valueAtAllowlist1Slot, bytes32(uint256(3)));
     }
 }

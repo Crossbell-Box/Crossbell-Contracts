@@ -61,15 +61,8 @@ contract Web3EntryBase is
     function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
-        address[] calldata blacklist,
-        address[] calldata whitelist
-    ) external virtual {}
-
-    function revokeOperators4Note(
-        uint256 characterId,
-        uint256 noteId,
-        address[] calldata blacklist,
-        address[] calldata whitelist
+        address[] calldata blocklist,
+        address[] calldata allowlist
     ) external virtual {}
 
     /**
@@ -636,11 +629,11 @@ contract Web3EntryBase is
         external
         view
         virtual
-        returns (address[] memory blacklist, address[] memory whitelist)
+        returns (address[] memory blocklist, address[] memory allowlist)
     {}
 
     // overridden in web3Entry
-    function hasNotePermission(
+    function isOperatorAllowedForNote(
         uint256 characterId,
         uint256 noteId,
         address operator

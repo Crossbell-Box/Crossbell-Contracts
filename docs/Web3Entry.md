@@ -14,12 +14,6 @@ mapping(uint256 => mapping(address => uint256)) _operatorsPermissionBitMap
 mapping(uint256 => mapping(uint256 => struct DataTypes.Operators4Note)) _operators4Note
 ```
 
-### migrateOwner
-
-```solidity
-address migrateOwner
-```
-
 ### grantOperatorPermissions
 
 ```solidity
@@ -41,10 +35,10 @@ _Every bit in permissionBitMap stands for a corresponding method in Web3Entry. m
 ### grantOperators4Note
 
 ```solidity
-function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
+function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blocklist, address[] allowlist) external
 ```
 
-Grant operators whitelist and blacklist roles of a note.
+Grant operators allowlist and blocklist roles of a note.
 
 #### Parameters
 
@@ -52,43 +46,8 @@ Grant operators whitelist and blacklist roles of a note.
 | ---- | ---- | ----------- |
 | characterId | uint256 | ID of character that you want to set. |
 | noteId | uint256 | ID of note that you want to set. |
-| blacklist | address[] | Blacklist addresses that you want to grant. |
-| whitelist | address[] | Whitelist addresses that you want to grant. |
-
-### revokeOperators4Note
-
-```solidity
-function revokeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist) external
-```
-
-Remove operators's blacklist and whitelist roles of a note.
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| characterId | uint256 | ID of character that you want to set. |
-| noteId | uint256 | ID of note that you want to set. |
-| blacklist | address[] | Blacklist addresses that you want to remove. |
-| whitelist | address[] | Whitelist addresses that you want to remove. |
-
-### migrateOperator
-
-```solidity
-function migrateOperator(address newbieVilla, uint256[] characterIds) external
-```
-
-Migrates old operators permissions.
-
-_set operators of newbieVilla DEFAULT_PERMISSION, and others OPERATOR_SYNC_PERMISSION.
-This function should be removed in the next release._
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| newbieVilla | address |  |
-| characterIds | uint256[] | List of characters to migrate. |
+| blocklist | address[] | blocklist addresses that you want to grant. |
+| allowlist | address[] | allowlist addresses that you want to grant. |
 
 ### getOperatorPermissions
 
@@ -114,10 +73,10 @@ Get permission bitmap of an operator.
 ### getOperators4Note
 
 ```solidity
-function getOperators4Note(uint256 characterId, uint256 noteId) external view returns (address[] blacklist, address[] whitelist)
+function getOperators4Note(uint256 characterId, uint256 noteId) external view returns (address[] blocklist, address[] allowlist)
 ```
 
-Get operators blacklist and whitelist for a note.
+Get operators blocklist and allowlist for a note.
 
 #### Parameters
 
@@ -126,10 +85,10 @@ Get operators blacklist and whitelist for a note.
 | characterId | uint256 | ID of character to query. |
 | noteId | uint256 | ID of note to query. |
 
-### hasNotePermission
+### isOperatorAllowedForNote
 
 ```solidity
-function hasNotePermission(uint256 characterId, uint256 noteId, address operator) external view returns (bool)
+function isOperatorAllowedForNote(uint256 characterId, uint256 noteId, address operator) external view returns (bool)
 ```
 
 Query if a operator has permission for a note.
@@ -148,10 +107,10 @@ Query if a operator has permission for a note.
 | ---- | ---- | ----------- |
 | [0] | bool | true if Operator has permission for a note, otherwise false. |
 
-### _hasNotePermission
+### _isOperatorAllowedForNote
 
 ```solidity
-function _hasNotePermission(uint256 characterId, uint256 noteId, address operator) internal view returns (bool)
+function _isOperatorAllowedForNote(uint256 characterId, uint256 noteId, address operator) internal view returns (bool)
 ```
 
 ### _validateCallerPermission

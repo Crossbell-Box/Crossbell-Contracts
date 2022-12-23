@@ -11,14 +11,15 @@ function grantOperatorPermissions(uint256 characterId, address operator, uint256
 ### grantOperators4Note
 
 ```solidity
-function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist, mapping(uint256 => mapping(uint256 => struct DataTypes.Operators4Note)) _operators4Note) external
+function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blocklist, address[] allowlist, mapping(uint256 => mapping(uint256 => struct DataTypes.Operators4Note)) _operators4Note) external
 ```
 
-### revokeOperators4Note
-
-```solidity
-function revokeOperators4Note(uint256 characterId, uint256 noteId, address[] blacklist, address[] whitelist, mapping(uint256 => mapping(uint256 => struct DataTypes.Operators4Note)) _operators4Note) external
-```
+Set blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.
+     @dev The blocklistId and allowlistId increase by 1 everytime this function is called.
+     @param characterId The character Id of the note owner.
+     @param  noteId The note Id to grant.
+     @param blocklist The addresses list of blocked operators.
+     @param allowlist The addresses list of allowed operators.
 
 ### _bitmapFilter
 
