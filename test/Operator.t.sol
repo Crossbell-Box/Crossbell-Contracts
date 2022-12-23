@@ -612,20 +612,20 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.stopPrank();
 
         // case 2. bob's in blocklist and also allowlist
-        // vm.prank(alice);
-        // web3Entry.grantOperators4Note(
-        //     Const.FIRST_CHARACTER_ID,
-        //     Const.FIRST_NOTE_ID,
-        //     allowlist,
-        //     allowlist
-        // );
-        // vm.prank(bob);
-        // vm.expectRevert("NotEnoughPermissionForThisNote");
-        // web3Entry.setNoteUri(
-        //     Const.FIRST_CHARACTER_ID,
-        //     Const.FIRST_NOTE_ID,
-        //     Const.MOCK_NEW_NOTE_URI
-        // );
+        vm.prank(alice);
+        web3Entry.grantOperators4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            blocklist,
+            blocklist
+        );
+        vm.prank(bob);
+        vm.expectRevert("NotEnoughPermissionForThisNote");
+        web3Entry.setNoteUri(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            Const.MOCK_NEW_NOTE_URI
+        );
     }
 
     // function testMigrate() public {

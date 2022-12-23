@@ -27,6 +27,14 @@ library OperatorLogic {
         emit Events.GrantOperatorPermissions(characterId, operator, bitmap);
     }
 
+    /**
+     @notice Set blocklist and allowlist for a specifc note. Blocklist and allowlist are overwritten every time.
+     @dev The _blocklistSetIndex and _allowlistSetIndex increase by 1 everytime this function is called.
+     @param characterId The character Id of the note owner.
+     @param  noteId The note Id to grant.
+     @param _blocklist The addresses list of blocked operators.
+     @param _allowlist The addresses list of allowed operators.
+     */
     function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
@@ -34,57 +42,20 @@ library OperatorLogic {
         address[] calldata _allowlist,
         mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
     ) external {
-        // clear the blocklist first
-        uint256 length = _operators4Note[characterId][noteId].blocklist.length();
-        if (length > 0) {
-            for (uint256 i = length; i > 0; --i) {
-                _operators4Note[characterId][noteId].blocklist.remove(
-                    _operators4Note[characterId][noteId].blocklist.at(i)
-                );
-            }
-        }
         uint256 blocklistLength = _blocklist.length;
+        _operators4Note[characterId][noteId]._blocklistSetIndex ++;
         // grant blocklist roles
         for (uint256 i = 0; i < blocklistLength; i++) {
-            _operators4Note[characterId][noteId].blocklist.add(_blocklist[i]);
+            _operators4Note[characterId][noteId]._blocklistSet[_operators4Note[characterId][noteId]._blocklistSetIndex].add(_blocklist[i]);
         }
-
-        // clear the allowlist first
-        length = _operators4Note[characterId][noteId].allowlist.length();
-        if (length > 0) {
-            for (uint256 i = length; i > 0; --i) {
-                _operators4Note[characterId][noteId].allowlist.remove(
-                    _operators4Note[characterId][noteId].allowlist.at(i)
-                );
-            }
-        }
-
+        
         uint256 allowlistLength = _allowlist.length;
-        // grant allowlist roles
+        _operators4Note[characterId][noteId]._allowlistSetIndex ++;
+        // grant blocklist roles
         for (uint256 i = 0; i < allowlistLength; i++) {
-            _operators4Note[characterId][noteId].allowlist.add(_allowlist[i]);
+            _operators4Note[characterId][noteId]._allowlistSet[_operators4Note[characterId][noteId]._allowlistSetIndex].add(_allowlist[i]);
         }
-
         emit Events.GrantOperators4Note(characterId, noteId, _blocklist, _allowlist);
-    }
-
-    function revokeOperators4Note(
-        uint256 characterId,
-        uint256 noteId,
-        address[] calldata blocklist,
-        address[] calldata allowlist,
-        mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
-    ) external {
-        // revoke blocklist roles
-        for (uint256 i = 0; i < blocklist.length; i++) {
-            _operators4Note[characterId][noteId].blocklist.remove(blocklist[i]);
-        }
-        // revoke allowlist roles
-        for (uint256 i = 0; i < allowlist.length; i++) {
-            _operators4Note[characterId][noteId].allowlist.remove(allowlist[i]);
-        }
-
-        emit Events.RevokeOperators4Note(characterId, noteId, blocklist, allowlist);
     }
 
     /**

@@ -118,8 +118,8 @@ contract Web3Entry is Web3EntryBase {
         override
         returns (address[] memory blocklist, address[] memory allowlist)
     {
-        blocklist = _operators4Note[characterId][noteId].blocklist.values();
-        allowlist = _operators4Note[characterId][noteId].allowlist.values();
+        blocklist = _operators4Note[characterId][noteId]._blocklistSet[_operators4Note[characterId][noteId]._blocklistSetIndex].values();
+        allowlist = _operators4Note[characterId][noteId]._allowlistSet[_operators4Note[characterId][noteId]._allowlistSetIndex].values();
         return (blocklist, allowlist);
     }
 
@@ -144,11 +144,11 @@ contract Web3Entry is Web3EntryBase {
         address operator
     ) internal view returns (bool) {
         // check blocklist
-        if (_operators4Note[characterId][noteId].blocklist.contains(operator)) {
+        if (_operators4Note[characterId][noteId]._blocklistSet[_operators4Note[characterId][noteId]._blocklistSetIndex].contains(operator)) {
             return false;
         }
         // check allowlist
-        if (_operators4Note[characterId][noteId].allowlist.contains(operator)) {
+        if (_operators4Note[characterId][noteId]._allowlistSet[_operators4Note[characterId][noteId]._allowlistSetIndex].contains(operator)) {
             return true;
         }
         // check character operator permission
