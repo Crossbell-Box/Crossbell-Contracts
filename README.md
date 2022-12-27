@@ -31,14 +31,14 @@ This repository is the implementation of the protocol.
 
 ## ⚙ Development
 
-Install forge if you don't have one:
+Install foundry if you don't have one:
 ```shell
-# install foge
+# install foundry
 curl -L https://foundry.paradigm.xyz | bash
 foundryup
 ```
 
-Compile and run:
+Compile and run tests:
 ```shell
 yarn
 yarn test
