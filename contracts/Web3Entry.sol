@@ -142,18 +142,16 @@ contract Web3Entry is Web3EntryBase {
             return;
         }
 
-        //  check operator permission for msg.sender
-        uint256 bitMap = _operatorsPermissionBitMap[characterId][msg.sender];
-        if (_checkBit(bitMap, permissionId)) {
-            return;
-        }
-
         // check operator permission for tx.origin
         if (msg.sender == periphery) {
-            bitMap = _operatorsPermissionBitMap[characterId][tx.origin];
-            if (_checkBit(bitMap, permissionId)) {
+            if (_checkBit(_operatorsPermissionBitMap[characterId][tx.origin], permissionId)) {
                 return;
             }
+        }
+
+        //  check operator permission for msg.sender
+        if (_checkBit(_operatorsPermissionBitMap[characterId][msg.sender], permissionId)) {
+            return;
         }
 
         revert("NotEnoughPermission");
@@ -184,16 +182,16 @@ contract Web3Entry is Web3EntryBase {
             return;
         }
 
-        // check note permission for caller
-        if (_isOperatorAllowedForNote(characterId, noteId, msg.sender)) {
-            return;
-        }
-
         // check note permission for tx.origin
         if (msg.sender == periphery) {
             if (_isOperatorAllowedForNote(characterId, noteId, tx.origin)) {
                 return;
             }
+        }
+
+        // check note permission for caller
+        if (_isOperatorAllowedForNote(characterId, noteId, msg.sender)) {
+            return;
         }
 
         revert("NotEnoughPermissionForThisNote");

@@ -119,6 +119,12 @@ function _isOperatorAllowedForNote(uint256 characterId, uint256 noteId, address 
 function _validateCallerPermission(uint256 characterId, uint256 permissionId) internal view
 ```
 
+### _callerIsCharacterOwner
+
+```solidity
+function _callerIsCharacterOwner(uint256 characterId) internal view returns (bool)
+```
+
 ### _validateCallerPermission4Note
 
 ```solidity
