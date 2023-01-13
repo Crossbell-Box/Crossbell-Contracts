@@ -116,14 +116,16 @@ contract Web3Entry is Web3EntryBase {
         uint256 noteId,
         address operator
     ) internal view returns (bool) {
+        DataTypes.Operators4Note storage op = _operators4Note[characterId][noteId];
+
         // check blocklist
-        uint256 currentIndex = _operators4Note[characterId][noteId].blocklistId; // the current index of blocklistSet
-        if (_operators4Note[characterId][noteId].blocklists[currentIndex].contains(operator)) {
+        uint256 currentIndex = op.blocklistId; // the current index of blocklistSet
+        if (op.blocklists[currentIndex].contains(operator)) {
             return false;
         }
         // check allowlist
-        currentIndex = _operators4Note[characterId][noteId].allowlistId; // the current index of allowlistSet
-        if (_operators4Note[characterId][noteId].allowlists[currentIndex].contains(operator)) {
+        currentIndex = op.allowlistId; // the current index of allowlistSet
+        if (op.allowlists[currentIndex].contains(operator)) {
             return true;
         }
         // check character operator permission
@@ -135,17 +137,41 @@ contract Web3Entry is Web3EntryBase {
         view
         override
     {
+        // check character owner
+        if (_callerIsCharacterOwner(characterId)) {
+            return;
+        }
+
+        //  check operator permission for msg.sender
+        uint256 bitMap = _operatorsPermissionBitMap[characterId][msg.sender];
+        if (_checkBit(bitMap, permissionId)) {
+            return;
+        }
+
+        // check operator permission for tx.origin
+        if (msg.sender == periphery) {
+            bitMap = _operatorsPermissionBitMap[characterId][tx.origin];
+            if (_checkBit(bitMap, permissionId)) {
+                return;
+            }
+        }
+
+        revert("NotEnoughPermission");
+    }
+
+    function _callerIsCharacterOwner(uint256 characterId) internal view returns (bool) {
         address owner = ownerOf(characterId);
+
         if (msg.sender == owner) {
             // caller is character owner
-        } else if (tx.origin == owner && msg.sender == periphery) {
-            // caller is periphery
-        } else if (_checkBit(_operatorsPermissionBitMap[characterId][msg.sender], permissionId)) {
-            // caller has operator permission
-        } else {
-            // caller doesn't have corresponding permission,
-            revert("NotEnoughPermission");
+            return true;
         }
+        if (msg.sender == periphery && tx.origin == owner) {
+            // caller is periphery, and tx.origin is character owner
+            return true;
+        }
+
+        return false;
     }
 
     function _validateCallerPermission4Note(uint256 characterId, uint256 noteId)
@@ -153,17 +179,24 @@ contract Web3Entry is Web3EntryBase {
         view
         override
     {
-        address owner = ownerOf(characterId);
-        if (msg.sender == owner) {
-            // caller is character owner
-        } else if (tx.origin == owner && msg.sender == periphery) {
-            // caller is periphery
-        } else if (_isOperatorAllowedForNote(characterId, noteId, msg.sender)) {
-            // caller has note permission
-        } else {
-            // caller doesn't have corresponding permission,
-            revert("NotEnoughPermissionForThisNote");
+        // check character owner
+        if (_callerIsCharacterOwner(characterId)) {
+            return;
         }
+
+        // check note permission for caller
+        if (_isOperatorAllowedForNote(characterId, noteId, msg.sender)) {
+            return;
+        }
+
+        // check note permission for tx.origin
+        if (msg.sender == periphery) {
+            if (_isOperatorAllowedForNote(characterId, noteId, tx.origin)) {
+                return;
+            }
+        }
+
+        revert("NotEnoughPermissionForThisNote");
     }
 
     /**
