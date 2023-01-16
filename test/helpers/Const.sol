@@ -6,6 +6,7 @@ library Const {
     uint256 constant FIRST_CHARACTER_ID = 1;
     uint256 constant SECOND_CHARACTER_ID = 2;
     uint256 constant THIRD_CHARACTER_ID = 3;
+    uint256 constant FORTH_CHARACTER_ID = 4;
 
     uint256 constant FIRST_LINKLIST_ID = 1;
     uint256 constant SECOND_LINKLIST_ID = 2;

@@ -10,7 +10,6 @@ import "../contracts/libraries/OP.sol";
 import "../contracts/misc/NewbieVilla.sol";
 import "../contracts/Web3Entry.sol";
 import "../contracts/libraries/DataTypes.sol";
-import "../contracts/Web3Entry.sol";
 import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import "../contracts/modules/link/ApprovalLinkModule4Character.sol";
 import "../contracts/modules/link/ApprovalLinkModule4Note.sol";
