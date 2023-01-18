@@ -115,6 +115,7 @@ library CharacterLogic {
 
         uint256 byteHandleLength = byteHandle.length;
         for (uint256 i = 0; i < byteHandleLength; ) {
+            // char range: [0,9][a,z][-][_]
             if (
                 (byteHandle[i] < "0" ||
                     byteHandle[i] > "z" ||

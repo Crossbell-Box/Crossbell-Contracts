@@ -136,18 +136,6 @@ function linkLinklist(struct DataTypes.linkLinklistData vars) external
 function unlinkLinklist(struct DataTypes.unlinkLinklistData vars) external
 ```
 
-### setLinkModule4Character
-
-```solidity
-function setLinkModule4Character(struct DataTypes.setLinkModule4CharacterData vars) external
-```
-
-### setLinkModule4Note
-
-```solidity
-function setLinkModule4Note(struct DataTypes.setLinkModule4NoteData vars) external
-```
-
 ### setLinkModule4Linklist
 
 ```solidity
