@@ -25,12 +25,12 @@ contract CharacterSettingsTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.createCharacter(characterData);
         // User should fail to create character or set handle with exists handle
-        vm.expectRevert(abi.encodePacked("HandleExists"));
+        vm.expectRevert(abi.encodeWithSelector(ErrHandleExists.selector));
         vm.prank(alice);
         web3Entry.createCharacter(characterData);
 
         // UserTwo should fail to set character uri as a character owned by user 1
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.setCharacterUri(1, Const.MOCK_URI);
 
         // User should set new character uri

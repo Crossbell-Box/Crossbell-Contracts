@@ -47,17 +47,17 @@ contract CreateCharacterTest is Test, SetUp, Utils {
         vm.startPrank(bob);
 
         // handle length > 31
-        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
+        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
         web3Entry.createCharacter(makeCharacterData("da2423cea4f1047556e7a142f81a7eda", bob));
 
         // empty handle
-        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
+        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
         web3Entry.createCharacter(makeCharacterData("", bob));
 
         // handle length < 3
-        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
+        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
         web3Entry.createCharacter(makeCharacterData("a", bob));
-        vm.expectRevert(abi.encodePacked("HandleLengthInvalid"));
+        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
         web3Entry.createCharacter(makeCharacterData("ab", bob));
 
         // invalid character handle
@@ -109,11 +109,11 @@ contract CreateCharacterTest is Test, SetUp, Utils {
         web3Entry.createCharacter(makeCharacterData("abcd", bob));
 
         for (uint256 i = 0; i < handles.length; i++) {
-            vm.expectRevert(abi.encodePacked("HandleContainsInvalidCharacters"));
+            vm.expectRevert(abi.encodeWithSelector(ErrHandleContainsInvalidCharacters.selector));
             web3Entry.createCharacter(makeCharacterData(handles[i], bob));
 
             // set handle fail
-            vm.expectRevert(abi.encodePacked("HandleContainsInvalidCharacters"));
+            vm.expectRevert(abi.encodeWithSelector(ErrHandleContainsInvalidCharacters.selector));
             web3Entry.setHandle(1, handles[i]);
         }
     }

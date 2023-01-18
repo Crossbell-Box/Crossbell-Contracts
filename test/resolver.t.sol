@@ -3,7 +3,7 @@ pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
 import "forge-std/console2.sol";
-import "../contracts/Web3Entry.sol";
+import "../contracts/Resolver.sol";
 import "../contracts/libraries/DataTypes.sol";
 import "./helpers/Const.sol";
 import "./helpers/utils.sol";
@@ -14,8 +14,10 @@ contract ResolverTest is Test, SetUp, Utils {
     address public bob = address(0x2222);
     address public carol = address(0x3333);
 
+    Resolver internal resolver;
+
     function setUp() public {
-        _setUp();
+        resolver = new Resolver();
     }
 
     function testResolver() public {

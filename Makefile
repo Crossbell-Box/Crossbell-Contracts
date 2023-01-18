@@ -23,7 +23,8 @@ build  :; forge build
 scripts :; chmod +x ./scripts/*
 
 # Tests
-foundry-test :; forge clean && forge test --optimize --optimizer-runs 200 -v # --ffi # enable if you need the `ffi` cheat code on HEVM
+# --ffi # enable if you need the `ffi` cheat code on HEVM
+foundry-test :; forge clean && forge test --optimize --optimizer-runs 200 -v
 
 # Run solhint
 check :; solhint "{contracts,test,scripts}/**/*.sol"

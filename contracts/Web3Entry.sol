@@ -4,6 +4,7 @@ pragma solidity 0.8.10;
 import "./Web3EntryBase.sol";
 import "./libraries/OP.sol";
 import "./libraries/OperatorLogic.sol";
+import "./libraries/Error.sol";
 
 contract Web3Entry is Web3EntryBase {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -154,7 +155,7 @@ contract Web3Entry is Web3EntryBase {
             return;
         }
 
-        revert("NotEnoughPermission");
+        revert ErrNotEnoughPermission();
     }
 
     function _callerIsCharacterOwner(uint256 characterId) internal view returns (bool) {
@@ -194,7 +195,7 @@ contract Web3Entry is Web3EntryBase {
             return;
         }
 
-        revert("NotEnoughPermissionForThisNote");
+        revert ErrNotEnoughPermissionForThisNote();
     }
 
     /**

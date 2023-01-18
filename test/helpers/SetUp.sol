@@ -11,7 +11,6 @@ import "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import "../../contracts/modules/link/ApprovalLinkModule4Character.sol";
 import "../../contracts/modules/mint/ApprovalMintModule.sol";
 import "../../contracts/mocks/NFT.sol";
-import "../../contracts/Resolver.sol";
 import "./Const.sol";
 import "./utils.sol";
 
@@ -22,7 +21,6 @@ contract SetUp {
     MintNFT mintNFT;
     ApprovalLinkModule4Character linkModule4Character;
     NFT nft;
-    Resolver resolver;
     CharacterBoundToken cbt;
     TransparentUpgradeableProxy proxyWeb3Entry;
     address public admin = address(0x999999999999999999999999999999);
@@ -51,9 +49,6 @@ contract SetUp {
         // deploy linkModule4Character
         linkModule4Character = new ApprovalLinkModule4Character(address(web3Entry));
 
-        // deploy resolver
-        resolver = new Resolver();
-
         // deploy cbt
         cbt = new CharacterBoundToken(address(web3Entry));
 
@@ -63,8 +58,7 @@ contract SetUp {
             Const.WEB3_ENTRY_NFT_SYMBOL,
             address(linklist),
             address(mintNFT),
-            address(periphery), // periphery
-            address(resolver) // resolver
+            address(periphery) // periphery
         );
         // initialize linklist
         linklist.initialize(

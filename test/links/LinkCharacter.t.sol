@@ -5,6 +5,7 @@ import "forge-std/Test.sol";
 import "forge-std/console2.sol";
 import "../../contracts/Web3Entry.sol";
 import "../../contracts/libraries/DataTypes.sol";
+import "../../contracts/libraries/Error.sol";
 import "../helpers/Const.sol";
 import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
@@ -69,9 +70,9 @@ contract LinkProfileTest is Test, SetUp, Utils {
     }
 
     function testLinkCharacterFail() public {
-        // NotEnoughPermission
+        // case 1: NotEnoughPermission
         vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
                 Const.FIRST_CHARACTER_ID,
@@ -81,22 +82,26 @@ contract LinkProfileTest is Test, SetUp, Utils {
             )
         );
 
-        // CharacterNotExists
+        // case 2: CharacterNotExists
         vm.prank(alice);
-        vm.expectRevert(abi.encodePacked("CharacterNotExists"));
+        vm.expectRevert(
+            abi.encodeWithSelector(ErrCharacterNotExists.selector, Const.THIRD_CHARACTER_ID)
+        );
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
                 Const.FIRST_CHARACTER_ID,
-                3,
+                Const.THIRD_CHARACTER_ID,
                 Const.FollowLinkType,
                 new bytes(0)
             )
         );
 
-        // link a burned character
+        // case 3: link a burned character
         vm.prank(bob);
         web3Entry.burn(Const.SECOND_CHARACTER_ID);
-        vm.expectRevert(abi.encodePacked("CharacterNotExists"));
+        vm.expectRevert(
+            abi.encodeWithSelector(ErrCharacterNotExists.selector, Const.SECOND_CHARACTER_ID)
+        );
         vm.prank(alice);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
@@ -166,7 +171,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
         );
 
         // unlink
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.unlinkCharacter(
             DataTypes.unlinkCharacterData(

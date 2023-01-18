@@ -5,16 +5,16 @@
 ### initialize
 
 ```solidity
-function initialize(string _name, string _symbol, address _linklistContract, address _mintNFTImpl, address _periphery, address resolver) external
+function initialize(string _name, string _symbol, address _linklistContract, address _mintNFTImpl, address _periphery) external
 ```
 
 ### createCharacter
 
 ```solidity
-function createCharacter(struct DataTypes.CreateCharacterData vars) external
+function createCharacter(struct DataTypes.CreateCharacterData vars) external returns (uint256)
 ```
 
-EXTERNAL VIEW FUNCTIONS
+EXTERNAL  FUNCTIONS
 
 ### setHandle
 
@@ -134,6 +134,18 @@ function linkLinklist(struct DataTypes.linkLinklistData vars) external
 
 ```solidity
 function unlinkLinklist(struct DataTypes.unlinkLinklistData vars) external
+```
+
+### setLinkModule4Character
+
+```solidity
+function setLinkModule4Character(struct DataTypes.setLinkModule4CharacterData vars) external
+```
+
+### setLinkModule4Note
+
+```solidity
+function setLinkModule4Note(struct DataTypes.setLinkModule4NoteData vars) external
 ```
 
 ### setLinkModule4Linklist

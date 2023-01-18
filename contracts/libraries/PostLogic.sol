@@ -99,8 +99,6 @@ library PostLogic {
         string calldata newUri,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external {
-        require(!_noteByIdByCharacter[characterId][noteId].locked, "NoteLocked");
-
         _noteByIdByCharacter[characterId][noteId].contentUri = newUri;
 
         emit Events.SetNoteUri(characterId, noteId, newUri);

@@ -18,25 +18,24 @@ library LinkModuleLogic {
         bytes calldata linkModuleInitData,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external {
-        require(!_noteByIdByCharacter[characterId][noteId].locked, "NoteLocked");
+        if (_noteByIdByCharacter[characterId][noteId].locked)
+            if (linkModule != address(0)) {
+                _noteByIdByCharacter[characterId][noteId].linkModule = linkModule;
 
-        if (linkModule != address(0)) {
-            _noteByIdByCharacter[characterId][noteId].linkModule = linkModule;
+                bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
+                    characterId,
+                    noteId,
+                    linkModuleInitData
+                );
 
-            bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
-                characterId,
-                noteId,
-                linkModuleInitData
-            );
-
-            emit Events.SetLinkModule4Note(
-                characterId,
-                noteId,
-                linkModule,
-                returnData,
-                block.timestamp
-            );
-        }
+                emit Events.SetLinkModule4Note(
+                    characterId,
+                    noteId,
+                    linkModule,
+                    returnData,
+                    block.timestamp
+                );
+            }
     }
 
     function setLinkModule4Address(
@@ -45,8 +44,6 @@ library LinkModuleLogic {
         bytes calldata linkModuleInitData,
         mapping(address => address) storage _linkModules4Address
     ) external {
-        require(msg.sender == account, "NotAddressOwner");
-
         if (linkModule != address(0)) {
             _linkModules4Address[account] = linkModule;
             bytes memory linkModuleReturnData = ILinkModule4Address(linkModule)
@@ -68,8 +65,6 @@ library LinkModuleLogic {
         bytes calldata mintModuleInitData,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external {
-        require(!_noteByIdByCharacter[characterId][noteId].locked, "NoteLocked");
-
         if (mintModule != address(0)) {
             _noteByIdByCharacter[characterId][noteId].mintModule = mintModule;
 

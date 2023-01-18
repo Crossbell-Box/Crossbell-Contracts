@@ -88,8 +88,8 @@ contract OperatorTest is Test, SetUp, Utils {
 
     function testGrantOperatorPermissionsFail() public {
         // bob is not the owner of FIRST_CHARACTER_ID, he can't grant
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        vm.expectRevert("NotEnoughPermission");
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             bob,
@@ -146,8 +146,8 @@ contract OperatorTest is Test, SetUp, Utils {
 
     function testGrantOperators4NoteFail() public {
         // bob is not owner of FIRST_CHARACTER_ID, can't grant
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        vm.expectRevert("NotEnoughPermission");
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
@@ -156,8 +156,8 @@ contract OperatorTest is Test, SetUp, Utils {
         );
 
         // note doesn't exist
+        vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
         vm.prank(alice);
-        vm.expectRevert("NoteNotExists");
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.SECOND_NOTE_ID,
@@ -230,7 +230,7 @@ contract OperatorTest is Test, SetUp, Utils {
             allowlist
         );
         vm.startPrank(bob);
-        vm.expectRevert("NotEnoughPermissionForThisNote");
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
@@ -496,20 +496,20 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // default operator can't setHandle
         vm.startPrank(bob);
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.setHandle(Const.FIRST_CHARACTER_ID, "new-handle");
 
         // can't set primary character id
         // user can only set primary character id to himself
-        vm.expectRevert(abi.encodePacked("NotCharacterOwner"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotCharacterOwner.selector));
         web3Entry.setPrimaryCharacterId(Const.FIRST_CHARACTER_ID);
 
         // can't set social token
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.setSocialToken(Const.FIRST_CHARACTER_ID, address(0x132414));
 
         // can't grant operator
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.grantOperatorPermissions(
             Const.FIRST_CHARACTER_ID,
             carol,
@@ -517,7 +517,7 @@ contract OperatorTest is Test, SetUp, Utils {
         );
 
         // can't add operator for note
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
@@ -537,7 +537,7 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.stopPrank();
 
         vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
         // operator with sync permission can't sign
@@ -548,7 +548,7 @@ contract OperatorTest is Test, SetUp, Utils {
             OP.POST_NOTE_PERMISSION_BITMAP
         );
         vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("NotEnoughPermissionForThisNote"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
@@ -618,7 +618,7 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.stopPrank();
 
         vm.prank(bob);
-        vm.expectRevert("NotEnoughPermissionForThisNote");
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
@@ -635,7 +635,7 @@ contract OperatorTest is Test, SetUp, Utils {
             blocklist
         );
         vm.prank(bob);
-        vm.expectRevert("NotEnoughPermissionForThisNote");
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
@@ -737,12 +737,12 @@ contract OperatorTest is Test, SetUp, Utils {
 
         // carol can not
         vm.prank(carol);
-        vm.expectRevert("NotEnoughPermission");
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
         // bob can not
         vm.prank(bob);
-        vm.expectRevert("NotEnoughPermissionForThisNote");
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
