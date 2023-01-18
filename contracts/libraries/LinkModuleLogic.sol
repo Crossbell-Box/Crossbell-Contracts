@@ -18,24 +18,23 @@ library LinkModuleLogic {
         bytes calldata linkModuleInitData,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external {
-        if (_noteByIdByCharacter[characterId][noteId].locked)
-            if (linkModule != address(0)) {
-                _noteByIdByCharacter[characterId][noteId].linkModule = linkModule;
+        if (linkModule != address(0)) {
+            _noteByIdByCharacter[characterId][noteId].linkModule = linkModule;
 
-                bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
-                    characterId,
-                    noteId,
-                    linkModuleInitData
-                );
+            bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
+                characterId,
+                noteId,
+                linkModuleInitData
+            );
 
-                emit Events.SetLinkModule4Note(
-                    characterId,
-                    noteId,
-                    linkModule,
-                    returnData,
-                    block.timestamp
-                );
-            }
+            emit Events.SetLinkModule4Note(
+                characterId,
+                noteId,
+                linkModule,
+                returnData,
+                block.timestamp
+            );
+        }
     }
 
     function setLinkModule4Address(
