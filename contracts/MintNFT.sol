@@ -5,6 +5,7 @@ pragma solidity 0.8.10;
 import "./base/NFTBase.sol";
 import "./interfaces/IMintNFT.sol";
 import "./interfaces/IWeb3Entry.sol";
+import {ErrCallerNotWeb3Entry} from "./libraries/Error.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
@@ -33,7 +34,7 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
     }
 
     function mint(address to) external returns (uint256) {
-        require(msg.sender == Web3Entry, "MintNFT: NotWeb3Entry");
+        if (msg.sender != Web3Entry) revert ErrCallerNotWeb3Entry();
 
         _tokenIdCounter.increment();
         _mint(to, _tokenIdCounter.current());
@@ -44,8 +45,9 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
         return (_characterId, _noteId);
     }
 
-    function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(_exists(tokenId), "MintNFT: TokenDoesNotExist");
-        return IWeb3Entry(Web3Entry).getNote(_characterId, _noteId).contentUri;
+    function tokenURI(uint256 tokenId) public view override returns (string memory uri) {
+        if (_exists(tokenId)) {
+            uri = IWeb3Entry(Web3Entry).getNote(_characterId, _noteId).contentUri;
+        }
     }
 }
