@@ -46,3 +46,18 @@ error ErrNoteNotExists();
 
 /// @dev Array length mismatch
 error ErrArrayLengthMismatch();
+
+/// @dev Caller is not web3Entry contract
+error ErrCallerNotWeb3Entry();
+
+/// @dev Caller is not web3Entry contract, and not the owner of character
+error ErrCallerNotWeb3EntryOrNotOwner();
+
+/// @dev Token id already exists
+error ErrTokenIdAlreadyExists();
+
+/// @dev Character does not exist
+error ErrNotExistingCharacter();
+
+/// @dev Token id of linklist does not exist
+error ErrNotExistingLinklistToken();

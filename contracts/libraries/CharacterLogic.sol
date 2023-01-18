@@ -7,7 +7,7 @@ import "./Events.sol";
 import "./Constants.sol";
 import "../interfaces/ILinkModule4Character.sol";
 import "../interfaces/ILinklist.sol";
-import {ErrHandleExists, ErrSocialTokenExists, ErrSocialTokenExists, ErrHandleLengthInvalid, ErrHandleContainsInvalidCharacters} from "./Error.sol";
+import "./Error.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 library CharacterLogic {
