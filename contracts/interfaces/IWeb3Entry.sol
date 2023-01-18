@@ -88,10 +88,8 @@ interface IWeb3Entry {
      * These functions are temporarily commented out, in order to limit the contract code size within 24K.
      * These functions will be restored when necessary in the future.
      */
-    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external;
-
-    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external;
-
+    //    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external;
+    //    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external;
     //    function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external;
 
     function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external;

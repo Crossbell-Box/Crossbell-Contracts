@@ -310,6 +310,7 @@ contract Web3EntryBase is
      * @notice set link module for his character
      */
 
+    /*
     function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external {
         _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_CHARACTER);
 
@@ -335,6 +336,7 @@ contract Web3EntryBase is
             _noteByIdByCharacter
         );
     }
+    */
 
     /**
      * @notice Set linkModule for a ERC721 token that you own.
