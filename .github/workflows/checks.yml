@@ -1,0 +1,66 @@
+name: checks
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: Install Dependencies
+        run: yarn
+      - name: Run lints
+        run: yarn lint
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - name: Install Foundry
+        uses: onbjerg/foundry-toolchain@v1
+        with:
+          version: nightly
+      - name: Install Dependencies
+        run: yarn
+      - name: Update Modules
+        run: yarn sync
+      - name: Run Tests
+        run: FOUNDRY_PROFILE=ci yarn test
+
+  codespell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run CodeSpell
+        uses: codespell-project/actions-codespell@v1.0
+        with:
+          check_filenames: true
+          skip: ./.git,./docs,package-lock.json,yarn.lock
+
+  slither:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: Copy configuration file
+        run: cp .env.example .env
+      - name: Disable foundry
+        run: rm foundry.toml
+      - uses: crytic/slither-action@v0.2.0
+        id: slither
+        with:
+          node-version: 14
+          sarif: results.sarif
+          fail-on: none
+          slither-config: slither.config.json
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ steps.slither.outputs.sarif }}
+
