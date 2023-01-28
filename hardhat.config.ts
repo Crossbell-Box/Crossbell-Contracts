@@ -25,8 +25,8 @@ module.exports = {
     },
     paths: {
         sources: "./contracts",
-        cache: "./cache_hardhat",
-        artifacts: "./artifacts_hardhat",
+        cache: "./cache",
+        artifacts: "./artifacts",
     },
     networks: {
         crossbell: {
