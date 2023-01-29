@@ -24,7 +24,7 @@
     "ordering": "warn",
     "private-vars-leading-underscore": ["error",{"strict":true}],
     "quotes": ["error","double"],
-    "reason-string": ["error",{"maxLength":32}],
+    "reason-string": ["error",{"maxLength":64}],
     "reentrancy": "error",
     "state-visibility": "error",
     "use-forbidden-name": "error",

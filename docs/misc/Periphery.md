@@ -8,10 +8,10 @@
 address web3Entry
 ```
 
-### linklistInitialized
+### _linklistInitialized
 
 ```solidity
-bool linklistInitialized
+bool _linklistInitialized
 ```
 
 ### linklist
@@ -23,7 +23,25 @@ address linklist
 ### initialize
 
 ```solidity
-function initialize(address _web3Entry, address _linklist) external
+function initialize(address web3Entry_, address linklist_) external
+```
+
+### linkCharactersInBatch
+
+```solidity
+function linkCharactersInBatch(struct DataTypes.linkCharactersInBatchData vars) external
+```
+
+### sync
+
+```solidity
+function sync(address account, string handle, string uri, address[] toAddresses, bytes32 linkType) external
+```
+
+### migrate
+
+```solidity
+function migrate(struct DataTypes.MigrateData vars) external
 ```
 
 ### getNotesByCharacterId
@@ -36,12 +54,6 @@ function getNotesByCharacterId(uint256 characterId, uint256 offset, uint256 limi
 
 ```solidity
 function getLinkingCharacterIds(uint256 fromCharacterId, bytes32 linkType) external view returns (uint256[] results)
-```
-
-### getLinkingCharacterId
-
-```solidity
-function getLinkingCharacterId(bytes32 linkKey) external pure returns (uint256 characterId)
 ```
 
 ### getLinkingNotes
@@ -86,12 +98,6 @@ function getLinkingAnyUri(bytes32 linkKey) external view returns (string)
 function getLinkingAddresses(uint256 fromCharacterId, bytes32 linkType) external view returns (address[])
 ```
 
-### getLinkingAddress
-
-```solidity
-function getLinkingAddress(bytes32 linkKey) external pure returns (address)
-```
-
 ### getLinkingLinklistIds
 
 ```solidity
@@ -104,33 +110,29 @@ function getLinkingLinklistIds(uint256 fromCharacterId, bytes32 linkType) extern
 function getLinkingLinklistId(bytes32 linkKey) external pure returns (uint256 linklistId)
 ```
 
-### characterExists
+### getLinkingAddress
 
 ```solidity
-function characterExists(uint256 characterId) internal view returns (bool)
+function getLinkingAddress(bytes32 linkKey) external pure returns (address)
 ```
 
-### linkCharactersInBatch
+### getLinkingCharacterId
 
 ```solidity
-function linkCharactersInBatch(struct DataTypes.linkCharactersInBatchData vars) external
-```
-
-### sync
-
-```solidity
-function sync(address account, string handle, string uri, address[] toAddresses, bytes32 linkType) external
-```
-
-### migrate
-
-```solidity
-function migrate(struct DataTypes.MigrateData vars) external
+function getLinkingCharacterId(bytes32 linkKey) external pure returns (uint256 characterId)
 ```
 
 ### _migrate
 
 ```solidity
 function _migrate(address account, string handle, string uri, address[] toAddresses, bytes32 linkType) internal
+```
+
+__migrate will not update handle if the target character already exists_
+
+### _exists
+
+```solidity
+function _exists(uint256 characterId) internal view returns (bool)
 ```
 

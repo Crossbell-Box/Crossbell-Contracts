@@ -13,12 +13,51 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 contract Periphery is Initializable {
     address public web3Entry;
 
-    bool private linklistInitialized;
+    bool private _linklistInitialized; // obsoleted slot
     address public linklist;
 
-    function initialize(address _web3Entry, address _linklist) external initializer {
-        web3Entry = _web3Entry;
-        linklist = _linklist;
+    function initialize(address web3Entry_, address linklist_) external initializer {
+        web3Entry = web3Entry_;
+        linklist = linklist_;
+    }
+
+    function linkCharactersInBatch(DataTypes.linkCharactersInBatchData calldata vars) external {
+        if (vars.toCharacterIds.length != vars.data.length) revert ErrArrayLengthMismatch();
+
+        for (uint256 i = 0; i < vars.toCharacterIds.length; i++) {
+            IWeb3Entry(web3Entry).linkCharacter(
+                DataTypes.linkCharacterData({
+                    fromCharacterId: vars.fromCharacterId,
+                    toCharacterId: vars.toCharacterIds[i],
+                    linkType: vars.linkType,
+                    data: vars.data[i]
+                })
+            );
+        }
+
+        for (uint256 i = 0; i < vars.toAddresses.length; i++) {
+            IWeb3Entry(web3Entry).createThenLinkCharacter(
+                DataTypes.createThenLinkCharacterData({
+                    fromCharacterId: vars.fromCharacterId,
+                    to: vars.toAddresses[i],
+                    linkType: vars.linkType
+                })
+            );
+        }
+    }
+
+    function sync(
+        address account,
+        string calldata handle,
+        string calldata uri,
+        address[] calldata toAddresses,
+        bytes32 linkType
+    ) external {
+        _migrate(account, handle, uri, toAddresses, linkType);
+    }
+
+    function migrate(DataTypes.MigrateData calldata vars) external {
+        _migrate(vars.account, vars.handle, vars.uri, vars.toAddresses, vars.linkType);
     }
 
     function getNotesByCharacterId(
@@ -51,7 +90,7 @@ contract Periphery is Initializable {
 
         uint256 count;
         for (uint256 i = 0; i < len; i++) {
-            if (characterExists(linkingCharacterIds[i])) {
+            if (_exists(linkingCharacterIds[i])) {
                 count++;
             }
         }
@@ -59,15 +98,11 @@ contract Periphery is Initializable {
         results = new uint256[](count);
         uint256 j;
         for (uint256 i = 0; i < len; i++) {
-            if (characterExists(linkingCharacterIds[i])) {
+            if (_exists(linkingCharacterIds[i])) {
                 results[j] = linkingCharacterIds[i];
                 j++;
             }
         }
-    }
-
-    function getLinkingCharacterId(bytes32 linkKey) external pure returns (uint256 characterId) {
-        characterId = uint256(linkKey);
     }
 
     function getLinkingNotes(uint256 fromCharacterId, bytes32 linkType)
@@ -126,10 +161,6 @@ contract Periphery is Initializable {
         return ILinklist(linklist).getLinkingAddresses(linklistId);
     }
 
-    function getLinkingAddress(bytes32 linkKey) external pure returns (address) {
-        return address(uint160(uint256(linkKey)));
-    }
-
     function getLinkingLinklistIds(uint256 fromCharacterId, bytes32 linkType)
         external
         view
@@ -143,49 +174,18 @@ contract Periphery is Initializable {
         linklistId = uint256(linkKey);
     }
 
-    function characterExists(uint256 characterId) internal view returns (bool) {
-        return IWeb3Entry(web3Entry).getCharacter(characterId).characterId != 0;
+    function getLinkingAddress(bytes32 linkKey) external pure returns (address) {
+        return address(uint160(uint256(linkKey)));
     }
 
-    function linkCharactersInBatch(DataTypes.linkCharactersInBatchData calldata vars) external {
-        if (vars.toCharacterIds.length != vars.data.length) revert ErrArrayLengthMismatch();
-
-        for (uint256 i = 0; i < vars.toCharacterIds.length; i++) {
-            IWeb3Entry(web3Entry).linkCharacter(
-                DataTypes.linkCharacterData({
-                    fromCharacterId: vars.fromCharacterId,
-                    toCharacterId: vars.toCharacterIds[i],
-                    linkType: vars.linkType,
-                    data: vars.data[i]
-                })
-            );
-        }
-
-        for (uint256 i = 0; i < vars.toAddresses.length; i++) {
-            IWeb3Entry(web3Entry).createThenLinkCharacter(
-                DataTypes.createThenLinkCharacterData({
-                    fromCharacterId: vars.fromCharacterId,
-                    to: vars.toAddresses[i],
-                    linkType: vars.linkType
-                })
-            );
-        }
+    function getLinkingCharacterId(bytes32 linkKey) external pure returns (uint256 characterId) {
+        characterId = uint256(linkKey);
     }
 
-    function sync(
-        address account,
-        string calldata handle,
-        string calldata uri,
-        address[] calldata toAddresses,
-        bytes32 linkType
-    ) external {
-        _migrate(account, handle, uri, toAddresses, linkType);
-    }
-
-    function migrate(DataTypes.MigrateData calldata vars) external {
-        _migrate(vars.account, vars.handle, vars.uri, vars.toAddresses, vars.linkType);
-    }
-
+    /**
+     * @dev _migrate will not update handle if the target character already exists
+     */
+    // solhint-disable-next-line function-max-lines
     function _migrate(
         address account,
         string memory handle,
@@ -208,11 +208,6 @@ contract Periphery is Initializable {
             // get primary character id
             fromProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(account);
         } else {
-            //            if (bytes(handle).length > 0) {
-            //                // set handle
-            //                IWeb3Entry(web3Entry).setHandle(fromProfileId, handle);
-            //            }
-
             if (bytes(uri).length > 0) {
                 // set character uri
                 IWeb3Entry(web3Entry).setCharacterUri(fromProfileId, uri);
@@ -241,5 +236,9 @@ contract Periphery is Initializable {
                 );
             }
         }
+    }
+
+    function _exists(uint256 characterId) internal view returns (bool) {
+        return IWeb3Entry(web3Entry).getCharacter(characterId).characterId != 0;
     }
 }

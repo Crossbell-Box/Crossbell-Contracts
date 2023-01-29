@@ -11,7 +11,7 @@ event Transfer(address from, uint256 characterId, uint256 tokenId)
 ### initialize
 
 ```solidity
-function initialize(string _name, string _symbol, address _web3Entry) external
+function initialize(string name_, string symbol_, address web3Entry_) external
 ```
 
 ### mint
@@ -20,52 +20,10 @@ function initialize(string _name, string _symbol, address _web3Entry) external
 function mint(uint256 characterId, bytes32 linkType, uint256 tokenId) external
 ```
 
-### totalSupply
-
-```solidity
-function totalSupply() public view returns (uint256)
-```
-
-_See {IERC721Enumerable-totalSupply}._
-
-### balanceOf
-
-```solidity
-function balanceOf(address account) public view returns (uint256 balance)
-```
-
-### balanceOf
-
-```solidity
-function balanceOf(uint256 characterId) public view returns (uint256)
-```
-
-### ownerOf
-
-```solidity
-function ownerOf(uint256 tokenId) public view returns (address)
-```
-
-_See {IERC721-ownerOf}._
-
-### characterOwnerOf
-
-```solidity
-function characterOwnerOf(uint256 tokenId) public view returns (uint256)
-```
-
-returns the characterId who owns the given tokenId.
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| tokenId | uint256 | The token id of the linklist. |
-
 ### setUri
 
 ```solidity
-function setUri(uint256 tokenId, string _uri) external
+function setUri(uint256 tokenId, string newUri) external
 ```
 
 ### addLinkingCharacterId
@@ -78,6 +36,78 @@ function addLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external
 
 ```solidity
 function removeLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external
+```
+
+### addLinkingNote
+
+```solidity
+function addLinkingNote(uint256 tokenId, uint256 toCharacterId, uint256 toNoteId) external returns (bytes32)
+```
+
+### removeLinkingNote
+
+```solidity
+function removeLinkingNote(uint256 tokenId, uint256 toCharacterId, uint256 toNoteId) external
+```
+
+### addLinkingCharacterLink
+
+```solidity
+function addLinkingCharacterLink(uint256 tokenId, struct DataTypes.CharacterLinkStruct linkData) external
+```
+
+### removeLinkingCharacterLink
+
+```solidity
+function removeLinkingCharacterLink(uint256 tokenId, struct DataTypes.CharacterLinkStruct linkData) external
+```
+
+### addLinkingERC721
+
+```solidity
+function addLinkingERC721(uint256 tokenId, address tokenAddress, uint256 erc721TokenId) external returns (bytes32)
+```
+
+### removeLinkingERC721
+
+```solidity
+function removeLinkingERC721(uint256 tokenId, address tokenAddress, uint256 erc721TokenId) external
+```
+
+### addLinkingAddress
+
+```solidity
+function addLinkingAddress(uint256 tokenId, address ethAddress) external
+```
+
+### removeLinkingAddress
+
+```solidity
+function removeLinkingAddress(uint256 tokenId, address ethAddress) external
+```
+
+### addLinkingAnyUri
+
+```solidity
+function addLinkingAnyUri(uint256 tokenId, string toUri) external returns (bytes32)
+```
+
+### removeLinkingAnyUri
+
+```solidity
+function removeLinkingAnyUri(uint256 tokenId, string toUri) external
+```
+
+### addLinkingLinklistId
+
+```solidity
+function addLinkingLinklistId(uint256 tokenId, uint256 linklistId) external
+```
+
+### removeLinkingLinklistId
+
+```solidity
+function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId) external
 ```
 
 ### getLinkingCharacterIds
@@ -98,18 +128,6 @@ function getLinkingCharacterListLength(uint256 tokenId) external view returns (u
 function getOwnerCharacterId(uint256 tokenId) external view returns (uint256)
 ```
 
-### addLinkingNote
-
-```solidity
-function addLinkingNote(uint256 tokenId, uint256 toCharacterId, uint256 toNoteId) external returns (bytes32)
-```
-
-### removeLinkingNote
-
-```solidity
-function removeLinkingNote(uint256 tokenId, uint256 toCharacterId, uint256 toNoteId) external
-```
-
 ### getLinkingNotes
 
 ```solidity
@@ -126,18 +144,6 @@ function getLinkingNote(bytes32 linkKey) external view returns (struct DataTypes
 
 ```solidity
 function getLinkingNoteListLength(uint256 tokenId) external view returns (uint256)
-```
-
-### addLinkingCharacterLink
-
-```solidity
-function addLinkingCharacterLink(uint256 tokenId, struct DataTypes.CharacterLinkStruct linkData) external
-```
-
-### removeLinkingCharacterLink
-
-```solidity
-function removeLinkingCharacterLink(uint256 tokenId, struct DataTypes.CharacterLinkStruct linkData) external
 ```
 
 ### getLinkingCharacterLinks
@@ -158,18 +164,6 @@ function getLinkingCharacterLink(bytes32 linkKey) external view returns (struct 
 function getLinkingCharacterLinkListLength(uint256 tokenId) external view returns (uint256)
 ```
 
-### addLinkingERC721
-
-```solidity
-function addLinkingERC721(uint256 tokenId, address tokenAddress, uint256 erc721TokenId) external returns (bytes32)
-```
-
-### removeLinkingERC721
-
-```solidity
-function removeLinkingERC721(uint256 tokenId, address tokenAddress, uint256 erc721TokenId) external
-```
-
 ### getLinkingERC721s
 
 ```solidity
@@ -188,18 +182,6 @@ function getLinkingERC721(bytes32 linkKey) external view returns (struct DataTyp
 function getLinkingERC721ListLength(uint256 tokenId) external view returns (uint256)
 ```
 
-### addLinkingAddress
-
-```solidity
-function addLinkingAddress(uint256 tokenId, address ethAddress) external
-```
-
-### removeLinkingAddress
-
-```solidity
-function removeLinkingAddress(uint256 tokenId, address ethAddress) external
-```
-
 ### getLinkingAddresses
 
 ```solidity
@@ -210,18 +192,6 @@ function getLinkingAddresses(uint256 tokenId) external view returns (address[])
 
 ```solidity
 function getLinkingAddressListLength(uint256 tokenId) external view returns (uint256)
-```
-
-### addLinkingAnyUri
-
-```solidity
-function addLinkingAnyUri(uint256 tokenId, string toUri) external returns (bytes32)
-```
-
-### removeLinkingAnyUri
-
-```solidity
-function removeLinkingAnyUri(uint256 tokenId, string toUri) external
 ```
 
 ### getLinkingAnyUris
@@ -246,18 +216,6 @@ function getLinkingAnyUriKeys(uint256 tokenId) external view returns (bytes32[])
 
 ```solidity
 function getLinkingAnyListLength(uint256 tokenId) external view returns (uint256)
-```
-
-### addLinkingLinklistId
-
-```solidity
-function addLinkingLinklistId(uint256 tokenId, uint256 linklistId) external
-```
-
-### removeLinkingLinklistId
-
-```solidity
-function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId) external
 ```
 
 ### getLinkingLinklistIds
@@ -290,17 +248,47 @@ function getLinkType(uint256 tokenId) external view returns (bytes32)
 function Uri(uint256 tokenId) external view returns (string)
 ```
 
-### _transfer
+### totalSupply
 
 ```solidity
-function _transfer(address, address, uint256) internal pure
+function totalSupply() public view returns (uint256)
 ```
 
-### _safeTransfer
+_See {IERC721Enumerable-totalSupply}._
+
+### balanceOf
 
 ```solidity
-function _safeTransfer(address, address, uint256, bytes) internal pure
+function balanceOf(uint256 characterId) public view returns (uint256)
 ```
+
+### balanceOf
+
+```solidity
+function balanceOf(address account) public view returns (uint256 balance)
+```
+
+### characterOwnerOf
+
+```solidity
+function characterOwnerOf(uint256 tokenId) public view returns (uint256)
+```
+
+returns the characterId who owns the given tokenId.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| tokenId | uint256 | The token id of the linklist. |
+
+### ownerOf
+
+```solidity
+function ownerOf(uint256 tokenId) public view returns (address)
+```
+
+_See {IERC721-ownerOf}._
 
 ### _getTokenUri
 
@@ -318,5 +306,17 @@ function _validateCallerIsWeb3Entry() internal view
 
 ```solidity
 function _validateCallerIsWeb3EntryOrOwner(uint256 tokenId) internal view
+```
+
+### _safeTransfer
+
+```solidity
+function _safeTransfer(address, address, uint256, bytes) internal pure
+```
+
+### _transfer
+
+```solidity
+function _transfer(address, address, uint256) internal pure
 ```
 

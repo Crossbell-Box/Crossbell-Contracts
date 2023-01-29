@@ -27,50 +27,17 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
     }
 
     /**
-     * @notice  Initialize the Newbie Villa contract.
-     * @dev     msg.sender will be granted both DEFAULT_ADMIN_ROLE and ADMIN_ROLE.
-     * @param   _web3Entry  Address of Web3Entry.
-     * @param   _xsyncOperator  Address of xsyncOperator.
+     * @notice Initialize the Newbie Villa contract.
+     * @dev msg.sender will be granted both DEFAULT_ADMIN_ROLE and ADMIN_ROLE.
+     * @param web3Entry_ Address of web3Entry contract.
+     * @param xsyncOperator_ Address of xsyncOperator.
      */
-    function initialize(address _web3Entry, address _xsyncOperator) external initializer {
-        web3Entry = _web3Entry;
-        xsyncOperator = _xsyncOperator;
+    function initialize(address web3Entry_, address xsyncOperator_) external initializer {
+        web3Entry = web3Entry_;
+        xsyncOperator = xsyncOperator_;
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(ADMIN_ROLE, _msgSender());
-    }
-
-    function splitSignature(bytes memory sig)
-        internal
-        pure
-        returns (
-            uint8 v,
-            bytes32 r,
-            bytes32 s
-        )
-    {
-        require(sig.length == 65, "NewbieVilla: Wrong signature length");
-
-        assembly {
-            // first 32 bytes, after the length prefix.
-            r := mload(add(sig, 32))
-            // second 32 bytes.
-            s := mload(add(sig, 64))
-            // final byte (first byte of the next 32 bytes).
-            v := byte(0, mload(add(sig, 96)))
-        }
-
-        return (v, r, s);
-    }
-
-    function recoverSigner(bytes32 message, bytes memory sig) internal pure returns (address) {
-        (uint8 v, bytes32 r, bytes32 s) = splitSignature(sig);
-
-        return ecrecover(message, v, r, s);
-    }
-
-    function prefixed(bytes32 hash) internal pure returns (bytes32) {
-        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
     }
 
     /**
@@ -106,11 +73,11 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
         uint256 expires,
         bytes memory proof
     ) external _notExpired(expires) {
-        bytes32 signedData = prefixed(
+        bytes32 signedData = _prefixed(
             keccak256(abi.encodePacked(address(this), characterId, nonce, expires))
         );
         require(
-            hasRole(ADMIN_ROLE, recoverSigner(signedData, proof)),
+            hasRole(ADMIN_ROLE, _recoverSigner(signedData, proof)),
             "NewbieVilla: Unauthorized withdraw"
         );
 
@@ -162,5 +129,40 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
             OP.POST_NOTE_PERMISSION_BITMAP
         );
         return IERC721Receiver.onERC721Received.selector;
+    }
+
+    function _splitSignature(bytes memory sig)
+        internal
+        pure
+        returns (
+            uint8 v,
+            bytes32 r,
+            bytes32 s
+        )
+    {
+        require(sig.length == 65, "NewbieVilla: Wrong signature length");
+
+        /* solhint-disable no-inline-assembly */
+        assembly {
+            // first 32 bytes, after the length prefix.
+            r := mload(add(sig, 32))
+            // second 32 bytes.
+            s := mload(add(sig, 64))
+            // final byte (first byte of the next 32 bytes).
+            v := byte(0, mload(add(sig, 96)))
+        }
+        /* solhint-enable no-inline-assembly */
+
+        return (v, r, s);
+    }
+
+    function _recoverSigner(bytes32 message, bytes memory sig) internal pure returns (address) {
+        (uint8 v, bytes32 r, bytes32 s) = _splitSignature(sig);
+
+        return ecrecover(message, v, r, s);
+    }
+
+    function _prefixed(bytes32 hash) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
     }
 }

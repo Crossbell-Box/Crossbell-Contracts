@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 contract MintNFT is NFTBase, IMintNFT, Initializable {
     using Counters for Counters.Counter;
 
+    // solhint-disable var-name-mixedcase
     address public Web3Entry;
 
     uint256 internal _characterId;
@@ -24,7 +25,7 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
         address web3Entry,
         string calldata name,
         string calldata symbol
-    ) external initializer {
+    ) external override initializer {
         super._initialize(name, symbol);
         _characterId = characterId;
         _noteId = noteId;
@@ -33,7 +34,7 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
         emit Events.MintNFTInitialized(characterId, noteId, block.timestamp);
     }
 
-    function mint(address to) external returns (uint256) {
+    function mint(address to) external override returns (uint256) {
         if (msg.sender != Web3Entry) revert ErrCallerNotWeb3Entry();
 
         _tokenIdCounter.increment();
@@ -41,7 +42,7 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
         return _tokenIdCounter.current();
     }
 
-    function getSourcePublicationPointer() external view returns (uint256, uint256) {
+    function getSourcePublicationPointer() external view override returns (uint256, uint256) {
         return (_characterId, _noteId);
     }
 

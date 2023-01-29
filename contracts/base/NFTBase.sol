@@ -12,6 +12,7 @@ abstract contract NFTBase is ERC721Enumerable {
         emit Events.BaseInitialized(name, symbol, block.timestamp);
     }
 
+    // solhint-disable ordering
     function burn(uint256 tokenId) public virtual {
         require(_isApprovedOrOwner(msg.sender, tokenId), "NFTBase: NotOwnerOrApproved");
         _burn(tokenId);
