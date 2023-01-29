@@ -1,0 +1,10 @@
+{
+  "filter_paths": "lib",
+  "solc_remaps": [
+    "ds-test/=lib/forge-std/lib/ds-test/src/",
+    "forge-std/=lib/forge-std/src/",
+    "@openzeppelin/=node_modules/@openzeppelin/"
+  ],
+  "compile_force_framework":"hardhat",
+  "hardhat_artifacts_directory": "./artifacts"
+}
