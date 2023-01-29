@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable comprehensive-interface
 pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
@@ -16,7 +17,6 @@ contract PeripheryTest is Test, SetUp, Utils {
     address public constant carol = address(0x3333);
     address public constant dick = address(0x4444);
 
-    /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
 

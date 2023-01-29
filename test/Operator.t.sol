@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable comprehensive-interface
 pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
@@ -31,7 +32,6 @@ contract OperatorTest is Test, SetUp, Utils {
     NewbieVilla public newbieVilla;
     address public migrateOwner = 0xda2423ceA4f1047556e7a142F81a7ED50e93e160;
 
-    /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
 

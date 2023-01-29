@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable comprehensive-interface
 pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
@@ -17,7 +18,6 @@ contract MintNFTTest is Test, Utils {
     MintNFT public nft;
     address public web3Entry = address(1);
 
-    /* solhint-disable comprehensive-interface */
     function setUp() public {
         nft = new MintNFT();
         nft.initialize(1, 1, web3Entry, "name", "symbol");

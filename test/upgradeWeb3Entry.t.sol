@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable comprehensive-interface
 pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
@@ -32,7 +33,6 @@ contract UpgradeWeb3Entry is Test, Utils {
     address public periphery = address(0x222);
     address public mintNFT = address(0x333);
 
-    /* solhint-disable comprehensive-interface */
     function setUp() public {
         web3EntryBaseImpl = new Web3EntryBase();
         proxyWeb3Entry = new TransparentUpgradeableProxy(address(web3EntryBaseImpl), admin, "");

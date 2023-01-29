@@ -5,13 +5,19 @@ pragma solidity 0.8.10;
 import "../libraries/DataTypes.sol";
 
 interface ILinklist {
+    function initialize(
+        string calldata _name,
+        string calldata _symbol,
+        address _web3Entry
+    ) external;
+
     function mint(
         uint256 characterId,
         bytes32 linkType,
         uint256 tokenId
     ) external;
 
-    function setUri(uint256 tokenId, string memory _uri) external;
+    function setUri(uint256 tokenId, string memory newUri) external;
 
     /////////////////////////////////
     // linking Character
@@ -141,4 +147,8 @@ interface ILinklist {
     function getLinkType(uint256 tokenId) external view returns (bytes32);
 
     function Uri(uint256 tokenId) external view returns (string memory);
+
+    function characterOwnerOf(uint256 tokenId) external view returns (uint256);
+
+    function balanceOf(uint256 characterId) external view returns (uint256);
 }

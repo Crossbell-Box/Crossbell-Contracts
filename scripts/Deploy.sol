@@ -9,12 +9,14 @@ import "../contracts/misc/Periphery.sol";
 import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 
 contract Deploy is Script {
-    address admin = address(0x713Ba8985dF91249b9e4CD86DD9eF62f8c8ddBC6); // update admin address before deployment
-    string constant WEB3_ENTRY_NFT_NAME = "Web3 Entry Character";
-    string constant WEB3_ENTRY_NFT_SYMBOL = "WEC";
-    string constant LINK_LIST_NFT_NAME = "Link List Token";
-    string constant LINK_LIST_NFT_SYMBOL = "LLT";
+    // update admin address before deployment
+    address public admin = address(0x713Ba8985dF91249b9e4CD86DD9eF62f8c8ddBC6);
+    string public constant WEB3_ENTRY_NFT_NAME = "Web3 Entry Character";
+    string public constant WEB3_ENTRY_NFT_SYMBOL = "WEC";
+    string public constant LINK_LIST_NFT_NAME = "Link List Token";
+    string public constant LINK_LIST_NFT_SYMBOL = "LLT";
 
+    /* solhint-disable comprehensive-interface */
     function run() external {
         vm.startBroadcast();
 

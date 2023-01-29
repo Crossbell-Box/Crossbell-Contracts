@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable comprehensive-interface
 pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
@@ -16,7 +17,6 @@ contract ResolverTest is Test, SetUp, Utils {
 
     Resolver public resolver;
 
-    /* solhint-disable comprehensive-interface */
     function setUp() public {
         resolver = new Resolver();
     }

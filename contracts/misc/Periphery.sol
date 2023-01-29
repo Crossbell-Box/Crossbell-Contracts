@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-
+// solhint-disable comprehensive-interface
 pragma solidity 0.8.10;
 
 import "../interfaces/IWeb3Entry.sol";

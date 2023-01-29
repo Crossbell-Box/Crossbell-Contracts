@@ -16,7 +16,7 @@ contract ApprovalLinkModule4Character is ILinkModule4Character, ModuleBase {
         external
         returns (bytes memory)
     {
-        address owner = IERC721(Web3Entry).ownerOf(characterId);
+        address owner = IERC721(web3Entry).ownerOf(characterId);
 
         if (data.length > 0) {
             address[] memory addresses = abi.decode(data, (address[]));
@@ -38,7 +38,7 @@ contract ApprovalLinkModule4Character is ILinkModule4Character, ModuleBase {
         bool[] calldata toApprove
     ) external {
         require(addresses.length == toApprove.length, "InitParamsInvalid");
-        address owner = IERC721(Web3Entry).ownerOf(characterId);
+        address owner = IERC721(web3Entry).ownerOf(characterId);
         require(msg.sender == owner, "NotCharacterOwner");
 
         uint256 addressesLength = addresses.length;
@@ -55,7 +55,7 @@ contract ApprovalLinkModule4Character is ILinkModule4Character, ModuleBase {
         uint256 characterId,
         bytes calldata
     ) external view override onlyWeb3Entry {
-        address owner = IERC721(Web3Entry).ownerOf(characterId);
+        address owner = IERC721(web3Entry).ownerOf(characterId);
 
         require(
             _approvedByCharacterByOwner[owner][characterId][caller],

@@ -44,6 +44,7 @@ contract CreateCharacterTest is Test, SetUp, Utils {
         assertEq(character.uri, Const.MOCK_CHARACTER_URI);
     }
 
+    // solhint-disable-next-line function-max-lines
     function testCreateCharacterAndSetHandleFail() public {
         vm.startPrank(bob);
 
