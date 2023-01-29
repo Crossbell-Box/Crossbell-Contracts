@@ -7,6 +7,7 @@ import "./Events.sol";
 import "./Constants.sol";
 import "../interfaces/ILinkModule4Character.sol";
 import "../interfaces/ILinklist.sol";
+import "./Error.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 library CharacterLogic {
@@ -24,7 +25,7 @@ library CharacterLogic {
         }
 
         bytes32 handleHash = keccak256(bytes(vars.handle));
-        require(_characterIdByHandleHash[handleHash] == 0, "HandleExists");
+        if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
 
         _characterIdByHandleHash[handleHash] = characterId;
 
@@ -56,7 +57,7 @@ library CharacterLogic {
         address tokenAddress,
         mapping(uint256 => DataTypes.Character) storage _characterById
     ) external {
-        require(_characterById[characterId].socialToken == address(0), "SocialTokenExists");
+        if (_characterById[characterId].socialToken != address(0)) revert ErrSocialTokenExists();
 
         _characterById[characterId].socialToken = tokenAddress;
 
@@ -91,7 +92,7 @@ library CharacterLogic {
 
         // set new handle
         bytes32 handleHash = keccak256(bytes(newHandle));
-        require(_characterIdByHandleHash[handleHash] == 0, "HandleExists");
+        if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
 
         // remove old handle
         string memory oldHandle = _characterById[characterId].handle;
@@ -107,21 +108,24 @@ library CharacterLogic {
 
     function _validateHandle(string calldata handle) private pure {
         bytes memory byteHandle = bytes(handle);
-        require(
-            byteHandle.length >= Constants.MIN_HANDLE_LENGTH &&
-                byteHandle.length <= Constants.MAX_HANDLE_LENGTH,
-            "HandleLengthInvalid"
-        );
+        if (
+            byteHandle.length > Constants.MAX_HANDLE_LENGTH ||
+            byteHandle.length < Constants.MIN_HANDLE_LENGTH
+        ) revert ErrHandleLengthInvalid();
 
         uint256 byteHandleLength = byteHandle.length;
-        for (uint256 i = 0; i < byteHandleLength; ++i) {
-            require(
-                (byteHandle[i] <= "9" && byteHandle[i] >= "0") ||
-                    (byteHandle[i] <= "z" && byteHandle[i] >= "a") ||
-                    byteHandle[i] == "-" ||
-                    byteHandle[i] == "_",
-                "HandleContainsInvalidCharacters"
-            );
+        for (uint256 i = 0; i < byteHandleLength; ) {
+            // char range: [0,9][a,z][-][_]
+            if (
+                (byteHandle[i] < "0" ||
+                    byteHandle[i] > "z" ||
+                    (byteHandle[i] > "9" && byteHandle[i] < "a")) &&
+                byteHandle[i] != "-" &&
+                byteHandle[i] != "_"
+            ) revert ErrHandleContainsInvalidCharacters();
+            unchecked {
+                ++i;
+            }
         }
     }
 }

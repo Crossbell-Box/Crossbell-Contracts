@@ -17,6 +17,7 @@ import "./libraries/PostLogic.sol";
 import "./libraries/LinkModuleLogic.sol";
 import "./libraries/LinkLogic.sol";
 import "./libraries/OP.sol";
+import "./libraries/Error.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
@@ -39,14 +40,12 @@ contract Web3EntryBase is
         string calldata _symbol,
         address _linklistContract,
         address _mintNFTImpl,
-        address _periphery,
-        address _resolver
+        address _periphery
     ) external initializer {
         super._initialize(_name, _symbol);
         _linklist = _linklistContract;
         MINT_NFT_IMPL = _mintNFTImpl;
         periphery = _periphery;
-        resolver = _resolver;
 
         emit Events.Web3EntryInitialized(block.timestamp);
     }
@@ -75,12 +74,18 @@ contract Web3EntryBase is
      *      * linkModule: The link module to use, can be the zero address.
      *      * linkModuleInitData: The link module initialization data, if any.
      */
-    function createCharacter(DataTypes.CreateCharacterData calldata vars) external {
-        _createCharacter(vars);
+    function createCharacter(DataTypes.CreateCharacterData calldata vars)
+        external
+        returns (uint256)
+    {
+        return _createCharacter(vars);
     }
 
-    function _createCharacter(DataTypes.CreateCharacterData memory vars) internal {
-        uint256 characterId = ++_characterCounter;
+    function _createCharacter(DataTypes.CreateCharacterData memory vars)
+        internal
+        returns (uint256 characterId)
+    {
+        characterId = ++_characterCounter;
         // mint character nft
         _safeMint(vars.to, characterId);
 
@@ -176,10 +181,7 @@ contract Web3EntryBase is
         bytes32 linkType,
         bytes memory data
     ) internal {
-        require(
-            _primaryCharacterByAddress[to] == 0,
-            "Target address already has primary character."
-        );
+        if (_primaryCharacterByAddress[to] != 0) revert ErrTargetAlreadyHasPrimaryCharacter();
 
         uint256 characterId = ++_characterCounter;
         // mint character nft
@@ -307,11 +309,9 @@ contract Web3EntryBase is
     /**
      * @notice set link module for his character
      */
-    /*
-        function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars)
-        external
 
-    {
+    /*
+    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external {
         _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_CHARACTER);
 
         CharacterLogic.setCharacterLinkModule(
@@ -322,14 +322,11 @@ contract Web3EntryBase is
         );
     }
 
-        function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external  {
+    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external {
         _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE);
-        _validateCallerPermission4Note(
-            vars.characterId,
-            vars.noteId,
-            OP.NOTE_SET_LINK_MODULE_FOR_NOTE
-        );
+        _validateCallerPermission4Note(vars.characterId, vars.noteId);
         _validateNoteExists(vars.characterId, vars.noteId);
+        _validateNoteNotLocked(vars.characterId, vars.noteId);
 
         LinkModuleLogic.setLinkModule4Note(
             vars.characterId,
@@ -381,6 +378,8 @@ contract Web3EntryBase is
      addresses and is irrelevan to characters.
      */
     function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external {
+        if (msg.sender != vars.account) revert ErrNotAddressOwner();
+
         LinkModuleLogic.setLinkModule4Address(
             vars.account,
             vars.linkModule,
@@ -405,8 +404,9 @@ contract Web3EntryBase is
     }
 
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external {
-        _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE);
+        _validateCallerPermission(vars.characterId, OP.SET_MINT_MODULE_FOR_NOTE);
         _validateNoteExists(vars.characterId, vars.noteId);
+        _validateNoteNotLocked(vars.characterId, vars.noteId);
 
         LinkModuleLogic.setMintModule4Note(
             vars.characterId,
@@ -433,6 +433,8 @@ contract Web3EntryBase is
     ) external {
         _validateCallerPermission4Note(characterId, noteId);
         _validateNoteExists(characterId, noteId);
+        _validateNoteNotLocked(characterId, noteId);
+
         PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
     }
 
@@ -716,10 +718,18 @@ contract Web3EntryBase is
 
     function _validateCallerIsCharacterOwner(uint256 characterId) internal view {
         address owner = ownerOf(characterId);
-        require(
-            msg.sender == owner || (tx.origin == owner && msg.sender == periphery),
-            "NotCharacterOwner"
-        );
+
+        // tx.origin is character owner, and msg.sender is periphery
+        if (msg.sender == periphery && tx.origin == owner) {
+            return;
+        }
+
+        // msg.sender is character owner
+        if (msg.sender == owner) {
+            return;
+        }
+
+        revert ErrNotCharacterOwner();
     }
 
     // overridden in web3Entry
@@ -733,16 +743,21 @@ contract Web3EntryBase is
     {}
 
     function _validateCharacterExists(uint256 characterId) internal view {
-        require(_exists(characterId), "CharacterNotExists");
+        if (!_exists(characterId)) revert ErrCharacterNotExists(characterId);
     }
 
     function _validateERC721Exists(address tokenAddress, uint256 tokenId) internal view {
-        require(address(0) != IERC721(tokenAddress).ownerOf(tokenId), "REC721NotExists");
+        address owner = IERC721(tokenAddress).ownerOf(tokenId);
+        if (address(0) == owner) revert ErrREC721NotExists();
     }
 
     function _validateNoteExists(uint256 characterId, uint256 noteId) internal view {
-        require(!_noteByIdByCharacter[characterId][noteId].deleted, "NoteIsDeleted");
-        require(noteId <= _characterById[characterId].noteCount, "NoteNotExists");
+        if (_noteByIdByCharacter[characterId][noteId].deleted) revert ErrNoteIsDeleted();
+        if (noteId > _characterById[characterId].noteCount) revert ErrNoteNotExists();
+    }
+
+    function _validateNoteNotLocked(uint256 characterId, uint256 noteId) internal view {
+        if (_noteByIdByCharacter[characterId][noteId].locked) revert ErrNoteLocked();
     }
 
     function getRevision() external pure returns (uint256) {

@@ -47,7 +47,7 @@ function getSourcePublicationPointer() external view returns (uint256, uint256)
 ### tokenURI
 
 ```solidity
-function tokenURI(uint256 tokenId) public view returns (string)
+function tokenURI(uint256 tokenId) public view returns (string uri)
 ```
 
 _See {IERC721Metadata-tokenURI}._

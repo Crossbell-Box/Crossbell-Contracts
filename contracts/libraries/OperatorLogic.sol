@@ -31,7 +31,7 @@ library OperatorLogic {
      @notice Set blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.
      @dev The blocklistId and allowlistId increase by 1 every time this function is called.
      @param characterId The character Id of the note owner.
-     @param  noteId The note Id to grant.
+     @param noteId The note Id to grant.
      @param blocklist The addresses list of blocked operators.
      @param allowlist The addresses list of allowed operators.
      */
@@ -44,28 +44,26 @@ library OperatorLogic {
     ) external {
         DataTypes.Operators4Note storage operators4Note = _operators4Note[characterId][noteId];
 
-        uint256 blocklistLength = blocklist.length;
         operators4Note.blocklistId++;
         uint256 currentId = operators4Note.blocklistId; // the current id of blocklists
         // grant blocklist roles
-        for (uint256 i = 0; i < blocklistLength; i++) {
+        for (uint256 i = 0; i < blocklist.length; i++) {
             operators4Note.blocklists[currentId].add(blocklist[i]);
         }
 
-        uint256 allowlistLength = allowlist.length;
         operators4Note.allowlistId++;
         currentId = operators4Note.allowlistId; // the current id of allowlists
-        // grant blocklist roles
-        for (uint256 i = 0; i < allowlistLength; i++) {
+        // grant allowlist roles
+        for (uint256 i = 0; i < allowlist.length; i++) {
             operators4Note.allowlists[currentId].add(allowlist[i]);
         }
         emit Events.GrantOperators4Note(characterId, noteId, blocklist, allowlist);
     }
 
     /**
- * @dev _bitmapFilter unsets bits of non-existent permission IDs to zero. These unset permission IDs are
-     meaningless now, but they are reserved for future use, so it's best to leave them blank and avoid messing
-      up with future methods.
+     * @dev _bitmapFilter unsets bits of non-existent permission IDs to zero.
+     * These unset permission IDs are meaningless now, but they are reserved for future use,
+     * so it's best to leave them blank and avoid messing up with future methods.
      */
     function _bitmapFilter(uint256 bitmap) internal pure returns (uint256) {
         return bitmap & OP.ALLOWED_PERMISSION_BITMAP_MASK;

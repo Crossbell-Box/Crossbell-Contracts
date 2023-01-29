@@ -17,7 +17,7 @@ function grantOperators4Note(uint256 characterId, uint256 noteId, address[] bloc
 Set blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.
      @dev The blocklistId and allowlistId increase by 1 everytime this function is called.
      @param characterId The character Id of the note owner.
-     @param  noteId The note Id to grant.
+     @param noteId The note Id to grant.
      @param blocklist The addresses list of blocked operators.
      @param allowlist The addresses list of allowed operators.
 
@@ -27,7 +27,7 @@ Set blocklist and allowlist for a specific note. Blocklist and allowlist are ove
 function _bitmapFilter(uint256 bitmap) internal pure returns (uint256)
 ```
 
-__bitmapFilter unsets bits of non-existent permission IDs to zero. These unset permission IDs are
-     meaningless now, but they are reserved for future use, so it's best to leave them blank and avoid messing
-      up with future methods._
+__bitmapFilter unsets bits of non-existent permission IDs to zero.
+These unset permission IDs are meaningless now, but they are reserved for future use,
+so it's best to leave them blank and avoid messing up with future methods._
 

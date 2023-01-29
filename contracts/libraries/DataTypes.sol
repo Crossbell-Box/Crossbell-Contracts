@@ -224,9 +224,9 @@ library DataTypes {
      @dev The blocklistId and allowlistSetId increase by 1 every time `grantOperators4Note` is called.
      * This is a safer way to overwrite addressSets,
      * if you want to learn more about the details check this issue: https://github.com/OpenZeppelin/openzeppelin-contracts/issues/3256.
-     @param blocklistId The current index of blocklistSet.
+     @param blocklistId The current id of blocklistSet.
      @param blocklists The list of blocklist addresses.
-     @param allowlistId The current index of allowlistSet.
+     @param allowlistId The current id of allowlistSet.
      @param allowlists The list of allowlist addresses.
      */
     struct Operators4Note {

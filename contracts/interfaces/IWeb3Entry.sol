@@ -10,15 +10,16 @@ interface IWeb3Entry {
         string calldata _symbol,
         address _linklistContract,
         address _mintNFTImpl,
-        address _periphery,
-        address resolver
+        address _periphery
     ) external;
 
     ////////////////////////////////////////////////////////
-    ///     EXTERNAL VIEW FUNCTIONS
+    ///     EXTERNAL  FUNCTIONS
     ////////////////////////////////////////////////////////
 
-    function createCharacter(DataTypes.CreateCharacterData calldata vars) external;
+    function createCharacter(DataTypes.CreateCharacterData calldata vars)
+        external
+        returns (uint256);
 
     function setHandle(uint256 characterId, string calldata newHandle) external;
 

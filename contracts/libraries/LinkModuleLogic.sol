@@ -18,8 +18,6 @@ library LinkModuleLogic {
         bytes calldata linkModuleInitData,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external {
-        require(!_noteByIdByCharacter[characterId][noteId].locked, "NoteLocked");
-
         if (linkModule != address(0)) {
             _noteByIdByCharacter[characterId][noteId].linkModule = linkModule;
 
@@ -45,8 +43,6 @@ library LinkModuleLogic {
         bytes calldata linkModuleInitData,
         mapping(address => address) storage _linkModules4Address
     ) external {
-        require(msg.sender == account, "NotAddressOwner");
-
         if (linkModule != address(0)) {
             _linkModules4Address[account] = linkModule;
             bytes memory linkModuleReturnData = ILinkModule4Address(linkModule)
@@ -68,8 +64,6 @@ library LinkModuleLogic {
         bytes calldata mintModuleInitData,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external {
-        require(!_noteByIdByCharacter[characterId][noteId].locked, "NoteLocked");
-
         if (mintModule != address(0)) {
             _noteByIdByCharacter[characterId][noteId].mintModule = mintModule;
 

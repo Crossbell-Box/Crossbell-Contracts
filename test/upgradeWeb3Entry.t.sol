@@ -5,7 +5,6 @@ import "forge-std/Test.sol";
 // import "forge-std/console2.sol";
 import "../contracts/Linklist.sol";
 import "../contracts/MintNFT.sol";
-import "../contracts/Resolver.sol";
 import "../contracts/Web3Entry.sol";
 import "../contracts/Web3EntryBase.sol";
 import "../contracts/libraries/DataTypes.sol";
@@ -32,7 +31,6 @@ contract UpgradeWeb3Entry is Test, Utils {
     address public linkList = address(0x111);
     address public periphery = address(0x222);
     address public mintNFT = address(0x333);
-    address public resolver = address(0x444);
 
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -49,8 +47,7 @@ contract UpgradeWeb3Entry is Test, Utils {
             Const.WEB3_ENTRY_NFT_SYMBOL,
             linkList,
             mintNFT,
-            periphery,
-            resolver
+            periphery
         );
     }
 
@@ -140,7 +137,6 @@ contract UpgradeWeb3Entry is Test, Utils {
         );
 
         bytes32 bytes32Periphery = bytes32((uint256(uint160(periphery))));
-        bytes32 bytes32Resolver = bytes32((uint256(uint160(resolver))));
         bytes32 bytes32bob = bytes32((uint256(uint160(bob))));
         bytes32 bytes32carol = bytes32((uint256(uint160(carol))));
 
@@ -151,7 +147,6 @@ contract UpgradeWeb3Entry is Test, Utils {
             prevSlotArr[i] = value;
         }
         assertEq(prevSlotArr[21], bytes32Periphery);
-        assertEq(prevSlotArr[23], bytes32Resolver);
 
         // upgrade to new web3Entry
         vm.startPrank(admin);

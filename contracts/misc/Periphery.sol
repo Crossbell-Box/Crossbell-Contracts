@@ -5,6 +5,7 @@ pragma solidity 0.8.10;
 import "../interfaces/IWeb3Entry.sol";
 import "../interfaces/ILinklist.sol";
 import "../libraries/DataTypes.sol";
+import "../libraries/Error.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
@@ -147,7 +148,7 @@ contract Periphery is Initializable {
     }
 
     function linkCharactersInBatch(DataTypes.linkCharactersInBatchData calldata vars) external {
-        require(vars.toCharacterIds.length == vars.data.length, "ArrayLengthMismatch");
+        if (vars.toCharacterIds.length != vars.data.length) revert ErrArrayLengthMismatch();
 
         for (uint256 i = 0; i < vars.toCharacterIds.length; i++) {
             IWeb3Entry(web3Entry).linkCharacter(

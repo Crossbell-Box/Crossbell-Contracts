@@ -24,7 +24,7 @@ contract NoteTest is Test, SetUp, Utils {
 
     function testPostNoteFail() public {
         //  bob should fail to post note at a character owned by alice
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
     }
@@ -98,7 +98,7 @@ contract NoteTest is Test, SetUp, Utils {
 
     function testUpdateNoteFail() public {
         // NotEnoughPermission
-        vm.expectRevert(abi.encodePacked("NotEnoughPermissionForThisNote"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
         vm.prank(bob);
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
@@ -108,7 +108,7 @@ contract NoteTest is Test, SetUp, Utils {
 
         vm.startPrank(alice);
         // NoteNotExists
-        vm.expectRevert(abi.encodePacked("NoteNotExists"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
@@ -118,7 +118,7 @@ contract NoteTest is Test, SetUp, Utils {
         // NoteLocked
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
-        vm.expectRevert(abi.encodePacked("NoteLocked"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNoteLocked.selector));
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
@@ -128,7 +128,7 @@ contract NoteTest is Test, SetUp, Utils {
         // NoteIsDeleted
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID);
-        vm.expectRevert(abi.encodePacked("NoteIsDeleted"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNoteIsDeleted.selector));
         web3Entry.setNoteUri(
             Const.FIRST_CHARACTER_ID,
             Const.SECOND_NOTE_ID,
@@ -165,20 +165,20 @@ contract NoteTest is Test, SetUp, Utils {
     }
 
     function testLockNoteFail() public {
-        // NotEnoughPermission
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        // case 1: NotEnoughPermission
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 
         vm.startPrank(alice);
-        // NoteNotExists
-        vm.expectRevert(abi.encodePacked("NoteNotExists"));
+        // case 2: NoteNotExists
+        vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
         web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 
-        // NoteIsDeleted
+        // case 3: NoteIsDeleted
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
-        vm.expectRevert(abi.encodePacked("NoteIsDeleted"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNoteIsDeleted.selector));
         web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 
         vm.stopPrank();
@@ -237,22 +237,22 @@ contract NoteTest is Test, SetUp, Utils {
     }
 
     function testDeleteNoteFail() public {
-        // NotEnoughPermission
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        // case 1: NotEnoughPermission
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 
+        // case 2: NoteNotExists
+        vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
+        vm.prank(alice);
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+
         vm.startPrank(alice);
-        // NoteNotExists
-        vm.expectRevert(abi.encodePacked("NoteNotExists"));
-        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
-
-        // NoteIsDeleted
-        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
-        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
-        vm.expectRevert(abi.encodePacked("NoteIsDeleted"));
-        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
-
+        uint256 noteId = web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, noteId);
+        // case 3: NoteIsDeleted
+        vm.expectRevert(abi.encodeWithSelector(ErrNoteIsDeleted.selector));
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, noteId);
         vm.stopPrank();
     }
 
@@ -282,7 +282,7 @@ contract NoteTest is Test, SetUp, Utils {
     }
 
     function testPostNote4CharacterFail() public {
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.postNote4Character(
             makePostNoteData(Const.FIRST_CHARACTER_ID),
@@ -317,7 +317,7 @@ contract NoteTest is Test, SetUp, Utils {
     function testPostNote4AddressFail() public {
         address toAddress = address(0x123456789);
 
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.postNote4Address(makePostNoteData(Const.FIRST_CHARACTER_ID), toAddress);
     }
@@ -358,7 +358,7 @@ contract NoteTest is Test, SetUp, Utils {
     }
 
     function testPostNote4LinklistFail() public {
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.postNote4Linklist(
             makePostNoteData(Const.FIRST_CHARACTER_ID),
@@ -396,7 +396,7 @@ contract NoteTest is Test, SetUp, Utils {
     }
 
     function testPostNote4NoteFail() public {
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.postNote4Note(
             makePostNoteData(Const.FIRST_CHARACTER_ID),
@@ -433,7 +433,7 @@ contract NoteTest is Test, SetUp, Utils {
 
     function testPostNote4ERC721Fail() public {
         // NotEnoughPermission
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.postNote4ERC721(
             makePostNoteData(Const.FIRST_CHARACTER_ID),
@@ -474,7 +474,7 @@ contract NoteTest is Test, SetUp, Utils {
     }
 
     function testPostNote4AnyUriFail() public {
-        vm.expectRevert(abi.encodePacked("NotEnoughPermission"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.postNote4AnyUri(makePostNoteData(Const.FIRST_CHARACTER_ID), "ipfs://anyURI");
     }
@@ -507,18 +507,18 @@ contract NoteTest is Test, SetUp, Utils {
     }
 
     function testMintNoteFail() public {
-        vm.expectRevert(abi.encodePacked("NoteNotExists"));
+        vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
         vm.prank(bob);
         web3Entry.mintNote(
             DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
         );
 
-        // mint a deleted note
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
         vm.stopPrank();
-        vm.expectRevert(abi.encodePacked("NoteIsDeleted"));
+        // mint a deleted note
+        vm.expectRevert(abi.encodeWithSelector(ErrNoteIsDeleted.selector));
         vm.prank(bob);
         web3Entry.mintNote(
             DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))

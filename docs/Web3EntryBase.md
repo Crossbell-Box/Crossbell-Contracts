@@ -11,7 +11,7 @@ uint256 REVISION
 ### initialize
 
 ```solidity
-function initialize(string _name, string _symbol, address _linklistContract, address _mintNFTImpl, address _periphery, address _resolver) external
+function initialize(string _name, string _symbol, address _linklistContract, address _mintNFTImpl, address _periphery) external
 ```
 
 ### grantOperatorPermissions
@@ -29,7 +29,7 @@ function grantOperators4Note(uint256 characterId, uint256 noteId, address[] bloc
 ### createCharacter
 
 ```solidity
-function createCharacter(struct DataTypes.CreateCharacterData vars) external
+function createCharacter(struct DataTypes.CreateCharacterData vars) external returns (uint256)
 ```
 
 This method creates a character with the given parameters to the given address.
@@ -43,7 +43,7 @@ This method creates a character with the given parameters to the given address.
 ### _createCharacter
 
 ```solidity
-function _createCharacter(struct DataTypes.CreateCharacterData vars) internal
+function _createCharacter(struct DataTypes.CreateCharacterData vars) internal returns (uint256 characterId)
 ```
 
 ### setHandle
@@ -428,6 +428,12 @@ function _validateERC721Exists(address tokenAddress, uint256 tokenId) internal v
 
 ```solidity
 function _validateNoteExists(uint256 characterId, uint256 noteId) internal view
+```
+
+### _validateNoteNotLocked
+
+```solidity
+function _validateNoteNotLocked(uint256 characterId, uint256 noteId) internal view
 ```
 
 ### getRevision

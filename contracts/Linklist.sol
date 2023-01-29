@@ -8,10 +8,11 @@ import "./base/NFTBase.sol";
 import "./libraries/Events.sol";
 import "./libraries/DataTypes.sol";
 import "./libraries/Constants.sol";
+import "./libraries/Error.sol";
 import "./storage/LinklistStorage.sol";
+import "./storage/LinklistExtendStorage.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import "./storage/LinklistExtendStorage.sol";
 
 contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, LinklistExtendStorage {
     using EnumerableSet for EnumerableSet.UintSet;
@@ -37,7 +38,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         uint256 tokenId
     ) external {
         _validateCallerIsWeb3Entry();
-        require(_linklistOwners[tokenId] == 0, "Linklist: Token already exists");
+        if (_linklistOwners[tokenId] != 0) revert ErrTokenIdAlreadyExists();
 
         linkTypes[tokenId] = linkType;
 
@@ -45,6 +46,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         _linklistOwners[tokenId] = characterId;
         _linklistBalances[characterId] += 1;
         _tokenCount += 1;
+
         emit Transfer(address(0), characterId, tokenId);
 
         // emit erc721 transfer event
@@ -74,7 +76,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     function ownerOf(uint256 tokenId) public view override returns (address) {
         uint256 characterId = characterOwnerOf(tokenId);
         address owner = IERC721Enumerable(Web3Entry).ownerOf(characterId);
-        require(owner != address(0), "Linklist: owner query for nonexistent character");
         return owner;
     }
 
@@ -84,13 +85,10 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
      */
     function characterOwnerOf(uint256 tokenId) public view returns (uint256) {
         uint256 characterId = _linklistOwners[tokenId];
-        require(characterId != 0, "Linklist: owner query for nonexistent token");
-
         return characterId;
     }
 
     function setUri(uint256 tokenId, string memory _uri) external {
-        require(_linklistOwners[tokenId] != 0, "Linklist: setUri for nonexistent token");
         _validateCallerIsWeb3EntryOrOwner(tokenId);
 
         _uris[tokenId] = _uri;
@@ -119,8 +117,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
 
     function getOwnerCharacterId(uint256 tokenId) external view returns (uint256) {
         uint256 characterId = _linklistOwners[tokenId];
-        require(characterId != 0, "Linklist: owner query for nonexistent token");
-
         return characterId;
     }
 
@@ -430,19 +426,15 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     }
 
     function _getTokenUri(uint256 tokenId) internal view returns (string memory) {
-        require(_exists(tokenId), "Linklist: URI query for nonexistent token");
-
         return _uris[tokenId];
     }
 
     function _validateCallerIsWeb3Entry() internal view {
-        require(msg.sender == Web3Entry, "Linklist: NotWeb3Entry");
+        if (msg.sender != Web3Entry) revert ErrCallerNotWeb3Entry();
     }
 
     function _validateCallerIsWeb3EntryOrOwner(uint256 tokenId) internal view {
-        require(
-            msg.sender == Web3Entry || msg.sender == ownerOf(tokenId),
-            "Linklist: NotWeb3EntryOrNotOwner"
-        );
+        if (msg.sender != Web3Entry && msg.sender != ownerOf(tokenId))
+            revert ErrCallerNotWeb3EntryOrNotOwner();
     }
 }
