@@ -23,10 +23,10 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
         uint256 characterId,
         uint256 noteId,
         address web3Entry,
-        string calldata name,
-        string calldata symbol
+        string calldata name_,
+        string calldata symbol_
     ) external override initializer {
-        super._initialize(name, symbol);
+        super._initialize(name_, symbol_);
         _characterId = characterId;
         _noteId = noteId;
         Web3Entry = web3Entry;
