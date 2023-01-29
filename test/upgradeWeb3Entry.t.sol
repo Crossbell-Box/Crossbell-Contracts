@@ -15,30 +15,24 @@ import "./helpers/SetUp.sol";
 import "./helpers/utils.sol";
 
 contract UpgradeWeb3Entry is Test, Utils {
-    Web3EntryBase web3EntryBaseImpl;
-    Web3EntryBase web3EntryBase;
-    Web3Entry web3EntryImpl;
-    Web3Entry web3Entry;
-    TransparentUpgradeableProxy proxyWeb3Entry;
+    using EnumerableSet for EnumerableSet.AddressSet;
+
+    Web3EntryBase public web3EntryBaseImpl;
+    Web3EntryBase public web3EntryBase;
+    Web3Entry public web3EntryImpl;
+    Web3Entry public web3Entry;
+    TransparentUpgradeableProxy public proxyWeb3Entry;
+
     address public admin = address(0x999999999999999999999999999999);
     address public alice = address(0x1111);
     address public bob = address(0x2222);
     address public carol = address(0x3333);
 
-    address[] public blocklist = [bob, admin];
-    address[] public allowlist = [carol, bob, alice];
-
     address public linkList = address(0x111);
     address public periphery = address(0x222);
     address public mintNFT = address(0x333);
 
-    using EnumerableSet for EnumerableSet.AddressSet;
-
-    struct Operators4Note {
-        EnumerableSet.AddressSet blocklist;
-        EnumerableSet.AddressSet allowlist;
-    }
-
+    /* solhint-disable comprehensive-interface */
     function setUp() public {
         web3EntryBaseImpl = new Web3EntryBase();
         proxyWeb3Entry = new TransparentUpgradeableProxy(address(web3EntryBaseImpl), admin, "");
@@ -64,6 +58,7 @@ contract UpgradeWeb3Entry is Test, Utils {
         vm.stopPrank();
     }
 
+    // solhint-disable-next-line function-max-lines
     function testCheckStorage() public {
         // use web3entryBase to generate some data
         Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
@@ -108,6 +103,9 @@ contract UpgradeWeb3Entry is Test, Utils {
             OP.POST_NOTE_PERMISSION_BITMAP
         );
 
+        address[] memory blocklist = array(bob, admin);
+        address[] memory allowlist = array(carol, bob, alice);
+
         // grant NOTE_SET_NOTE_URI permission to bob
         Web3Entry(address(proxyWeb3Entry)).grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
@@ -116,20 +114,17 @@ contract UpgradeWeb3Entry is Test, Utils {
             allowlist
         );
 
-        address[] memory _blocklist;
-        address[] memory _allowlist;
+        (address[] memory blocklist_, address[] memory allowlist_) = Web3Entry(
+            address(proxyWeb3Entry)
+        ).getOperators4Note(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
 
-        (_blocklist, _allowlist) = Web3Entry(address(proxyWeb3Entry)).getOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID
-        );
-
-        assertEq(_blocklist, blocklist);
-        assertEq(_allowlist, allowlist);
+        assertEq(blocklist_, blocklist);
+        assertEq(allowlist_, allowlist);
 
         vm.stopPrank();
     }
 
+    // solhint-disable-next-line function-max-lines
     function testSlot() public {
         // create character
         Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
@@ -181,8 +176,8 @@ contract UpgradeWeb3Entry is Test, Utils {
         Web3Entry(address(proxyWeb3Entry)).grantOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            blocklist,
-            allowlist
+            array(bob, admin),
+            array(carol, bob, alice)
         );
         vm.stopPrank();
 

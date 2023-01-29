@@ -14,8 +14,9 @@ contract ResolverTest is Test, SetUp, Utils {
     address public bob = address(0x2222);
     address public carol = address(0x3333);
 
-    Resolver internal resolver;
+    Resolver public resolver;
 
+    /* solhint-disable comprehensive-interface */
     function setUp() public {
         resolver = new Resolver();
     }

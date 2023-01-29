@@ -15,6 +15,7 @@ contract LinkModuleTest is Test, SetUp, Utils {
     address public carol = address(0x3333);
     address public dick = address(0x4444);
 
+    /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
     }

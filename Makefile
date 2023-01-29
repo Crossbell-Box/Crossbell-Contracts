@@ -27,7 +27,7 @@ scripts :; chmod +x ./scripts/*
 foundry-test :; forge clean && forge test --optimize --optimizer-runs 200 -v
 
 # Run solhint
-check :; solhint "{contracts,test,scripts}/**/*.sol"
+solhint :; solhint -f table "{contracts,test,scripts}/**/*.sol"
 
 # slither
 slither :; slither .

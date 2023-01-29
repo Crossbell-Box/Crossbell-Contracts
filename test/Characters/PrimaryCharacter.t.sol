@@ -14,6 +14,7 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
     address public bob = address(0x2222);
     address public carol = address(0x3333);
 
+    /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
     }

@@ -31,6 +31,7 @@ contract OperatorTest is Test, SetUp, Utils {
     NewbieVilla public newbieVilla;
     address public migrateOwner = 0xda2423ceA4f1047556e7a142F81a7ED50e93e160;
 
+    /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
 
@@ -116,16 +117,13 @@ contract OperatorTest is Test, SetUp, Utils {
             allowlist
         );
 
-        address[] memory _blocklist;
-        address[] memory _allowlist;
-
-        (_blocklist, _allowlist) = web3Entry.getOperators4Note(
+        (address[] memory blocklist_, address[] memory allowlist_) = web3Entry.getOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
 
-        assertEq(_blocklist, blocklist);
-        assertEq(_allowlist, allowlist);
+        assertEq(blocklist_, blocklist);
+        assertEq(allowlist_, allowlist);
 
         // blocklist and allowlist are overwritten correctly
         // i swap blocklist and allowlist here for convenience.
@@ -135,13 +133,13 @@ contract OperatorTest is Test, SetUp, Utils {
             allowlist,
             blocklist
         );
-        (_blocklist, _allowlist) = web3Entry.getOperators4Note(
+        (blocklist_, allowlist_) = web3Entry.getOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
 
-        assertEq(_blocklist, allowlist);
-        assertEq(_allowlist, blocklist);
+        assertEq(blocklist_, allowlist);
+        assertEq(allowlist_, blocklist);
     }
 
     function testGrantOperators4NoteFail() public {
@@ -192,6 +190,7 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
+    // solhint-disable-next-line function-max-lines
     function testEdgeCases() public {
         // make sure that note permissions always go before operator permissions
         // case 1. grant operator permissions first, then grant note permissions
@@ -275,6 +274,7 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
+    // solhint-disable-next-line function-max-lines
     function testOperatorCan() public {
         // alice grant bob as OP.POST_NOTE_PERMISSION_BITMAP permission
         vm.prank(alice);
@@ -483,6 +483,7 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.stopPrank();
     }
 
+    // solhint-disable-next-line function-max-lines
     function testOperatorFail() public {
         // alice set bob as her operator with OP.DEFAULT_PERMISSION_BITMAP (access to all notes
         vm.startPrank(alice);
@@ -677,33 +678,14 @@ contract OperatorTest is Test, SetUp, Utils {
             blocklist,
             allowlist
         );
-
-        address[] memory _blocklist;
-        address[] memory _allowlist;
-
-        (_blocklist, _allowlist) = web3Entry.getOperators4Note(
+        address[] memory blocklist_;
+        address[] memory allowlist_;
+        (blocklist_, allowlist_) = web3Entry.getOperators4Note(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
-
-        assertEq(_blocklist, blocklist);
-        assertEq(_allowlist, allowlist);
-    }
-
-    function _checkOperators(
-        uint256 characterId,
-        address[4] memory expectedOperators,
-        uint256 expectedPermission
-    ) internal {
-        address[] memory operators = web3Entry.getOperators(characterId);
-        for (uint256 i = 0; i < operators.length; i++) {
-            assertEq(operators[i], expectedOperators[i]);
-            // check Operator permission
-            assertEq(
-                web3Entry.getOperatorPermissions(characterId, expectedOperators[i]),
-                expectedPermission
-            );
-        }
+        assertEq(blocklist_, blocklist);
+        assertEq(allowlist_, allowlist);
     }
 
     function testValidateCallerPermission() public {
@@ -748,5 +730,21 @@ contract OperatorTest is Test, SetUp, Utils {
             Const.FIRST_NOTE_ID,
             Const.MOCK_NEW_NOTE_URI
         );
+    }
+
+    function _checkOperators(
+        uint256 characterId,
+        address[4] memory expectedOperators,
+        uint256 expectedPermission
+    ) internal {
+        address[] memory operators = web3Entry.getOperators(characterId);
+        for (uint256 i = 0; i < operators.length; i++) {
+            assertEq(operators[i], expectedOperators[i]);
+            // check Operator permission
+            assertEq(
+                web3Entry.getOperatorPermissions(characterId, expectedOperators[i]),
+                expectedPermission
+            );
+        }
     }
 }
