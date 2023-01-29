@@ -415,9 +415,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         view
         override
         returns (uint256 characterId)
-    {
-        characterId = _currentTakeOver[tokenId];
-    }
+    {} // solhint-disable-line no-empty-blocks
 
     function getLinkType(uint256 tokenId) external view override returns (bytes32) {
         return _linkTypes[tokenId];

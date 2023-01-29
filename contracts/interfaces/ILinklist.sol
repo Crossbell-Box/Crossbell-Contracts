@@ -145,6 +145,7 @@ interface ILinklist {
 
     function getLinkingLinklistLength(uint256 tokenId) external view returns (uint256);
 
+    // NOTE: This function is deprecated.
     function getCurrentTakeOver(uint256 tokenId) external view returns (uint256);
 
     function getLinkType(uint256 tokenId) external view returns (bytes32);
