@@ -13,6 +13,9 @@ contract Thanks is Initializable {
 
     address internal _web3Entry;
 
+    // custom errors
+    error ErrCallerNotCharacterOwner();
+
     // events
     event ThankCharacter(
         uint256 indexed fromCharacterId,
@@ -42,9 +45,11 @@ contract Thanks is Initializable {
         address token,
         uint256 amount
     ) external {
-        // check
         address from = IERC721(_web3Entry).ownerOf(fromCharacterId);
         address to = IERC721(_web3Entry).ownerOf(toCharacterId);
+
+        // check
+        if (msg.sender != from) revert ErrCallerNotCharacterOwner();
 
         // transfer token
         IERC20(token).safeTransferFrom(from, to, amount);
@@ -60,9 +65,11 @@ contract Thanks is Initializable {
         address token,
         uint256 amount
     ) external {
-        // check
         address from = IERC721(_web3Entry).ownerOf(fromCharacterId);
         address to = IERC721(_web3Entry).ownerOf(toCharacterId);
+
+        // check
+        if (msg.sender != from) revert ErrCallerNotCharacterOwner();
 
         // transfer token
         IERC20(token).safeTransferFrom(from, to, amount);
