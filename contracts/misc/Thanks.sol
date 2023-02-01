@@ -14,13 +14,13 @@ contract Thanks is Initializable {
     address internal _web3Entry;
 
     // events
-    event ThanksToCharacter(
+    event ThankCharacter(
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,
         address token,
         uint256 amount
     );
-    event ThanksToNote(
+    event ThankNote(
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,
         uint256 indexed toNoteId,
@@ -36,7 +36,7 @@ contract Thanks is Initializable {
         _web3Entry = web3Entry;
     }
 
-    function thanksToCharacter(
+    function thankCharacter(
         uint256 fromCharacterId,
         uint256 toCharacterId,
         address token,
@@ -50,10 +50,10 @@ contract Thanks is Initializable {
         IERC20(token).safeTransferFrom(from, to, amount);
 
         // emit event
-        emit ThanksToCharacter(fromCharacterId, toCharacterId, token, amount);
+        emit ThankCharacter(fromCharacterId, toCharacterId, token, amount);
     }
 
-    function thanksToNote(
+    function thankNote(
         uint256 fromCharacterId,
         uint256 toCharacterId,
         uint256 toNoteId,
@@ -68,6 +68,6 @@ contract Thanks is Initializable {
         IERC20(token).safeTransferFrom(from, to, amount);
 
         // emit event
-        emit ThanksToNote(fromCharacterId, toCharacterId, toNoteId, token, amount);
+        emit ThankNote(fromCharacterId, toCharacterId, toNoteId, token, amount);
     }
 }
