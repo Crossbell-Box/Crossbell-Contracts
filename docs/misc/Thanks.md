@@ -75,7 +75,7 @@ Thanks a character by transferring `amount` tokens from the `fromCharacterId` ac
 Emits the `ThankCharacter` event.
 
 Requirements:
-- The caller must be the owner of `fromCharacterId.
+- The caller must be the character owner of `fromCharacterId.
 
 #### Parameters
 
@@ -96,7 +96,7 @@ Thanks a note by transferring `amount` tokens from the `fromCharacterId` account
 Emits the `ThankNote` event.
 
 Requirements:
-- The caller must be the owner of `fromCharacterId.
+- The caller must be the character owner of `fromCharacterId.
 
 #### Parameters
 

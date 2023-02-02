@@ -64,7 +64,7 @@ contract Thanks is Initializable {
      * Emits the `ThankCharacter` event.
      *
      * Requirements:
-     * - The caller must be the owner of `fromCharacterId.
+     * - The caller must be the character owner of `fromCharacterId.
      * @param fromCharacterId The token ID of character that calls this contract.
      * @param toCharacterId The token ID of character that will receive the token.
      * @param token Address of token.
@@ -93,7 +93,7 @@ contract Thanks is Initializable {
      * Emits the `ThankNote` event.
      *
      * Requirements:
-     * - The caller must be the owner of `fromCharacterId.
+     * - The caller must be the character owner of `fromCharacterId.
      * @param fromCharacterId The token ID of character that calls this contract.
      * @param toCharacterId The token ID of character that will receive the token.
      * @param toNoteId The note ID.
