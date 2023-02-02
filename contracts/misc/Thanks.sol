@@ -76,13 +76,13 @@ contract Thanks is Initializable {
         address token,
         uint256 amount
     ) external {
-        address from = IERC721(web3Entry).ownerOf(fromCharacterId);
-        address to = IERC721(web3Entry).ownerOf(toCharacterId);
         // check
-        if (msg.sender != from) revert ErrCallerNotCharacterOwner();
+        address characterOwner = IERC721(web3Entry).ownerOf(fromCharacterId);
+        if (msg.sender != characterOwner) revert ErrCallerNotCharacterOwner();
 
         // transfer token
-        IERC20(token).safeTransferFrom(from, to, amount);
+        address to = IERC721(web3Entry).ownerOf(toCharacterId);
+        IERC20(token).safeTransferFrom(msg.sender, to, amount);
 
         // emit event
         emit ThankCharacter(fromCharacterId, toCharacterId, token, amount);
@@ -107,13 +107,13 @@ contract Thanks is Initializable {
         address token,
         uint256 amount
     ) external {
-        address from = IERC721(web3Entry).ownerOf(fromCharacterId);
-        address to = IERC721(web3Entry).ownerOf(toCharacterId);
         // check
-        if (msg.sender != from) revert ErrCallerNotCharacterOwner();
+        address characterOwner = IERC721(web3Entry).ownerOf(fromCharacterId);
+        if (msg.sender != characterOwner) revert ErrCallerNotCharacterOwner();
 
         // transfer token
-        IERC20(token).safeTransferFrom(from, to, amount);
+        address to = IERC721(web3Entry).ownerOf(toCharacterId);
+        IERC20(token).safeTransferFrom(msg.sender, to, amount);
 
         // emit event
         emit ThankNote(fromCharacterId, toCharacterId, toNoteId, token, amount);
