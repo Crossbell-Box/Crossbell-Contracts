@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable comprehensive-interface
 pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
@@ -10,12 +11,12 @@ import "./helpers/utils.sol";
 import "./helpers/SetUp.sol";
 
 contract MintNFTTest is Test, Utils {
-    address internal alice = address(0x1111);
-    address internal bob = address(0x2222);
-    address internal carol = address(0x3333);
+    address public alice = address(0x1111);
+    address public bob = address(0x2222);
+    address public carol = address(0x3333);
 
-    MintNFT internal nft;
-    address internal web3Entry = address(1);
+    MintNFT public nft;
+    address public web3Entry = address(1);
 
     function setUp() public {
         nft = new MintNFT();

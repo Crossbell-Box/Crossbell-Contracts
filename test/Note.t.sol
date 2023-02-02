@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable comprehensive-interface
 pragma solidity 0.8.10;
 
 import "forge-std/Test.sol";
@@ -46,7 +47,7 @@ contract NoteTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
-        _matchNote(
+        matchNote(
             note,
             Const.bytes32Zero,
             Const.bytes32Zero,
@@ -83,7 +84,7 @@ contract NoteTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
-        _matchNote(
+        matchNote(
             note,
             Const.bytes32Zero,
             Const.bytes32Zero,
@@ -151,7 +152,7 @@ contract NoteTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
-        _matchNote(
+        matchNote(
             note,
             Const.bytes32Zero,
             Const.bytes32Zero,
@@ -198,7 +199,7 @@ contract NoteTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
-        _matchNote(
+        matchNote(
             note,
             Const.bytes32Zero,
             Const.bytes32Zero,
@@ -223,7 +224,7 @@ contract NoteTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
-        _matchNote(
+        matchNote(
             note,
             Const.bytes32Zero,
             Const.bytes32Zero,
@@ -268,7 +269,7 @@ contract NoteTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
-        _matchNote(
+        matchNote(
             note,
             Const.LinkItemTypeCharacter,
             bytes32(Const.SECOND_CHARACTER_ID),
@@ -301,7 +302,7 @@ contract NoteTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
-        _matchNote(
+        matchNote(
             note,
             Const.LinkItemTypeAddress,
             bytes32(uint256(uint160(toAddress))),
@@ -344,7 +345,7 @@ contract NoteTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
-        _matchNote(
+        matchNote(
             note,
             Const.LinkItemTypeLinklist,
             bytes32(Const.FIRST_LINKLIST_ID),
@@ -382,7 +383,7 @@ contract NoteTest is Test, SetUp, Utils {
             Const.FIRST_NOTE_ID
         );
         console.logBytes32(note.linkItemType);
-        _matchNote(
+        matchNote(
             note,
             Const.LinkItemTypeNote,
             keccak256(abi.encodePacked("Note", Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID)),
@@ -418,7 +419,7 @@ contract NoteTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
-        _matchNote(
+        matchNote(
             note,
             Const.LinkItemTypeERC721,
             keccak256(abi.encodePacked("ERC721", address(nft), uint256(1))),
@@ -460,7 +461,7 @@ contract NoteTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
-        _matchNote(
+        matchNote(
             note,
             Const.LinkItemTypeAnyUri,
             keccak256(abi.encodePacked("AnyUri", uri)),

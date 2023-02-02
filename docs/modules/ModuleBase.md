@@ -2,10 +2,10 @@
 
 ## ModuleBase
 
-### Web3Entry
+### web3Entry
 
 ```solidity
-address Web3Entry
+address web3Entry
 ```
 
 ### onlyWeb3Entry
@@ -17,6 +17,6 @@ modifier onlyWeb3Entry()
 ### constructor
 
 ```solidity
-constructor(address web3Entry) internal
+constructor(address web3Entry_) internal
 ```
 

@@ -11,7 +11,7 @@ uint256 REVISION
 ### initialize
 
 ```solidity
-function initialize(string _name, string _symbol, address _linklistContract, address _mintNFTImpl, address _periphery) external
+function initialize(string name_, string symbol_, address linklist_, address mintNFTImpl_, address periphery_) external
 ```
 
 ### grantOperatorPermissions
@@ -29,7 +29,7 @@ function grantOperators4Note(uint256 characterId, uint256 noteId, address[] bloc
 ### createCharacter
 
 ```solidity
-function createCharacter(struct DataTypes.CreateCharacterData vars) external returns (uint256)
+function createCharacter(struct DataTypes.CreateCharacterData vars) external returns (uint256 characterId)
 ```
 
 This method creates a character with the given parameters to the given address.
@@ -39,12 +39,6 @@ This method creates a character with the given parameters to the given address.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | vars | struct DataTypes.CreateCharacterData | The CreateCharacterData struct containing the following parameters:      * to: The address receiving the character.      * handle: The handle to set for the character.      * uri: The URI to set for the character metadata.      * linkModule: The link module to use, can be the zero address.      * linkModuleInitData: The link module initialization data, if any. |
-
-### _createCharacter
-
-```solidity
-function _createCharacter(struct DataTypes.CreateCharacterData vars) internal returns (uint256 characterId)
-```
 
 ### setHandle
 
@@ -92,12 +86,6 @@ function unlinkCharacter(struct DataTypes.unlinkCharacterData vars) external
 
 ```solidity
 function createThenLinkCharacter(struct DataTypes.createThenLinkCharacterData vars) external
-```
-
-### _createThenLinkCharacter
-
-```solidity
-function _createThenLinkCharacter(uint256 fromCharacterId, address to, bytes32 linkType, bytes data) internal
 ```
 
 ### linkNote
@@ -257,12 +245,6 @@ function postNote4ERC721(struct DataTypes.PostNoteData postNoteData, struct Data
 function postNote4AnyUri(struct DataTypes.PostNoteData postNoteData, string uri) external returns (uint256)
 ```
 
-### burn
-
-```solidity
-function burn(uint256 tokenId) public
-```
-
 ### getOperators
 
 ```solidity
@@ -364,12 +346,6 @@ function getLinkModule4Linklist(uint256 tokenId) external view returns (address)
 function getLinkModule4ERC721(address tokenAddress, uint256 tokenId) external view returns (address)
 ```
 
-### tokenURI
-
-```solidity
-function tokenURI(uint256 characterId) public view returns (string)
-```
-
 ### getLinklistUri
 
 ```solidity
@@ -392,6 +368,30 @@ function getLinklistType(uint256 linkListId) external view returns (bytes32)
 
 ```solidity
 function getLinklistContract() external view returns (address)
+```
+
+### getRevision
+
+```solidity
+function getRevision() external pure returns (uint256)
+```
+
+### burn
+
+```solidity
+function burn(uint256 tokenId) public virtual
+```
+
+### tokenURI
+
+```solidity
+function tokenURI(uint256 characterId) public view returns (string)
+```
+
+### _createThenLinkCharacter
+
+```solidity
+function _createThenLinkCharacter(uint256 fromCharacterId, address to, bytes32 linkType, bytes data) internal
 ```
 
 ### _validateCallerIsCharacterOwner
@@ -434,11 +434,5 @@ function _validateNoteExists(uint256 characterId, uint256 noteId) internal view
 
 ```solidity
 function _validateNoteNotLocked(uint256 characterId, uint256 noteId) internal view
-```
-
-### getRevision
-
-```solidity
-function getRevision() external pure returns (uint256)
 ```
 

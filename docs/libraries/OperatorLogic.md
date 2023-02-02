@@ -15,7 +15,7 @@ function grantOperators4Note(uint256 characterId, uint256 noteId, address[] bloc
 ```
 
 Set blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.
-     @dev The blocklistId and allowlistId increase by 1 everytime this function is called.
+     @dev The blocklistId and allowlistId increase by 1 every time this function is called.
      @param characterId The character Id of the note owner.
      @param noteId The note Id to grant.
      @param blocklist The addresses list of blocked operators.

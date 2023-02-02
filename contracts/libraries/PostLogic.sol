@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-
+// solhint-disable private-vars-leading-underscore
 pragma solidity 0.8.10;
 
 import "./DataTypes.sol";
@@ -114,14 +114,14 @@ library PostLogic {
 
         bytes4 firstBytes = bytes4(bytes(handle));
 
-        string memory NFTName = string(
+        string memory name = string(
             abi.encodePacked(handle, "-Note-", characterId.toString(), "-", noteId.toString())
         );
-        string memory NFTSymbol = string(
+        string memory symbol = string(
             abi.encodePacked(firstBytes, "-Note-", characterId.toString(), "-", noteId.toString())
         );
 
-        IMintNFT(mintNFT).initialize(characterId, noteId, address(this), NFTName, NFTSymbol);
+        IMintNFT(mintNFT).initialize(characterId, noteId, address(this), name, symbol);
         return mintNFT;
     }
 }

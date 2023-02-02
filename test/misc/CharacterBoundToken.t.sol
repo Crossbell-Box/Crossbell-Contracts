@@ -13,6 +13,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 contract CbtTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
+
     uint256 public amount = 1;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
@@ -22,6 +23,7 @@ contract CbtTest is Test, SetUp, Utils {
     event ApprovalForAll(address indexed account, address indexed operator, bool approved);
     event URI(string value, uint256 indexed id);
 
+    /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
 
@@ -299,9 +301,10 @@ contract CbtTest is Test, SetUp, Utils {
     }
 
     function testGetRoleMember() public {
-        // get role member
-        assertEq(cbt.getRoleMember(DEFAULT_ADMIN_ROLE, 0), address(this)); // owner(this contract) is granted in constructor
-        assertEq(cbt.getRoleMember(MINTER_ROLE, 0), address(this)); // owner is granted in constructor
+        // owner(this contract) is granted in constructor
+        assertEq(cbt.getRoleMember(DEFAULT_ADMIN_ROLE, 0), address(this));
+        // owner is granted in constructor
+        assertEq(cbt.getRoleMember(MINTER_ROLE, 0), address(this));
 
         // grant role
         cbt.grantRole(MINTER_ROLE, bob);
@@ -313,8 +316,10 @@ contract CbtTest is Test, SetUp, Utils {
     }
 
     function testGetRoleMemberCount() public {
-        assertEq(cbt.getRoleMemberCount(DEFAULT_ADMIN_ROLE), 1); // owner(this contract) is granted in constructor
-        assertEq(cbt.getRoleMemberCount(MINTER_ROLE), 1); // owner is granted in constructor
+        // owner(this contract) is granted in constructor
+        assertEq(cbt.getRoleMemberCount(DEFAULT_ADMIN_ROLE), 1);
+        // owner is granted in constructor
+        assertEq(cbt.getRoleMemberCount(MINTER_ROLE), 1);
 
         // grant role
         cbt.grantRole(MINTER_ROLE, alice);

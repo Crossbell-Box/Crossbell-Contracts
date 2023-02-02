@@ -1,6 +1,10 @@
 name: checks
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   lint:
@@ -11,21 +15,25 @@ jobs:
         with:
           node-version: 14
       - name: Install Dependencies
-        run: yarn
+        run: yarn install
       - name: Run lints
         run: yarn lint
 
   tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
       - name: Install Foundry
-        uses: onbjerg/foundry-toolchain@v1
+        uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
       - name: Install Dependencies
-        run: yarn
+        run: yarn install
       - name: Update Modules
         run: yarn sync
       - name: Run Tests
@@ -41,8 +49,23 @@ jobs:
           check_filenames: true
           skip: ./.git,./docs,package-lock.json,yarn.lock
 
+  solhint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: Install Dependencies
+        run: yarn install
+      - name: Run Check
+        run: yarn solhint
+
   slither:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -63,4 +86,3 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ steps.slither.outputs.sarif }}
-

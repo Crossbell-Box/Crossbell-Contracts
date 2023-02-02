@@ -107,6 +107,16 @@ Query if a operator has permission for a note.
 | ---- | ---- | ----------- |
 | [0] | bool | true if Operator has permission for a note, otherwise false. |
 
+### _beforeTokenTransfer
+
+```solidity
+function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual
+```
+
+_Operator lists will be reset to blank before the characters are transferred in order to grant the
+whole control power to receivers of character transfers.
+Permissions4Note is left unset, because permissions for notes are always stricter than default._
+
 ### _isOperatorAllowedForNote
 
 ```solidity
@@ -138,14 +148,4 @@ function _checkBit(uint256 x, uint256 i) internal pure returns (bool)
 ```
 
 __checkBit checks if the value of the i'th bit of x is 1_
-
-### _beforeTokenTransfer
-
-```solidity
-function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual
-```
-
-_Operator lists will be reset to blank before the characters are transferred in order to grant the
-whole control power to receivers of character transfers.
-Permissions4Note is left unset, because permissions for notes are always stricter than default._
 

@@ -11,13 +11,14 @@ import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
 
 contract LinklistTest is Test, SetUp, Utils {
-    address internal alice = address(0x1111);
-    address internal bob = address(0x2222);
-    address internal carol = address(0x3333);
+    address public alice = address(0x1111);
+    address public bob = address(0x2222);
+    address public carol = address(0x3333);
 
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
+    /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
 

@@ -22,13 +22,13 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
 
     function initialize(
-        string calldata _name,
-        string calldata _symbol,
-        address _web3Entry
-    ) external initializer {
-        Web3Entry = _web3Entry;
+        string calldata name_,
+        string calldata symbol_,
+        address web3Entry_
+    ) external override initializer {
+        Web3Entry = web3Entry_;
 
-        super._initialize(_name, _symbol);
+        super._initialize(name_, symbol_);
         emit Events.LinklistNFTInitialized(block.timestamp);
     }
 
@@ -36,11 +36,11 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         uint256 characterId,
         bytes32 linkType,
         uint256 tokenId
-    ) external {
+    ) external override {
         _validateCallerIsWeb3Entry();
         if (_linklistOwners[tokenId] != 0) revert ErrTokenIdAlreadyExists();
 
-        linkTypes[tokenId] = linkType;
+        _linkTypes[tokenId] = linkType;
 
         // mint tokenId to characterId
         _linklistOwners[tokenId] = characterId;
@@ -57,67 +57,22 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         );
     }
 
-    function totalSupply() public view override returns (uint256) {
-        return _tokenCount;
-    }
-
-    function balanceOf(address account) public view override returns (uint256 balance) {
-        uint256 characterCount = IERC721Enumerable(Web3Entry).balanceOf(account);
-        for (uint256 i = 0; i < characterCount; i++) {
-            uint256 characterId = IERC721Enumerable(Web3Entry).tokenOfOwnerByIndex(account, i);
-            balance += balanceOf(characterId);
-        }
-    }
-
-    function balanceOf(uint256 characterId) public view returns (uint256) {
-        return _linklistBalances[characterId];
-    }
-
-    function ownerOf(uint256 tokenId) public view override returns (address) {
-        uint256 characterId = characterOwnerOf(tokenId);
-        address owner = IERC721Enumerable(Web3Entry).ownerOf(characterId);
-        return owner;
-    }
-
-    /**
-     * @notice returns the characterId who owns the given tokenId.
-     * @param tokenId The token id of the linklist.
-     */
-    function characterOwnerOf(uint256 tokenId) public view returns (uint256) {
-        uint256 characterId = _linklistOwners[tokenId];
-        return characterId;
-    }
-
-    function setUri(uint256 tokenId, string memory _uri) external {
+    function setUri(uint256 tokenId, string memory newUri) external override {
         _validateCallerIsWeb3EntryOrOwner(tokenId);
-
-        _uris[tokenId] = _uri;
+        _uris[tokenId] = newUri;
     }
 
     /////////////////////////////////
     // linking Character
     /////////////////////////////////
-    function addLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external {
+    function addLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external override {
         _validateCallerIsWeb3Entry();
-        linkingCharacterList[tokenId].add(toCharacterId);
+        _linkingCharacters[tokenId].add(toCharacterId);
     }
 
-    function removeLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external {
+    function removeLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external override {
         _validateCallerIsWeb3Entry();
-        linkingCharacterList[tokenId].remove(toCharacterId);
-    }
-
-    function getLinkingCharacterIds(uint256 tokenId) external view returns (uint256[] memory) {
-        return linkingCharacterList[tokenId].values();
-    }
-
-    function getLinkingCharacterListLength(uint256 tokenId) external view returns (uint256) {
-        return linkingCharacterList[tokenId].length();
-    }
-
-    function getOwnerCharacterId(uint256 tokenId) external view returns (uint256) {
-        uint256 characterId = _linklistOwners[tokenId];
-        return characterId;
+        _linkingCharacters[tokenId].remove(toCharacterId);
     }
 
     /////////////////////////////////
@@ -127,17 +82,14 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         uint256 tokenId,
         uint256 toCharacterId,
         uint256 toNoteId
-    ) external returns (bytes32) {
+    ) external override returns (bytes32) {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("Note", toCharacterId, toNoteId));
         if (tokenId != 0) {
-            linkNoteKeys[tokenId].add(linkKey);
+            _linkNoteKeys[tokenId].add(linkKey);
         }
-        linkNoteList[linkKey] = DataTypes.NoteStruct({
-            characterId: toCharacterId,
-            noteId: toNoteId
-        });
+        _linkNotes[linkKey] = DataTypes.NoteStruct({characterId: toCharacterId, noteId: toNoteId});
 
         return linkKey;
     }
@@ -146,34 +98,14 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         uint256 tokenId,
         uint256 toCharacterId,
         uint256 toNoteId
-    ) external {
+    ) external override {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("Note", toCharacterId, toNoteId));
-        linkNoteKeys[tokenId].remove(linkKey);
+        _linkNoteKeys[tokenId].remove(linkKey);
 
         // do note delete
         // delete linkNoteList[linkKey];
-    }
-
-    function getLinkingNotes(uint256 tokenId)
-        external
-        view
-        returns (DataTypes.NoteStruct[] memory results)
-    {
-        bytes32[] memory linkKeys = linkNoteKeys[tokenId].values();
-        results = new DataTypes.NoteStruct[](linkKeys.length);
-        for (uint256 i = 0; i < linkKeys.length; i++) {
-            results[i] = linkNoteList[linkKeys[i]];
-        }
-    }
-
-    function getLinkingNote(bytes32 linkKey) external view returns (DataTypes.NoteStruct memory) {
-        return linkNoteList[linkKey];
-    }
-
-    function getLinkingNoteListLength(uint256 tokenId) external view returns (uint256) {
-        return linkNoteKeys[tokenId].length();
     }
 
     /////////////////////////////////
@@ -182,7 +114,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     function addLinkingCharacterLink(
         uint256 tokenId,
         DataTypes.CharacterLinkStruct calldata linkData
-    ) external {
+    ) external override {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(
@@ -194,15 +126,15 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
             )
         );
         if (tokenId != 0) {
-            linkingCharacterLinkKeys[tokenId].add(linkKey);
+            _linkingCharacterLinkKeys[tokenId].add(linkKey);
         }
-        linkingCharacterLinkList[linkKey] = linkData;
+        _linkingCharacterLinks[linkKey] = linkData;
     }
 
     function removeLinkingCharacterLink(
         uint256 tokenId,
         DataTypes.CharacterLinkStruct calldata linkData
-    ) external {
+    ) external override {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(
@@ -213,35 +145,10 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
                 linkData.linkType
             )
         );
-        linkingCharacterLinkKeys[tokenId].remove(linkKey);
+        _linkingCharacterLinkKeys[tokenId].remove(linkKey);
 
         // do note delete
         // delete linkingCharacterLinkList[linkKey];
-    }
-
-    function getLinkingCharacterLinks(uint256 tokenId)
-        external
-        view
-        returns (DataTypes.CharacterLinkStruct[] memory results)
-    {
-        bytes32[] memory linkKeys = linkingCharacterLinkKeys[tokenId].values();
-        results = new DataTypes.CharacterLinkStruct[](linkKeys.length);
-        for (uint256 i = 0; i < linkKeys.length; i++) {
-            bytes32 key = linkKeys[i];
-            results[i] = linkingCharacterLinkList[key];
-        }
-    }
-
-    function getLinkingCharacterLink(bytes32 linkKey)
-        external
-        view
-        returns (DataTypes.CharacterLinkStruct memory)
-    {
-        return linkingCharacterLinkList[linkKey];
-    }
-
-    function getLinkingCharacterLinkListLength(uint256 tokenId) external view returns (uint256) {
-        return linkingCharacterLinkKeys[tokenId].length();
     }
 
     /////////////////////////////////
@@ -251,14 +158,14 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         uint256 tokenId,
         address tokenAddress,
         uint256 erc721TokenId
-    ) external returns (bytes32) {
+    ) external override returns (bytes32) {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("ERC721", tokenAddress, erc721TokenId));
         if (tokenId != 0) {
-            linkingERC721Keys[tokenId].add(linkKey);
+            _linkingERC721Keys[tokenId].add(linkKey);
         }
-        linkingERC721List[linkKey] = DataTypes.ERC721Struct({
+        _linkingERC721s[linkKey] = DataTypes.ERC721Struct({
             tokenAddress: tokenAddress,
             erc721TokenId: erc721TokenId
         });
@@ -270,159 +177,284 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         uint256 tokenId,
         address tokenAddress,
         uint256 erc721TokenId
-    ) external {
+    ) external override {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("ERC721", tokenAddress, erc721TokenId));
-        linkingERC721Keys[tokenId].remove(linkKey);
+        _linkingERC721Keys[tokenId].remove(linkKey);
 
         // do not delete, maybe others link the same token
         // delete linkingERC721List[linkKey];
     }
 
+    /////////////////////////////////
+    // linking Address
+    /////////////////////////////////
+    function addLinkingAddress(uint256 tokenId, address ethAddress) external override {
+        _validateCallerIsWeb3Entry();
+        _linkingAddresses[tokenId].add(ethAddress);
+    }
+
+    function removeLinkingAddress(uint256 tokenId, address ethAddress) external override {
+        _validateCallerIsWeb3Entry();
+        _linkingAddresses[tokenId].remove(ethAddress);
+    }
+
+    /////////////////////////////////
+    // linking Any Uri
+    /////////////////////////////////
+    function addLinkingAnyUri(uint256 tokenId, string memory toUri)
+        external
+        override
+        returns (bytes32)
+    {
+        _validateCallerIsWeb3Entry();
+
+        bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", toUri));
+        if (tokenId != 0) {
+            _linkingAnyKeys[tokenId].add(linkKey);
+        }
+        _linkingAnys[linkKey] = toUri;
+        return linkKey;
+    }
+
+    function removeLinkingAnyUri(uint256 tokenId, string memory toUri) external override {
+        _validateCallerIsWeb3Entry();
+
+        bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", toUri));
+        _linkingAnyKeys[tokenId].remove(linkKey);
+
+        // do note delete
+        // delete linkingAnylist[linkKey];
+    }
+
+    /////////////////////////////////
+    // linking Linklist
+    /////////////////////////////////
+    function addLinkingLinklistId(uint256 tokenId, uint256 linklistId) external override {
+        _validateCallerIsWeb3Entry();
+        _linkingLinklists[tokenId].add(linklistId);
+    }
+
+    function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId) external override {
+        _validateCallerIsWeb3Entry();
+        _linkingLinklists[tokenId].remove(linklistId);
+    }
+
+    function getLinkingCharacterIds(uint256 tokenId)
+        external
+        view
+        override
+        returns (uint256[] memory)
+    {
+        return _linkingCharacters[tokenId].values();
+    }
+
+    function getLinkingCharacterListLength(uint256 tokenId)
+        external
+        view
+        override
+        returns (uint256)
+    {
+        return _linkingCharacters[tokenId].length();
+    }
+
+    function getOwnerCharacterId(uint256 tokenId) external view override returns (uint256) {
+        uint256 characterId = _linklistOwners[tokenId];
+        return characterId;
+    }
+
+    function getLinkingNotes(uint256 tokenId)
+        external
+        view
+        override
+        returns (DataTypes.NoteStruct[] memory results)
+    {
+        bytes32[] memory linkKeys = _linkNoteKeys[tokenId].values();
+        results = new DataTypes.NoteStruct[](linkKeys.length);
+        for (uint256 i = 0; i < linkKeys.length; i++) {
+            bytes32 key = linkKeys[i];
+            results[i] = _linkNotes[key];
+        }
+    }
+
+    function getLinkingNote(bytes32 linkKey)
+        external
+        view
+        override
+        returns (DataTypes.NoteStruct memory)
+    {
+        return _linkNotes[linkKey];
+    }
+
+    function getLinkingNoteListLength(uint256 tokenId) external view override returns (uint256) {
+        return _linkNoteKeys[tokenId].length();
+    }
+
+    function getLinkingCharacterLinks(uint256 tokenId)
+        external
+        view
+        override
+        returns (DataTypes.CharacterLinkStruct[] memory results)
+    {
+        bytes32[] memory linkKeys = _linkingCharacterLinkKeys[tokenId].values();
+        results = new DataTypes.CharacterLinkStruct[](linkKeys.length);
+        for (uint256 i = 0; i < linkKeys.length; i++) {
+            bytes32 key = linkKeys[i];
+            results[i] = _linkingCharacterLinks[key];
+        }
+    }
+
+    function getLinkingCharacterLink(bytes32 linkKey)
+        external
+        view
+        override
+        returns (DataTypes.CharacterLinkStruct memory)
+    {
+        return _linkingCharacterLinks[linkKey];
+    }
+
+    function getLinkingCharacterLinkListLength(uint256 tokenId)
+        external
+        view
+        override
+        returns (uint256)
+    {
+        return _linkingCharacterLinkKeys[tokenId].length();
+    }
+
     function getLinkingERC721s(uint256 tokenId)
         external
         view
+        override
         returns (DataTypes.ERC721Struct[] memory results)
     {
-        bytes32[] memory linkKeys = linkingERC721Keys[tokenId].values();
+        bytes32[] memory linkKeys = _linkingERC721Keys[tokenId].values();
         results = new DataTypes.ERC721Struct[](linkKeys.length);
         for (uint256 i = 0; i < linkKeys.length; i++) {
-            results[i] = linkingERC721List[linkKeys[i]];
+            bytes32 key = linkKeys[i];
+            results[i] = _linkingERC721s[key];
         }
     }
 
     function getLinkingERC721(bytes32 linkKey)
         external
         view
+        override
         returns (DataTypes.ERC721Struct memory)
     {
-        return linkingERC721List[linkKey];
+        return _linkingERC721s[linkKey];
     }
 
-    function getLinkingERC721ListLength(uint256 tokenId) external view returns (uint256) {
-        return linkingERC721Keys[tokenId].length();
+    function getLinkingERC721ListLength(uint256 tokenId) external view override returns (uint256) {
+        return _linkingERC721Keys[tokenId].length();
     }
 
-    /////////////////////////////////
-    // linking Address
-    /////////////////////////////////
-    function addLinkingAddress(uint256 tokenId, address ethAddress) external {
-        _validateCallerIsWeb3Entry();
-        linkingAddressList[tokenId].add(ethAddress);
+    function getLinkingAddresses(uint256 tokenId)
+        external
+        view
+        override
+        returns (address[] memory)
+    {
+        return _linkingAddresses[tokenId].values();
     }
 
-    function removeLinkingAddress(uint256 tokenId, address ethAddress) external {
-        _validateCallerIsWeb3Entry();
-        linkingAddressList[tokenId].remove(ethAddress);
+    function getLinkingAddressListLength(uint256 tokenId) external view override returns (uint256) {
+        return _linkingAddresses[tokenId].length();
     }
 
-    function getLinkingAddresses(uint256 tokenId) external view returns (address[] memory) {
-        return linkingAddressList[tokenId].values();
-    }
-
-    function getLinkingAddressListLength(uint256 tokenId) external view returns (uint256) {
-        return linkingAddressList[tokenId].length();
-    }
-
-    /////////////////////////////////
-    // linking Any Uri
-    /////////////////////////////////
-    function addLinkingAnyUri(uint256 tokenId, string memory toUri) external returns (bytes32) {
-        _validateCallerIsWeb3Entry();
-
-        bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", toUri));
-        if (tokenId != 0) {
-            linkingAnyKeys[tokenId].add(linkKey);
-        }
-        linkingAnylist[linkKey] = toUri;
-        return linkKey;
-    }
-
-    function removeLinkingAnyUri(uint256 tokenId, string memory toUri) external {
-        _validateCallerIsWeb3Entry();
-
-        bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", toUri));
-        linkingAnyKeys[tokenId].remove(linkKey);
-
-        // do note delete
-        // delete linkingAnylist[linkKey];
-    }
-
-    function getLinkingAnyUris(uint256 tokenId) external view returns (string[] memory results) {
-        bytes32[] memory linkKeys = linkingAnyKeys[tokenId].values();
+    function getLinkingAnyUris(uint256 tokenId)
+        external
+        view
+        override
+        returns (string[] memory results)
+    {
+        bytes32[] memory linkKeys = _linkingAnyKeys[tokenId].values();
         results = new string[](linkKeys.length);
         for (uint256 i = 0; i < linkKeys.length; i++) {
             bytes32 key = linkKeys[i];
-            results[i] = linkingAnylist[key];
+            results[i] = _linkingAnys[key];
         }
     }
 
-    function getLinkingAnyUri(bytes32 linkKey) external view returns (string memory) {
-        return linkingAnylist[linkKey];
+    function getLinkingAnyUri(bytes32 linkKey) external view override returns (string memory) {
+        return _linkingAnys[linkKey];
     }
 
-    function getLinkingAnyUriKeys(uint256 tokenId) external view returns (bytes32[] memory) {
-        return linkingAnyKeys[tokenId].values();
+    function getLinkingAnyUriKeys(uint256 tokenId)
+        external
+        view
+        override
+        returns (bytes32[] memory)
+    {
+        return _linkingAnyKeys[tokenId].values();
     }
 
-    function getLinkingAnyListLength(uint256 tokenId) external view returns (uint256) {
-        return linkingAnyKeys[tokenId].length();
+    function getLinkingAnyListLength(uint256 tokenId) external view override returns (uint256) {
+        return _linkingAnyKeys[tokenId].length();
     }
 
-    /////////////////////////////////
-    // linking Linklist
-    /////////////////////////////////
-    function addLinkingLinklistId(uint256 tokenId, uint256 linklistId) external {
-        _validateCallerIsWeb3Entry();
-        linkingLinklists[tokenId].add(linklistId);
+    function getLinkingLinklistIds(uint256 tokenId)
+        external
+        view
+        override
+        returns (uint256[] memory)
+    {
+        return _linkingLinklists[tokenId].values();
     }
 
-    function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId) external {
-        _validateCallerIsWeb3Entry();
-        linkingLinklists[tokenId].remove(linklistId);
-    }
-
-    function getLinkingLinklistIds(uint256 tokenId) external view returns (uint256[] memory) {
-        return linkingLinklists[tokenId].values();
-    }
-
-    function getLinkingLinklistLength(uint256 tokenId) external view returns (uint256) {
-        return linkingLinklists[tokenId].length();
+    function getLinkingLinklistLength(uint256 tokenId) external view override returns (uint256) {
+        return _linkingLinklists[tokenId].length();
     }
 
     /////////////////////////////////
     // common
     /////////////////////////////////
-    function getCurrentTakeOver(uint256 tokenId) external view returns (uint256 characterId) {
-        characterId = currentTakeOver[tokenId];
+    function getCurrentTakeOver(uint256 tokenId)
+        external
+        view
+        override
+        returns (uint256 characterId)
+    {} // solhint-disable-line no-empty-blocks
+
+    function getLinkType(uint256 tokenId) external view override returns (bytes32) {
+        return _linkTypes[tokenId];
     }
 
-    function getLinkType(uint256 tokenId) external view returns (bytes32) {
-        return linkTypes[tokenId];
-    }
-
-    function Uri(uint256 tokenId) external view returns (string memory) {
+    // solhint-disable-next-line func-name-mixedcase
+    function Uri(uint256 tokenId) external view override returns (string memory) {
         return _getTokenUri(tokenId);
     }
 
-    function _transfer(
-        address,
-        address,
-        uint256
-    ) internal pure override {
-        // this function will do nothing, as linklist is a character bounded token
-        // users should never transfer a linklist directly
+    function totalSupply() public view override returns (uint256) {
+        return _tokenCount;
     }
 
-    function _safeTransfer(
-        address,
-        address,
-        uint256,
-        bytes memory
-    ) internal pure override {
-        // this function will do nothing, as linklist is a character bounded token
-        // users should never transfer a linklist directly
+    function balanceOf(uint256 characterId) public view override returns (uint256) {
+        return _linklistBalances[characterId];
+    }
+
+    function balanceOf(address account) public view override returns (uint256 balance) {
+        uint256 characterCount = IERC721Enumerable(Web3Entry).balanceOf(account);
+        for (uint256 i = 0; i < characterCount; i++) {
+            uint256 characterId = IERC721Enumerable(Web3Entry).tokenOfOwnerByIndex(account, i);
+            balance += balanceOf(characterId);
+        }
+    }
+
+    /**
+     * @notice returns the characterId who owns the given tokenId.
+     * @param tokenId The token id of the linklist.
+     */
+    function characterOwnerOf(uint256 tokenId) public view override returns (uint256) {
+        uint256 characterId = _linklistOwners[tokenId];
+        return characterId;
+    }
+
+    function ownerOf(uint256 tokenId) public view override returns (address) {
+        uint256 characterId = characterOwnerOf(tokenId);
+        address owner = IERC721Enumerable(Web3Entry).ownerOf(characterId);
+        return owner;
     }
 
     function _getTokenUri(uint256 tokenId) internal view returns (string memory) {
@@ -436,5 +468,24 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     function _validateCallerIsWeb3EntryOrOwner(uint256 tokenId) internal view {
         if (msg.sender != Web3Entry && msg.sender != ownerOf(tokenId))
             revert ErrCallerNotWeb3EntryOrNotOwner();
+    }
+
+    function _safeTransfer(
+        address,
+        address,
+        uint256,
+        bytes memory // solhint-disable-next-line no-empty-blocks
+    ) internal pure override {
+        // this function will do nothing, as linklist is a character bounded token
+        // users should never transfer a linklist directly
+    }
+
+    function _transfer(
+        address,
+        address,
+        uint256 // solhint-disable-next-line no-empty-blocks
+    ) internal pure override {
+        // this function will do nothing, as linklist is a character bounded token
+        // users should never transfer a linklist directly
     }
 }

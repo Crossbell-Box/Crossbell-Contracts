@@ -8,64 +8,64 @@
 address Web3Entry
 ```
 
-### linkTypes
+### _linkTypes
 
 ```solidity
-mapping(uint256 => bytes32) linkTypes
+mapping(uint256 => bytes32) _linkTypes
 ```
 
-### linkingCharacterList
+### _linkingCharacters
 
 ```solidity
-mapping(uint256 => struct EnumerableSet.UintSet) linkingCharacterList
+mapping(uint256 => struct EnumerableSet.UintSet) _linkingCharacters
 ```
 
-### linkingAddressList
+### _linkingAddresses
 
 ```solidity
-mapping(uint256 => struct EnumerableSet.AddressSet) linkingAddressList
+mapping(uint256 => struct EnumerableSet.AddressSet) _linkingAddresses
 ```
 
-### linkingLinklists
+### _linkingLinklists
 
 ```solidity
-mapping(uint256 => struct EnumerableSet.UintSet) linkingLinklists
+mapping(uint256 => struct EnumerableSet.UintSet) _linkingLinklists
 ```
 
-### linkKeysList
+### _linkKeys
 
 ```solidity
-mapping(uint256 => struct EnumerableSet.Bytes32Set) linkKeysList
+mapping(uint256 => struct EnumerableSet.Bytes32Set) _linkKeys
 ```
 
-### linkingERC721List
+### _linkingERC721s
 
 ```solidity
-mapping(bytes32 => struct DataTypes.ERC721Struct) linkingERC721List
+mapping(bytes32 => struct DataTypes.ERC721Struct) _linkingERC721s
 ```
 
-### linkNoteList
+### _linkNotes
 
 ```solidity
-mapping(bytes32 => struct DataTypes.NoteStruct) linkNoteList
+mapping(bytes32 => struct DataTypes.NoteStruct) _linkNotes
 ```
 
-### linkingCharacterLinkList
+### _linkingCharacterLinks
 
 ```solidity
-mapping(bytes32 => struct DataTypes.CharacterLinkStruct) linkingCharacterLinkList
+mapping(bytes32 => struct DataTypes.CharacterLinkStruct) _linkingCharacterLinks
 ```
 
-### linkingAnylist
+### _linkingAnys
 
 ```solidity
-mapping(bytes32 => string) linkingAnylist
+mapping(bytes32 => string) _linkingAnys
 ```
 
-### currentTakeOver
+### _currentTakeOver
 
 ```solidity
-mapping(uint256 => uint256) currentTakeOver
+mapping(uint256 => uint256) _currentTakeOver
 ```
 
 ### _uris
@@ -74,27 +74,27 @@ mapping(uint256 => uint256) currentTakeOver
 mapping(uint256 => string) _uris
 ```
 
-### linkingERC721Keys
+### _linkingERC721Keys
 
 ```solidity
-mapping(uint256 => struct EnumerableSet.Bytes32Set) linkingERC721Keys
+mapping(uint256 => struct EnumerableSet.Bytes32Set) _linkingERC721Keys
 ```
 
-### linkNoteKeys
+### _linkNoteKeys
 
 ```solidity
-mapping(uint256 => struct EnumerableSet.Bytes32Set) linkNoteKeys
+mapping(uint256 => struct EnumerableSet.Bytes32Set) _linkNoteKeys
 ```
 
-### linkingCharacterLinkKeys
+### _linkingCharacterLinkKeys
 
 ```solidity
-mapping(uint256 => struct EnumerableSet.Bytes32Set) linkingCharacterLinkKeys
+mapping(uint256 => struct EnumerableSet.Bytes32Set) _linkingCharacterLinkKeys
 ```
 
-### linkingAnyKeys
+### _linkingAnyKeys
 
 ```solidity
-mapping(uint256 => struct EnumerableSet.Bytes32Set) linkingAnyKeys
+mapping(uint256 => struct EnumerableSet.Bytes32Set) _linkingAnyKeys
 ```
 
