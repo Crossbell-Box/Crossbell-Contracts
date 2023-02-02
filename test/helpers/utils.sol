@@ -11,9 +11,10 @@ contract Utils is Test {
     uint8 public constant CheckTopic2 = 0x2;
     uint8 public constant CheckTopic3 = 0x4;
     uint8 public constant CheckData = 0x8;
+    uint8 public constant CheckAll = 0xf;
 
     function expectEmit() public {
-        expectEmit(0);
+        expectEmit(CheckAll);
     }
 
     function expectEmit(uint8 checks) public {
