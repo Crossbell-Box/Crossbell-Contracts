@@ -14,6 +14,7 @@ async function main() {
 
     const Tips = await ethers.getContractFactory("Tips");
     const tips = await Tips.deploy();
+    await tips.deployed();
     await tips.initialize(proxyWeb3Entry);
 
     const Proxy = await ethers.getContractFactory("TransparentUpgradeableProxy");
