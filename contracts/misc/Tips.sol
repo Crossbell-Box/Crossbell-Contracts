@@ -60,7 +60,8 @@ contract Tips is Initializable {
     }
 
     /**
-     * @notice Tips a character by transferring `amount` tokens from the `fromCharacterId` account to `toCharacterId` account.
+     * @notice Tips a character by transferring `amount` tokens
+     * from the `fromCharacterId` account to `toCharacterId` account.
      * Emits the `ThankCharacter` event.
      *
      * Requirements:
@@ -89,7 +90,8 @@ contract Tips is Initializable {
     }
 
     /**
-     * @notice Tips a character's note by transferring `amount` tokens from the `fromCharacterId` account to `toCharacterId` account.
+     * @notice Tips a character's note by transferring `amount` tokens
+     * from the `fromCharacterId` account to `toCharacterId` account.
      * Emits the `ThankNote` event.
      *
      * Requirements:
