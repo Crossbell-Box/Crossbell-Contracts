@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 import "./interfaces/ILinklist.sol";
 import "./interfaces/IWeb3Entry.sol";
@@ -434,7 +434,12 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         return _linklistBalances[characterId];
     }
 
-    function balanceOf(address account) public view override returns (uint256 balance) {
+    function balanceOf(address account)
+        public
+        view
+        override(IERC721, ERC721)
+        returns (uint256 balance)
+    {
         uint256 characterCount = IERC721Enumerable(Web3Entry).balanceOf(account);
         for (uint256 i = 0; i < characterCount; i++) {
             uint256 characterId = IERC721Enumerable(Web3Entry).tokenOfOwnerByIndex(account, i);
@@ -451,7 +456,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         return characterId;
     }
 
-    function ownerOf(uint256 tokenId) public view override returns (address) {
+    function ownerOf(uint256 tokenId) public view override(IERC721, ERC721) returns (address) {
         uint256 characterId = characterOwnerOf(tokenId);
         address owner = IERC721Enumerable(Web3Entry).ownerOf(characterId);
         return owner;
