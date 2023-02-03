@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { NewbieVilla, NFT } from "../../typechain";
+import { NewbieVilla, NFT } from "../../typechain-types";
 
 export const FIRST_CHARACTER_ID = 1;
 export const SECOND_CHARACTER_ID = 2;

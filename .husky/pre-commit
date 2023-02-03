@@ -8,4 +8,7 @@ yarn lint
 # unit test
 echo "Running test"
 yarn test
-yarn docgen
+
+ # unit test
+echo "Running solhint"
+yarn solhint
