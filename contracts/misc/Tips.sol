@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable comprehensive-interface
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -9,10 +9,10 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 /**
- * @title Thanks
+ * @title Tips
  * @dev Logic to handle rewards that user can send to character and note.
  */
-contract Thanks is Initializable {
+contract Tips is Initializable {
     using SafeERC20 for IERC20;
 
     //address of web3Entry
@@ -29,7 +29,7 @@ contract Thanks is Initializable {
      * @param token Address of token to reward.
      * @param amount Amount of token to reward.
      */
-    event ThankCharacter(
+    event TipCharacter(
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,
         address token,
@@ -43,7 +43,7 @@ contract Thanks is Initializable {
      * @param token Address of token.
      * @param amount Amount of token.
      */
-    event ThankNote(
+    event TipCharacterForNote(
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,
         uint256 indexed toNoteId,
@@ -60,7 +60,7 @@ contract Thanks is Initializable {
     }
 
     /**
-     * @notice Thanks a character by transferring `amount` tokens from the `fromCharacterId` account to `toCharacterId` account.
+     * @notice Tips a character by transferring `amount` tokens from the `fromCharacterId` account to `toCharacterId` account.
      * Emits the `ThankCharacter` event.
      *
      * Requirements:
@@ -70,7 +70,7 @@ contract Thanks is Initializable {
      * @param token Address of token.
      * @param amount Amount of token.
      */
-    function thankCharacter(
+    function tipCharacter(
         uint256 fromCharacterId,
         uint256 toCharacterId,
         address token,
@@ -85,11 +85,11 @@ contract Thanks is Initializable {
         IERC20(token).safeTransferFrom(msg.sender, to, amount);
 
         // emit event
-        emit ThankCharacter(fromCharacterId, toCharacterId, token, amount);
+        emit TipCharacter(fromCharacterId, toCharacterId, token, amount);
     }
 
     /**
-     * @notice Thanks a note by transferring `amount` tokens from the `fromCharacterId` account to `toCharacterId` account.
+     * @notice Tips a character's note by transferring `amount` tokens from the `fromCharacterId` account to `toCharacterId` account.
      * Emits the `ThankNote` event.
      *
      * Requirements:
@@ -100,7 +100,7 @@ contract Thanks is Initializable {
      * @param token Address of token.
      * @param amount Amount of token.
      */
-    function thankNote(
+    function tipCharacterForNote(
         uint256 fromCharacterId,
         uint256 toCharacterId,
         uint256 toNoteId,
@@ -116,6 +116,6 @@ contract Thanks is Initializable {
         IERC20(token).safeTransferFrom(msg.sender, to, amount);
 
         // emit event
-        emit ThankNote(fromCharacterId, toCharacterId, toNoteId, token, amount);
+        emit TipCharacterForNote(fromCharacterId, toCharacterId, toNoteId, token, amount);
     }
 }

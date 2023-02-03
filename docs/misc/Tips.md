@@ -1,6 +1,6 @@
 # Solidity API
 
-## Thanks
+## Tips
 
 _Logic to handle rewards that user can send to character and note._
 
@@ -16,10 +16,10 @@ address web3Entry
 error ErrCallerNotCharacterOwner()
 ```
 
-### ThankCharacter
+### TipCharacter
 
 ```solidity
-event ThankCharacter(uint256 fromCharacterId, uint256 toCharacterId, address token, uint256 amount)
+event TipCharacter(uint256 fromCharacterId, uint256 toCharacterId, address token, uint256 amount)
 ```
 
 _Emitted when the assets are rewarded to a character._
@@ -33,10 +33,10 @@ _Emitted when the assets are rewarded to a character._
 | token | address | Address of token to reward. |
 | amount | uint256 | Amount of token to reward. |
 
-### ThankNote
+### TipCharacterForNote
 
 ```solidity
-event ThankNote(uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId, address token, uint256 amount)
+event TipCharacterForNote(uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId, address token, uint256 amount)
 ```
 
 _Emitted when the assets are rewarded to a note._
@@ -65,13 +65,13 @@ Initialize the contract.
 | ---- | ---- | ----------- |
 | web3Entry_ | address | Address of web3Entry. |
 
-### thankCharacter
+### tipCharacter
 
 ```solidity
-function thankCharacter(uint256 fromCharacterId, uint256 toCharacterId, address token, uint256 amount) external
+function tipCharacter(uint256 fromCharacterId, uint256 toCharacterId, address token, uint256 amount) external
 ```
 
-Thanks a character by transferring `amount` tokens from the `fromCharacterId` account to `toCharacterId` account.
+Tips a character by transferring `amount` tokens from the `fromCharacterId` account to `toCharacterId` account.
 Emits the `ThankCharacter` event.
 
 Requirements:
@@ -86,13 +86,13 @@ Requirements:
 | token | address | Address of token. |
 | amount | uint256 | Amount of token. |
 
-### thankNote
+### tipCharacterForNote
 
 ```solidity
-function thankNote(uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId, address token, uint256 amount) external
+function tipCharacterForNote(uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId, address token, uint256 amount) external
 ```
 
-Thanks a note by transferring `amount` tokens from the `fromCharacterId` account to `toCharacterId` account.
+Tips a character's note by transferring `amount` tokens from the `fromCharacterId` account to `toCharacterId` account.
 Emits the `ThankNote` event.
 
 Requirements:
