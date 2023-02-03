@@ -29,7 +29,7 @@ struct Counters.Counter _tokenIdCounter
 ### initialize
 
 ```solidity
-function initialize(uint256 characterId, uint256 noteId, address web3Entry, string name, string symbol) external
+function initialize(uint256 characterId, uint256 noteId, address web3Entry, string name_, string symbol_) external
 ```
 
 ### mint

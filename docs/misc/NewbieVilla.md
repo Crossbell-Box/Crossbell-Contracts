@@ -33,7 +33,7 @@ modifier _notExpired(uint256 expires)
 ### initialize
 
 ```solidity
-function initialize(address _web3Entry, address _xsyncOperator) external
+function initialize(address web3Entry_, address xsyncOperator_) external
 ```
 
 Initialize the Newbie Villa contract.
@@ -44,26 +44,8 @@ _msg.sender will be granted both DEFAULT_ADMIN_ROLE and ADMIN_ROLE._
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| _web3Entry | address | Address of Web3Entry. |
-| _xsyncOperator | address | Address of xsyncOperator. |
-
-### splitSignature
-
-```solidity
-function splitSignature(bytes sig) internal pure returns (uint8 v, bytes32 r, bytes32 s)
-```
-
-### recoverSigner
-
-```solidity
-function recoverSigner(bytes32 message, bytes sig) internal pure returns (address)
-```
-
-### prefixed
-
-```solidity
-function prefixed(bytes32 hash) internal pure returns (bytes32)
-```
+| web3Entry_ | address | Address of web3Entry contract. |
+| xsyncOperator_ | address | Address of xsyncOperator. |
 
 ### withdraw
 
@@ -125,4 +107,22 @@ Requirements:
 |  | address |  |
 | tokenId | uint256 |  |
 | data | bytes | bytes encoded from the operator address to set for the incoming character. |
+
+### _splitSignature
+
+```solidity
+function _splitSignature(bytes sig) internal pure returns (uint8 v, bytes32 r, bytes32 s)
+```
+
+### _recoverSigner
+
+```solidity
+function _recoverSigner(bytes32 message, bytes sig) internal pure returns (address)
+```
+
+### _prefixed
+
+```solidity
+function _prefixed(bytes32 hash) internal pure returns (bytes32)
+```
 

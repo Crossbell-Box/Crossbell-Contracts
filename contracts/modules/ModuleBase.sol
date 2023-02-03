@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 abstract contract ModuleBase {
-    address public immutable Web3Entry;
+    address public immutable web3Entry;
 
     modifier onlyWeb3Entry() {
-        require(msg.sender == Web3Entry, "NotWeb3Entry");
+        require(msg.sender == web3Entry, "NotWeb3Entry");
         _;
     }
 
-    constructor(address web3Entry) {
-        require(web3Entry != address(0), "InvalidWeb3Entry");
-        Web3Entry = web3Entry;
+    constructor(address web3Entry_) {
+        require(web3Entry_ != address(0), "InvalidWeb3Entry");
+        web3Entry = web3Entry_;
     }
 }

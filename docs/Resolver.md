@@ -2,28 +2,28 @@
 
 ## Resolver
 
-### ensRecords
+### _ensRecords
 
 ```solidity
-mapping(bytes32 => address) ensRecords
+mapping(bytes32 => address) _ensRecords
 ```
 
-### rnsRecords
+### _rnsRecords
 
 ```solidity
-mapping(bytes32 => address) rnsRecords
+mapping(bytes32 => address) _rnsRecords
 ```
 
-### totalENSCount
+### _totalENSCount
 
 ```solidity
-uint256 totalENSCount
+uint256 _totalENSCount
 ```
 
-### totalRNSCount
+### _totalRNSCount
 
 ```solidity
-uint256 totalRNSCount
+uint256 _totalRNSCount
 ```
 
 ### addENSRecords

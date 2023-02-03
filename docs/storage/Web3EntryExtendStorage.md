@@ -2,10 +2,10 @@
 
 ## Web3EntryExtendStorage
 
-### periphery
+### _periphery
 
 ```solidity
-address periphery
+address _periphery
 ```
 
 ### _operatorByCharacter

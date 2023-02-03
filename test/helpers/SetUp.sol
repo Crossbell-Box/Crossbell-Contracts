@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 import "../../contracts/Web3Entry.sol";
 import "../../contracts/Linklist.sol";
@@ -15,16 +15,17 @@ import "./Const.sol";
 import "./utils.sol";
 
 contract SetUp {
-    Web3Entry web3Entry;
-    Linklist linklist;
-    Periphery periphery;
-    MintNFT mintNFT;
-    ApprovalLinkModule4Character linkModule4Character;
-    NFT nft;
-    CharacterBoundToken cbt;
-    TransparentUpgradeableProxy proxyWeb3Entry;
+    Web3Entry public web3Entry;
+    Linklist public linklist;
+    Periphery public periphery;
+    MintNFT public mintNFT;
+    ApprovalLinkModule4Character public linkModule4Character;
+    NFT public nft;
+    CharacterBoundToken public cbt;
+    TransparentUpgradeableProxy public proxyWeb3Entry;
     address public admin = address(0x999999999999999999999999999999);
 
+    /* solhint-disable comprehensive-interface */
     function _setUp() internal {
         // deploy mintNFT
         mintNFT = new MintNFT();

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 import "../../interfaces/IMintModule4Note.sol";
 import "../ModuleBase.sol";
@@ -17,7 +17,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         uint256 noteId,
         bytes calldata data
     ) external returns (bytes memory) {
-        address owner = IERC721(Web3Entry).ownerOf(characterId);
+        address owner = IERC721(web3Entry).ownerOf(characterId);
 
         if (data.length > 0) {
             address[] memory addresses = abi.decode(data, (address[]));
@@ -39,7 +39,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         bool[] calldata toApprove
     ) external {
         require(addresses.length == toApprove.length, "InitParamsInvalid");
-        address owner = IERC721(Web3Entry).ownerOf(characterId);
+        address owner = IERC721(web3Entry).ownerOf(characterId);
         require(msg.sender == owner, "NotCharacterOwner");
 
         uint256 addressesLength = addresses.length;
@@ -59,7 +59,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         uint256 noteId,
         bytes calldata
     ) external view onlyWeb3Entry {
-        address owner = IERC721(Web3Entry).ownerOf(characterId);
+        address owner = IERC721(web3Entry).ownerOf(characterId);
 
         require(
             _approvedByCharacterByNoteByOwner[owner][characterId][noteId][to],

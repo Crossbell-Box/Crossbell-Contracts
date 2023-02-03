@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 import "@std/Test.sol";
 import "@std/Script.sol";
@@ -7,8 +7,9 @@ import "../Linklist.sol";
 import "../upgradeability/TransparentUpgradeableProxy.sol";
 
 contract UpgradeLinklist is Script {
-    address payable linklistProxy = payable(0xFc8C75bD5c26F50798758f387B698f207a016b6A);
+    address payable public linklistProxy = payable(0xFc8C75bD5c26F50798758f387B698f207a016b6A);
 
+    /* solhint-disable comprehensive-interface */
     function run() external {
         vm.startBroadcast();
 

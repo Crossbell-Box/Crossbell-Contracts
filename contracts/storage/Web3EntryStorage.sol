@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 import "../libraries/DataTypes.sol";
 
@@ -34,5 +34,6 @@ contract Web3EntryStorage {
     uint256 internal _characterCounter;
     // LinkList NFT token contract
     address internal _linklist;
+    // solhint-disable-next-line private-vars-leading-underscore, var-name-mixedcase
     address internal MINT_NFT_IMPL;
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 import "forge-std/Test.sol";
 import "forge-std/console2.sol";
@@ -14,6 +14,7 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
     address public bob = address(0x2222);
     address public carol = address(0x3333);
 
+    /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
     }

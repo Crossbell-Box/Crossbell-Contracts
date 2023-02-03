@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
@@ -37,6 +37,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     // Mapping from owner to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
+    // solhint-disable-next-line func-name-mixedcase
     function __ERC721_Init(string calldata name_, string calldata symbol_) internal {
         _name = name_;
         _symbol = symbol_;
@@ -188,7 +189,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         address from,
         address to,
         uint256 tokenId,
-        bytes memory _data
+        bytes memory _data // solhint-disable private-vars-leading-underscore
     ) public virtual override {
         require(
             _isApprovedOrOwner(_msgSender(), tokenId),
@@ -211,7 +212,8 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      * - `from` cannot be the zero address.
      * - `to` cannot be the zero address.
      * - `tokenId` token must exist and be owned by `from`.
-     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
+     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received},
+     * which is called upon a safe transfer.
      *
      * Emits a {Transfer} event.
      */
@@ -219,7 +221,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         address from,
         address to,
         uint256 tokenId,
-        bytes memory _data
+        bytes memory _data // solhint-disable private-vars-leading-underscore
     ) internal virtual {
         _transfer(from, to, tokenId);
         require(
@@ -266,7 +268,8 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      * Requirements:
      *
      * - `tokenId` must not exist.
-     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
+     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received},
+     * which is called upon a safe transfer.
      *
      * Emits a {Transfer} event.
      */
@@ -281,7 +284,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     function _safeMint(
         address to,
         uint256 tokenId,
-        bytes memory _data
+        bytes memory _data // solhint-disable private-vars-leading-underscore
     ) internal virtual {
         _mint(to, tokenId);
         require(
@@ -414,7 +417,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         address from,
         address to,
         uint256 tokenId,
-        bytes memory _data
+        bytes memory _data // solhint-disable private-vars-leading-underscore
     ) private returns (bool) {
         if (to.isContract()) {
             try IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data) returns (
@@ -425,9 +428,11 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
                 if (reason.length == 0) {
                     revert("ERC721: transfer to non ERC721Receiver implementer");
                 } else {
+                    /* solhint-disable no-inline-assembly */
                     assembly {
                         revert(add(32, reason), mload(reason))
                     }
+                    /* solhint-enable no-inline-assembly */
                 }
             }
         } else {
@@ -453,7 +458,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         address from,
         address to,
         uint256 tokenId
-    ) internal virtual {}
+    ) internal virtual {} // solhint-disable-line no-empty-blocks
 
     /**
      * @dev Hook that is called after any transfer of tokens. This includes
@@ -470,5 +475,5 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         address from,
         address to,
         uint256 tokenId
-    ) internal virtual {}
+    ) internal virtual {} // solhint-disable-line no-empty-blocks
 }

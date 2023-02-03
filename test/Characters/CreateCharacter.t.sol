@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 import "forge-std/Test.sol";
 import "forge-std/console2.sol";
@@ -13,6 +13,7 @@ contract CreateCharacterTest is Test, SetUp, Utils {
     address public alice = address(0x1111);
     address public bob = address(0x2222);
 
+    /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
     }
@@ -43,6 +44,7 @@ contract CreateCharacterTest is Test, SetUp, Utils {
         assertEq(character.uri, Const.MOCK_CHARACTER_URI);
     }
 
+    // solhint-disable-next-line function-max-lines
     function testCreateCharacterAndSetHandleFail() public {
         vm.startPrank(bob);
 

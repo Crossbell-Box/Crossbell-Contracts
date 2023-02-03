@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
-
-pragma solidity 0.8.10;
+// solhint-disable  private-vars-leading-underscore
+pragma solidity 0.8.16;
 
 import "./Events.sol";
 import "./DataTypes.sol";
@@ -32,7 +32,7 @@ library LinkLogic {
         if (linkModule != address(0)) {
             try
                 ILinkModule4Character(linkModule).processLink(linker, toCharacterId, data)
-            {} catch {}
+            {} catch {} // solhint-disable-line no-empty-blocks
         }
 
         emit Events.LinkCharacter(linker, fromCharacterId, toCharacterId, linkType, linklistId);
@@ -82,7 +82,7 @@ library LinkLogic {
                     vars.toNoteId,
                     vars.data
                 )
-            {} catch {}
+            {} catch {} // solhint-disable-line no-empty-blocks
         }
 
         emit Events.LinkNote(

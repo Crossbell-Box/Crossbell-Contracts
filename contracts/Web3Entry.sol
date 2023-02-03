@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 import "./Web3EntryBase.sol";
 import "./libraries/OP.sol";
@@ -112,6 +112,28 @@ contract Web3Entry is Web3EntryBase {
         return _isOperatorAllowedForNote(characterId, noteId, operator);
     }
 
+    /**
+     * @dev Operator lists will be reset to blank before the characters are transferred in order to grant the
+     * whole control power to receivers of character transfers.
+     * Permissions4Note is left unset, because permissions for notes are always stricter than default.
+     */
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual override {
+        uint256 len = _operatorsByCharacter[tokenId].length();
+        address[] memory operators = _operatorsByCharacter[tokenId].values();
+        for (uint256 i = 0; i < len; i++) {
+            _operatorsPermissionBitMap[tokenId][operators[i]] = 0;
+            _operatorsByCharacter[tokenId].remove(operators[i]);
+        }
+        if (_primaryCharacterByAddress[from] != 0) {
+            _primaryCharacterByAddress[from] = 0;
+        }
+        super._beforeTokenTransfer(from, to, tokenId);
+    }
+
     function _isOperatorAllowedForNote(
         uint256 characterId,
         uint256 noteId,
@@ -144,7 +166,8 @@ contract Web3Entry is Web3EntryBase {
         }
 
         // check operator permission for tx.origin
-        if (msg.sender == periphery) {
+        if (msg.sender == _periphery) {
+            // solhint-disable-next-line avoid-tx-origin
             if (_checkBit(_operatorsPermissionBitMap[characterId][tx.origin], permissionId)) {
                 return;
             }
@@ -165,7 +188,9 @@ contract Web3Entry is Web3EntryBase {
             // caller is character owner
             return true;
         }
-        if (msg.sender == periphery && tx.origin == owner) {
+
+        // solhint-disable-next-line avoid-tx-origin
+        if (msg.sender == _periphery && tx.origin == owner) {
             // caller is periphery, and tx.origin is character owner
             return true;
         }
@@ -184,7 +209,8 @@ contract Web3Entry is Web3EntryBase {
         }
 
         // check note permission for tx.origin
-        if (msg.sender == periphery) {
+        if (msg.sender == _periphery) {
+            // solhint-disable-next-line avoid-tx-origin
             if (_isOperatorAllowedForNote(characterId, noteId, tx.origin)) {
                 return;
             }
@@ -203,27 +229,5 @@ contract Web3Entry is Web3EntryBase {
      */
     function _checkBit(uint256 x, uint256 i) internal pure returns (bool) {
         return (x >> i) & 1 == 1;
-    }
-
-    /**
-     * @dev Operator lists will be reset to blank before the characters are transferred in order to grant the
-     * whole control power to receivers of character transfers.
-     * Permissions4Note is left unset, because permissions for notes are always stricter than default.
-     */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual override {
-        uint256 len = _operatorsByCharacter[tokenId].length();
-        address[] memory operators = _operatorsByCharacter[tokenId].values();
-        for (uint256 i = 0; i < len; i++) {
-            _operatorsPermissionBitMap[tokenId][operators[i]] = 0;
-            _operatorsByCharacter[tokenId].remove(operators[i]);
-        }
-        if (_primaryCharacterByAddress[from] != 0) {
-            _primaryCharacterByAddress[from] = 0;
-        }
-        super._beforeTokenTransfer(from, to, tokenId);
     }
 }

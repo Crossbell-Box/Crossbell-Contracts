@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
-
-pragma solidity 0.8.10;
+// solhint-disable comprehensive-interface
+pragma solidity 0.8.16;
 
 import "../base/NFTBase.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 contract NFT is NFTBase, Initializable {
-    function initialize(string calldata _name, string calldata _symbol) external initializer {
-        super._initialize(_name, _symbol);
+    function initialize(string calldata name_, string calldata symbol_) external initializer {
+        super._initialize(name_, symbol_);
     }
 
     function mint(address to) public {
@@ -18,6 +18,7 @@ contract NFT is NFTBase, Initializable {
 }
 
 contract NFT1155 is ERC1155 {
+    // solhint-disable-next-line no-empty-blocks
     constructor() ERC1155("https://ipfsxxxx") {}
 
     function mint(address to) public {

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 import "../helpers/Const.sol";
 import "../helpers/utils.sol";
@@ -17,6 +17,7 @@ contract NewbieVillaTest is Test, SetUp, Utils {
 
     NewbieVilla public newbieVilla;
 
+    /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
 
@@ -108,6 +109,7 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         nft.safeTransferFrom(address(bob), address(newbieVilla), Const.FIRST_CHARACTER_ID);
     }
 
+    // solhint-disable-next-line no-empty-blocks
     function testWithdrawNewbieOut() public {
         // In Hardhat
     }

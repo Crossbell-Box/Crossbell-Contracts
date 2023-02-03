@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
-
-pragma solidity 0.8.10;
+// solhint-disable private-vars-leading-underscore
+pragma solidity 0.8.16;
 
 /**
 * @dev every uint8 stands for a single method in Web3Entry.sol.

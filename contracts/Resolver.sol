@@ -1,48 +1,56 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 import "./interfaces/IResolver.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Resolver is IResolver, Ownable {
-    mapping(bytes32 => address) internal ensRecords;
-    mapping(bytes32 => address) internal rnsRecords;
-    uint256 internal totalENSCount;
-    uint256 internal totalRNSCount;
+    mapping(bytes32 => address) internal _ensRecords;
+    mapping(bytes32 => address) internal _rnsRecords;
+    uint256 internal _totalENSCount;
+    uint256 internal _totalRNSCount;
 
-    function addENSRecords(string[] calldata labels, address[] calldata owners) external onlyOwner {
+    function addENSRecords(string[] calldata labels, address[] calldata owners)
+        external
+        override
+        onlyOwner
+    {
         _addRecords(labels, owners, true);
     }
 
-    function addRNSRecords(string[] calldata labels, address[] calldata owners) external onlyOwner {
+    function addRNSRecords(string[] calldata labels, address[] calldata owners)
+        external
+        override
+        onlyOwner
+    {
         _addRecords(labels, owners, false);
     }
 
-    function deleteENSRecords(string[] calldata labels) external onlyOwner {
+    function deleteENSRecords(string[] calldata labels) external override onlyOwner {
         _deleteRecords(labels, true);
     }
 
-    function deleteRNSRecords(string[] calldata labels) external onlyOwner {
+    function deleteRNSRecords(string[] calldata labels) external override onlyOwner {
         _deleteRecords(labels, false);
     }
 
-    function getENSRecord(string calldata label) external view returns (address) {
+    function getENSRecord(string calldata label) external view override returns (address) {
         bytes32 hash = keccak256(bytes(label));
-        return ensRecords[hash];
+        return _ensRecords[hash];
     }
 
-    function getRNSRecord(string calldata label) external view returns (address) {
+    function getRNSRecord(string calldata label) external view override returns (address) {
         bytes32 hash = keccak256(bytes(label));
-        return rnsRecords[hash];
+        return _rnsRecords[hash];
     }
 
-    function getTotalENSCount() external view returns (uint256) {
-        return totalENSCount;
+    function getTotalENSCount() external view override returns (uint256) {
+        return _totalENSCount;
     }
 
-    function getTotalRNSCount() external view returns (uint256) {
-        return totalRNSCount;
+    function getTotalRNSCount() external view override returns (uint256) {
+        return _totalRNSCount;
     }
 
     function _addRecords(
@@ -55,14 +63,14 @@ contract Resolver is IResolver, Ownable {
             bytes32 hash = keccak256(bytes(labels[i]));
             if (ens) {
                 // add ens record
-                require(ensRecords[hash] == address(0), "RecordExists");
-                ensRecords[hash] = owners[i];
-                totalENSCount++;
+                require(_ensRecords[hash] == address(0), "RecordExists");
+                _ensRecords[hash] = owners[i];
+                _totalENSCount++;
             } else {
                 // add rns record
-                require(rnsRecords[hash] == address(0), "RecordExists");
-                rnsRecords[hash] = owners[i];
-                totalRNSCount++;
+                require(_rnsRecords[hash] == address(0), "RecordExists");
+                _rnsRecords[hash] = owners[i];
+                _totalRNSCount++;
             }
         }
     }
@@ -71,11 +79,11 @@ contract Resolver is IResolver, Ownable {
         for (uint256 i = 0; i < labels.length; i++) {
             bytes32 hash = keccak256(bytes(labels[i]));
             if (ens) {
-                delete ensRecords[hash];
-                totalENSCount--;
+                delete _ensRecords[hash];
+                _totalENSCount--;
             } else {
-                delete rnsRecords[hash];
-                totalRNSCount--;
+                delete _rnsRecords[hash];
+                _totalRNSCount--;
             }
         }
     }

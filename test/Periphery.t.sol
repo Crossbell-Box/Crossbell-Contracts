@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.10;
+// solhint-disable comprehensive-interface
+pragma solidity 0.8.16;
 
 import "forge-std/Test.sol";
 import "forge-std/console2.sol";
@@ -11,10 +12,10 @@ import "../contracts/Web3Entry.sol";
 import "../contracts/libraries/DataTypes.sol";
 
 contract PeripheryTest is Test, SetUp, Utils {
-    address internal constant alice = address(0x1111);
-    address internal constant bob = address(0x2222);
-    address internal constant carol = address(0x3333);
-    address internal constant dick = address(0x4444);
+    address public constant alice = address(0x1111);
+    address public constant bob = address(0x2222);
+    address public constant carol = address(0x3333);
+    address public constant dick = address(0x4444);
 
     function setUp() public {
         _setUp();

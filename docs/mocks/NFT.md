@@ -5,7 +5,7 @@
 ### initialize
 
 ```solidity
-function initialize(string _name, string _symbol) external
+function initialize(string name_, string symbol_) external
 ```
 
 ### mint

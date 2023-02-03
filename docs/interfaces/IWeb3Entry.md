@@ -5,13 +5,13 @@
 ### initialize
 
 ```solidity
-function initialize(string _name, string _symbol, address _linklistContract, address _mintNFTImpl, address _periphery) external
+function initialize(string name_, string symbol_, address linklist_, address mintNFTImpl_, address periphery_) external
 ```
 
 ### createCharacter
 
 ```solidity
-function createCharacter(struct DataTypes.CreateCharacterData vars) external returns (uint256)
+function createCharacter(struct DataTypes.CreateCharacterData vars) external returns (uint256 characterId)
 ```
 
 EXTERNAL  FUNCTIONS

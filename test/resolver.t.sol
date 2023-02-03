@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.10;
+// solhint-disable comprehensive-interface
+pragma solidity 0.8.16;
 
 import "forge-std/Test.sol";
 import "forge-std/console2.sol";
@@ -14,7 +15,7 @@ contract ResolverTest is Test, SetUp, Utils {
     address public bob = address(0x2222);
     address public carol = address(0x3333);
 
-    Resolver internal resolver;
+    Resolver public resolver;
 
     function setUp() public {
         resolver = new Resolver();

@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.10;
+pragma solidity 0.8.16;
 
 import "../libraries/DataTypes.sol";
 
 interface IWeb3Entry {
     function initialize(
-        string calldata _name,
-        string calldata _symbol,
-        address _linklistContract,
-        address _mintNFTImpl,
-        address _periphery
+        string calldata name_,
+        string calldata symbol_,
+        address linklist_,
+        address mintNFTImpl_,
+        address periphery_
     ) external;
 
     ////////////////////////////////////////////////////////
@@ -19,7 +19,7 @@ interface IWeb3Entry {
 
     function createCharacter(DataTypes.CreateCharacterData calldata vars)
         external
-        returns (uint256);
+        returns (uint256 characterId);
 
     function setHandle(uint256 characterId, string calldata newHandle) external;
 
