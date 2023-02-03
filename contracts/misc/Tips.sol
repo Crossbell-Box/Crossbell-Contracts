@@ -76,9 +76,9 @@ contract Tips is Initializable {
         address token,
         uint256 amount
     ) external {
-        // check
-        address characterOwner = IERC721(web3Entry).ownerOf(fromCharacterId);
-        if (msg.sender != characterOwner) revert ErrCallerNotCharacterOwner();
+        // caller must be the owner of fromCharacterId
+        if (msg.sender != IERC721(web3Entry).ownerOf(fromCharacterId))
+            revert ErrCallerNotCharacterOwner();
 
         // transfer token
         address to = IERC721(web3Entry).ownerOf(toCharacterId);
@@ -108,9 +108,9 @@ contract Tips is Initializable {
         address token,
         uint256 amount
     ) external {
-        // check
-        address characterOwner = IERC721(web3Entry).ownerOf(fromCharacterId);
-        if (msg.sender != characterOwner) revert ErrCallerNotCharacterOwner();
+        // caller must be the owner of fromCharacterId
+        if (msg.sender != IERC721(web3Entry).ownerOf(fromCharacterId))
+            revert ErrCallerNotCharacterOwner();
 
         // transfer token
         address to = IERC721(web3Entry).ownerOf(toCharacterId);
