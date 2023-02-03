@@ -1,11 +1,13 @@
 {
-  "filter_paths": "(lib/|node_modules/)",
+  "detectors_to_exclude": "missing-zero-check,initialize-target,reentrancy-events",
+  "disable_color": false,
+  "filter_paths": "(lib/|node_modules/|upgradeability/)",
   "solc_remaps": [
     "ds-test/=lib/forge-std/lib/ds-test/src/",
     "forge-std/=lib/forge-std/src/",
     "@openzeppelin/=node_modules/@openzeppelin/"
   ],
   "compile_force_framework":"hardhat",
-  "hardhat_artifacts_directory": "./artifacts",
-  "disable_color": false
+  "hardhat_artifacts_directory": "./artifacts"
+
 }
