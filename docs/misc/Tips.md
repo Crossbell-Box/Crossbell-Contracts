@@ -71,7 +71,8 @@ Initialize the contract.
 function tipCharacter(uint256 fromCharacterId, uint256 toCharacterId, address token, uint256 amount) external
 ```
 
-Tips a character by transferring `amount` tokens from the `fromCharacterId` account to `toCharacterId` account.
+Tips a character by transferring `amount` tokens
+from the `fromCharacterId` account to `toCharacterId` account.
 Emits the `ThankCharacter` event.
 
 Requirements:
@@ -92,7 +93,8 @@ Requirements:
 function tipCharacterForNote(uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId, address token, uint256 amount) external
 ```
 
-Tips a character's note by transferring `amount` tokens from the `fromCharacterId` account to `toCharacterId` account.
+Tips a character's note by transferring `amount` tokens
+from the `fromCharacterId` account to `toCharacterId` account.
 Emits the `ThankNote` event.
 
 Requirements:
