@@ -288,8 +288,6 @@ returns the characterId who owns the given tokenId.
 function ownerOf(uint256 tokenId) public view returns (address)
 ```
 
-_See {IERC721-ownerOf}._
-
 ### _getTokenUri
 
 ```solidity
