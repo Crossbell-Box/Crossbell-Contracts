@@ -73,7 +73,9 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         web3Entry.createCharacter(makeCharacterData("handleforcarol2", bob));
         // link character
         bytes memory data = new bytes(0);
-        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, Const.FollowLinkType, data));
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(1, 2, Const.FollowLinkType, bytes32(0), data)
+        );
         assertEq(web3Entry.getLinklistId(1, Const.FollowLinkType), Const.FIRST_LINKLIST_ID);
         // transfer character 1 to bob
         web3Entry.transferFrom(bob, alice, Const.FIRST_CHARACTER_ID);

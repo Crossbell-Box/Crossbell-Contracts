@@ -13,17 +13,17 @@ contract LinklistStorage {
     // solhint-disable var-name-mixedcase
     address public Web3Entry; // slot 10
 
-    // tokenId => linkType
+    // linklistId => linkType
     mapping(uint256 => bytes32) internal _linkTypes;
 
-    // tokenId =>  characterIds
+    // linklistId =>  characterIds
     mapping(uint256 => EnumerableSet.UintSet) internal _linkingCharacters;
-    // tokenId => external addresses
+    // linklistId => external addresses
     mapping(uint256 => EnumerableSet.AddressSet) internal _linkingAddresses;
-    // tokenId =>  LinklistId
+    // linklistId =>  LinklistId
     mapping(uint256 => EnumerableSet.UintSet) internal _linkingLinklists;
 
-    // tokenId => linkKeys
+    // linklistId => linkKeys
     mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkKeys; // this slot is not used
     // linkKey => linking ERC721
     mapping(bytes32 => DataTypes.ERC721Struct) internal _linkingERC721s;
@@ -34,14 +34,31 @@ contract LinklistStorage {
     // linkKey => linking Any string
     mapping(bytes32 => string) internal _linkingAnys;
 
-    // tokenId => characterId
+    // linklistId => characterId
     mapping(uint256 => uint256) internal _currentTakeOver; // this slot is not used
-    mapping(uint256 => string) internal _uris; // tokenId => tokenURI
+    mapping(uint256 => string) internal _uris; // linklistId => tokenURI
 
     // linkKey sets
-    // tokenId => linkKeys
+    // linklistId => linkKeys
     mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkingERC721Keys;
     mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkNoteKeys;
     mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkingCharacterLinkKeys;
     mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkingAnyKeys;
+
+    // linklist tags
+    // linklistId => characterId => tags
+    mapping(uint256 => mapping(uint256 => EnumerableSet.Bytes32Set)) internal _linkedCharacterTags;
+    // linklistId => linkKey => tags
+    mapping(uint256 => mapping(bytes32 => EnumerableSet.Bytes32Set)) internal _linkedNoteTags;
+    // linklistId => linkKey => tags
+    mapping(uint256 => mapping(bytes32 => EnumerableSet.Bytes32Set))
+        internal _linkedCharacterLinkTags;
+    // linklistId => linkKey => tags
+    mapping(uint256 => mapping(bytes32 => EnumerableSet.Bytes32Set)) internal _linkedERC721Tags;
+    // linklistId => address => tags
+    mapping(uint256 => mapping(address => EnumerableSet.Bytes32Set)) internal _linkedAdressTags;
+    // linklistId => address => tags
+    mapping(uint256 => mapping(bytes32 => EnumerableSet.Bytes32Set)) internal _linkedUriTags;
+    // linklistId => linklistId => tags
+    mapping(uint256 => mapping(uint256 => EnumerableSet.Bytes32Set)) internal _linkedLinklistTags;
 }

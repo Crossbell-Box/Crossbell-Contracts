@@ -22,9 +22,17 @@ interface ILinklist {
     /////////////////////////////////
     // linking Character
     /////////////////////////////////
-    function addLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external;
+    function addLinkingCharacterId(
+        uint256 tokenId,
+        uint256 toCharacterId,
+        bytes32 tag
+    ) external;
 
-    function removeLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external;
+    function removeLinkingCharacterId(
+        uint256 tokenId,
+        uint256 toCharacterId,
+        bytes32 tag
+    ) external;
 
     /////////////////////////////////
     // linking Note
@@ -32,13 +40,15 @@ interface ILinklist {
     function addLinkingNote(
         uint256 tokenId,
         uint256 toCharacterId,
-        uint256 toNoteId
+        uint256 toNoteId,
+        bytes32 tag
     ) external returns (bytes32);
 
     function removeLinkingNote(
         uint256 tokenId,
         uint256 toCharacterId,
-        uint256 toNoteId
+        uint256 toNoteId,
+        bytes32 tag
     ) external;
 
     /////////////////////////////////
@@ -47,35 +57,61 @@ interface ILinklist {
     function addLinkingERC721(
         uint256 tokenId,
         address tokenAddress,
-        uint256 erc721TokenId
+        uint256 erc721TokenId,
+        bytes32 tag
     ) external returns (bytes32);
 
     function removeLinkingERC721(
         uint256 tokenId,
         address tokenAddress,
-        uint256 erc721TokenId
+        uint256 erc721TokenId,
+        bytes32 tag
     ) external;
 
     /////////////////////////////////
     // linking Address
     /////////////////////////////////
-    function addLinkingAddress(uint256 tokenId, address ethAddress) external;
+    function addLinkingAddress(
+        uint256 tokenId,
+        address ethAddress,
+        bytes32 tag
+    ) external;
 
-    function removeLinkingAddress(uint256 tokenId, address ethAddress) external;
+    function removeLinkingAddress(
+        uint256 tokenId,
+        address ethAddress,
+        bytes32 tag
+    ) external;
 
     /////////////////////////////////
     // linking Any
     /////////////////////////////////
-    function addLinkingAnyUri(uint256 tokenId, string memory toUri) external returns (bytes32);
+    function addLinkingAnyUri(
+        uint256 tokenId,
+        string memory toUri,
+        bytes32 tag
+    ) external returns (bytes32);
 
-    function removeLinkingAnyUri(uint256 tokenId, string memory toUri) external;
+    function removeLinkingAnyUri(
+        uint256 tokenId,
+        string memory toUri,
+        bytes32 tag
+    ) external;
 
     /////////////////////////////////
     // linking Linklist
     /////////////////////////////////
-    function addLinkingLinklistId(uint256 tokenId, uint256 linklistId) external;
+    function addLinkingLinklistId(
+        uint256 tokenId,
+        uint256 linklistId,
+        bytes32 tag
+    ) external;
 
-    function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId) external;
+    function removeLinkingLinklistId(
+        uint256 tokenId,
+        uint256 linklistId,
+        bytes32 tag
+    ) external;
 
     /////////////////////////////////
     // linking CharacterLink

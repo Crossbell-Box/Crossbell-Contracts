@@ -30,6 +30,7 @@ contract Periphery is Initializable {
                     fromCharacterId: vars.fromCharacterId,
                     toCharacterId: vars.toCharacterIds[i],
                     linkType: vars.linkType,
+                    tag: vars.tag,
                     data: vars.data[i]
                 })
             );
@@ -40,7 +41,8 @@ contract Periphery is Initializable {
                 DataTypes.createThenLinkCharacterData({
                     fromCharacterId: vars.fromCharacterId,
                     to: vars.toAddresses[i],
-                    linkType: vars.linkType
+                    linkType: vars.linkType,
+                    tag: vars.tag
                 })
             );
         }
@@ -222,7 +224,8 @@ contract Periphery is Initializable {
                     DataTypes.createThenLinkCharacterData({
                         fromCharacterId: fromProfileId,
                         to: toAddresses[i],
-                        linkType: linkType
+                        linkType: linkType,
+                        tag: bytes32(0)
                     })
                 );
             } else {
@@ -231,6 +234,7 @@ contract Periphery is Initializable {
                         fromCharacterId: fromProfileId,
                         toCharacterId: toProfileId,
                         linkType: linkType,
+                        tag: bytes32(0),
                         data: ""
                     })
                 );
