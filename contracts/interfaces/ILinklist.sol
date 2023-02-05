@@ -181,6 +181,45 @@ interface ILinklist {
 
     function getLinkingLinklistLength(uint256 tokenId) external view returns (uint256);
 
+    function getLinkedCharacterTags(uint256 tokenId, uint256 characterId)
+        external
+        view
+        returns (bytes32[] memory);
+
+    function getLinkedUriTags(uint256 tokenId, bytes32 toUri)
+        external
+        view
+        returns (bytes32[] memory);
+
+    function getLinkedAddressTags(uint256 tokenId, address ethAddress)
+        external
+        view
+        returns (bytes32[] memory);
+
+    function getLinkedLinklistTags(uint256 tokenId, uint256 linklistId)
+        external
+        view
+        returns (bytes32[] memory);
+
+    function getLinkedCharacterLinkTags(
+        uint256 tokenId,
+        uint256 fromCharacterId,
+        uint256 toCharacterId,
+        bytes32 linkType
+    ) external view returns (bytes32[] memory);
+
+    function getLinkedNoteTags(
+        uint256 tokenId,
+        uint256 characterId,
+        uint256 noteId
+    ) external view returns (bytes32[] memory);
+
+    function getLinkedERC721Tags(
+        uint256 tokenId,
+        address tokenAddress,
+        uint256 erc721TokenId
+    ) external view returns (bytes32[] memory);
+
     // NOTE: This function is deprecated.
     function getCurrentTakeOver(uint256 tokenId) external view returns (uint256);
 

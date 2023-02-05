@@ -32,8 +32,8 @@ contract LinkProfileTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.SECOND_CHARACTER_ID,
             Const.FollowLinkType,
-            1,
-            bytes32(0)
+            bytes32(0),
+            1
         );
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
@@ -258,8 +258,8 @@ contract LinkProfileTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             3,
             Const.FollowLinkType,
-            1,
-            bytes32(0)
+            bytes32(0),
+            1
         );
         web3Entry.createThenLinkCharacter(
             DataTypes.createThenLinkCharacterData(
