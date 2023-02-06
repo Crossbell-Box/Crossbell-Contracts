@@ -80,7 +80,7 @@ contract Web3EntryBase is
         returns (uint256 characterId)
     {
         // check if the handle exists
-        _checkHandleExists(vars.handle);
+        _checkHandleExists(keccak256(bytes(vars.handle)));
 
         // check if the handle is valid
         _validateHandle(vars.handle);
@@ -102,7 +102,7 @@ contract Web3EntryBase is
         _validateCallerPermission(characterId, OP.SET_HANDLE);
 
         // check if the handle exists
-        _checkHandleExists(newHandle);
+        _checkHandleExists(keccak256(bytes(newHandle)));
 
         // check if the handle is valid
         _validateHandle(newHandle);
@@ -723,8 +723,7 @@ contract Web3EntryBase is
         if (_primaryCharacterByAddress[to] != 0) revert ErrTargetAlreadyHasPrimaryCharacter();
 
         // check if the to handle exists
-        bytes32 handleHash = keccak256(bytes(Strings.toHexString(uint160(to), 20)));
-        if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
+        _checkHandleExists(keccak256(abi.encodePacked(to)));
 
         uint256 characterId = ++_characterCounter;
         // mint character nft
@@ -733,7 +732,7 @@ contract Web3EntryBase is
         CharacterLogic.createCharacter(
             DataTypes.CreateCharacterData({
                 to: to,
-                handle: Strings.toHexString(uint160(to), 20),
+                handle: string(abi.encodePacked(to)),
                 uri: "",
                 linkModule: address(0),
                 linkModuleInitData: ""
@@ -760,8 +759,7 @@ contract Web3EntryBase is
     }
 
     // check if the handle exists
-    function _checkHandleExists(string calldata handle) internal view {
-        bytes32 handleHash = keccak256(bytes(handle));
+    function _checkHandleExists(bytes32 handleHash) internal view {
         if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
     }
 
