@@ -80,17 +80,18 @@ contract Web3EntryBase is
         override
         returns (uint256 characterId)
     {
+        // check if the handle exists
+        bytes32 handleHash = keccak256(bytes(vars.handle));
+        if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
+
+        // check if the handle is valid
+        _validateHandle(vars.handle);
+
         characterId = ++_characterCounter;
         // mint character nft
         _safeMint(vars.to, characterId);
 
-        CharacterLogic.createCharacter(
-            vars,
-            true,
-            characterId,
-            _characterIdByHandleHash,
-            _characterById
-        );
+        CharacterLogic.createCharacter(vars, characterId, _characterIdByHandleHash, _characterById);
 
         // set primary character
         if (_primaryCharacterByAddress[vars.to] == 0) {
@@ -102,12 +103,22 @@ contract Web3EntryBase is
     function setHandle(uint256 characterId, string calldata newHandle) external override {
         _validateCallerPermission(characterId, OP.SET_HANDLE);
 
+        // check if the handle exists
+        bytes32 handleHash = keccak256(bytes(newHandle));
+        if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
+
+        // check if the handle is valid
+        _validateHandle(newHandle);
+
         CharacterLogic.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
     }
 
     // owner permission
     function setSocialToken(uint256 characterId, address tokenAddress) external override {
         _validateCallerPermission(characterId, OP.SET_SOCIAL_TOKEN);
+
+        // check if the social token exists
+        if (_characterById[characterId].socialToken != address(0)) revert ErrSocialTokenExists();
 
         CharacterLogic.setSocialToken(characterId, tokenAddress, _characterById);
     }
@@ -714,6 +725,10 @@ contract Web3EntryBase is
     ) internal {
         if (_primaryCharacterByAddress[to] != 0) revert ErrTargetAlreadyHasPrimaryCharacter();
 
+        // check if the to handle exists
+        bytes32 handleHash = keccak256(bytes(Strings.toHexString(uint160(to), 20)));
+        if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
+
         uint256 characterId = ++_characterCounter;
         // mint character nft
         _safeMint(to, characterId);
@@ -726,7 +741,6 @@ contract Web3EntryBase is
                 linkModule: address(0),
                 linkModuleInitData: ""
             }),
-            false,
             characterId,
             _characterIdByHandleHash,
             _characterById
@@ -792,5 +806,28 @@ contract Web3EntryBase is
 
     function _validateNoteNotLocked(uint256 characterId, uint256 noteId) internal view {
         if (_noteByIdByCharacter[characterId][noteId].locked) revert ErrNoteLocked();
+    }
+
+    function _validateHandle(string calldata handle) internal pure {
+        bytes memory byteHandle = bytes(handle);
+        if (
+            byteHandle.length > Constants.MAX_HANDLE_LENGTH ||
+            byteHandle.length < Constants.MIN_HANDLE_LENGTH
+        ) revert ErrHandleLengthInvalid();
+
+        uint256 byteHandleLength = byteHandle.length;
+        for (uint256 i = 0; i < byteHandleLength; ) {
+            // char range: [0,9][a,z][-][_]
+            if (
+                (byteHandle[i] < "0" ||
+                    byteHandle[i] > "z" ||
+                    (byteHandle[i] > "9" && byteHandle[i] < "a")) &&
+                byteHandle[i] != "-" &&
+                byteHandle[i] != "_"
+            ) revert ErrHandleContainsInvalidCharacters();
+            unchecked {
+                ++i;
+            }
+        }
     }
 }

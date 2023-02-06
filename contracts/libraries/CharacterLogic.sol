@@ -15,18 +15,11 @@ library CharacterLogic {
 
     function createCharacter(
         DataTypes.CreateCharacterData calldata vars,
-        bool validateHandle,
         uint256 characterId,
         mapping(bytes32 => uint256) storage _characterIdByHandleHash,
         mapping(uint256 => DataTypes.Character) storage _characterById
     ) external {
-        if (validateHandle) {
-            _validateHandle(vars.handle);
-        }
-
         bytes32 handleHash = keccak256(bytes(vars.handle));
-        if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
-
         _characterIdByHandleHash[handleHash] = characterId;
 
         _characterById[characterId].characterId = characterId;
@@ -57,8 +50,6 @@ library CharacterLogic {
         address tokenAddress,
         mapping(uint256 => DataTypes.Character) storage _characterById
     ) external {
-        if (_characterById[characterId].socialToken != address(0)) revert ErrSocialTokenExists();
-
         _characterById[characterId].socialToken = tokenAddress;
 
         emit Events.SetSocialToken(msg.sender, characterId, tokenAddress);
@@ -88,25 +79,20 @@ library CharacterLogic {
         mapping(bytes32 => uint256) storage _characterIdByHandleHash,
         mapping(uint256 => DataTypes.Character) storage _characterById
     ) external {
-        _validateHandle(newHandle);
-
-        // set new handle
-        bytes32 handleHash = keccak256(bytes(newHandle));
-        if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
-
         // remove old handle
         string memory oldHandle = _characterById[characterId].handle;
         bytes32 oldHandleHash = keccak256(bytes(oldHandle));
         delete _characterIdByHandleHash[oldHandleHash];
 
+        // set new handle
+        bytes32 handleHash = keccak256(bytes(newHandle));
         _characterIdByHandleHash[handleHash] = characterId;
-
         _characterById[characterId].handle = newHandle;
 
         emit Events.SetHandle(msg.sender, characterId, newHandle);
     }
 
-    function _validateHandle(string calldata handle) private pure {
+    function validateHandle(string calldata handle) internal pure {
         bytes memory byteHandle = bytes(handle);
         if (
             byteHandle.length > Constants.MAX_HANDLE_LENGTH ||
