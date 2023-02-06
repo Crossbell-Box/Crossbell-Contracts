@@ -29,7 +29,6 @@ contract Web3EntryBase is
     Initializable,
     Web3EntryExtendStorage
 {
-    using Strings for uint256;
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -81,8 +80,7 @@ contract Web3EntryBase is
         returns (uint256 characterId)
     {
         // check if the handle exists
-        bytes32 handleHash = keccak256(bytes(vars.handle));
-        if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
+        _checkHandleExists(vars.handle);
 
         // check if the handle is valid
         _validateHandle(vars.handle);
@@ -104,8 +102,7 @@ contract Web3EntryBase is
         _validateCallerPermission(characterId, OP.SET_HANDLE);
 
         // check if the handle exists
-        bytes32 handleHash = keccak256(bytes(newHandle));
-        if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
+        _checkHandleExists(newHandle);
 
         // check if the handle is valid
         _validateHandle(newHandle);
@@ -762,6 +759,12 @@ contract Web3EntryBase is
         );
     }
 
+    // check if the handle exists
+    function _checkHandleExists(string calldata handle) internal view {
+        bytes32 handleHash = keccak256(bytes(handle));
+        if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
+    }
+
     function _validateCallerIsCharacterOwner(uint256 characterId) internal view {
         address owner = ownerOf(characterId);
 
@@ -809,25 +812,24 @@ contract Web3EntryBase is
     }
 
     function _validateHandle(string calldata handle) internal pure {
-        bytes memory byteHandle = bytes(handle);
+        bytes calldata byteHandle = bytes(handle);
         if (
             byteHandle.length > Constants.MAX_HANDLE_LENGTH ||
             byteHandle.length < Constants.MIN_HANDLE_LENGTH
         ) revert ErrHandleLengthInvalid();
 
-        uint256 byteHandleLength = byteHandle.length;
-        for (uint256 i = 0; i < byteHandleLength; ) {
-            // char range: [0,9][a,z][-][_]
-            if (
-                (byteHandle[i] < "0" ||
-                    byteHandle[i] > "z" ||
-                    (byteHandle[i] > "9" && byteHandle[i] < "a")) &&
-                byteHandle[i] != "-" &&
-                byteHandle[i] != "_"
-            ) revert ErrHandleContainsInvalidCharacters();
+        for (uint256 i = 0; i < byteHandle.length; ) {
+            _validateChar(byteHandle[i]);
+
             unchecked {
                 ++i;
             }
         }
+    }
+
+    function _validateChar(bytes1 c) internal pure {
+        // char range: [0,9][a,z][-][_]
+        if ((c < "0" || c > "z" || (c > "9" && c < "a")) && c != "-" && c != "_")
+            revert ErrHandleContainsInvalidCharacters();
     }
 }
