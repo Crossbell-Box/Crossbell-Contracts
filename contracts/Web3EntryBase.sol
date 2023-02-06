@@ -85,7 +85,7 @@ contract Web3EntryBase is
         if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
 
         // check if the handle is valid
-        CharacterLogic.validateHandle(vars.handle);
+        _validateHandle(vars.handle);
 
         characterId = ++_characterCounter;
         // mint character nft
@@ -108,7 +108,7 @@ contract Web3EntryBase is
         if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
 
         // check if the handle is valid
-        CharacterLogic.validateHandle(newHandle);
+        _validateHandle(newHandle);
 
         CharacterLogic.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
     }
@@ -806,5 +806,28 @@ contract Web3EntryBase is
 
     function _validateNoteNotLocked(uint256 characterId, uint256 noteId) internal view {
         if (_noteByIdByCharacter[characterId][noteId].locked) revert ErrNoteLocked();
+    }
+
+    function _validateHandle(string calldata handle) internal pure {
+        bytes memory byteHandle = bytes(handle);
+        if (
+            byteHandle.length > Constants.MAX_HANDLE_LENGTH ||
+            byteHandle.length < Constants.MIN_HANDLE_LENGTH
+        ) revert ErrHandleLengthInvalid();
+
+        uint256 byteHandleLength = byteHandle.length;
+        for (uint256 i = 0; i < byteHandleLength; ) {
+            // char range: [0,9][a,z][-][_]
+            if (
+                (byteHandle[i] < "0" ||
+                    byteHandle[i] > "z" ||
+                    (byteHandle[i] > "9" && byteHandle[i] < "a")) &&
+                byteHandle[i] != "-" &&
+                byteHandle[i] != "_"
+            ) revert ErrHandleContainsInvalidCharacters();
+            unchecked {
+                ++i;
+            }
+        }
     }
 }
