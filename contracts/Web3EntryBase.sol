@@ -155,7 +155,6 @@ contract Web3EntryBase is
             vars.toCharacterId,
             vars.linkType,
             vars.data,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
             _linklist,
             _characterById[vars.toCharacterId].linkModule,
             _attachedLinklists
@@ -167,7 +166,6 @@ contract Web3EntryBase is
 
         LinkLogic.unlinkCharacter(
             vars,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
             _linklist,
             _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
@@ -185,13 +183,7 @@ contract Web3EntryBase is
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_NOTE);
         _validateNoteExists(vars.toCharacterId, vars.toNoteId);
 
-        LinkLogic.linkNote(
-            vars,
-            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
-            _linklist,
-            _noteByIdByCharacter,
-            _attachedLinklists
-        );
+        LinkLogic.linkNote(vars, _linklist, _noteByIdByCharacter, _attachedLinklists);
     }
 
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external override {
@@ -751,7 +743,6 @@ contract Web3EntryBase is
             characterId,
             linkType,
             data,
-            IERC721Enumerable(this).ownerOf(fromCharacterId),
             _linklist,
             address(0),
             _attachedLinklists

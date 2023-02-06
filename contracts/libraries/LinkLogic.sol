@@ -18,11 +18,11 @@ library LinkLogic {
         uint256 toCharacterId,
         bytes32 linkType,
         bytes memory data,
-        address linker,
         address linklist,
         address linkModule,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
+        address linker = IERC721Enumerable(address(this)).ownerOf(fromCharacterId);
         uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist, _attachedLinklists);
 
         // add to link list
@@ -40,10 +40,10 @@ library LinkLogic {
 
     function unlinkCharacter(
         DataTypes.unlinkCharacterData calldata vars,
-        address linker,
         address linklist,
         uint256 linklistId
     ) external {
+        address linker = IERC721Enumerable(address(this)).ownerOf(vars.fromCharacterId);
         // remove from link list
         ILinklist(linklist).removeLinkingCharacterId(linklistId, vars.toCharacterId);
 
@@ -57,11 +57,11 @@ library LinkLogic {
 
     function linkNote(
         DataTypes.linkNoteData calldata vars,
-        address linker,
         address linklist,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
+        address linker = IERC721Enumerable(address(this)).ownerOf(vars.fromCharacterId);
         uint256 linklistId = _mintLinklist(
             vars.fromCharacterId,
             vars.linkType,
