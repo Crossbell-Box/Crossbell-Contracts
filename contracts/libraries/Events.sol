@@ -67,6 +67,7 @@ library Events {
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,
         bytes32 linkType,
+        bytes32 tag,
         uint256 linklistId
     );
 
@@ -74,7 +75,8 @@ library Events {
         address indexed account,
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,
-        bytes32 linkType
+        bytes32 linkType,
+        bytes32 tag
     );
 
     event LinkNote(
@@ -82,6 +84,7 @@ library Events {
         uint256 indexed toCharacterId,
         uint256 indexed toNoteId,
         bytes32 linkType,
+        bytes32 tag,
         uint256 linklistId
     );
 
@@ -90,6 +93,7 @@ library Events {
         uint256 indexed toCharacterId,
         uint256 indexed toNoteId,
         bytes32 linkType,
+        bytes32 tag,
         uint256 linklistId
     );
 
@@ -98,6 +102,7 @@ library Events {
         address indexed tokenAddress,
         uint256 indexed toNoteId,
         bytes32 linkType,
+        bytes32 tag,
         uint256 linklistId
     );
 
@@ -105,30 +110,39 @@ library Events {
         uint256 indexed fromCharacterId,
         address indexed ethAddress,
         bytes32 linkType,
+        bytes32 tag,
         uint256 linklistId
     );
 
     event UnlinkAddress(
         uint256 indexed fromCharacterId,
         address indexed ethAddress,
-        bytes32 linkType
+        bytes32 linkType,
+        bytes32 tag
     );
 
     event LinkAnyUri(
         uint256 indexed fromCharacterId,
         string toUri,
         bytes32 linkType,
+        bytes32 tag,
         uint256 linklistId
     );
 
-    event UnlinkAnyUri(uint256 indexed fromCharacterId, string toUri, bytes32 linkType);
+    event UnlinkAnyUri(
+        uint256 indexed fromCharacterId,
+        string toUri,
+        bytes32 linkType,
+        bytes32 tag
+    );
 
     event LinkCharacterLink(
         uint256 indexed fromCharacterId,
         bytes32 indexed linkType,
         uint256 clFromCharacterId,
         uint256 clToCharacterId,
-        bytes32 clLinkType
+        bytes32 clLinkType,
+        bytes32 cltag
     );
 
     event UnlinkCharacterLink(
@@ -136,7 +150,8 @@ library Events {
         bytes32 indexed linkType,
         uint256 clFromCharactereId,
         uint256 clToCharacterId,
-        bytes32 clLinkType
+        bytes32 clLinkType,
+        bytes32 cltag
     );
 
     event UnlinkERC721(
@@ -144,6 +159,7 @@ library Events {
         address indexed tokenAddress,
         uint256 indexed toNoteId,
         bytes32 linkType,
+        bytes32 tag,
         uint256 linklistId
     );
 
@@ -151,6 +167,7 @@ library Events {
         uint256 indexed fromCharacterId,
         uint256 indexed toLinklistId,
         bytes32 linkType,
+        bytes32 tag,
         uint256 indexed linklistId
     );
 
@@ -158,6 +175,7 @@ library Events {
         uint256 indexed fromCharacterId,
         uint256 indexed toLinklistId,
         bytes32 linkType,
+        bytes32 tag,
         uint256 indexed linklistId
     );
 

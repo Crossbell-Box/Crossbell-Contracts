@@ -25,6 +25,7 @@ library DataTypes {
         uint256 fromCharacterId;
         address to;
         bytes32 linkType;
+        bytes32 tag;
     }
 
     struct linkNoteData {
@@ -32,6 +33,7 @@ library DataTypes {
         uint256 toCharacterId;
         uint256 toNoteId;
         bytes32 linkType;
+        bytes32 tag;
         bytes data;
     }
 
@@ -40,12 +42,14 @@ library DataTypes {
         uint256 toCharacterId;
         uint256 toNoteId;
         bytes32 linkType;
+        bytes32 tag;
     }
 
     struct linkCharacterData {
         uint256 fromCharacterId;
         uint256 toCharacterId;
         bytes32 linkType;
+        bytes32 tag;
         bytes data;
     }
 
@@ -53,6 +57,7 @@ library DataTypes {
         uint256 fromCharacterId;
         uint256 toCharacterId;
         bytes32 linkType;
+        bytes32 tag;
     }
 
     struct linkERC721Data {
@@ -60,6 +65,7 @@ library DataTypes {
         address tokenAddress;
         uint256 tokenId;
         bytes32 linkType;
+        bytes32 tag;
         bytes data;
     }
 
@@ -68,12 +74,14 @@ library DataTypes {
         address tokenAddress;
         uint256 tokenId;
         bytes32 linkType;
+        bytes32 tag;
     }
 
     struct linkAddressData {
         uint256 fromCharacterId;
         address ethAddress;
         bytes32 linkType;
+        bytes32 tag;
         bytes data;
     }
 
@@ -81,12 +89,14 @@ library DataTypes {
         uint256 fromCharacterId;
         address ethAddress;
         bytes32 linkType;
+        bytes32 tag;
     }
 
     struct linkAnyUriData {
         uint256 fromCharacterId;
         string toUri;
         bytes32 linkType;
+        bytes32 tag;
         bytes data;
     }
 
@@ -94,12 +104,14 @@ library DataTypes {
         uint256 fromCharacterId;
         string toUri;
         bytes32 linkType;
+        bytes32 tag;
     }
 
     struct linkLinklistData {
         uint256 fromCharacterId;
         uint256 toLinkListId;
         bytes32 linkType;
+        bytes32 tag;
         bytes data;
     }
 
@@ -107,6 +119,7 @@ library DataTypes {
         uint256 fromCharacterId;
         uint256 toLinkListId;
         bytes32 linkType;
+        bytes32 tag;
     }
 
     struct setLinkModule4CharacterData {
@@ -153,6 +166,7 @@ library DataTypes {
         uint256[] toCharacterIds;
         bytes[] data;
         address[] toAddresses;
+        bytes32 tag;
         bytes32 linkType;
     }
 
@@ -208,6 +222,7 @@ library DataTypes {
         uint256 fromCharacterId;
         uint256 toCharacterId;
         bytes32 linkType;
+        bytes32 tag;
     }
 
     struct NoteStruct {

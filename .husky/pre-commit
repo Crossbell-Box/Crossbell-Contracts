@@ -9,6 +9,6 @@ yarn lint
 echo "Running test"
 yarn test
 
- # unit test
+# unit test
 echo "Running solhint"
 yarn solhint

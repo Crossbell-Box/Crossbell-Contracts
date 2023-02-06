@@ -66,4 +66,12 @@ library Const {
 
     uint256 public constant PrivateKey0x1 =
         0x0000000000000000000000000000000000000000000000000000000000000001;
+
+    // note link tag
+    // "LinkNoteTag"
+    bytes32 public constant NoteLinkTag =
+        0x4c696e6b4e6f7465546167000000000000000000000000000000000000000000;
+    // "LinkUriTag"
+    bytes32 public constant UriLinkTag =
+        0x4e6f74654c696e6b546167000000000000000000000000000000000000000000;
 }

@@ -146,6 +146,7 @@ contract Web3EntryBase is
             vars.fromCharacterId,
             vars.toCharacterId,
             vars.linkType,
+            vars.tag,
             vars.data,
             IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
             _linklist,
@@ -170,7 +171,7 @@ contract Web3EntryBase is
         override
     {
         _validateCallerPermission(vars.fromCharacterId, OP.CREATE_THEN_LINK_CHARACTER);
-        _createThenLinkCharacter(vars.fromCharacterId, vars.to, vars.linkType, "0x");
+        _createThenLinkCharacter(vars.fromCharacterId, vars.to, vars.linkType, vars.tag, "0x");
     }
 
     function linkNote(DataTypes.linkNoteData calldata vars) external override {
@@ -498,7 +499,13 @@ contract Web3EntryBase is
         _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_NOTE);
 
         bytes32 linkItemType = Constants.NoteLinkTypeNote;
-        bytes32 linkKey = ILinklist(_linklist).addLinkingNote(0, note.characterId, note.noteId);
+        bytes32 linkItemTag = Constants.NoteLinkTag;
+        bytes32 linkKey = ILinklist(_linklist).addLinkingNote(
+            0,
+            note.characterId,
+            note.noteId,
+            linkItemTag
+        );
         uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
 
         PostLogic.postNoteWithLink(
@@ -521,10 +528,12 @@ contract Web3EntryBase is
         _validateERC721Exists(erc721.tokenAddress, erc721.erc721TokenId);
 
         bytes32 linkItemType = Constants.NoteLinkTypeERC721;
+        bytes32 linkItemTag = Constants.NoteLinkTag;
         bytes32 linkKey = ILinklist(_linklist).addLinkingERC721(
             0,
             erc721.tokenAddress,
-            erc721.erc721TokenId
+            erc721.erc721TokenId,
+            linkItemTag
         );
         uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
 
@@ -548,7 +557,7 @@ contract Web3EntryBase is
         _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_ANYURI);
 
         bytes32 linkItemType = Constants.NoteLinkTypeAnyUri;
-        bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
+        bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri, Constants.UriLinkTag);
         uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
 
         PostLogic.postNoteWithLink(
@@ -710,6 +719,7 @@ contract Web3EntryBase is
         uint256 fromCharacterId,
         address to,
         bytes32 linkType,
+        bytes32 tag,
         bytes memory data
     ) internal {
         if (_primaryCharacterByAddress[to] != 0) revert ErrTargetAlreadyHasPrimaryCharacter();
@@ -740,6 +750,7 @@ contract Web3EntryBase is
             fromCharacterId,
             characterId,
             linkType,
+            tag,
             data,
             IERC721Enumerable(this).ownerOf(fromCharacterId),
             _linklist,

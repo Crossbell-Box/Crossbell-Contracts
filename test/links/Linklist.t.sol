@@ -39,6 +39,7 @@ contract LinklistTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.FollowLinkType,
+                bytes32(0),
                 new bytes(0)
             )
         );
@@ -61,6 +62,7 @@ contract LinklistTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.FollowLinkType,
+                bytes32(0),
                 new bytes(0)
             )
         );
@@ -79,6 +81,7 @@ contract LinklistTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.FollowLinkType,
+                bytes32(0),
                 new bytes(0)
             )
         );
@@ -103,6 +106,7 @@ contract LinklistTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.FollowLinkType,
+                bytes32(0),
                 new bytes(0)
             )
         );
