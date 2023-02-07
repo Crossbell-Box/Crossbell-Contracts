@@ -11,19 +11,17 @@ contract Resolver is IResolver, Ownable {
     uint256 internal _totalENSCount;
     uint256 internal _totalRNSCount;
 
-    function addENSRecords(string[] calldata labels, address[] calldata owners)
-        external
-        override
-        onlyOwner
-    {
+    function addENSRecords(
+        string[] calldata labels,
+        address[] calldata owners
+    ) external override onlyOwner {
         _addRecords(labels, owners, true);
     }
 
-    function addRNSRecords(string[] calldata labels, address[] calldata owners)
-        external
-        override
-        onlyOwner
-    {
+    function addRNSRecords(
+        string[] calldata labels,
+        address[] calldata owners
+    ) external override onlyOwner {
         _addRecords(labels, owners, false);
     }
 
@@ -53,11 +51,7 @@ contract Resolver is IResolver, Ownable {
         return _totalRNSCount;
     }
 
-    function _addRecords(
-        string[] memory labels,
-        address[] memory owners,
-        bool ens
-    ) internal {
+    function _addRecords(string[] memory labels, address[] memory owners, bool ens) internal {
         require(labels.length == owners.length, "ArrayLengthMismatch");
         for (uint256 i = 0; i < labels.length; i++) {
             bytes32 hash = keccak256(bytes(labels[i]));

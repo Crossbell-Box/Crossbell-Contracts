@@ -12,10 +12,10 @@ contract ApprovalLinkModule4Character is ILinkModule4Character, ModuleBase {
 
     constructor(address web3Entry) ModuleBase(web3Entry) {}
 
-    function initializeLinkModule(uint256 characterId, bytes calldata data)
-        external
-        returns (bytes memory)
-    {
+    function initializeLinkModule(
+        uint256 characterId,
+        bytes calldata data
+    ) external returns (bytes memory) {
         address owner = IERC721(web3Entry).ownerOf(characterId);
 
         if (data.length > 0) {

@@ -51,11 +51,7 @@ contract Web3EntryBase is
     }
 
     // overridden in web3Entry
-    function grantOperatorPermissions(
-        uint256,
-        address,
-        uint256
-    ) external virtual override {} // solhint-disable-line no-empty-blocks
+    function grantOperatorPermissions(uint256, address, uint256) external virtual override {} // solhint-disable-line no-empty-blocks
 
     function grantOperators4Note(
         uint256 characterId,
@@ -74,11 +70,9 @@ contract Web3EntryBase is
      *      * linkModule: The link module to use, can be the zero address.
      *      * linkModuleInitData: The link module initialization data, if any.
      */
-    function createCharacter(DataTypes.CreateCharacterData calldata vars)
-        external
-        override
-        returns (uint256 characterId)
-    {
+    function createCharacter(
+        DataTypes.CreateCharacterData calldata vars
+    ) external override returns (uint256 characterId) {
         // check if the handle exists
         _checkHandleExists(keccak256(bytes(vars.handle)));
 
@@ -171,10 +165,9 @@ contract Web3EntryBase is
         );
     }
 
-    function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars)
-        external
-        override
-    {
+    function createThenLinkCharacter(
+        DataTypes.createThenLinkCharacterData calldata vars
+    ) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.CREATE_THEN_LINK_CHARACTER);
         _createThenLinkCharacter(vars.fromCharacterId, vars.to, vars.linkType, "0x");
     }
@@ -314,10 +307,9 @@ contract Web3EntryBase is
      */
     //////////////////////////////////////////////////////////////
 
-    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars)
-        external
-        override
-    {
+    function setLinkModule4Linklist(
+        DataTypes.setLinkModule4LinklistData calldata vars
+    ) external override {
         // get character id of the owner of this linklist
         uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(vars.linklistId);
 
@@ -336,10 +328,9 @@ contract Web3EntryBase is
      * @dev Operators can't setLinkModule4Address, because this linkModule is for 
      addresses and is irrelevan to characters.
      */
-    function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars)
-        external
-        override
-    {
+    function setLinkModule4Address(
+        DataTypes.setLinkModule4AddressData calldata vars
+    ) external override {
         if (msg.sender != vars.account) revert ErrNotAddressOwner();
 
         LinkModuleLogic.setLinkModule4Address(
@@ -422,11 +413,10 @@ contract Web3EntryBase is
         emit Events.DeleteNote(characterId, noteId);
     }
 
-    function postNote4Character(DataTypes.PostNoteData calldata postNoteData, uint256 toCharacterId)
-        external
-        override
-        returns (uint256)
-    {
+    function postNote4Character(
+        DataTypes.PostNoteData calldata postNoteData,
+        uint256 toCharacterId
+    ) external override returns (uint256) {
         _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_CHARACTER);
 
         bytes32 linkItemType = Constants.NoteLinkTypeCharacter;
@@ -445,11 +435,10 @@ contract Web3EntryBase is
         return noteId;
     }
 
-    function postNote4Address(DataTypes.PostNoteData calldata noteData, address ethAddress)
-        external
-        override
-        returns (uint256)
-    {
+    function postNote4Address(
+        DataTypes.PostNoteData calldata noteData,
+        address ethAddress
+    ) external override returns (uint256) {
         _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_ADDRESS);
 
         bytes32 linkItemType = Constants.NoteLinkTypeAddress;
@@ -468,11 +457,10 @@ contract Web3EntryBase is
         return noteId;
     }
 
-    function postNote4Linklist(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
-        external
-        override
-        returns (uint256)
-    {
+    function postNote4Linklist(
+        DataTypes.PostNoteData calldata noteData,
+        uint256 toLinklistId
+    ) external override returns (uint256) {
         _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_LINKLIST);
 
         bytes32 linkItemType = Constants.NoteLinkTypeLinklist;
@@ -540,11 +528,10 @@ contract Web3EntryBase is
         return noteId;
     }
 
-    function postNote4AnyUri(DataTypes.PostNoteData calldata postNoteData, string calldata uri)
-        external
-        override
-        returns (uint256)
-    {
+    function postNote4AnyUri(
+        DataTypes.PostNoteData calldata postNoteData,
+        string calldata uri
+    ) external override returns (uint256) {
         _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_ANYURI);
 
         bytes32 linkItemType = Constants.NoteLinkTypeAnyUri;
@@ -576,18 +563,18 @@ contract Web3EntryBase is
     }
 
     // overridden in web3Entry
-    function getOperatorPermissions(uint256, address)
-        external
-        view
-        virtual
-        override
-        returns (uint256)
-    {
+    function getOperatorPermissions(
+        uint256,
+        address
+    ) external view virtual override returns (uint256) {
         return 0;
     }
 
     // overridden in web3Entry
-    function getOperators4Note(uint256 characterId, uint256 noteId)
+    function getOperators4Note(
+        uint256 characterId,
+        uint256 noteId
+    )
         external
         view
         virtual
@@ -611,21 +598,15 @@ contract Web3EntryBase is
         return characterId == _primaryCharacterByAddress[account];
     }
 
-    function getCharacter(uint256 characterId)
-        external
-        view
-        override
-        returns (DataTypes.Character memory)
-    {
+    function getCharacter(
+        uint256 characterId
+    ) external view override returns (DataTypes.Character memory) {
         return _characterById[characterId];
     }
 
-    function getCharacterByHandle(string calldata handle)
-        external
-        view
-        override
-        returns (DataTypes.Character memory)
-    {
+    function getCharacterByHandle(
+        string calldata handle
+    ) external view override returns (DataTypes.Character memory) {
         bytes32 handleHash = keccak256(bytes(handle));
         uint256 characterId = _characterIdByHandleHash[handleHash];
         return _characterById[characterId];
@@ -639,12 +620,10 @@ contract Web3EntryBase is
         return tokenURI(characterId);
     }
 
-    function getNote(uint256 characterId, uint256 noteId)
-        external
-        view
-        override
-        returns (DataTypes.Note memory)
-    {
+    function getNote(
+        uint256 characterId,
+        uint256 noteId
+    ) external view override returns (DataTypes.Note memory) {
         return _noteByIdByCharacter[characterId][noteId];
     }
 
@@ -656,12 +635,10 @@ contract Web3EntryBase is
         return _linkModules4Linklist[tokenId];
     }
 
-    function getLinkModule4ERC721(address tokenAddress, uint256 tokenId)
-        external
-        view
-        override
-        returns (address)
-    {
+    function getLinkModule4ERC721(
+        address tokenAddress,
+        uint256 tokenId
+    ) external view override returns (address) {
         return _linkModules4ERC721[tokenAddress][tokenId];
     }
 
@@ -669,12 +646,10 @@ contract Web3EntryBase is
         return ILinklist(_linklist).Uri(tokenId);
     }
 
-    function getLinklistId(uint256 characterId, bytes32 linkType)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getLinklistId(
+        uint256 characterId,
+        bytes32 linkType
+    ) external view override returns (uint256) {
         return _attachedLinklists[characterId][linkType];
     }
 
@@ -776,11 +751,10 @@ contract Web3EntryBase is
     function _validateCallerPermission(uint256, uint256) internal view virtual {}
 
     // overridden in web3Entry
-    function _validateCallerPermission4Note(uint256 characterId, uint256 noteId)
-        internal
-        view
-        virtual
-    {} // solhint-disable-line no-empty-blocks
+    function _validateCallerPermission4Note(
+        uint256 characterId,
+        uint256 noteId
+    ) internal view virtual {} // solhint-disable-line no-empty-blocks
 
     function _validateCharacterExists(uint256 characterId) internal view {
         if (!_exists(characterId)) revert ErrCharacterNotExists(characterId);

@@ -131,15 +131,9 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
         return IERC721Receiver.onERC721Received.selector;
     }
 
-    function _splitSignature(bytes memory sig)
-        internal
-        pure
-        returns (
-            uint8 v,
-            bytes32 r,
-            bytes32 s
-        )
-    {
+    function _splitSignature(
+        bytes memory sig
+    ) internal pure returns (uint8 v, bytes32 r, bytes32 s) {
         require(sig.length == 65, "NewbieVilla: Wrong signature length");
 
         /* solhint-disable no-inline-assembly */

@@ -51,11 +51,10 @@ contract Utils is Test {
         assertEq(note.deleted, deleted);
     }
 
-    function makeCharacterData(string memory handle, address to)
-        public
-        pure
-        returns (DataTypes.CreateCharacterData memory)
-    {
+    function makeCharacterData(
+        string memory handle,
+        address to
+    ) public pure returns (DataTypes.CreateCharacterData memory) {
         DataTypes.CreateCharacterData memory characterData = DataTypes.CreateCharacterData(
             to,
             handle,
@@ -66,11 +65,9 @@ contract Utils is Test {
         return characterData;
     }
 
-    function makePostNoteData(uint256 characterId)
-        public
-        pure
-        returns (DataTypes.PostNoteData memory)
-    {
+    function makePostNoteData(
+        uint256 characterId
+    ) public pure returns (DataTypes.PostNoteData memory) {
         DataTypes.PostNoteData memory postNoteData = DataTypes.PostNoteData(
             characterId,
             Const.MOCK_NOTE_URI,
@@ -122,11 +119,7 @@ contract Utils is Test {
         return arr;
     }
 
-    function array(
-        uint256 a,
-        uint256 b,
-        uint256 c
-    ) public pure returns (uint256[] memory) {
+    function array(uint256 a, uint256 b, uint256 c) public pure returns (uint256[] memory) {
         uint256[] memory arr = new uint256[](3);
         arr[0] = a;
         arr[1] = b;
@@ -134,11 +127,7 @@ contract Utils is Test {
         return arr;
     }
 
-    function array(
-        address a,
-        address b,
-        address c
-    ) public pure returns (address[] memory) {
+    function array(address a, address b, address c) public pure returns (address[] memory) {
         address[] memory arr = new address[](3);
         arr[0] = a;
         arr[1] = b;
@@ -146,11 +135,7 @@ contract Utils is Test {
         return arr;
     }
 
-    function array(
-        bytes32 a,
-        bytes32 b,
-        bytes32 c
-    ) public pure returns (bytes32[] memory) {
+    function array(bytes32 a, bytes32 b, bytes32 c) public pure returns (bytes32[] memory) {
         bytes32[] memory arr = new bytes32[](3);
         arr[0] = a;
         arr[1] = b;
