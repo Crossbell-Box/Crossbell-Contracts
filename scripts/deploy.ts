@@ -73,7 +73,7 @@ async function main() {
             proxyLinklist.address,
             mintNFT.address,
             proxyPeriphery.address,
-            resolver.address
+            resolver.address,
         );
 
     await linkList
