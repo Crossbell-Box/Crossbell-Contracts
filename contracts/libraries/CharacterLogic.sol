@@ -91,27 +91,4 @@ library CharacterLogic {
 
         emit Events.SetHandle(msg.sender, characterId, newHandle);
     }
-
-    function validateHandle(string calldata handle) internal pure {
-        bytes memory byteHandle = bytes(handle);
-        if (
-            byteHandle.length > Constants.MAX_HANDLE_LENGTH ||
-            byteHandle.length < Constants.MIN_HANDLE_LENGTH
-        ) revert ErrHandleLengthInvalid();
-
-        uint256 byteHandleLength = byteHandle.length;
-        for (uint256 i = 0; i < byteHandleLength; ) {
-            // char range: [0,9][a,z][-][_]
-            if (
-                (byteHandle[i] < "0" ||
-                    byteHandle[i] > "z" ||
-                    (byteHandle[i] > "9" && byteHandle[i] < "a")) &&
-                byteHandle[i] != "-" &&
-                byteHandle[i] != "_"
-            ) revert ErrHandleContainsInvalidCharacters();
-            unchecked {
-                ++i;
-            }
-        }
-    }
 }

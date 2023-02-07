@@ -125,13 +125,17 @@ contract Web3Entry is Web3EntryBase {
         uint256 len = _operatorsByCharacter[tokenId].length();
         address[] memory operators = _operatorsByCharacter[tokenId].values();
         for (uint256 i = 0; i < len; i++) {
-            _operatorsPermissionBitMap[tokenId][operators[i]] = 0;
-            _operatorsByCharacter[tokenId].remove(operators[i]);
+            _clearOperator(tokenId, operators[i]);
         }
         if (_primaryCharacterByAddress[from] != 0) {
             _primaryCharacterByAddress[from] = 0;
         }
         super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    function _clearOperator(uint256 tokenId, address operator) internal {
+        delete _operatorsPermissionBitMap[tokenId][operator];
+        _operatorsByCharacter[tokenId].remove(operator);
     }
 
     function _isOperatorAllowedForNote(
