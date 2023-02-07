@@ -30,7 +30,22 @@ foundry-test :; forge clean && forge test --optimize --optimizer-runs 200 -v
 solhint :; solhint -f table "{contracts,test,scripts}/**/*.sol"
 
 # slither
+# to install slither, visit [https://github.com/crytic/slither]
 slither :; slither .
+
+# mythril
+mythril :
+	@echo " > \033[32mChecking contracts with mythril...\033[0m"
+	./tools/mythril.sh
+
+manticore :
+	@echo " > \033[32mChecking contracts with manticore...\033[0m"
+	./tools/manticore/manticore.sh
+
+# upgradeable check
+upgradeable:
+	@echo " > \033[32mChecking upgradeable...\033[0m"
+	./tools/checkUpgradeable.sh
 
 # Lints
 lint :; npx prettier --write "{contracts,test,scripts}/**/*.{sol,ts}"
@@ -38,8 +53,5 @@ lint :; npx prettier --write "{contracts,test,scripts}/**/*.{sol,ts}"
 # Generate Gas Snapshots
 snapshot :; forge clean && forge snapshot
 
-# Rename all instances of femplate with the new repo name
-rename :; chmod +x ./scripts/* && ./scripts/rename.sh
-
-# fork mainnet environment
-mainnet-fork :; npx hardhat node
+# generate docs
+docgen :; npx hardhat docgen

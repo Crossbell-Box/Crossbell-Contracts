@@ -8,3 +8,5 @@ ApprovalLinkModule4Character.sol
 ApprovalLinkModule4Note.sol
 ApprovalMintModule.sol
 FeeMintModule.sol
+ERC721.sol
+Web3EntryBase.sol

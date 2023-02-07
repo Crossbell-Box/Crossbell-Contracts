@@ -53,7 +53,7 @@ async function main() {
         linklist,
         mintNFTImpl,
         periphery,
-        resolver
+        resolver,
     );
 
     console.log("LinkModuleLogic deployed to:", linkModuleLogic.address);
