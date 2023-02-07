@@ -41,8 +41,8 @@ library LinkLogic {
             fromCharacterId,
             toCharacterId,
             linkType,
-            tag,
-            linklistId
+            linklistId,
+            tag
         );
     }
 
@@ -99,7 +99,6 @@ library LinkLogic {
             vars.toCharacterId,
             vars.toNoteId,
             vars.linkType,
-            vars.tag,
             linklistId
         );
     }
@@ -127,7 +126,6 @@ library LinkLogic {
             vars.toCharacterId,
             vars.toNoteId,
             vars.linkType,
-            vars.tag,
             linklistId
         );
     }
@@ -150,8 +148,7 @@ library LinkLogic {
             linkType,
             linkData.fromCharacterId,
             linkData.toCharacterId,
-            linkData.linkType,
-            linkData.tag
+            linkData.linkType
         );
     }
 
@@ -171,8 +168,7 @@ library LinkLogic {
             linkType,
             linkData.fromCharacterId,
             linkData.toCharacterId,
-            linkData.linkType,
-            linkData.tag
+            linkData.linkType
         );
     }
 
@@ -195,7 +191,6 @@ library LinkLogic {
             vars.fromCharacterId,
             vars.toLinkListId,
             vars.linkType,
-            vars.tag,
             linklistId
         );
     }
@@ -212,7 +207,6 @@ library LinkLogic {
             vars.fromCharacterId,
             vars.toLinkListId,
             vars.linkType,
-            vars.tag,
             linklistId
         );
     }
@@ -237,7 +231,6 @@ library LinkLogic {
             vars.tokenAddress,
             vars.tokenId,
             vars.linkType,
-            vars.tag,
             linklistId
         );
     }
@@ -260,7 +253,6 @@ library LinkLogic {
             vars.tokenAddress,
             vars.tokenId,
             vars.linkType,
-            vars.tag,
             linklistId
         );
     }
@@ -280,13 +272,7 @@ library LinkLogic {
         // add to link list
         ILinklist(linklist).addLinkingAddress(linklistId, vars.ethAddress, vars.tag);
 
-        emit Events.LinkAddress(
-            vars.fromCharacterId,
-            vars.ethAddress,
-            vars.linkType,
-            vars.tag,
-            linklistId
-        );
+        emit Events.LinkAddress(vars.fromCharacterId, vars.ethAddress, vars.linkType, linklistId);
     }
 
     function unlinkAddress(
@@ -297,7 +283,7 @@ library LinkLogic {
         // remove from link list
         ILinklist(linklist).removeLinkingAddress(linklistId, vars.ethAddress, vars.tag);
 
-        emit Events.UnlinkAddress(vars.fromCharacterId, vars.ethAddress, vars.linkType, vars.tag);
+        emit Events.UnlinkAddress(vars.fromCharacterId, vars.ethAddress, vars.linkType);
     }
 
     function linkAnyUri(
@@ -315,13 +301,7 @@ library LinkLogic {
         // add to link list
         ILinklist(linklist).addLinkingAnyUri(linklistId, vars.toUri, vars.tag);
 
-        emit Events.LinkAnyUri(
-            vars.fromCharacterId,
-            vars.toUri,
-            vars.linkType,
-            vars.tag,
-            linklistId
-        );
+        emit Events.LinkAnyUri(vars.fromCharacterId, vars.toUri, vars.linkType, linklistId);
     }
 
     function unlinkAnyUri(
@@ -332,7 +312,7 @@ library LinkLogic {
         // remove from link list
         ILinklist(linklist).removeLinkingAnyUri(linklistId, vars.toUri, vars.tag);
 
-        emit Events.UnlinkAnyUri(vars.fromCharacterId, vars.toUri, vars.linkType, vars.tag);
+        emit Events.UnlinkAnyUri(vars.fromCharacterId, vars.toUri, vars.linkType);
     }
 
     function _mintLinklist(

@@ -124,11 +124,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     /////////////////////////////////
     // linking CharacterLink
     /////////////////////////////////
-    /**
-     * @notice  link a linklist belongs to another character.
-     * @param   tokenId  linklistId.
-     * @param   linkData  linkdata.
-     */
     function addLinkingCharacterLink(
         uint256 tokenId,
         DataTypes.CharacterLinkStruct calldata linkData
@@ -309,25 +304,11 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         return _linkingCharacters[tokenId].length();
     }
 
-    function getLinkedCharacterTags(uint256 tokenId, uint256 characterId)
-        external
-        view
-        override
-        returns (bytes32[] memory)
-    {
-        return _linkedCharacterTags[tokenId][characterId].values();
-    }
-
     function getOwnerCharacterId(uint256 tokenId) external view override returns (uint256) {
         uint256 characterId = _linklistOwners[tokenId];
         return characterId;
     }
 
-    /**
-     * @notice retrive all linked notes under a linklist.
-     * @param   tokenId  linklistId.
-     * @return  results  all the noted retrived.
-     */
     function getLinkingNotes(uint256 tokenId)
         external
         view
@@ -342,12 +323,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         }
     }
 
-    /**
-     * @notice  retrive a note by its linkKey.
-     * @dev     the linkKey is calculated as: keccak256(abi.encodePacked("Note", toCharacterId, toNoteId));.
-     * @param   linkKey  the key of this link.
-     * @return  DataTypes.NoteStruct  the note retrived.
-     */
     function getLinkingNote(bytes32 linkKey)
         external
         view
@@ -357,29 +332,10 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         return _linkNotes[linkKey];
     }
 
-    function getLinkedNoteTags(
-        uint256 tokenId,
-        uint256 characterId,
-        uint256 noteId
-    ) external view override returns (bytes32[] memory) {
-        bytes32 linkKey = keccak256(abi.encodePacked("Note", characterId, noteId));
-        return _linkedNoteTags[tokenId][linkKey].values();
-    }
-
-    /**
-     * @notice  get the number of linked notes under a linklist.
-     * @param   tokenId  linklistId.
-     * @return  uint256  the number of linked notes under the linklist.
-     */
     function getLinkingNoteListLength(uint256 tokenId) external view override returns (uint256) {
         return _linkNoteKeys[tokenId].length();
     }
 
-    /**
-     * @notice  get all the linked linklist under a linklist.
-     * @param   tokenId  linklist id to query.
-     * @return  results  all the linked linklist under the linklist.
-     */
     function getLinkingCharacterLinks(uint256 tokenId)
         external
         view
@@ -412,33 +368,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         return _linkingCharacterLinkKeys[tokenId].length();
     }
 
-    function getLinkedCharacterLinkTags(
-        uint256 tokenId,
-        uint256 fromCharacterId,
-        uint256 toCharacterId,
-        bytes32 linkType
-    ) external view override returns (bytes32[] memory) {
-        bytes32 linkKey = keccak256(
-            abi.encodePacked("CharacterLink", fromCharacterId, toCharacterId, linkType)
-        );
-        return _linkedCharacterLinkTags[tokenId][linkKey].values();
-    }
-
-    /**
-     * @notice  get tags of a linked linklist.
-     * @param   tokenId  linklist id to query.
-     * @param   linklistId  id of of the linked linklist.
-     * @return  bytes32[]  all the tag on the linked linklist.
-     */
-    function getLinkedLinklistTags(uint256 tokenId, uint256 linklistId)
-        external
-        view
-        override
-        returns (bytes32[] memory)
-    {
-        return _linkedLinklistTags[tokenId][linklistId].values();
-    }
-
     function getLinkingERC721s(uint256 tokenId)
         external
         view
@@ -466,15 +395,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         return _linkingERC721Keys[tokenId].length();
     }
 
-    function getLinkedERC721Tags(
-        uint256 tokenId,
-        address tokenAddress,
-        uint256 erc721TokenId
-    ) external view override returns (bytes32[] memory) {
-        bytes32 linkKey = keccak256(abi.encodePacked("ERC721", tokenAddress, erc721TokenId));
-        return _linkedERC721Tags[tokenId][linkKey].values();
-    }
-
     function getLinkingAddresses(uint256 tokenId)
         external
         view
@@ -486,15 +406,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
 
     function getLinkingAddressListLength(uint256 tokenId) external view override returns (uint256) {
         return _linkingAddresses[tokenId].length();
-    }
-
-    function getLinkedAddressTags(uint256 tokenId, address ethAddress)
-        external
-        view
-        override
-        returns (bytes32[] memory)
-    {
-        return _linkedAdressTags[tokenId][ethAddress].values();
     }
 
     function getLinkingAnyUris(uint256 tokenId)
@@ -526,15 +437,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
 
     function getLinkingAnyListLength(uint256 tokenId) external view override returns (uint256) {
         return _linkingAnyKeys[tokenId].length();
-    }
-
-    function getLinkedUriTags(uint256 tokenId, bytes32 toUri)
-        external
-        view
-        override
-        returns (bytes32[] memory)
-    {
-        return _linkedUriTags[tokenId][toUri].values();
     }
 
     function getLinkingLinklistIds(uint256 tokenId)

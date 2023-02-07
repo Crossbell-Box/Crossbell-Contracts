@@ -33,7 +33,7 @@ solhint :; solhint -f table "{contracts,test,scripts}/**/*.sol"
 slither :; slither .
 
 # Lints
-lint :; npx prettier --write "{contracts,test,scripts}/**/*.{sol,ts}"
+lint :; prettier --write "{contracts,test,scripts}/**/*.{sol,ts}"
 
 # Generate Gas Snapshots
 snapshot :; forge clean && forge snapshot
