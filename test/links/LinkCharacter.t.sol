@@ -32,15 +32,13 @@ contract LinkProfileTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.SECOND_CHARACTER_ID,
             Const.FollowLinkType,
-            1,
-            bytes32(0)
+            1
         );
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.FollowLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -54,7 +52,6 @@ contract LinkProfileTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.FollowLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -68,7 +65,6 @@ contract LinkProfileTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.FollowLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -83,7 +79,6 @@ contract LinkProfileTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.FollowLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -98,7 +93,6 @@ contract LinkProfileTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.THIRD_CHARACTER_ID,
                 Const.FollowLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -115,7 +109,6 @@ contract LinkProfileTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.FollowLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -128,7 +121,6 @@ contract LinkProfileTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.FollowLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -139,15 +131,13 @@ contract LinkProfileTest is Test, SetUp, Utils {
             alice,
             Const.FIRST_CHARACTER_ID,
             Const.SECOND_CHARACTER_ID,
-            Const.FollowLinkType,
-            bytes32(0)
+            Const.FollowLinkType
         );
         web3Entry.unlinkCharacter(
             DataTypes.unlinkCharacterData(
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
-                bytes32(0)
+                Const.FollowLinkType
             )
         );
 
@@ -156,19 +146,13 @@ contract LinkProfileTest is Test, SetUp, Utils {
             DataTypes.unlinkCharacterData(
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
-                bytes32(0)
+                Const.FollowLinkType
             )
         );
 
         // unlink a non-existing character
         web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                99999,
-                Const.FollowLinkType,
-                bytes32(0)
-            )
+            DataTypes.unlinkCharacterData(Const.FIRST_CHARACTER_ID, 99999, Const.FollowLinkType)
         );
         vm.stopPrank();
 
@@ -183,7 +167,6 @@ contract LinkProfileTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.FollowLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -195,8 +178,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
             DataTypes.unlinkCharacterData(
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
-                bytes32(0)
+                Const.FollowLinkType
             )
         );
     }
@@ -208,7 +190,6 @@ contract LinkProfileTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.FollowLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -223,7 +204,6 @@ contract LinkProfileTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.LikeLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -238,7 +218,6 @@ contract LinkProfileTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 bytes32("LinkTypeAB"),
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -253,20 +232,12 @@ contract LinkProfileTest is Test, SetUp, Utils {
     function testCreateThenLinkCharacter() public {
         vm.prank(alice);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.LinkCharacter(
-            alice,
-            Const.FIRST_CHARACTER_ID,
-            3,
-            Const.FollowLinkType,
-            1,
-            bytes32(0)
-        );
+        emit Events.LinkCharacter(alice, Const.FIRST_CHARACTER_ID, 3, Const.FollowLinkType, 1);
         web3Entry.createThenLinkCharacter(
             DataTypes.createThenLinkCharacterData(
                 Const.FIRST_CHARACTER_ID,
                 address(0x56789),
-                Const.FollowLinkType,
-                bytes32(0)
+                Const.FollowLinkType
             )
         );
     }

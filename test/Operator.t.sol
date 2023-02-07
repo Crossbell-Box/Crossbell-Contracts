@@ -307,7 +307,6 @@ contract OperatorTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.LikeLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -315,16 +314,14 @@ contract OperatorTest is Test, SetUp, Utils {
             DataTypes.unlinkCharacterData(
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
-                Const.LikeLinkType,
-                bytes32(0)
+                Const.LikeLinkType
             )
         );
         web3Entry.createThenLinkCharacter(
             DataTypes.createThenLinkCharacterData(
                 Const.FIRST_CHARACTER_ID,
                 Const.MOCK_TO_ADDRESS,
-                Const.LinkItemTypeCharacter,
-                bytes32(0)
+                Const.LinkItemTypeCharacter
             )
         );
         // bob can setlinklisturi
@@ -335,7 +332,6 @@ contract OperatorTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
                 Const.FollowLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -345,8 +341,7 @@ contract OperatorTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
-                Const.FollowLinkType,
-                bytes32(0)
+                Const.FollowLinkType
             )
         );
         // linkERC721
@@ -357,7 +352,6 @@ contract OperatorTest is Test, SetUp, Utils {
                 address(nft),
                 1,
                 Const.LikeLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -367,8 +361,7 @@ contract OperatorTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 address(nft),
                 1,
-                Const.LikeLinkType,
-                bytes32(0)
+                Const.LikeLinkType
             )
         );
         // linkAddress
@@ -377,7 +370,6 @@ contract OperatorTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 address(0x1232414),
                 Const.LikeLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -386,8 +378,7 @@ contract OperatorTest is Test, SetUp, Utils {
             DataTypes.unlinkAddressData(
                 Const.FIRST_CHARACTER_ID,
                 address(0x1232414),
-                Const.LikeLinkType,
-                bytes32(0)
+                Const.LikeLinkType
             )
         );
         // linkAnyUri
@@ -396,7 +387,6 @@ contract OperatorTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 "ipfs://anyURI",
                 Const.LikeLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
@@ -405,8 +395,7 @@ contract OperatorTest is Test, SetUp, Utils {
             DataTypes.unlinkAnyUriData(
                 Const.FIRST_CHARACTER_ID,
                 "ipfs://anyURI",
-                Const.LikeLinkType,
-                bytes32(0)
+                Const.LikeLinkType
             )
         );
         // linkLinklist
@@ -415,18 +404,12 @@ contract OperatorTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 1,
                 Const.LikeLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
         // unlinkLinklist
         web3Entry.unlinkLinklist(
-            DataTypes.unlinkLinklistData(
-                Const.FIRST_CHARACTER_ID,
-                1,
-                Const.LikeLinkType,
-                bytes32(0)
-            )
+            DataTypes.unlinkLinklistData(Const.FIRST_CHARACTER_ID, 1, Const.LikeLinkType)
         );
         ApprovalLinkModule4Character linkModule4Character = new ApprovalLinkModule4Character(
             address(web3Entry)

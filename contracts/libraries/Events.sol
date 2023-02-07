@@ -67,16 +67,14 @@ library Events {
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,
         bytes32 linkType,
-        uint256 linklistId,
-        bytes32 tag
+        uint256 linklistId
     );
 
     event UnlinkCharacter(
         address indexed account,
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,
-        bytes32 linkType,
-        bytes32 tag
+        bytes32 linkType
     );
 
     event LinkNote(

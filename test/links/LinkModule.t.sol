@@ -44,7 +44,6 @@ contract LinkModuleTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.LikeLinkType,
-                bytes32(0),
                 new bytes(1)
             )
         );
@@ -52,7 +51,7 @@ contract LinkModuleTest is Test, SetUp, Utils {
         web3Entry.createCharacter(makeCharacterData("imdick", dick));
         vm.prank(dick);
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(3, 2, Const.LikeLinkType, bytes32(0), new bytes(1))
+            DataTypes.linkCharacterData(3, 2, Const.LikeLinkType, new bytes(1))
         );
     }
 }

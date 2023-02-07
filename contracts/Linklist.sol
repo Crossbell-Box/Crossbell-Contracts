@@ -65,24 +65,14 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     /////////////////////////////////
     // linking Character
     /////////////////////////////////
-    function addLinkingCharacterId(
-        uint256 tokenId,
-        uint256 toCharacterId,
-        bytes32 tag
-    ) external override {
+    function addLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external override {
         _validateCallerIsWeb3Entry();
         _linkingCharacters[tokenId].add(toCharacterId);
-        _linkedCharacterTags[tokenId][toCharacterId].add(tag);
     }
 
-    function removeLinkingCharacterId(
-        uint256 tokenId,
-        uint256 toCharacterId,
-        bytes32 tag
-    ) external override {
+    function removeLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external override {
         _validateCallerIsWeb3Entry();
         _linkingCharacters[tokenId].remove(toCharacterId);
-        _linkedCharacterTags[tokenId][toCharacterId].remove(tag);
     }
 
     /////////////////////////////////
@@ -91,8 +81,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     function addLinkingNote(
         uint256 tokenId,
         uint256 toCharacterId,
-        uint256 toNoteId,
-        bytes32 tag
+        uint256 toNoteId
     ) external override returns (bytes32) {
         _validateCallerIsWeb3Entry();
 
@@ -101,21 +90,19 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
             _linkNoteKeys[tokenId].add(linkKey);
         }
         _linkNotes[linkKey] = DataTypes.NoteStruct({characterId: toCharacterId, noteId: toNoteId});
-        _linkedNoteTags[tokenId][linkKey].add(tag);
+
         return linkKey;
     }
 
     function removeLinkingNote(
         uint256 tokenId,
         uint256 toCharacterId,
-        uint256 toNoteId,
-        bytes32 tag
+        uint256 toNoteId
     ) external override {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("Note", toCharacterId, toNoteId));
         _linkNoteKeys[tokenId].remove(linkKey);
-        _linkedNoteTags[tokenId][linkKey].remove(tag);
 
         // do note delete
         // delete linkNoteList[linkKey];
@@ -140,7 +127,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         );
         if (tokenId != 0) {
             _linkingCharacterLinkKeys[tokenId].add(linkKey);
-            _linkedCharacterLinkTags[tokenId][linkKey].add(linkData.tag);
         }
         _linkingCharacterLinks[linkKey] = linkData;
     }
@@ -160,7 +146,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
             )
         );
         _linkingCharacterLinkKeys[tokenId].remove(linkKey);
-        _linkedCharacterLinkTags[tokenId][linkKey].remove(linkData.tag);
 
         // do note delete
         // delete linkingCharacterLinkList[linkKey];
@@ -172,15 +157,13 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     function addLinkingERC721(
         uint256 tokenId,
         address tokenAddress,
-        uint256 erc721TokenId,
-        bytes32 tag
+        uint256 erc721TokenId
     ) external override returns (bytes32) {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("ERC721", tokenAddress, erc721TokenId));
         if (tokenId != 0) {
             _linkingERC721Keys[tokenId].add(linkKey);
-            _linkedERC721Tags[tokenId][linkKey].add(tag);
         }
         _linkingERC721s[linkKey] = DataTypes.ERC721Struct({
             tokenAddress: tokenAddress,
@@ -193,14 +176,12 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     function removeLinkingERC721(
         uint256 tokenId,
         address tokenAddress,
-        uint256 erc721TokenId,
-        bytes32 tag
+        uint256 erc721TokenId
     ) external override {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("ERC721", tokenAddress, erc721TokenId));
         _linkingERC721Keys[tokenId].remove(linkKey);
-        _linkedERC721Tags[tokenId][linkKey].remove(tag);
 
         // do not delete, maybe others link the same token
         // delete linkingERC721List[linkKey];
@@ -209,55 +190,39 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     /////////////////////////////////
     // linking Address
     /////////////////////////////////
-    function addLinkingAddress(
-        uint256 tokenId,
-        address ethAddress,
-        bytes32 tag
-    ) external override {
+    function addLinkingAddress(uint256 tokenId, address ethAddress) external override {
         _validateCallerIsWeb3Entry();
         _linkingAddresses[tokenId].add(ethAddress);
-        _linkedAdressTags[tokenId][ethAddress].add(tag);
     }
 
-    function removeLinkingAddress(
-        uint256 tokenId,
-        address ethAddress,
-        bytes32 tag
-    ) external override {
+    function removeLinkingAddress(uint256 tokenId, address ethAddress) external override {
         _validateCallerIsWeb3Entry();
         _linkingAddresses[tokenId].remove(ethAddress);
-        _linkedAdressTags[tokenId][ethAddress].remove(tag);
     }
 
     /////////////////////////////////
     // linking Any Uri
     /////////////////////////////////
-    function addLinkingAnyUri(
-        uint256 tokenId,
-        string memory toUri,
-        bytes32 tag
-    ) external override returns (bytes32) {
+    function addLinkingAnyUri(uint256 tokenId, string memory toUri)
+        external
+        override
+        returns (bytes32)
+    {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", toUri));
         if (tokenId != 0) {
             _linkingAnyKeys[tokenId].add(linkKey);
-            _linkedUriTags[tokenId][linkKey].add(tag);
         }
         _linkingAnys[linkKey] = toUri;
         return linkKey;
     }
 
-    function removeLinkingAnyUri(
-        uint256 tokenId,
-        string memory toUri,
-        bytes32 tag
-    ) external override {
+    function removeLinkingAnyUri(uint256 tokenId, string memory toUri) external override {
         _validateCallerIsWeb3Entry();
 
         bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", toUri));
         _linkingAnyKeys[tokenId].remove(linkKey);
-        _linkedUriTags[tokenId][linkKey].remove(tag);
 
         // do note delete
         // delete linkingAnylist[linkKey];
@@ -266,24 +231,14 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     /////////////////////////////////
     // linking Linklist
     /////////////////////////////////
-    function addLinkingLinklistId(
-        uint256 tokenId,
-        uint256 linklistId,
-        bytes32 tag
-    ) external override {
+    function addLinkingLinklistId(uint256 tokenId, uint256 linklistId) external override {
         _validateCallerIsWeb3Entry();
         _linkingLinklists[tokenId].add(linklistId);
-        _linkedLinklistTags[tokenId][linklistId].add(tag);
     }
 
-    function removeLinkingLinklistId(
-        uint256 tokenId,
-        uint256 linklistId,
-        bytes32 tag
-    ) external override {
+    function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId) external override {
         _validateCallerIsWeb3Entry();
         _linkingLinklists[tokenId].remove(linklistId);
-        _linkedLinklistTags[tokenId][linklistId].remove(tag);
     }
 
     function getLinkingCharacterIds(uint256 tokenId)

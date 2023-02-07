@@ -17,7 +17,6 @@ library LinkLogic {
         uint256 fromCharacterId,
         uint256 toCharacterId,
         bytes32 linkType,
-        bytes32 tag,
         bytes memory data,
         address linker,
         address linklist,
@@ -27,7 +26,7 @@ library LinkLogic {
         uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist, _attachedLinklists);
 
         // add to link list
-        ILinklist(linklist).addLinkingCharacterId(linklistId, toCharacterId, tag);
+        ILinklist(linklist).addLinkingCharacterId(linklistId, toCharacterId);
 
         // process link module
         if (linkModule != address(0)) {
@@ -36,14 +35,7 @@ library LinkLogic {
             {} catch {} // solhint-disable-line no-empty-blocks
         }
 
-        emit Events.LinkCharacter(
-            linker,
-            fromCharacterId,
-            toCharacterId,
-            linkType,
-            linklistId,
-            tag
-        );
+        emit Events.LinkCharacter(linker, fromCharacterId, toCharacterId, linkType, linklistId);
     }
 
     function unlinkCharacter(
@@ -53,14 +45,13 @@ library LinkLogic {
         uint256 linklistId
     ) external {
         // remove from link list
-        ILinklist(linklist).removeLinkingCharacterId(linklistId, vars.toCharacterId, vars.tag);
+        ILinklist(linklist).removeLinkingCharacterId(linklistId, vars.toCharacterId);
 
         emit Events.UnlinkCharacter(
             linker,
             vars.fromCharacterId,
             vars.toCharacterId,
-            vars.linkType,
-            vars.tag
+            vars.linkType
         );
     }
 
@@ -79,7 +70,7 @@ library LinkLogic {
         );
 
         // add to link list
-        ILinklist(linklist).addLinkingNote(linklistId, vars.toCharacterId, vars.toNoteId, vars.tag);
+        ILinklist(linklist).addLinkingNote(linklistId, vars.toCharacterId, vars.toNoteId);
 
         // process link
         address linkModule = _noteByIdByCharacter[vars.toCharacterId][vars.toNoteId].linkModule;
@@ -114,12 +105,7 @@ library LinkLogic {
         uint256 linklistId = _attachedLinklists[vars.fromCharacterId][vars.linkType];
 
         // remove from link list
-        ILinklist(linklist).removeLinkingNote(
-            linklistId,
-            vars.toCharacterId,
-            vars.toNoteId,
-            vars.tag
-        );
+        ILinklist(linklist).removeLinkingNote(linklistId, vars.toCharacterId, vars.toNoteId);
 
         emit Events.UnlinkNote(
             vars.fromCharacterId,
@@ -185,7 +171,7 @@ library LinkLogic {
         );
 
         // add to link list
-        ILinklist(linklist).addLinkingLinklistId(linklistId, vars.toLinkListId, vars.tag);
+        ILinklist(linklist).addLinkingLinklistId(linklistId, vars.toLinkListId);
 
         emit Events.LinkLinklist(
             vars.fromCharacterId,
@@ -201,7 +187,7 @@ library LinkLogic {
         uint256 linklistId
     ) external {
         // add to link list
-        ILinklist(linklist).removeLinkingLinklistId(linklistId, vars.toLinkListId, vars.tag);
+        ILinklist(linklist).removeLinkingLinklistId(linklistId, vars.toLinkListId);
 
         emit Events.UnlinkLinklist(
             vars.fromCharacterId,
@@ -224,7 +210,7 @@ library LinkLogic {
         );
 
         // add to link list
-        ILinklist(linklist).addLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId, vars.tag);
+        ILinklist(linklist).addLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId);
 
         emit Events.LinkERC721(
             vars.fromCharacterId,
@@ -241,12 +227,7 @@ library LinkLogic {
         uint256 linklistId
     ) external {
         // remove from link list
-        ILinklist(linklist).removeLinkingERC721(
-            linklistId,
-            vars.tokenAddress,
-            vars.tokenId,
-            vars.tag
-        );
+        ILinklist(linklist).removeLinkingERC721(linklistId, vars.tokenAddress, vars.tokenId);
 
         emit Events.UnlinkERC721(
             vars.fromCharacterId,
@@ -270,7 +251,7 @@ library LinkLogic {
         );
 
         // add to link list
-        ILinklist(linklist).addLinkingAddress(linklistId, vars.ethAddress, vars.tag);
+        ILinklist(linklist).addLinkingAddress(linklistId, vars.ethAddress);
 
         emit Events.LinkAddress(vars.fromCharacterId, vars.ethAddress, vars.linkType, linklistId);
     }
@@ -281,7 +262,7 @@ library LinkLogic {
         uint256 linklistId
     ) external {
         // remove from link list
-        ILinklist(linklist).removeLinkingAddress(linklistId, vars.ethAddress, vars.tag);
+        ILinklist(linklist).removeLinkingAddress(linklistId, vars.ethAddress);
 
         emit Events.UnlinkAddress(vars.fromCharacterId, vars.ethAddress, vars.linkType);
     }
@@ -299,7 +280,7 @@ library LinkLogic {
         );
 
         // add to link list
-        ILinklist(linklist).addLinkingAnyUri(linklistId, vars.toUri, vars.tag);
+        ILinklist(linklist).addLinkingAnyUri(linklistId, vars.toUri);
 
         emit Events.LinkAnyUri(vars.fromCharacterId, vars.toUri, vars.linkType, linklistId);
     }
@@ -310,7 +291,7 @@ library LinkLogic {
         uint256 linklistId
     ) external {
         // remove from link list
-        ILinklist(linklist).removeLinkingAnyUri(linklistId, vars.toUri, vars.tag);
+        ILinklist(linklist).removeLinkingAnyUri(linklistId, vars.toUri);
 
         emit Events.UnlinkAnyUri(vars.fromCharacterId, vars.toUri, vars.linkType);
     }

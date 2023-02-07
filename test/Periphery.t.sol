@@ -48,7 +48,6 @@ contract PeripheryTest is Test, SetUp, Utils {
                 characterIds,
                 new bytes[](3),
                 new address[](0),
-                bytes32(0),
                 bytes32(0x666f6c6c6f770000000000000000000000000000000000000000000000000000)
             )
         );
@@ -69,7 +68,6 @@ contract PeripheryTest is Test, SetUp, Utils {
                 characterIds,
                 new bytes[](3),
                 new address[](0),
-                bytes32(0),
                 bytes32(0x666f6c6c6f770000000000000000000000000000000000000000000000000000)
             )
         );
@@ -83,7 +81,6 @@ contract PeripheryTest is Test, SetUp, Utils {
                 characterIds,
                 new bytes[](2),
                 new address[](0),
-                bytes32(0),
                 bytes32(0x666f6c6c6f770000000000000000000000000000000000000000000000000000)
             )
         );

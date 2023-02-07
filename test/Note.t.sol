@@ -330,7 +330,6 @@ contract NoteTest is Test, SetUp, Utils {
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
                 Const.LikeLinkType,
-                bytes32(0),
                 new bytes(0)
             )
         );
