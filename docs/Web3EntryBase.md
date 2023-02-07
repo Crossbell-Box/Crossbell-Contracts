@@ -94,6 +94,12 @@ function createThenLinkCharacter(struct DataTypes.createThenLinkCharacterData va
 function linkNote(struct DataTypes.linkNoteData vars) external
 ```
 
+### linkNoteWithUri
+
+```solidity
+function linkNoteWithUri(struct DataTypes.linkNoteData vars, string uri) external
+```
+
 ### unlinkNote
 
 ```solidity

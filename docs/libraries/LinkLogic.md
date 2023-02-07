@@ -20,6 +20,18 @@ function unlinkCharacter(struct DataTypes.unlinkCharacterData vars, address link
 function linkNote(struct DataTypes.linkNoteData vars, address linker, address linklist, mapping(uint256 => mapping(uint256 => struct DataTypes.Note)) _noteByIdByCharacter, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
 ```
 
+### linkNoteWithUri
+
+```solidity
+function linkNoteWithUri(struct DataTypes.linkNoteData vars, string uri, address linker, address linklist, mapping(uint256 => mapping(uint256 => struct DataTypes.Note)) _noteByIdByCharacter, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
+```
+
+### _processLinkNote
+
+```solidity
+function _processLinkNote(struct DataTypes.linkNoteData vars, address linker, address linklist, mapping(uint256 => mapping(uint256 => struct DataTypes.Note)) _noteByIdByCharacter, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) internal returns (uint256)
+```
+
 ### unlinkNote
 
 ```solidity

@@ -110,6 +110,12 @@ event UnlinkCharacter(address account, uint256 fromCharacterId, uint256 toCharac
 event LinkNote(uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId, bytes32 linkType, uint256 linklistId)
 ```
 
+### LinkNoteWithUri
+
+```solidity
+event LinkNoteWithUri(uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId, bytes32 linkType, string uri, uint256 linklistId)
+```
+
 ### UnlinkNote
 
 ```solidity

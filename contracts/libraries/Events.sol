@@ -85,6 +85,15 @@ library Events {
         uint256 linklistId
     );
 
+    event LinkNoteWithUri(
+        uint256 indexed fromCharacterId,
+        uint256 indexed toCharacterId,
+        uint256 indexed toNoteId,
+        bytes32 linkType,
+        string uri,
+        uint256 linklistId
+    );
+
     event UnlinkNote(
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,

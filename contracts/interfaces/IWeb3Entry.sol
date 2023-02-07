@@ -56,6 +56,8 @@ interface IWeb3Entry {
 
     function linkNote(DataTypes.linkNoteData calldata vars) external;
 
+    function linkNoteWithUri(DataTypes.linkNoteData calldata vars, string calldata uri) external;
+
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external;
 
     function linkERC721(DataTypes.linkERC721Data calldata vars) external;

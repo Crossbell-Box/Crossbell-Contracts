@@ -186,6 +186,21 @@ contract Web3EntryBase is
         );
     }
 
+    function linkNoteWithUri(DataTypes.linkNoteData calldata vars, string calldata uri)
+        external
+        override
+    {
+        _validateCallerPermission(vars.fromCharacterId, OP.LINK_NOTE);
+        LinkLogic.linkNoteWithUri(
+            vars,
+            uri,
+            IERC721Enumerable(this).ownerOf(vars.fromCharacterId),
+            _linklist,
+            _noteByIdByCharacter,
+            _attachedLinklists
+        );
+    }
+
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_NOTE);
 

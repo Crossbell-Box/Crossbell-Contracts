@@ -62,6 +62,56 @@ library LinkLogic {
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
+        uint256 linklistId = _processLinkNote(
+            vars,
+            linker,
+            linklist,
+            _noteByIdByCharacter,
+            _attachedLinklists
+        );
+
+        emit Events.LinkNote(
+            vars.fromCharacterId,
+            vars.toCharacterId,
+            vars.toNoteId,
+            vars.linkType,
+            linklistId
+        );
+    }
+
+    function linkNoteWithUri(
+        DataTypes.linkNoteData calldata vars,
+        string calldata uri,
+        address linker,
+        address linklist,
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter,
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+    ) external {
+        uint256 linklistId = _processLinkNote(
+            vars,
+            linker,
+            linklist,
+            _noteByIdByCharacter,
+            _attachedLinklists
+        );
+
+        emit Events.LinkNoteWithUri(
+            vars.fromCharacterId,
+            vars.toCharacterId,
+            vars.toNoteId,
+            vars.linkType,
+            uri,
+            linklistId
+        );
+    }
+
+    function _processLinkNote(
+        DataTypes.linkNoteData calldata vars,
+        address linker,
+        address linklist,
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter,
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+    ) internal returns (uint256) {
         uint256 linklistId = _mintLinklist(
             vars.fromCharacterId,
             vars.linkType,
@@ -84,14 +134,7 @@ library LinkLogic {
                 )
             {} catch {} // solhint-disable-line no-empty-blocks
         }
-
-        emit Events.LinkNote(
-            vars.fromCharacterId,
-            vars.toCharacterId,
-            vars.toNoteId,
-            vars.linkType,
-            linklistId
-        );
+        return linklistId;
     }
 
     function unlinkNote(
