@@ -9,7 +9,7 @@ fi
 # flatten
 yarn
 mkdir -p flattened
-#forge flatten contracts/Web3Entry.sol -o ./flattened/Web3Entry.sol
+forge flatten contracts/Web3Entry.sol -o ./flattened/Web3Entry.sol
 #forge flatten contracts/Linklist.sol -o ./flattened/Linklist.sol
 #forge flatten contracts/MintNFT.sol -o ./flattened/MintNFT.sol
 #forge flatten contracts/misc/Tips.sol -o ./flattened/Tips.sol
@@ -21,6 +21,8 @@ echo '
 pip3 install solc-select && solc-select install 0.8.16 && solc-select use 0.8.16 && cd /project &&
 pip3 install crytic-compile==0.2.2 &&
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Web3Entry: "
+manticore ./flattened/Web3Entry.sol --contract=Web3Entry --config=tools/manticore/manticore.yaml &&
 echo "NewbieVilla: "
 manticore ./flattened/NewbieVilla.sol --contract=NewbieVilla --config=tools/manticore/manticore.yaml &&
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" ' |
