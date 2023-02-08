@@ -173,6 +173,16 @@ contract Web3EntryBase is
         _createThenLinkCharacter(vars.fromCharacterId, vars.to, vars.linkType, "0x");
     }
 
+    /**
+     * @notice  linkNote creates a link between a character and a note, which can be used to indicate liking or 
+                disagreeing for notes by assigning different linkTypes .
+     * @param   vars The linkNoteData struct containing the following parameters:
+     *      * fromCharacterId: The character id of the linker.
+     *      * toCharacterId: The character id of the note owner.
+     *      * toNoteId: The note id of the note to link.
+     *      * linkType: The link type to use, for example, `LikeLinkType`.
+     *      * data: The data input for link module, if any.
+     */
     function linkNote(DataTypes.linkNoteData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_NOTE);
         _validateNoteExists(vars.toCharacterId, vars.toNoteId);
@@ -186,13 +196,25 @@ contract Web3EntryBase is
         );
     }
 
+    /**
+     * @notice  linkNoteWithUri creates a link between a character and a note, and at the same 
+                time attaches a uri to the link.
+     * @param   vars The linkNoteData struct containing the following parameters:
+     *      * fromCharacterId: The character id of the linker.
+     *      * toCharacterId: The character id of the note owner.
+     *      * toNoteId: The note id of the note to link.
+     *      * linkType: The link type to use, for example, `LikeLinkType`.
+     *      * data: The data input for link module, if any.
+     * @param   uri The uri attached to the link, which can contain anything depending on how 
+                you want to use it.
+     */
     function linkNoteWithUri(DataTypes.linkNoteData calldata vars, string calldata uri)
         external
         override
     {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_NOTE);
         _validateNoteExists(vars.toCharacterId, vars.toNoteId);
-        
+
         LinkLogic.linkNoteWithUri(
             vars,
             uri,

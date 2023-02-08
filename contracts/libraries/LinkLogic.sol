@@ -105,38 +105,6 @@ library LinkLogic {
         );
     }
 
-    function _processLinkNote(
-        DataTypes.linkNoteData calldata vars,
-        address linker,
-        address linklist,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
-    ) internal returns (uint256) {
-        uint256 linklistId = _mintLinklist(
-            vars.fromCharacterId,
-            vars.linkType,
-            linklist,
-            _attachedLinklists
-        );
-
-        // add to link list
-        ILinklist(linklist).addLinkingNote(linklistId, vars.toCharacterId, vars.toNoteId);
-
-        // process link
-        address linkModule = _noteByIdByCharacter[vars.toCharacterId][vars.toNoteId].linkModule;
-        if (linkModule != address(0)) {
-            try
-                ILinkModule4Note(linkModule).processLink(
-                    linker,
-                    vars.toCharacterId,
-                    vars.toNoteId,
-                    vars.data
-                )
-            {} catch {} // solhint-disable-line no-empty-blocks
-        }
-        return linklistId;
-    }
-
     function unlinkNote(
         DataTypes.unlinkNoteData calldata vars,
         address linklist,
@@ -355,5 +323,37 @@ library LinkLogic {
             _attachedLinklists[fromCharacterId][linkType] = linklistId;
             emit Events.AttachLinklist(linklistId, fromCharacterId, linkType);
         }
+    }
+
+    function _processLinkNote(
+        DataTypes.linkNoteData calldata vars,
+        address linker,
+        address linklist,
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter,
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+    ) internal returns (uint256) {
+        uint256 linklistId = _mintLinklist(
+            vars.fromCharacterId,
+            vars.linkType,
+            linklist,
+            _attachedLinklists
+        );
+
+        // add to link list
+        ILinklist(linklist).addLinkingNote(linklistId, vars.toCharacterId, vars.toNoteId);
+
+        // process link
+        address linkModule = _noteByIdByCharacter[vars.toCharacterId][vars.toNoteId].linkModule;
+        if (linkModule != address(0)) {
+            try
+                ILinkModule4Note(linkModule).processLink(
+                    linker,
+                    vars.toCharacterId,
+                    vars.toNoteId,
+                    vars.data
+                )
+            {} catch {} // solhint-disable-line no-empty-blocks
+        }
+        return linklistId;
     }
 }

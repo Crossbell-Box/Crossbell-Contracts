@@ -29,6 +29,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
         web3Entry.postNote(makePostNoteData(Const.SECOND_CHARACTER_ID));
     }
 
+    // solhint-disable-next-line function-max-lines
     function testLinkNote() public {
         vm.startPrank(alice);
         expectEmit(CheckAll);
@@ -76,7 +77,11 @@ contract LinkProfileTest is Test, SetUp, Utils {
 
         // operators can link
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
         vm.prank(bob);
         web3Entry.linkNote(
             DataTypes.linkNoteData(
@@ -89,6 +94,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
         );
     }
 
+    // solhint-disable-next-line function-max-lines
     function testLinkNoteWithUri() public {
         vm.startPrank(alice);
         // link with uri
@@ -132,7 +138,11 @@ contract LinkProfileTest is Test, SetUp, Utils {
 
         // operators can link with uri
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(Const.FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
         vm.prank(bob);
         web3Entry.linkNoteWithUri(
             DataTypes.linkNoteData(
@@ -146,6 +156,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
         );
     }
 
+    // solhint-disable-next-line function-max-lines
     function testLinkNoteFail() public {
         // case 1: Not character owner
         vm.prank(bob);
@@ -209,6 +220,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
         );
     }
 
+    // solhint-disable-next-line function-max-lines
     function testLinkNoteWithUriFail() public {
         // case 1: Not character owner
         vm.prank(bob);
@@ -274,6 +286,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
         );
     }
 
+    // solhint-disable-next-line function-max-lines
     function testUnlinkNote() public {
         // case 1: unlink an none-exist link
         vm.startPrank(alice);
@@ -336,6 +349,7 @@ contract LinkProfileTest is Test, SetUp, Utils {
         vm.stopPrank();
     }
 
+    // solhint-disable-next-line function-max-lines
     function testUnlinkNoteFail() public {
         // case 1: Not character owner
         vm.prank(bob);
