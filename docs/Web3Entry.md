@@ -117,6 +117,12 @@ _Operator lists will be reset to blank before the characters are transferred in 
 whole control power to receivers of character transfers.
 Permissions4Note is left unset, because permissions for notes are always stricter than default._
 
+### _clearOperator
+
+```solidity
+function _clearOperator(uint256 tokenId, address operator) internal
+```
+
 ### _isOperatorAllowedForNote
 
 ```solidity

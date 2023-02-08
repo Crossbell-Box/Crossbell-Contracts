@@ -17,9 +17,9 @@ interface IWeb3Entry {
     ///     EXTERNAL  FUNCTIONS
     ////////////////////////////////////////////////////////
 
-    function createCharacter(DataTypes.CreateCharacterData calldata vars)
-        external
-        returns (uint256 characterId);
+    function createCharacter(
+        DataTypes.CreateCharacterData calldata vars
+    ) external returns (uint256 characterId);
 
     function setHandle(uint256 characterId, string calldata newHandle) external;
 
@@ -102,27 +102,26 @@ interface IWeb3Entry {
 
     function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256);
 
-    function setNoteUri(
-        uint256 characterId,
-        uint256 noteId,
-        string calldata newUri
-    ) external;
+    function setNoteUri(uint256 characterId, uint256 noteId, string calldata newUri) external;
 
     function lockNote(uint256 characterId, uint256 noteId) external;
 
     function deleteNote(uint256 characterId, uint256 noteId) external;
 
-    function postNote4Character(DataTypes.PostNoteData calldata postNoteData, uint256 toCharacterId)
-        external
-        returns (uint256);
+    function postNote4Character(
+        DataTypes.PostNoteData calldata postNoteData,
+        uint256 toCharacterId
+    ) external returns (uint256);
 
-    function postNote4Address(DataTypes.PostNoteData calldata noteData, address ethAddress)
-        external
-        returns (uint256);
+    function postNote4Address(
+        DataTypes.PostNoteData calldata noteData,
+        address ethAddress
+    ) external returns (uint256);
 
-    function postNote4Linklist(DataTypes.PostNoteData calldata noteData, uint256 toLinklistId)
-        external
-        returns (uint256);
+    function postNote4Linklist(
+        DataTypes.PostNoteData calldata noteData,
+        uint256 toLinklistId
+    ) external returns (uint256);
 
     function postNote4Note(
         DataTypes.PostNoteData calldata postNoteData,
@@ -134,24 +133,25 @@ interface IWeb3Entry {
         DataTypes.ERC721Struct calldata erc721
     ) external returns (uint256);
 
-    function postNote4AnyUri(DataTypes.PostNoteData calldata postNoteData, string calldata uri)
-        external
-        returns (uint256);
+    function postNote4AnyUri(
+        DataTypes.PostNoteData calldata postNoteData,
+        string calldata uri
+    ) external returns (uint256);
 
     ////////////////////////////////////////////////////////
     ///      VIEW FUNCTIONS
     ////////////////////////////////////////////////////////
     function getOperators(uint256 characterId) external view returns (address[] memory);
 
-    function getOperatorPermissions(uint256 characterId, address operator)
-        external
-        view
-        returns (uint256);
+    function getOperatorPermissions(
+        uint256 characterId,
+        address operator
+    ) external view returns (uint256);
 
-    function getOperators4Note(uint256 characterId, uint256 noteId)
-        external
-        view
-        returns (address[] memory blocklist, address[] memory allowlist);
+    function getOperators4Note(
+        uint256 characterId,
+        uint256 noteId
+    ) external view returns (address[] memory blocklist, address[] memory allowlist);
 
     function isOperatorAllowedForNote(
         uint256 characterId,
@@ -165,28 +165,27 @@ interface IWeb3Entry {
 
     function getCharacter(uint256 characterId) external view returns (DataTypes.Character memory);
 
-    function getCharacterByHandle(string calldata handle)
-        external
-        view
-        returns (DataTypes.Character memory);
+    function getCharacterByHandle(
+        string calldata handle
+    ) external view returns (DataTypes.Character memory);
 
     function getHandle(uint256 characterId) external view returns (string memory);
 
     function getCharacterUri(uint256 characterId) external view returns (string memory);
 
-    function getNote(uint256 characterId, uint256 noteId)
-        external
-        view
-        returns (DataTypes.Note memory);
+    function getNote(
+        uint256 characterId,
+        uint256 noteId
+    ) external view returns (DataTypes.Note memory);
 
     function getLinkModule4Address(address account) external view returns (address);
 
     function getLinkModule4Linklist(uint256 tokenId) external view returns (address);
 
-    function getLinkModule4ERC721(address tokenAddress, uint256 tokenId)
-        external
-        view
-        returns (address);
+    function getLinkModule4ERC721(
+        address tokenAddress,
+        uint256 tokenId
+    ) external view returns (address);
 
     function getLinklistUri(uint256 tokenId) external view returns (string memory);
 

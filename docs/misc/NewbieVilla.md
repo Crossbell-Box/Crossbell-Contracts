@@ -12,6 +12,18 @@ proof to withdraw the corresponding character._
 bytes32 ADMIN_ROLE
 ```
 
+### ERC1820_REGISTRY
+
+```solidity
+contract IERC1820Registry ERC1820_REGISTRY
+```
+
+### TOKENS_RECIPIENT_INTERFACE_HASH
+
+```solidity
+bytes32 TOKENS_RECIPIENT_INTERFACE_HASH
+```
+
 ### web3Entry
 
 ```solidity
@@ -24,6 +36,35 @@ address web3Entry
 address xsyncOperator
 ```
 
+### _token
+
+```solidity
+address _token
+```
+
+### _balances
+
+```solidity
+mapping(uint256 => uint256) _balances
+```
+
+### Withdraw
+
+```solidity
+event Withdraw(address to, uint256 characterId, address token, uint256 amount)
+```
+
+_Emitted when the web3Entry character nft is withdrawn._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| to | address | The receiver of web3Entry character nft. |
+| characterId | uint256 | The character ID. |
+| token | address | Addresses of token withdrawn. |
+| amount | uint256 | Amount of token withdrawn. |
+
 ### _notExpired
 
 ```solidity
@@ -33,12 +74,12 @@ modifier _notExpired(uint256 expires)
 ### initialize
 
 ```solidity
-function initialize(address web3Entry_, address xsyncOperator_) external
+function initialize(address web3Entry_, address xsyncOperator_, address token_, address admin_) external
 ```
 
 Initialize the Newbie Villa contract.
 
-_msg.sender will be granted both DEFAULT_ADMIN_ROLE and ADMIN_ROLE._
+_msg.sender will be granted `DEFAULT_ADMIN_ROLE`._
 
 #### Parameters
 
@@ -46,6 +87,8 @@ _msg.sender will be granted both DEFAULT_ADMIN_ROLE and ADMIN_ROLE._
 | ---- | ---- | ----------- |
 | web3Entry_ | address | Address of web3Entry contract. |
 | xsyncOperator_ | address | Address of xsyncOperator. |
+| token_ | address | Address of ERC777 token. |
+| admin_ | address | Address of admin. |
 
 ### withdraw
 
@@ -54,6 +97,7 @@ function withdraw(address to, uint256 characterId, uint256 nonce, uint256 expire
 ```
 
 Withdraw character#`characterId` to `to` using the nonce, expires and the proof.
+Emits the `Withdraw` event.
 
 _Proof is the signature from someone with the ADMIN_ROLE. The message to sign is
 the packed data of this contract's address, `characterId`, `nonce` and `expires`.
@@ -107,6 +151,43 @@ Requirements:
 |  | address |  |
 | tokenId | uint256 |  |
 | data | bytes | bytes encoded from the operator address to set for the incoming character. |
+
+### tokensReceived
+
+```solidity
+function tokensReceived(address, address, address to, uint256 amount, bytes userData, bytes operatorData) external
+```
+
+_Called by an {IERC777} token contract whenever tokens are being
+moved or created into a registered account (`to`). The type of operation
+is conveyed by `from` being the zero address or not.
+
+This call occurs _after_ the token contract's state is updated, so
+{IERC777-balanceOf}, etc., can be used to query the post-operation state.
+
+This function may revert to prevent the operation from being executed._
+
+### balanceOf
+
+```solidity
+function balanceOf(uint256 characterId) external view returns (uint256)
+```
+
+_Returns the amount of tokens owned by `characterId`._
+
+### getToken
+
+```solidity
+function getToken() external view returns (address)
+```
+
+Returns the address of mira token contract.
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | address | The address of mira token contract. |
 
 ### _splitSignature
 

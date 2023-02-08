@@ -277,13 +277,13 @@ function getOperatorPermissions(uint256, address) external view virtual returns 
 ### getOperators4Note
 
 ```solidity
-function getOperators4Note(uint256 characterId, uint256 noteId) external view virtual returns (address[] blocklist, address[] allowlist)
+function getOperators4Note(uint256, uint256) external view virtual returns (address[] blocklist, address[] allowlist)
 ```
 
 ### isOperatorAllowedForNote
 
 ```solidity
-function isOperatorAllowedForNote(uint256 characterId, uint256 noteId, address operator) external view virtual returns (bool)
+function isOperatorAllowedForNote(uint256, uint256, address) external view virtual returns (bool)
 ```
 
 ### getPrimaryCharacterId
@@ -394,6 +394,12 @@ function tokenURI(uint256 characterId) public view returns (string)
 function _createThenLinkCharacter(uint256 fromCharacterId, address to, bytes32 linkType, bytes data) internal
 ```
 
+### _checkHandleExists
+
+```solidity
+function _checkHandleExists(bytes32 handleHash) internal view
+```
+
 ### _validateCallerIsCharacterOwner
 
 ```solidity
@@ -409,7 +415,7 @@ function _validateCallerPermission(uint256, uint256) internal view virtual
 ### _validateCallerPermission4Note
 
 ```solidity
-function _validateCallerPermission4Note(uint256 characterId, uint256 noteId) internal view virtual
+function _validateCallerPermission4Note(uint256, uint256) internal view virtual
 ```
 
 ### _validateCharacterExists
@@ -434,5 +440,17 @@ function _validateNoteExists(uint256 characterId, uint256 noteId) internal view
 
 ```solidity
 function _validateNoteNotLocked(uint256 characterId, uint256 noteId) internal view
+```
+
+### _validateHandle
+
+```solidity
+function _validateHandle(string handle) internal pure
+```
+
+### _validateChar
+
+```solidity
+function _validateChar(bytes1 c) internal pure
 ```
 

@@ -16,10 +16,11 @@ async function main() {
 
     const proxyWeb3Entry = "0xa6f969045641Cf486a747A2688F3a5A6d43cd0D8";
     const xsyncOperator = "0x0F588318A494e4508A121a32B6670b5494Ca3357";
+    const miraToken = "0xAfB95CC0BD320648B3E8Df6223d9CDD05EbeDC64";
 
     const NewbieVilla = await ethers.getContractFactory("NewbieVilla");
     const newbieVilla = await NewbieVilla.deploy();
-    await newbieVilla.initialize(proxyWeb3Entry, xsyncOperator);
+    await newbieVilla.initialize(proxyWeb3Entry, xsyncOperator, miraToken);
 
     console.log("newbieVilla deployed to:", newbieVilla.address);
 }

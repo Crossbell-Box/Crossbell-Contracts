@@ -31,6 +31,7 @@
     },
     "scripts": {
         "setup": "make clean && make build",
+        "compile": "npx hardhat clean && npx hardhat compile",
         "sync": "make install",
         "test": "make foundry-test && npx hardhat test",
         "snapshot": "make snapshot",
@@ -39,6 +40,7 @@
         "upgradeable": "make upgradeable",
         "mythril": "make mythril",
         "manticore": "make manticore",
+        "storage-layout": "make storage-layout",
         "remap": "forge remappings > remappings.txt",
         "version": "auto-changelog -t keepachangelog --commit-limit false --ignore-commit-pattern 'chore:|test:|docs:' && git add CHANGELOG.md",
         "docgen": "make docgen",

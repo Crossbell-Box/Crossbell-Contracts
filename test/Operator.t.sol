@@ -20,26 +20,30 @@ contract OperatorTest is Test, SetUp, Utils {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     address public xsyncOperator = address(0x6666);
 
-    address public alice = address(0x1111);
-    address public bob = address(0x2222);
-    address public carol = address(0x3333);
-    address public dick = address(0x4444);
-    address public erik = address(0x5555);
+    address public constant alice = address(0x1111);
+    address public constant bob = address(0x2222);
+    address public constant carol = address(0x3333);
+    address public constant dick = address(0x4444);
+    address public constant erik = address(0x5555);
+
+    address public constant newbieAdmin = address(0x9999);
 
     address[] public blocklist = [bob];
     address[] public allowlist = [carol, dick];
 
     NewbieVilla public newbieVilla;
-    address public migrateOwner = 0xda2423ceA4f1047556e7a142F81a7ED50e93e160;
+    address public constant migrateOwner = 0xda2423ceA4f1047556e7a142F81a7ED50e93e160;
 
     function setUp() public {
         _setUp();
 
         // setup newbieVilla
         newbieVilla = new NewbieVilla();
-        newbieVilla.initialize(address(web3Entry), xsyncOperator);
+        newbieVilla.initialize(address(web3Entry), xsyncOperator, address(0x000001), newbieAdmin);
         // grant mint role
+        vm.prank(newbieAdmin);
         newbieVilla.grantRole(ADMIN_ROLE, alice);
+        vm.prank(newbieAdmin);
         newbieVilla.grantRole(ADMIN_ROLE, bob);
 
         // create character

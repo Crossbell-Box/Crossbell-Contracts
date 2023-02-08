@@ -8,34 +8,10 @@
 bytes32 MINTER_ROLE
 ```
 
-### _balances
-
-```solidity
-mapping(uint256 => mapping(uint256 => uint256)) _balances
-```
-
-### _operatorApprovals
-
-```solidity
-mapping(address => mapping(address => bool)) _operatorApprovals
-```
-
-### _tokenURIs
-
-```solidity
-mapping(uint256 => string) _tokenURIs
-```
-
 ### web3Entry
 
 ```solidity
 address web3Entry
-```
-
-### _currentTokenNumbers
-
-```solidity
-mapping(uint256 => uint256) _currentTokenNumbers
 ```
 
 ### Mint

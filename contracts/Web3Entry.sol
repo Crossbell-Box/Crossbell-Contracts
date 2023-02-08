@@ -68,12 +68,10 @@ contract Web3Entry is Web3EntryBase {
      * @param operator Address to grant operator permissions to.
      * @return Permission bitmap of this operator.
      */
-    function getOperatorPermissions(uint256 characterId, address operator)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getOperatorPermissions(
+        uint256 characterId,
+        address operator
+    ) external view override returns (uint256) {
         return _operatorsPermissionBitMap[characterId][operator];
     }
 
@@ -82,12 +80,10 @@ contract Web3Entry is Web3EntryBase {
      * @param characterId ID of character to query.
      * @param noteId ID of note to query.
      */
-    function getOperators4Note(uint256 characterId, uint256 noteId)
-        external
-        view
-        override
-        returns (address[] memory blocklist, address[] memory allowlist)
-    {
+    function getOperators4Note(
+        uint256 characterId,
+        uint256 noteId
+    ) external view override returns (address[] memory blocklist, address[] memory allowlist) {
         blocklist = _operators4Note[characterId][noteId]
             .blocklists[_operators4Note[characterId][noteId].blocklistId]
             .values();
@@ -159,11 +155,10 @@ contract Web3Entry is Web3EntryBase {
         return _checkBit(_operatorsPermissionBitMap[characterId][operator], OP.SET_NOTE_URI);
     }
 
-    function _validateCallerPermission(uint256 characterId, uint256 permissionId)
-        internal
-        view
-        override
-    {
+    function _validateCallerPermission(
+        uint256 characterId,
+        uint256 permissionId
+    ) internal view override {
         // check character owner
         if (_callerIsCharacterOwner(characterId)) {
             return;
@@ -202,11 +197,10 @@ contract Web3Entry is Web3EntryBase {
         return false;
     }
 
-    function _validateCallerPermission4Note(uint256 characterId, uint256 noteId)
-        internal
-        view
-        override
-    {
+    function _validateCallerPermission4Note(
+        uint256 characterId,
+        uint256 noteId
+    ) internal view override {
         // check character owner
         if (_callerIsCharacterOwner(characterId)) {
             return;

@@ -53,11 +53,7 @@ contract CharacterBoundToken is
         emit Mint(characterId, tokenId, _currentTokenNumbers[tokenId]);
     }
 
-    function burn(
-        uint256 characterId,
-        uint256 tokenId,
-        uint256 amount
-    ) external {
+    function burn(uint256 characterId, uint256 tokenId, uint256 amount) external {
         address account = IERC721Enumerable(web3Entry).ownerOf(characterId);
         require(
             account == _msgSender() || isApprovedForAll(account, _msgSender()),
@@ -107,13 +103,10 @@ contract CharacterBoundToken is
         _setApprovalForAll(_msgSender(), operator, approved);
     }
 
-    function balanceOfBatch(address[] memory accounts, uint256[] memory tokenIds)
-        external
-        view
-        virtual
-        override
-        returns (uint256[] memory)
-    {
+    function balanceOfBatch(
+        address[] memory accounts,
+        uint256[] memory tokenIds
+    ) external view virtual override returns (uint256[] memory) {
         require(accounts.length == tokenIds.length, "accounts and ids length mismatch");
 
         uint256[] memory batchBalances = new uint256[](accounts.length);
@@ -128,26 +121,19 @@ contract CharacterBoundToken is
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(AccessControlEnumerable, ERC165, IERC165)
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(AccessControlEnumerable, ERC165, IERC165) returns (bool) {
         return
             interfaceId == type(IERC1155).interfaceId ||
             interfaceId == type(IERC1155MetadataURI).interfaceId ||
             super.supportsInterface(interfaceId);
     }
 
-    function balanceOf(address account, uint256 tokenId)
-        public
-        view
-        virtual
-        override
-        returns (uint256 balance)
-    {
+    function balanceOf(
+        address account,
+        uint256 tokenId
+    ) public view virtual override returns (uint256 balance) {
         uint256 characterCount = IERC721Enumerable(web3Entry).balanceOf(account);
         for (uint256 i = 0; i < characterCount; i++) {
             uint256 characterId = IERC721Enumerable(web3Entry).tokenOfOwnerByIndex(account, i);
@@ -167,13 +153,10 @@ contract CharacterBoundToken is
     /**
      * @dev See {IERC1155-isApprovedForAll}.
      */
-    function isApprovedForAll(address account, address operator)
-        public
-        view
-        virtual
-        override
-        returns (bool)
-    {
+    function isApprovedForAll(
+        address account,
+        address operator
+    ) public view virtual override returns (bool) {
         return _operatorApprovals[account][operator];
     }
 
@@ -182,11 +165,7 @@ contract CharacterBoundToken is
      *
      * Emits an {ApprovalForAll} event.
      */
-    function _setApprovalForAll(
-        address owner,
-        address operator,
-        bool approved
-    ) internal virtual {
+    function _setApprovalForAll(address owner, address operator, bool approved) internal virtual {
         require(owner != operator, "ERC1155: setting approval status for self");
         _operatorApprovals[owner][operator] = approved;
         emit ApprovalForAll(owner, operator, approved);

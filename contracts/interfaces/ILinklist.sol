@@ -11,11 +11,7 @@ interface ILinklist {
         address web3Entry_
     ) external;
 
-    function mint(
-        uint256 characterId,
-        bytes32 linkType,
-        uint256 tokenId
-    ) external;
+    function mint(uint256 characterId, bytes32 linkType, uint256 tokenId) external;
 
     function setUri(uint256 tokenId, string memory newUri) external;
 
@@ -35,11 +31,7 @@ interface ILinklist {
         uint256 toNoteId
     ) external returns (bytes32);
 
-    function removeLinkingNote(
-        uint256 tokenId,
-        uint256 toCharacterId,
-        uint256 toNoteId
-    ) external;
+    function removeLinkingNote(uint256 tokenId, uint256 toCharacterId, uint256 toNoteId) external;
 
     /////////////////////////////////
     // linking ERC721
@@ -96,36 +88,31 @@ interface ILinklist {
 
     function getOwnerCharacterId(uint256 tokenId) external view returns (uint256);
 
-    function getLinkingNotes(uint256 tokenId)
-        external
-        view
-        returns (DataTypes.NoteStruct[] memory results);
+    function getLinkingNotes(
+        uint256 tokenId
+    ) external view returns (DataTypes.NoteStruct[] memory results);
 
     function getLinkingNote(bytes32 linkKey) external view returns (DataTypes.NoteStruct memory);
 
     function getLinkingNoteListLength(uint256 tokenId) external view returns (uint256);
 
-    function getLinkingCharacterLinks(uint256 tokenId)
-        external
-        view
-        returns (DataTypes.CharacterLinkStruct[] memory results);
+    function getLinkingCharacterLinks(
+        uint256 tokenId
+    ) external view returns (DataTypes.CharacterLinkStruct[] memory results);
 
-    function getLinkingCharacterLink(bytes32 linkKey)
-        external
-        view
-        returns (DataTypes.CharacterLinkStruct memory);
+    function getLinkingCharacterLink(
+        bytes32 linkKey
+    ) external view returns (DataTypes.CharacterLinkStruct memory);
 
     function getLinkingCharacterLinkListLength(uint256 tokenId) external view returns (uint256);
 
-    function getLinkingERC721s(uint256 tokenId)
-        external
-        view
-        returns (DataTypes.ERC721Struct[] memory results);
+    function getLinkingERC721s(
+        uint256 tokenId
+    ) external view returns (DataTypes.ERC721Struct[] memory results);
 
-    function getLinkingERC721(bytes32 linkKey)
-        external
-        view
-        returns (DataTypes.ERC721Struct memory);
+    function getLinkingERC721(
+        bytes32 linkKey
+    ) external view returns (DataTypes.ERC721Struct memory);
 
     function getLinkingERC721ListLength(uint256 tokenId) external view returns (uint256);
 

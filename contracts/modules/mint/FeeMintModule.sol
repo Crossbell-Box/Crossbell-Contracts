@@ -56,11 +56,10 @@ contract FeeMintModule is IMintModule4Note, ModuleBase {
         IERC20(currency).safeTransferFrom(to, recipient, amount);
     }
 
-    function getNoteData(uint256 characterId, uint256 noteId)
-        external
-        view
-        returns (CharacterNoteData memory)
-    {
+    function getNoteData(
+        uint256 characterId,
+        uint256 noteId
+    ) external view returns (CharacterNoteData memory) {
         return _dataByNoteByCharacter[characterId][noteId];
     }
 }
