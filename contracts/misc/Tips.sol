@@ -87,10 +87,12 @@ contract Tips is Initializable, IERC777Recipient {
         bytes memory data = userData.length > 0 ? userData : operatorData;
         if (data.length == 64) {
             // tip character
+            // slither-disable-next-line variable-scope
             (uint256 fromCharacterId, uint256 toCharacterId) = abi.decode(data, (uint256, uint256));
             _tipCharacter(from, fromCharacterId, toCharacterId, _token, amount);
         } else if (data.length == 96) {
             // tip character for note
+            // slither-disable-next-line variable-scope
             (uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId) = abi.decode(
                 data,
                 (uint256, uint256, uint256)
