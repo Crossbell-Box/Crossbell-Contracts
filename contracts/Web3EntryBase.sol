@@ -191,6 +191,8 @@ contract Web3EntryBase is
         override
     {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_NOTE);
+        _validateNoteExists(vars.toCharacterId, vars.toNoteId);
+        
         LinkLogic.linkNoteWithUri(
             vars,
             uri,
