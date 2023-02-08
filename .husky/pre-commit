@@ -9,6 +9,10 @@ yarn lint
 echo "Running test"
 yarn test
 
- # unit test
+# storage-layout check
+echo "Running storage-layout check"
+yarn storage-layout
+
+# solhint
 echo "Running solhint"
 yarn solhint

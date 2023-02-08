@@ -11,6 +11,7 @@ async function main() {
 
     const proxyWeb3Entry = "0xa6f969045641Cf486a747A2688F3a5A6d43cd0D8";
     const proxyAdminMultisig = "0x2CD6eA7DE6B33C663a669158c70800BAba17a951";
+    const miraToken = "0xAfB95CC0BD320648B3E8Df6223d9CDD05EbeDC64";
 
     const Tips = await ethers.getContractFactory("Tips");
     const tips = await Tips.deploy();
@@ -20,7 +21,7 @@ async function main() {
     const Proxy = await ethers.getContractFactory("TransparentUpgradeableProxy");
     const proxyTips = await Proxy.deploy(tips.address, proxyAdminMultisig, "0x");
     await proxyTips.deployed();
-    await tips.attach(proxyTips.address).connect(addr1).initialize(proxyWeb3Entry);
+    await tips.attach(proxyTips.address).connect(addr1).initialize(proxyWeb3Entry, miraToken);
 
     console.log("proxyTips deployed to:", proxyTips.address);
     console.log("tips logic deployed to:", tips.address);

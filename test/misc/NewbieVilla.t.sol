@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable comprehensive-interface,check-send-result,multiple-sends
 pragma solidity 0.8.16;
 
 import "../helpers/Const.sol";
@@ -6,31 +7,62 @@ import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
 import "../../contracts/libraries/DataTypes.sol";
 import "../../contracts/misc/NewbieVilla.sol";
+import "../../contracts/mocks/MiraToken.sol";
+import "../../contracts/misc/Tips.sol";
 
 contract NewbieVillaTest is Test, SetUp, Utils {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
-    address public alice = address(0x1111);
-    address public bob = address(0x2222);
-    address public xsyncOperator = address(0x3333);
+    address public constant alice = address(0x1111);
+    address public constant bob = address(0x2222);
+    address public constant carol = address(0x3333);
+    address public constant xsyncOperator = address(0x4444);
+
+    uint256 public constant newbieAdminPrivateKey = 1;
+    address public newbieAdmin = vm.addr(newbieAdminPrivateKey);
 
     NewbieVilla public newbieVilla;
+    MiraToken public token;
+    Tips public tips;
 
-    /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
 
+        // deploy and mint token
+        token = new MiraToken("Mira Token", "MIRA", address(this));
+        token.mint(alice, 10 ether);
+        token.mint(bob, 10 ether);
+
+        // deploy newbie villa
         newbieVilla = new NewbieVilla();
-        newbieVilla.initialize(address(web3Entry), xsyncOperator);
+        newbieVilla.initialize(address(web3Entry), xsyncOperator, address(token), newbieAdmin);
+        vm.prank(newbieAdmin);
+        newbieVilla.grantRole(ADMIN_ROLE, newbieAdmin);
+
+        // deploy and init Tips contract
+        tips = new Tips();
+        tips.initialize(address(web3Entry), address(token));
 
         // grant mint role to alice
+        vm.prank(newbieAdmin);
         newbieVilla.grantRole(ADMIN_ROLE, alice);
+    }
+
+    function testSetupState() public {
+        // check status after initialization
+        assertEq(newbieVilla.web3Entry(), address(web3Entry));
+        assertEq(newbieVilla.getToken(), address(token));
     }
 
     function testNewbieInitializeFail() public {
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
-        newbieVilla.initialize(address(web3Entry), xsyncOperator);
+        newbieVilla.initialize(
+            address(web3Entry),
+            xsyncOperator,
+            address(0x000001),
+            address(0x000001)
+        );
     }
 
     function testNewbieCreateCharacter() public {
@@ -109,9 +141,79 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         nft.safeTransferFrom(address(bob), address(newbieVilla), Const.FIRST_CHARACTER_ID);
     }
 
-    // solhint-disable-next-line no-empty-blocks
     function testWithdrawNewbieOut() public {
-        // In Hardhat
+        address to = carol;
+        uint256 characterId = Const.FIRST_CHARACTER_ID;
+        uint256 nonce = 1;
+        uint256 expires = block.timestamp + 10 minutes;
+        uint256 amount = 1 ether;
+
+        // 1. create and transfer web3Entry nft to newbieVilla
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, newbieAdmin));
+        vm.prank(newbieAdmin);
+        web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), characterId);
+
+        // 2. send some token to web3Entry nft in newbieVilla
+        vm.prank(alice);
+        token.send(address(newbieVilla), amount, abi.encode(2, characterId));
+
+        // 3. withdraw web3Entry nft
+
+        bytes32 digest = keccak256(
+            abi.encodePacked(
+                "\x19Ethereum Signed Message:\n32",
+                keccak256(abi.encodePacked(address(newbieVilla), characterId, nonce, expires))
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(newbieAdminPrivateKey, digest);
+        // withdraw
+        vm.prank(to);
+        newbieVilla.withdraw(to, characterId, nonce, expires, abi.encodePacked(r, s, v));
+
+        // check state
+        assertEq(newbieVilla.balanceOf(characterId), 0);
+        assertEq(web3Entry.ownerOf(characterId), carol);
+        assertEq(token.balanceOf(carol), amount);
+    }
+
+    function testTokensReceived(uint256 amount) public {
+        vm.assume(amount > 0 && amount < 10 ether);
+
+        vm.prank(alice);
+        token.send(
+            address(newbieVilla),
+            amount,
+            abi.encode(Const.FIRST_CHARACTER_ID, Const.SECOND_CHARACTER_ID)
+        );
+
+        // check balance
+        assertEq(newbieVilla.balanceOf(Const.SECOND_CHARACTER_ID), amount);
+    }
+
+    function testTokensReceivedFail() public {
+        // case 1: unknown receiving
+        vm.expectRevert("NewbieVilla: unknown receiving");
+        vm.prank(alice);
+        token.send(address(newbieVilla), 1 ether, "");
+
+        // case 2: unknown receiving
+        vm.expectRevert("NewbieVilla: unknown receiving");
+        vm.prank(alice);
+        token.send(address(newbieVilla), 1 ether, abi.encode(uint256(1)));
+
+        // case 3: invalid token
+        vm.expectRevert("NewbieVilla: invalid token");
+        newbieVilla.tokensReceived(
+            address(this),
+            alice,
+            address(newbieVilla),
+            1 ether,
+            abi.encode(uint256(1), uint256(2)),
+            ""
+        );
+
+        // check balance
+        assertEq(newbieVilla.balanceOf(Const.SECOND_CHARACTER_ID), 0);
     }
 
     function testExpired() public {

@@ -572,8 +572,8 @@ contract Web3EntryBase is
 
     // overridden in web3Entry
     function getOperators4Note(
-        uint256 characterId,
-        uint256 noteId
+        uint256,
+        uint256
     )
         external
         view
@@ -584,9 +584,9 @@ contract Web3EntryBase is
 
     // overridden in web3Entry
     function isOperatorAllowedForNote(
-        uint256 characterId,
-        uint256 noteId,
-        address operator
+        uint256,
+        uint256,
+        address
     ) external view virtual override returns (bool) {} // solhint-disable-line no-empty-blocks
 
     function getPrimaryCharacterId(address account) external view override returns (uint256) {
@@ -751,10 +751,7 @@ contract Web3EntryBase is
     function _validateCallerPermission(uint256, uint256) internal view virtual {}
 
     // overridden in web3Entry
-    function _validateCallerPermission4Note(
-        uint256 characterId,
-        uint256 noteId
-    ) internal view virtual {} // solhint-disable-line no-empty-blocks
+    function _validateCallerPermission4Note(uint256, uint256) internal view virtual {} // solhint-disable-line no-empty-blocks
 
     function _validateCharacterExists(uint256 characterId) internal view {
         if (!_exists(characterId)) revert ErrCharacterNotExists(characterId);

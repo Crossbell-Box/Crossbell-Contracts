@@ -6,3 +6,5 @@
 | _roleMembers  | mapping(bytes32 => struct EnumerableSet.AddressSet) | 2    | 0      | 32    | contracts/misc/NewbieVilla.sol:NewbieVilla |
 | web3Entry     | address                                             | 3    | 0      | 20    | contracts/misc/NewbieVilla.sol:NewbieVilla |
 | xsyncOperator | address                                             | 4    | 0      | 20    | contracts/misc/NewbieVilla.sol:NewbieVilla |
+| _token        | address                                             | 5    | 0      | 20    | contracts/misc/NewbieVilla.sol:NewbieVilla |
+| _balances     | mapping(uint256 => uint256)                         | 6    | 0      | 32    | contracts/misc/NewbieVilla.sol:NewbieVilla |

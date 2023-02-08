@@ -2,12 +2,16 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.16;
 
+import "../interfaces/IWeb3Entry.sol";
+import "../libraries/OP.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "../interfaces/IWeb3Entry.sol";
-import "../libraries/OP.sol";
+import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/introspection/IERC1820Registry.sol";
 
 /**
  * @dev Implementation of a contract to keep characters for others. The address with
@@ -15,11 +19,28 @@ import "../libraries/OP.sol";
  * proof to withdraw the corresponding character.
  */
 
-contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver {
+contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver, IERC777Recipient {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+
+    IERC1820Registry public constant ERC1820_REGISTRY =
+        IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+    bytes32 public constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
 
     address public web3Entry;
     address public xsyncOperator;
+    address internal _token; // mira token, erc777 standard
+    // characterId => balance
+    mapping(uint256 => uint256) internal _balances;
+
+    // events
+    /**
+     * @dev Emitted when the web3Entry character nft is withdrawn.
+     * @param to The receiver of web3Entry character nft.
+     * @param characterId The character ID.
+     * @param token Addresses of token withdrawn.
+     * @param amount Amount of token withdrawn.
+     */
+    event Withdraw(address to, uint256 characterId, address token, uint256 amount);
 
     modifier _notExpired(uint256 expires) {
         require(expires >= block.timestamp, "NewbieVilla: receipt has expired");
@@ -28,20 +49,36 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
 
     /**
      * @notice Initialize the Newbie Villa contract.
-     * @dev msg.sender will be granted both DEFAULT_ADMIN_ROLE and ADMIN_ROLE.
+     * @dev msg.sender will be granted `DEFAULT_ADMIN_ROLE`.
      * @param web3Entry_ Address of web3Entry contract.
      * @param xsyncOperator_ Address of xsyncOperator.
+     * @param token_ Address of ERC777 token.
+     * @param admin_ Address of admin.
      */
-    function initialize(address web3Entry_, address xsyncOperator_) external initializer {
+    function initialize(
+        address web3Entry_,
+        address xsyncOperator_,
+        address token_,
+        address admin_
+    ) external reinitializer(2) {
         web3Entry = web3Entry_;
         xsyncOperator = xsyncOperator_;
+        _token = token_;
 
-        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _setupRole(ADMIN_ROLE, _msgSender());
+        // grants `DEFAULT_ADMIN_ROLE`
+        _setupRole(DEFAULT_ADMIN_ROLE, admin_);
+
+        // register interfaces
+        ERC1820_REGISTRY.setInterfaceImplementer(
+            address(this),
+            TOKENS_RECIPIENT_INTERFACE_HASH,
+            address(this)
+        );
     }
 
     /**
      * @notice  Withdraw character#`characterId` to `to` using the nonce, expires and the proof.
+     * Emits the `Withdraw` event.
      * @dev     Proof is the signature from someone with the ADMIN_ROLE. The message to sign is
      * the packed data of this contract's address, `characterId`, `nonce` and `expires`.
      *
@@ -78,10 +115,18 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
         );
         require(
             hasRole(ADMIN_ROLE, _recoverSigner(signedData, proof)),
-            "NewbieVilla: Unauthorized withdraw"
+            "NewbieVilla: unauthorized withdraw"
         );
 
+        // transfer web3Entry nft
         IERC721(web3Entry).safeTransferFrom(address(this), to, characterId);
+
+        // send token
+        uint256 amount = _balances[characterId];
+        _balances[characterId] = 0;
+        IERC777(_token).send(to, amount, ""); // solhint-disable-line check-send-result
+
+        emit Withdraw(to, characterId, _token, amount);
     }
 
     /**
@@ -131,10 +176,46 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver 
         return IERC721Receiver.onERC721Received.selector;
     }
 
+    /// @inheritdoc IERC777Recipient
+    function tokensReceived(
+        address,
+        address,
+        address to,
+        uint256 amount,
+        bytes calldata userData,
+        bytes calldata operatorData
+    ) external override(IERC777Recipient) {
+        require(msg.sender == _token, "NewbieVilla: invalid token");
+        require(address(this) == to, "NewbieVilla: invalid receiver");
+
+        bytes memory data = userData.length > 0 ? userData : operatorData;
+        if (data.length == 64) {
+            (, uint256 toCharacterId) = abi.decode(data, (uint256, uint256));
+            _balances[toCharacterId] += amount;
+        } else {
+            revert("NewbieVilla: unknown receiving");
+        }
+    }
+
+    /**
+     * @dev Returns the amount of tokens owned by `characterId`.
+     */
+    function balanceOf(uint256 characterId) external view returns (uint256) {
+        return _balances[characterId];
+    }
+
+    /**
+     * @notice Returns the address of mira token contract.
+     * @return The address of mira token contract.
+     */
+    function getToken() external view returns (address) {
+        return _token;
+    }
+
     function _splitSignature(
         bytes memory sig
     ) internal pure returns (uint8 v, bytes32 r, bytes32 s) {
-        require(sig.length == 65, "NewbieVilla: Wrong signature length");
+        require(sig.length == 65, "NewbieVilla: wrong signature length");
 
         /* solhint-disable no-inline-assembly */
         assembly {

@@ -99,10 +99,18 @@ contract Tips is Initializable, IERC777Recipient {
         }
     }
 
+    /**
+     * @notice Returns the address of web3Entry contract.
+     * @return The address of web3Entry contract.
+     */
     function getWeb3Entry() external view returns (address) {
         return _web3Entry;
     }
 
+    /**
+     * @notice Returns the address of mira token contract.
+     * @return The address of mira token contract.
+     */
     function getToken() external view returns (address) {
         return _token;
     }

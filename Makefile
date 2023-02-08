@@ -47,6 +47,11 @@ upgradeable:
 	@echo " > \033[32mChecking upgradeable...\033[0m"
 	./tools/checkUpgradeable.sh
 
+# check upgradeable contract storage layout
+storage-layout:
+	@echo " > \033[32mChecking contract storage layout...\033[0m"
+	./tools/checkStorageLayout.sh
+
 # Lints
 lint :; npx prettier --write "{contracts,test,scripts}/**/*.{sol,ts}"
 

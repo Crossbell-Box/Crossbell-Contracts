@@ -73,6 +73,26 @@ jobs:
       - name: Run Check
         run: yarn upgradeable
 
+  contract-storage-layout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+      - name: Install Dependencies
+        run: yarn install
+      - name: Update Modules
+        run: yarn sync
+      - name: Run Check
+        run: yarn storage-layout
+
   mythril:
     runs-on: ubuntu-latest
     steps:

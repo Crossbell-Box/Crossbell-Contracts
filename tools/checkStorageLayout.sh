@@ -6,10 +6,22 @@ if [ ! -d "contracts" ]; then
 	exit 1
 fi
 
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 for contract in Web3Entry Tips NewbieVilla
 do
-  file=$(mktemp /tmp/crossbell-contracts-storage-layout.XXXXX) || exit 2
+  file=$(mktemp /tmp/contracts-storage-layout-${contract}.XXXXX) || exit 2
   forge inspect ${contract} storage-layout --pretty > ${file} || exit 3
 
-  diff ${file} ./tools/storageLayout/${contract}-storage-layout.txt
+  diffResult=$(mktemp /tmp/contracts-storage-layout-${contract}.XXXXX) || exit 4
+  diff ./tools/storageLayout/${contract}-storage-layout.txt ${file}  > ${diffResult}
+  if cat ${diffResult} | grep "^<" >/dev/null
+  then
+    echo "check ${contract} failed!"
+    cat ${diffResult}
+    exit 255
+  else
+    cp ${file} ./tools/storageLayout/${contract}-storage-layout.txt
+  fi
 done
+echo "check storage layout done!"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
