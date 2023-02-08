@@ -1,0 +1,8 @@
+| Name          | Type                                                | Slot | Offset | Bytes | Contract                                   |
+|---------------|-----------------------------------------------------|------|--------|-------|--------------------------------------------|
+| _initialized  | uint8                                               | 0    | 0      | 1     | contracts/misc/NewbieVilla.sol:NewbieVilla |
+| _initializing | bool                                                | 0    | 1      | 1     | contracts/misc/NewbieVilla.sol:NewbieVilla |
+| _roles        | mapping(bytes32 => struct AccessControl.RoleData)   | 1    | 0      | 32    | contracts/misc/NewbieVilla.sol:NewbieVilla |
+| _roleMembers  | mapping(bytes32 => struct EnumerableSet.AddressSet) | 2    | 0      | 32    | contracts/misc/NewbieVilla.sol:NewbieVilla |
+| web3Entry     | address                                             | 3    | 0      | 20    | contracts/misc/NewbieVilla.sol:NewbieVilla |
+| xsyncOperator | address                                             | 4    | 0      | 20    | contracts/misc/NewbieVilla.sol:NewbieVilla |
