@@ -123,14 +123,21 @@ contract Tips is Initializable, IERC777Recipient {
      * @notice Tips a character by transferring `amount` tokens
      * from the `fromCharacterId` account to `toCharacterId` account.
      * Emits the `ThankCharacter` event.
-     *
-     * Requirements:
+     * * Requirements:
      * - The `from` account must be the character owner of `fromCharacterId.
      * @param from The caller's account who sends token.
      * @param fromCharacterId The token ID of character that calls this contract.
      * @param toCharacterId The token ID of character that will receive the token.
      * @param token Address of token.
      * @param amount Amount of token.
+     */
+    /**
+     * @dev User should call `send` erc777 token to the Tips contract, with `fromCharacterId`
+     * and `toCharacterId` encoded in the `data`.
+     * `send` interface is
+     * [IERC777-send](https://docs.openzeppelin.com/contracts/2.x/api/token/erc777#IERC777-send-address-uint256-bytes-),
+     * and parameters encode refers [AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode) .
+     *
      */
     function _tipCharacter(
         address from,
@@ -159,6 +166,10 @@ contract Tips is Initializable, IERC777Recipient {
      * @param toNoteId The note ID.
      * @param token Address of token.
      * @param amount Amount of token.
+     */
+    /**
+     * @dev User should call `send` erc777 token to the Tips contract, with `fromCharacterId`,
+     *  `toCharacterId` and `toNoteId` encoded in the `data`.
      */
     function _tipCharacterForNote(
         address from,

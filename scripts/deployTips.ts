@@ -12,6 +12,7 @@ async function main() {
     const proxyWeb3Entry = "0xa6f969045641Cf486a747A2688F3a5A6d43cd0D8";
     const proxyAdminMultisig = "0x2CD6eA7DE6B33C663a669158c70800BAba17a951";
     const miraToken = "0xAfB95CC0BD320648B3E8Df6223d9CDD05EbeDC64";
+    const newbieVillaAdmin = "";
 
     const Tips = await ethers.getContractFactory("Tips");
     const tips = await Tips.deploy();

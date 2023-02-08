@@ -133,22 +133,10 @@ Returns the address of mira token contract.
 function _tipCharacter(address from, uint256 fromCharacterId, uint256 toCharacterId, address token, uint256 amount) internal
 ```
 
-Tips a character by transferring `amount` tokens
-from the `fromCharacterId` account to `toCharacterId` account.
-Emits the `ThankCharacter` event.
-
-Requirements:
-- The `from` account must be the character owner of `fromCharacterId.
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| from | address | The caller's account who sends token. |
-| fromCharacterId | uint256 | The token ID of character that calls this contract. |
-| toCharacterId | uint256 | The token ID of character that will receive the token. |
-| token | address | Address of token. |
-| amount | uint256 | Amount of token. |
+_User should call `send` erc777 token to the Tips contract, with `fromCharacterId`
+and `toCharacterId` encoded in the `data`.
+`send` interface is [IERC777-send](https://docs.openzeppelin.com/contracts/2.x/api/token/erc777#IERC777-send-address-uint256-bytes-),
+and parameters encode refers [AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode) ._
 
 ### _tipCharacterForNote
 
@@ -156,23 +144,8 @@ Requirements:
 function _tipCharacterForNote(address from, uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId, address token, uint256 amount) internal
 ```
 
-Tips a character's note by transferring `amount` tokens
-from the `fromCharacterId` account to `toCharacterId` account.
-Emits the `ThankNote` event.
-
-Requirements:
-- The `from` account must be the character owner of `fromCharacterId.
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| from | address | The caller's account who sends token. |
-| fromCharacterId | uint256 | The token ID of character that calls this contract. |
-| toCharacterId | uint256 | The token ID of character that will receive the token. |
-| toNoteId | uint256 | The note ID. |
-| token | address | Address of token. |
-| amount | uint256 | Amount of token. |
+_User should call `send` erc777 token to the Tips contract, with `fromCharacterId`,
+ `toCharacterId` and `toNoteId` encoded in the `data`._
 
 ### _sendToken
 
