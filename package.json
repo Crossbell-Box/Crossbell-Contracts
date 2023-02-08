@@ -31,6 +31,7 @@
     },
     "scripts": {
         "setup": "make clean && make build",
+        "compile": "npx hardhat clean && npx hardhat compile",
         "sync": "make install",
         "test": "make foundry-test && npx hardhat test",
         "snapshot": "make snapshot",
