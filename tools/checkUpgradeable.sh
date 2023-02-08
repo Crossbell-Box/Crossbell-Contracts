@@ -42,12 +42,13 @@ slither-check-upgradeability . Tips \
 2>>"$file2" 1>&2
 
 echo "NewbieVilla: " >"$file3"
-slither-check-upgradeability . NewbieVilla \
---proxy-filename . \
---proxy-name TransparentUpgradeableProxy \
---compile-force-framework 'hardhat' \
---exclude "initialize-target" \
-2>>"$file3" 1>&2
+# don't check NewbieVilla for now, as slither-check-upgradeability does not support "reinitializer"
+#slither-check-upgradeability . NewbieVilla \
+#--proxy-filename . \
+#--proxy-name TransparentUpgradeableProxy \
+#--compile-force-framework 'hardhat' \
+#--exclude "initialize-target" \
+#2>>"$file3" 1>&2
 
 # output
 lines1=$(sed -n '$=' "$file1")

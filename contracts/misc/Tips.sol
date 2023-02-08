@@ -17,9 +17,11 @@ contract Tips is Initializable, IERC777Recipient {
         IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
     bytes32 public constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
 
-    //address of web3Entry
+    // slither-disable-start naming-convention
+    // address of web3Entry
     address internal _web3Entry;
     address internal _token; // mira token, erc777 standard
+    // slither-disable-end naming-convention
 
     // custom errors
     error ErrCallerNotCharacterOwner();
