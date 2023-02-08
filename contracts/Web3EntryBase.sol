@@ -751,7 +751,7 @@ contract Web3EntryBase is
     function _validateCallerPermission(uint256, uint256) internal view virtual {}
 
     // overridden in web3Entry
-    function _validateCallerPermission4Note(uint256, uint256) internal view virtual {} // solhint-disable-line no-empty-blocks
+    function _validateCallerPermission4Note(uint256, uint256) internal view virtual {} // solhint-disable-line no-empty-blocks,dead-code
 
     function _validateCharacterExists(uint256 characterId) internal view {
         if (!_exists(characterId)) revert ErrCharacterNotExists(characterId);
