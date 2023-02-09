@@ -48,22 +48,7 @@ library Const {
 
     bytes32 public constant bytes32Zero = bytes32(0);
 
-    bytes32 public constant FollowLinkType = bytes32(bytes("follow"));
-    bytes32 public constant LikeLinkType = bytes32(bytes("like"));
-
-    bytes32 public constant LinkItemTypeCharacter =
-        0x4368617261637465720000000000000000000000000000000000000000000000;
-    bytes32 public constant LinkItemTypeAddress =
-        0x4164647265737300000000000000000000000000000000000000000000000000;
-    bytes32 public constant LinkItemTypeNote =
-        0x4e6f746500000000000000000000000000000000000000000000000000000000;
-    bytes32 public constant LinkItemTypeERC721 =
-        0x4552433732310000000000000000000000000000000000000000000000000000;
-    bytes32 public constant LinkItemTypeLinklist =
-        0x4c696e6b6c697374000000000000000000000000000000000000000000000000;
-    bytes32 public constant LinkItemTypeAnyUri =
-        0x416e795572690000000000000000000000000000000000000000000000000000;
-
-    uint256 public constant PrivateKey0x1 =
-        0x0000000000000000000000000000000000000000000000000000000000000001;
+    // constants for linkType
+    bytes32 public constant FollowLinkType = "follow";
+    bytes32 public constant LikeLinkType = "like";
 }
