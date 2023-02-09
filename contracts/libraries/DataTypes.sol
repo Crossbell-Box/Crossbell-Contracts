@@ -4,6 +4,10 @@ pragma solidity 0.8.16;
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
+/**
+ * @title DataTypes
+ * @notice A standard library of data types.
+ */
 library DataTypes {
     struct MigrateData {
         address account;
@@ -192,10 +196,20 @@ library DataTypes {
         address linkModule;
     }
 
-    // note struct
+    /**
+     * @dev A struct containing data associated with each new note.
+     * @param linkItemType The link type of this note, if the note is a note with link.
+     * @param linkKey If linkKey is not empty, it is a note with link(eg.a comment to a character or a note).
+     * @param contentURI The URI associated with this note.
+     * @param linkModule The address of the current link module of this note, can be empty.
+     * @param mintModule  The address of the current mint module of this note, can be empty.
+     * @param mintNFT The address of the mintNFT associated with this note, if any..
+     * @param deleted Whether the note is deleted.
+     * @param locked Whether the note is locked. If the note is locked, its owner can't set not uri anymore.
+     */
     struct Note {
-        bytes32 linkItemType; // type of note with link
-        bytes32 linkKey; // if linkKey is not empty, it is a note with link
+        bytes32 linkItemType;
+        bytes32 linkKey;
         string contentUri;
         address linkModule;
         address mintModule;
