@@ -325,7 +325,7 @@ contract OperatorTest is Test, SetUp, Utils {
             DataTypes.createThenLinkCharacterData(
                 Const.FIRST_CHARACTER_ID,
                 Const.MOCK_TO_ADDRESS,
-                Constants.NoteLinkTypeCharacter
+                Constants.LINK_ITEM_TYPE_CHARACTER
             )
         );
         // bob can setlinklisturi

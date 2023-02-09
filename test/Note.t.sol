@@ -272,7 +272,7 @@ contract NoteTest is Test, SetUp, Utils {
         );
         matchNote(
             note,
-            Constants.NoteLinkTypeCharacter,
+            Constants.LINK_ITEM_TYPE_CHARACTER,
             bytes32(Const.SECOND_CHARACTER_ID),
             Const.MOCK_NOTE_URI,
             address(0),
@@ -305,7 +305,7 @@ contract NoteTest is Test, SetUp, Utils {
         );
         matchNote(
             note,
-            Constants.NoteLinkTypeAddress,
+            Constants.LINK_ITEM_TYPE_ADDRESS,
             bytes32(uint256(uint160(toAddress))),
             Const.MOCK_NOTE_URI,
             address(0),
@@ -348,7 +348,7 @@ contract NoteTest is Test, SetUp, Utils {
         );
         matchNote(
             note,
-            Constants.NoteLinkTypeLinklist,
+            Constants.LINK_ITEM_TYPE_LINKLIST,
             bytes32(Const.FIRST_LINKLIST_ID),
             Const.MOCK_NOTE_URI,
             address(0),
@@ -386,7 +386,7 @@ contract NoteTest is Test, SetUp, Utils {
         console.logBytes32(note.linkItemType);
         matchNote(
             note,
-            Constants.NoteLinkTypeNote,
+            Constants.LINK_ITEM_TYPE_NOTE,
             keccak256(abi.encodePacked("Note", Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID)),
             Const.MOCK_NOTE_URI,
             address(0),
@@ -422,7 +422,7 @@ contract NoteTest is Test, SetUp, Utils {
         );
         matchNote(
             note,
-            Constants.NoteLinkTypeERC721,
+            Constants.LINK_ITEM_TYPE_ERC721,
             keccak256(abi.encodePacked("ERC721", address(nft), uint256(1))),
             Const.MOCK_NOTE_URI,
             address(0),
@@ -464,7 +464,7 @@ contract NoteTest is Test, SetUp, Utils {
         );
         matchNote(
             note,
-            Constants.NoteLinkTypeAnyUri,
+            Constants.LINK_ITEM_TYPE_ANYURI,
             keccak256(abi.encodePacked("AnyUri", uri)),
             Const.MOCK_NOTE_URI,
             address(0),

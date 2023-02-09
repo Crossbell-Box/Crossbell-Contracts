@@ -7,10 +7,10 @@ library Constants {
     uint8 public constant MIN_HANDLE_LENGTH = 3;
 
     // constants for linkItemType of note struct
-    bytes32 public constant NoteLinkTypeCharacter = "Character";
-    bytes32 public constant NoteLinkTypeAddress = "Address";
-    bytes32 public constant NoteLinkTypeLinklist = "Linklist";
-    bytes32 public constant NoteLinkTypeNote = "Note";
-    bytes32 public constant NoteLinkTypeERC721 = "ERC721";
-    bytes32 public constant NoteLinkTypeAnyUri = "AnyUri";
+    bytes32 public constant LINK_ITEM_TYPE_CHARACTER = "Character";
+    bytes32 public constant LINK_ITEM_TYPE_ADDRESS = "Address";
+    bytes32 public constant LINK_ITEM_TYPE_LINKLIST = "Linklist";
+    bytes32 public constant LINK_ITEM_TYPE_NOTE = "Note";
+    bytes32 public constant LINK_ITEM_TYPE_ERC721 = "ERC721";
+    bytes32 public constant LINK_ITEM_TYPE_ANYURI = "AnyUri";
 }

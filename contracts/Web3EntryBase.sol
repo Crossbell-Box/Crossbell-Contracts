@@ -419,7 +419,7 @@ contract Web3EntryBase is
     ) external override returns (uint256) {
         _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_CHARACTER);
 
-        bytes32 linkItemType = Constants.NoteLinkTypeCharacter;
+        bytes32 linkItemType = Constants.LINK_ITEM_TYPE_CHARACTER;
         bytes32 linkKey = bytes32(toCharacterId);
         uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
 
@@ -441,7 +441,7 @@ contract Web3EntryBase is
     ) external override returns (uint256) {
         _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_ADDRESS);
 
-        bytes32 linkItemType = Constants.NoteLinkTypeAddress;
+        bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ADDRESS;
         bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
         uint256 noteId = ++_characterById[noteData.characterId].noteCount;
 
@@ -463,7 +463,7 @@ contract Web3EntryBase is
     ) external override returns (uint256) {
         _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_LINKLIST);
 
-        bytes32 linkItemType = Constants.NoteLinkTypeLinklist;
+        bytes32 linkItemType = Constants.LINK_ITEM_TYPE_LINKLIST;
         bytes32 linkKey = bytes32(toLinklistId);
         uint256 noteId = ++_characterById[noteData.characterId].noteCount;
 
@@ -485,7 +485,7 @@ contract Web3EntryBase is
     ) external override returns (uint256) {
         _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_NOTE);
 
-        bytes32 linkItemType = Constants.NoteLinkTypeNote;
+        bytes32 linkItemType = Constants.LINK_ITEM_TYPE_NOTE;
         bytes32 linkKey = ILinklist(_linklist).addLinkingNote(0, note.characterId, note.noteId);
         uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
 
@@ -508,7 +508,7 @@ contract Web3EntryBase is
         _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_ERC721);
         _validateERC721Exists(erc721.tokenAddress, erc721.erc721TokenId);
 
-        bytes32 linkItemType = Constants.NoteLinkTypeERC721;
+        bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ERC721;
         bytes32 linkKey = ILinklist(_linklist).addLinkingERC721(
             0,
             erc721.tokenAddress,
@@ -534,7 +534,7 @@ contract Web3EntryBase is
     ) external override returns (uint256) {
         _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_ANYURI);
 
-        bytes32 linkItemType = Constants.NoteLinkTypeAnyUri;
+        bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ANYURI;
         bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
         uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
 
