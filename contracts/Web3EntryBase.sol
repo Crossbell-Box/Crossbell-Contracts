@@ -6,7 +6,6 @@ import "./base/NFTBase.sol";
 import "./interfaces/IWeb3Entry.sol";
 import "./interfaces/ILinklist.sol";
 import "./interfaces/ILinkModule4Note.sol";
-import "./interfaces/IResolver.sol";
 import "./storage/Web3EntryStorage.sol";
 import "./storage/Web3EntryExtendStorage.sol";
 import "./libraries/DataTypes.sol";
@@ -51,7 +50,8 @@ contract Web3EntryBase is
     }
 
     // overridden in web3Entry
-    function grantOperatorPermissions(uint256, address, uint256) external virtual override {} // solhint-disable-line no-empty-blocks
+    // solhint-disable-next-line no-empty-blocks
+    function grantOperatorPermissions(uint256, address, uint256) external virtual override {}
 
     function grantOperators4Note(
         uint256 characterId,
@@ -751,7 +751,8 @@ contract Web3EntryBase is
     function _validateCallerPermission(uint256, uint256) internal view virtual {}
 
     // overridden in web3Entry
-    function _validateCallerPermission4Note(uint256, uint256) internal view virtual {} // solhint-disable-line no-empty-blocks,dead-code
+    // solhint-disable-next-line no-empty-blocks,dead-code
+    function _validateCallerPermission4Note(uint256, uint256) internal view virtual {}
 
     function _validateCharacterExists(uint256 characterId) internal view {
         if (!_exists(characterId)) revert ErrCharacterNotExists(characterId);

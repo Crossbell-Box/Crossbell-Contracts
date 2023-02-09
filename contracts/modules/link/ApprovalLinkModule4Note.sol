@@ -6,17 +6,22 @@ import "../../interfaces/ILinkModule4Note.sol";
 import "../ModuleBase.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
+/**
+ * @title ApprovalLinkModule4Note
+ * @notice This is a simple LinkModule implementation, inheriting from the ILinkModule4Note interface.
+ */
 contract ApprovalLinkModule4Note is ILinkModule4Note, ModuleBase {
     mapping(address => mapping(uint256 => mapping(uint256 => mapping(address => bool))))
         internal _approvedByCharacterByNoteByOwner;
 
+    // solhint-disable-next-line no-empty-blocks
     constructor(address web3Entry) ModuleBase(web3Entry) {}
 
     function initializeLinkModule(
         uint256 characterId,
         uint256 noteId,
         bytes calldata data
-    ) external returns (bytes memory) {
+    ) external override returns (bytes memory) {
         address owner = IERC721(web3Entry).ownerOf(characterId);
 
         if (data.length > 0) {
@@ -32,6 +37,7 @@ contract ApprovalLinkModule4Note is ILinkModule4Note, ModuleBase {
         return data;
     }
 
+    // solhint-disable-next-line comprehensive-interface
     function approve(
         uint256 characterId,
         uint256 noteId,
@@ -58,7 +64,7 @@ contract ApprovalLinkModule4Note is ILinkModule4Note, ModuleBase {
         uint256 characterId,
         uint256 noteId,
         bytes calldata
-    ) external view onlyWeb3Entry {
+    ) external view override onlyWeb3Entry {
         address owner = IERC721(web3Entry).ownerOf(characterId);
 
         require(
@@ -67,6 +73,7 @@ contract ApprovalLinkModule4Note is ILinkModule4Note, ModuleBase {
         );
     }
 
+    // solhint-disable-next-line comprehensive-interface
     function isApproved(
         address characterOwner,
         uint256 characterId,

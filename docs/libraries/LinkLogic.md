@@ -5,19 +5,19 @@
 ### linkCharacter
 
 ```solidity
-function linkCharacter(uint256 fromCharacterId, uint256 toCharacterId, bytes32 linkType, bytes data, address linker, address linklist, address linkModule, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
+function linkCharacter(uint256 fromCharacterId, uint256 toCharacterId, bytes32 linkType, bytes data, address linklist, address linkModule, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
 ```
 
 ### unlinkCharacter
 
 ```solidity
-function unlinkCharacter(struct DataTypes.unlinkCharacterData vars, address linker, address linklist, uint256 linklistId) external
+function unlinkCharacter(struct DataTypes.unlinkCharacterData vars, address linklist, uint256 linklistId) external
 ```
 
 ### linkNote
 
 ```solidity
-function linkNote(struct DataTypes.linkNoteData vars, address linker, address linklist, mapping(uint256 => mapping(uint256 => struct DataTypes.Note)) _noteByIdByCharacter, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
+function linkNote(struct DataTypes.linkNoteData vars, address linklist, mapping(uint256 => mapping(uint256 => struct DataTypes.Note)) _noteByIdByCharacter, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
 ```
 
 ### unlinkNote
