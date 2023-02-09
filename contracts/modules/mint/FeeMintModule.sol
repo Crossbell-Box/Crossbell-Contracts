@@ -68,6 +68,8 @@ contract FeeMintModule is IMintModule4Note, ModuleBase {
         );
 
         address recipient = _dataByNoteByCharacter[characterId][noteId].recipient;
+        /// @dev onlyWeb3Entry can call `processMint`
+        // slither-disable-next-line arbitrary-send-erc20
         IERC20(token).safeTransferFrom(to, recipient, amount);
     }
 
