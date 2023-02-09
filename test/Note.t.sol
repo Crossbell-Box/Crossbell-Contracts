@@ -6,6 +6,7 @@ import "forge-std/Test.sol";
 import "forge-std/console2.sol";
 import "../contracts/Web3Entry.sol";
 import "../contracts/libraries/DataTypes.sol";
+import "../contracts/libraries/Constants.sol";
 import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import "./helpers/Const.sol";
 import "./helpers/utils.sol";
@@ -271,7 +272,7 @@ contract NoteTest is Test, SetUp, Utils {
         );
         matchNote(
             note,
-            Const.LinkItemTypeCharacter,
+            Constants.NoteLinkTypeCharacter,
             bytes32(Const.SECOND_CHARACTER_ID),
             Const.MOCK_NOTE_URI,
             address(0),
@@ -304,7 +305,7 @@ contract NoteTest is Test, SetUp, Utils {
         );
         matchNote(
             note,
-            Const.LinkItemTypeAddress,
+            Constants.NoteLinkTypeAddress,
             bytes32(uint256(uint160(toAddress))),
             Const.MOCK_NOTE_URI,
             address(0),
@@ -347,7 +348,7 @@ contract NoteTest is Test, SetUp, Utils {
         );
         matchNote(
             note,
-            Const.LinkItemTypeLinklist,
+            Constants.NoteLinkTypeLinklist,
             bytes32(Const.FIRST_LINKLIST_ID),
             Const.MOCK_NOTE_URI,
             address(0),
@@ -385,7 +386,7 @@ contract NoteTest is Test, SetUp, Utils {
         console.logBytes32(note.linkItemType);
         matchNote(
             note,
-            Const.LinkItemTypeNote,
+            Constants.NoteLinkTypeNote,
             keccak256(abi.encodePacked("Note", Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID)),
             Const.MOCK_NOTE_URI,
             address(0),
@@ -421,7 +422,7 @@ contract NoteTest is Test, SetUp, Utils {
         );
         matchNote(
             note,
-            Const.LinkItemTypeERC721,
+            Constants.NoteLinkTypeERC721,
             keccak256(abi.encodePacked("ERC721", address(nft), uint256(1))),
             Const.MOCK_NOTE_URI,
             address(0),
@@ -463,7 +464,7 @@ contract NoteTest is Test, SetUp, Utils {
         );
         matchNote(
             note,
-            Const.LinkItemTypeAnyUri,
+            Constants.NoteLinkTypeAnyUri,
             keccak256(abi.encodePacked("AnyUri", uri)),
             Const.MOCK_NOTE_URI,
             address(0),
