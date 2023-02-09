@@ -1,12 +1,3 @@
 node_modules/
 TransparentUpgradeableProxy.sol
 ProxyAdmin.sol
-MockWeb3EntryExtendStorage.sol
-MockWeb3EntryV2.sol
-MockWeb3EntryV2Storage.sol
-ApprovalLinkModule4Character.sol
-ApprovalLinkModule4Note.sol
-ApprovalMintModule.sol
-FeeMintModule.sol
-ERC721.sol
-Web3EntryBase.sol

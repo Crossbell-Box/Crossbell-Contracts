@@ -6,16 +6,21 @@ import "../../interfaces/ILinkModule4Character.sol";
 import "../ModuleBase.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
+/**
+ * @title ApprovalLinkModule4Character
+ * @notice This is a simple LinkModule implementation, inheriting from the ILinkModule4Character interface.
+ */
 contract ApprovalLinkModule4Character is ILinkModule4Character, ModuleBase {
     mapping(address => mapping(uint256 => mapping(address => bool)))
         internal _approvedByCharacterByOwner;
 
+    // solhint-disable-next-line no-empty-blocks
     constructor(address web3Entry) ModuleBase(web3Entry) {}
 
     function initializeLinkModule(
         uint256 characterId,
         bytes calldata data
-    ) external returns (bytes memory) {
+    ) external override returns (bytes memory) {
         address owner = IERC721(web3Entry).ownerOf(characterId);
 
         if (data.length > 0) {
@@ -32,6 +37,14 @@ contract ApprovalLinkModule4Character is ILinkModule4Character, ModuleBase {
         return data;
     }
 
+    /**
+     * @notice A custom function that allows character owners to customize approved addresses.
+     *
+     * @param characterId The character ID to approve/disapprove.
+     * @param addresses The addresses to approve/disapprove for linking the character.
+     * @param toApprove Whether to approve or disapprove the addresses for linking the character.
+     */
+    // solhint-disable-next-line comprehensive-interface
     function approve(
         uint256 characterId,
         address[] calldata addresses,
@@ -63,6 +76,7 @@ contract ApprovalLinkModule4Character is ILinkModule4Character, ModuleBase {
         );
     }
 
+    // solhint-disable-next-line comprehensive-interface
     function isApproved(
         address characterOwner,
         uint256 characterId,
