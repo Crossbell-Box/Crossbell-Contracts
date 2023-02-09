@@ -57,7 +57,7 @@ contract FeeMintModule is IMintModule4Note, ModuleBase {
         uint256 characterId,
         uint256 noteId,
         bytes calldata data
-    ) external override {
+    ) external override onlyWeb3Entry {
         uint256 amount = _dataByNoteByCharacter[characterId][noteId].amount;
         address token = _dataByNoteByCharacter[characterId][noteId].token;
 
