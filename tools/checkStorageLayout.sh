@@ -13,7 +13,7 @@ do
   forge inspect ${contract} storage-layout --pretty > ${file} || exit 3
 
   diffResult=$(mktemp /tmp/contracts-storage-layout-${contract}.XXXXX) || exit 4
-  diff ./tools/storageLayout/${contract}-storage-layout.txt ${file}  > ${diffResult}
+  diff -bB ./tools/storageLayout/${contract}-storage-layout.txt ${file}  > ${diffResult}
   if cat ${diffResult} | grep "^<" >/dev/null
   then
     echo "check ${contract} failed!"

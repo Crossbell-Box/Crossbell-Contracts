@@ -14,39 +14,39 @@ uint8 MAX_HANDLE_LENGTH
 uint8 MIN_HANDLE_LENGTH
 ```
 
-### NoteLinkTypeCharacter
+### LINK_ITEM_TYPE_CHARACTER
 
 ```solidity
-bytes32 NoteLinkTypeCharacter
+bytes32 LINK_ITEM_TYPE_CHARACTER
 ```
 
-### NoteLinkTypeAddress
+### LINK_ITEM_TYPE_ADDRESS
 
 ```solidity
-bytes32 NoteLinkTypeAddress
+bytes32 LINK_ITEM_TYPE_ADDRESS
 ```
 
-### NoteLinkTypeLinklist
+### LINK_ITEM_TYPE_LINKLIST
 
 ```solidity
-bytes32 NoteLinkTypeLinklist
+bytes32 LINK_ITEM_TYPE_LINKLIST
 ```
 
-### NoteLinkTypeNote
+### LINK_ITEM_TYPE_NOTE
 
 ```solidity
-bytes32 NoteLinkTypeNote
+bytes32 LINK_ITEM_TYPE_NOTE
 ```
 
-### NoteLinkTypeERC721
+### LINK_ITEM_TYPE_ERC721
 
 ```solidity
-bytes32 NoteLinkTypeERC721
+bytes32 LINK_ITEM_TYPE_ERC721
 ```
 
-### NoteLinkTypeAnyUri
+### LINK_ITEM_TYPE_ANYURI
 
 ```solidity
-bytes32 NoteLinkTypeAnyUri
+bytes32 LINK_ITEM_TYPE_ANYURI
 ```
 
