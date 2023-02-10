@@ -84,6 +84,10 @@ contract Tips is Initializable, IERC777Recipient {
         require(msg.sender == _token, "Tips: invalid token");
         require(address(this) == to, "Tips: invalid receiver");
 
+        /**
+         * @dev The userData/operatorData should be an abi encoded bytes of `fromCharacterId`, `toCharacter`
+         * and `toNoteId`(optional),  which are all uint256 type, so the length of data is 64 or 96.
+         */
         bytes memory data = userData.length > 0 ? userData : operatorData;
         if (data.length == 64) {
             // tip character

@@ -190,7 +190,12 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
         require(msg.sender == _token, "NewbieVilla: invalid token");
         require(address(this) == to, "NewbieVilla: invalid receiver");
 
+        /**
+         * @dev The userData/operatorData should be an abi encoded bytes of `fromCharacterId` and `toCharacter`,
+         * which are both uint256 type, so the length of data is 64.
+         */
         bytes memory data = userData.length > 0 ? userData : operatorData;
+
         if (data.length == 64) {
             (, uint256 toCharacterId) = abi.decode(data, (uint256, uint256));
             _balances[toCharacterId] += amount;
