@@ -210,7 +210,7 @@ contract UpgradeWeb3Entry is Test, Utils {
             )
         );
         bytes32 valueAtBlocklistSlot = vm.load(address(proxyWeb3Entry), blocklistSlot);
-        // the length of the blocklist shoule be 2 (bob and admin are in the blocklist)
+        // the length of the blocklist should be 2 (bob and admin are in the blocklist)
         assertEq(valueAtBlocklistSlot, bytes32(uint256(2)));
         bytes32 value1AtBlocklistSlot = keccak256(
             abi.encodePacked(bytes32bob, bytes32(uint256(blocklistSlot) + 1))
