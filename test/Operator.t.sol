@@ -216,7 +216,7 @@ contract OperatorTest is Test, SetUp, Utils {
             )
         );
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(newbieAdminPrivateKey, digest);
-        // withdraw character from newbie villa
+        // withdraw character from newbieVilla
         vm.prank(alice);
         newbieVilla.withdraw(alice, characterId, nonce, expires, abi.encodePacked(r, s, v));
 
