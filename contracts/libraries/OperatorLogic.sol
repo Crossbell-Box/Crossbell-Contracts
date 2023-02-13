@@ -30,7 +30,6 @@ library OperatorLogic {
 
     /**
      @notice Set blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.
-     @dev The blocklistId and allowlistId increase by 1 every time this function is called.
      @param characterId The character Id of the note owner.
      @param noteId The note Id to grant.
      @param blocklist The addresses list of blocked operators.
@@ -43,20 +42,17 @@ library OperatorLogic {
         address[] calldata allowlist,
         mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
     ) external {
+        delete _operators4Note[characterId][noteId];
         DataTypes.Operators4Note storage operators4Note = _operators4Note[characterId][noteId];
 
-        operators4Note.blocklistId++;
-        uint256 currentId = operators4Note.blocklistId; // the current id of blocklists
         // grant blocklist roles
         for (uint256 i = 0; i < blocklist.length; i++) {
-            operators4Note.blocklists[currentId].add(blocklist[i]);
+            operators4Note.blocklists.add(blocklist[i]);
         }
 
-        operators4Note.allowlistId++;
-        currentId = operators4Note.allowlistId; // the current id of allowlists
         // grant allowlist roles
         for (uint256 i = 0; i < allowlist.length; i++) {
-            operators4Note.allowlists[currentId].add(allowlist[i]);
+            operators4Note.allowlists.add(allowlist[i]);
         }
         emit Events.GrantOperators4Note(characterId, noteId, blocklist, allowlist);
     }

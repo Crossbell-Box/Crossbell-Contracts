@@ -202,51 +202,53 @@ contract UpgradeWeb3Entry is Test, Utils {
         valueAtOperatorBitmapSlot = vm.load(address(proxyWeb3Entry), operatorBitmapSlot);
         assertEq32(valueAtOperatorBitmapSlot, bytes32(OP.DEFAULT_PERMISSION_BITMAP));
 
-        // check note 1 operators
-        bytes32 blocklistIndexSlot = keccak256(
+        // check alice's blocklist for note 1
+        bytes32 blocklistSlot = keccak256(
             abi.encodePacked(
                 Const.FIRST_NOTE_ID,
                 (keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(26)))))
             )
         );
-        bytes32 valueAtblocklistIndexSlot = vm.load(address(proxyWeb3Entry), blocklistIndexSlot);
-        // the _blocklistSetIndex is 1
-        assertEq(valueAtblocklistIndexSlot, bytes32(uint256(1)));
-
-        uint256 blocklistMapSlot = uint256(bytes32(blocklistIndexSlot)) + uint256(1);
-        bytes32 valueAtblocklistMapSlot = vm.load(
-            address(proxyWeb3Entry),
-            bytes32(blocklistMapSlot)
+        bytes32 valueAtBlocklistSlot = vm.load(address(proxyWeb3Entry), blocklistSlot);
+        // the length of the blocklist shoule be 2 (bob and admin are in the blocklist)
+        assertEq(valueAtBlocklistSlot, bytes32(uint256(2)));
+        bytes32 value1AtBlocklistSlot = keccak256(
+            abi.encodePacked(bytes32bob, bytes32(uint256(blocklistSlot) + 1))
         );
-        // there should be nothing at blocklistMapSlot
-        assertEq(valueAtblocklistMapSlot, bytes32(uint256(0)));
+        bytes32 value1AtBlocklist = vm.load(address(proxyWeb3Entry), value1AtBlocklistSlot);
+        // the index of bob should be 1
+        assertEq(value1AtBlocklist, bytes32(uint256(1)));
+        /**
+        * commented out to avoid `Stack too deep`
+        bytes32 value2AtBlocklistSlot = keccak256(
+            abi.encodePacked(
+                bytes32admin,
+                bytes32(uint256(blocklistSlot) + 1
+            )
+        ));
+        bytes32 value2AtBlocklist = vm.load(address(proxyWeb3Entry), value2AtBlocklistSlot);
+        // the index of bob should be 1
+        assertEq(value2AtBlocklist,bytes32(uint256(2)));
+        */
 
-        // the blocklist at index 1
-        bytes32 blocklist1Slot = keccak256(abi.encodePacked(uint256(1), blocklistMapSlot));
-        bytes32 valueAtblocklist1Slot = vm.load(address(proxyWeb3Entry), blocklist1Slot);
-        // the length of blocklist at index 1  is 2
-        assertEq(valueAtblocklist1Slot, bytes32(uint256(2)));
-
-        // the allowlistSetIndex slot
-        uint256 allowlistSetIndexSlot = uint256(bytes32(blocklistIndexSlot)) + uint256(2);
-        bytes32 valueAtallowlistSetIndexSlot = vm.load(
+        // check alice's allowlist for note 1
+        bytes32 valueAtAllowlist = vm.load(
             address(proxyWeb3Entry),
-            bytes32(allowlistSetIndexSlot)
+            bytes32(uint256(blocklistSlot) + 2)
         );
-        assertEq(valueAtallowlistSetIndexSlot, bytes32(uint256(1)));
-
-        uint256 allowlistMapSlot = uint256(bytes32(allowlistSetIndexSlot)) + uint256(1);
-        bytes32 valueAtAllowlistMapSlot = vm.load(
-            address(proxyWeb3Entry),
-            bytes32(allowlistMapSlot)
+        // the length of the allowlist should be 3 (carol, bob, alice are in allowlist)
+        assertEq(valueAtAllowlist, bytes32(uint256(3)));
+        bytes32 value1AtAllowlistSlot = keccak256(
+            abi.encodePacked(bytes32carol, bytes32(uint256(blocklistSlot) + 3))
         );
-        // there should be nothing at blocklistMapSlot
-        assertEq(valueAtAllowlistMapSlot, bytes32(uint256(0)));
-
-        // the allowlist at index 1
-        bytes32 allowlist1Slot = keccak256(abi.encodePacked(uint256(1), allowlistMapSlot));
-        bytes32 valueAtAllowlist1Slot = vm.load(address(proxyWeb3Entry), allowlist1Slot);
-        // the length of allowlist at index 1  is 3
-        assertEq(valueAtAllowlist1Slot, bytes32(uint256(3)));
+        bytes32 value1AtAllowlist = vm.load(address(proxyWeb3Entry), value1AtAllowlistSlot);
+        // the index of bob should be 1
+        assertEq(value1AtAllowlist, bytes32(uint256(1)));
+        bytes32 value2AtAllowlistSlot = keccak256(
+            abi.encodePacked(bytes32bob, bytes32(uint256(blocklistSlot) + 3))
+        );
+        bytes32 value2AtAllowlist = vm.load(address(proxyWeb3Entry), value2AtAllowlistSlot);
+        // the index of bob should be 1
+        assertEq(value2AtAllowlist, bytes32(uint256(2)));
     }
 }

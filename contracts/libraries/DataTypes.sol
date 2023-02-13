@@ -235,19 +235,11 @@ library DataTypes {
     }
 
     /**
-     @dev The blocklistId and allowlistId increase at each call `grantOperators4Note`.
-     * This is a safer way to overwrite addressSet,
-     * if you want to learn more about the details,
-     * check this issue: https://github.com/OpenZeppelin/openzeppelin-contracts/issues/3256.
-     @param blocklistId The current id of blocklists.
      @param blocklists The list of blocklist addresses.
-     @param allowlistId The current id of allowlists.
      @param allowlists The list of allowlist addresses.
      */
     struct Operators4Note {
-        uint256 blocklistId;
-        mapping(uint256 => EnumerableSet.AddressSet) blocklists;
-        uint256 allowlistId;
-        mapping(uint256 => EnumerableSet.AddressSet) allowlists;
+        EnumerableSet.AddressSet blocklists;
+        EnumerableSet.AddressSet allowlists;
     }
 }

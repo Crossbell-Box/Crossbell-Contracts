@@ -620,12 +620,8 @@ contract Web3EntryBase is
         uint256 characterId,
         uint256 noteId
     ) external view override returns (address[] memory blocklist, address[] memory allowlist) {
-        blocklist = _operators4Note[characterId][noteId]
-            .blocklists[_operators4Note[characterId][noteId].blocklistId]
-            .values();
-        allowlist = _operators4Note[characterId][noteId]
-            .allowlists[_operators4Note[characterId][noteId].allowlistId]
-            .values();
+        blocklist = _operators4Note[characterId][noteId].blocklists.values();
+        allowlist = _operators4Note[characterId][noteId].allowlists.values();
         return (blocklist, allowlist);
     }
 
@@ -813,13 +809,11 @@ contract Web3EntryBase is
         DataTypes.Operators4Note storage op = _operators4Note[characterId][noteId];
 
         // check blocklist
-        uint256 currentIndex = op.blocklistId; // the current index of blocklistSet
-        if (op.blocklists[currentIndex].contains(operator)) {
+        if (op.blocklists.contains(operator)) {
             return false;
         }
         // check allowlist
-        currentIndex = op.allowlistId; // the current index of allowlistSet
-        if (op.allowlists[currentIndex].contains(operator)) {
+        if (op.allowlists.contains(operator)) {
             return true;
         }
         // check character operator permission
