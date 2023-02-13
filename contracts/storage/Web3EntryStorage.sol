@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-
+// slither-disable-start naming-convention
 pragma solidity 0.8.16;
 
 import "../libraries/DataTypes.sol";
@@ -37,3 +37,4 @@ contract Web3EntryStorage {
     // solhint-disable-next-line private-vars-leading-underscore, var-name-mixedcase
     address internal MINT_NFT_IMPL;
 }
+// slither-disable-end naming-convention

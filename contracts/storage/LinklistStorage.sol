@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable max-states-count
+// slither-disable-start naming-convention
 pragma solidity 0.8.16;
 
 import "../libraries/DataTypes.sol";
@@ -45,3 +46,4 @@ contract LinklistStorage {
     mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkingCharacterLinkKeys;
     mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkingAnyKeys;
 }
+// slither-disable-end naming-convention

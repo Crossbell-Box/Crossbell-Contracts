@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-
+// slither-disable-start naming-convention
 pragma solidity 0.8.16;
 
 import "../libraries/DataTypes.sol";
@@ -16,3 +16,4 @@ contract Web3EntryExtendStorage {
     // only for set note uri
     mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) internal _operators4Note; // slot 26
 }
+// slither-disable-end naming-convention

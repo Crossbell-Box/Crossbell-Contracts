@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-
+// slither-disable-start naming-convention
 pragma solidity 0.8.16;
 
 contract LinklistExtendStorage {
@@ -10,3 +10,4 @@ contract LinklistExtendStorage {
     // characterId => balances
     mapping(uint256 => uint256) internal _linklistBalances;
 }
+// slither-disable-end naming-convention

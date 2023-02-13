@@ -28,6 +28,7 @@ contract CharacterBoundToken is
 
     mapping(uint256 => string) private _tokenURIs;
 
+    // slither-disable-next-line immutable-states
     address public web3Entry;
 
     // tokenId => currentTokenNumber
