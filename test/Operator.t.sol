@@ -17,34 +17,19 @@ import "../contracts/modules/link/ApprovalLinkModule4Note.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract OperatorTest is Test, SetUp, Utils {
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    address public xsyncOperator = address(0x6666);
-
     address public constant alice = address(0x1111);
     address public constant bob = address(0x2222);
     address public constant carol = address(0x3333);
     address public constant dick = address(0x4444);
     address public constant erik = address(0x5555);
 
-    address public constant newbieAdmin = address(0x9999);
-
     address[] public blocklist = [bob];
     address[] public allowlist = [carol, dick];
 
-    NewbieVilla public newbieVilla;
     address public constant migrateOwner = 0xda2423ceA4f1047556e7a142F81a7ED50e93e160;
 
     function setUp() public {
         _setUp();
-
-        // setup newbieVilla
-        newbieVilla = new NewbieVilla();
-        newbieVilla.initialize(address(web3Entry), xsyncOperator, address(0x000001), newbieAdmin);
-        // grant mint role
-        vm.prank(newbieAdmin);
-        newbieVilla.grantRole(ADMIN_ROLE, alice);
-        vm.prank(newbieAdmin);
-        newbieVilla.grantRole(ADMIN_ROLE, bob);
 
         // create character
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
@@ -192,6 +177,60 @@ contract OperatorTest is Test, SetUp, Utils {
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob),
             OP.POST_NOTE_PERMISSION_BITMAP
         );
+    }
+
+    function testOperatorsWithTransfer() public {
+        // case 1: alice transfer its character
+        vm.startPrank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+        web3Entry.safeTransferFrom(alice, carol, Const.FIRST_CHARACTER_ID);
+        vm.stopPrank();
+
+        // check operator permission
+        assertEq(web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, bob), 0);
+        address[] memory operators = web3Entry.getOperators(Const.FIRST_CHARACTER_ID);
+        assertEq(operators.length, 0);
+    }
+
+    function testOperatorsWithTransferFromNewbieVilla() public {
+        // case 2: alice withdraw its character from newbieVilla contract
+        uint256 characterId;
+        uint256 nonce = 1;
+        uint256 expires = block.timestamp + 10 minutes;
+
+        // create and transfer web3Entry nft to newbieVilla
+        characterId = web3Entry.createCharacter(
+            makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, newbieAdmin)
+        );
+        vm.prank(newbieAdmin);
+        web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), characterId);
+        // generate proof for withdrawal
+        bytes32 digest = keccak256(
+            abi.encodePacked(
+                "\x19Ethereum Signed Message:\n32",
+                keccak256(abi.encodePacked(address(newbieVilla), characterId, nonce, expires))
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(newbieAdminPrivateKey, digest);
+        // withdraw character from newbie villa
+        vm.prank(alice);
+        newbieVilla.withdraw(alice, characterId, nonce, expires, abi.encodePacked(r, s, v));
+
+        // check operator permission
+        assertEq(
+            web3Entry.getOperatorPermissions(characterId, xsyncOperator),
+            OP.POST_NOTE_PERMISSION_BITMAP
+        );
+        assertEq(
+            web3Entry.getOperatorPermissions(characterId, newbieAdmin),
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+        address[] memory operators = web3Entry.getOperators(characterId);
+        assertEq(operators.length, 2);
     }
 
     // solhint-disable-next-line function-max-lines

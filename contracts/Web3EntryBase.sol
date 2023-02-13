@@ -40,12 +40,14 @@ contract Web3EntryBase is
         string calldata symbol_,
         address linklist_,
         address mintNFTImpl_,
-        address periphery_
-    ) external override initializer {
+        address periphery_,
+        address newbieVilla_
+    ) external override reinitializer(2) {
         super._initialize(name_, symbol_);
         _linklist = linklist_;
         MINT_NFT_IMPL = mintNFTImpl_;
         _periphery = periphery_;
+        _newbieVilla = newbieVilla_;
 
         emit Events.Web3EntryInitialized(block.timestamp);
     }
@@ -780,8 +782,10 @@ contract Web3EntryBase is
     }
 
     /**
-     * @dev Operator lists will be reset to blank before the characters are transferred in order to grant the
+     * @dev Operators will be reset to blank before the characters are transferred in order to grant the
      * whole control power to receivers of character transfers.
+     * If character is transferred from newbieVilla contract, don't clear operators.
+     *
      * Permissions4Note is left unset, because permissions for notes are always stricter than default.
      */
     function _beforeTokenTransfer(
@@ -789,8 +793,7 @@ contract Web3EntryBase is
         address to,
         uint256 tokenId
     ) internal virtual override {
-        // if character is transferred from newbieVilla contract,
-        // don't clear operator
+        // don't clear operator if character is transferred from newbieVilla contract
         if (from != _newbieVilla) {
             uint256 len = _operatorsByCharacter[tokenId].length();
             address[] memory operators = _operatorsByCharacter[tokenId].values();
@@ -800,8 +803,7 @@ contract Web3EntryBase is
             }
         }
 
-        if (_primaryCharacterByAddress[from] == tokenId) {
-            // reset primary character
+        if (_primaryCharacterByAddress[from] != 0) {
             _primaryCharacterByAddress[from] = 0;
         }
 

@@ -32,6 +32,7 @@ contract UpgradeWeb3Entry is Test, Utils {
     address public linkList = address(0x111);
     address public periphery = address(0x222);
     address public mintNFT = address(0x333);
+    address public newbieVilla = address(0x444);
 
     function setUp() public {
         web3EntryBaseImpl = new Web3EntryBase();
@@ -41,7 +42,8 @@ contract UpgradeWeb3Entry is Test, Utils {
             Const.WEB3_ENTRY_NFT_SYMBOL,
             linkList,
             mintNFT,
-            periphery
+            periphery,
+            newbieVilla
         );
     }
 
