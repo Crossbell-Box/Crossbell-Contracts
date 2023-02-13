@@ -341,8 +341,8 @@ struct ERC721Struct {
 
 ```solidity
 struct Operators4Note {
-  struct EnumerableSet.AddressSet blocklists;
-  struct EnumerableSet.AddressSet allowlists;
+  struct EnumerableSet.AddressSet blocklist;
+  struct EnumerableSet.AddressSet allowlist;
 }
 ```
 

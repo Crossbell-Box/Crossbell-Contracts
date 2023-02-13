@@ -20,6 +20,18 @@ Set blocklist and allowlist for a specific note. Blocklist and allowlist are ove
      @param blocklist The addresses list of blocked operators.
      @param allowlist The addresses list of allowed operators.
 
+### _clearOperators4Note
+
+```solidity
+function _clearOperators4Note(struct DataTypes.Operators4Note operators4Note) internal
+```
+
+### _updateOperators4Note
+
+```solidity
+function _updateOperators4Note(struct DataTypes.Operators4Note operators4Note, address[] blocklist, address[] allowlist) internal
+```
+
 ### _bitmapFilter
 
 ```solidity

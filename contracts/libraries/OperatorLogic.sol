@@ -44,26 +44,38 @@ library OperatorLogic {
     ) external {
         DataTypes.Operators4Note storage operators4Note = _operators4Note[characterId][noteId];
         // clear all iterms in blocklist and allowlist first
+        _clearOperators4Note(operators4Note);
+
+        // update blocklist and allowlist
+        _updateOperators4Note(operators4Note, blocklist, allowlist);
+
+        emit Events.GrantOperators4Note(characterId, noteId, blocklist, allowlist);
+    }
+
+    function _clearOperators4Note(DataTypes.Operators4Note storage operators4Note) internal {
         uint256 blocklistLength = operators4Note.blocklist.length();
-        for (uint256 i = blocklistLength; i > 0; i--) {
+        for (uint256 i = blocklistLength; i > 0;) {
             operators4Note.blocklist.remove(operators4Note.blocklist.at(i - 1));
+            unchecked{ i--; }
         }
 
         uint256 allowlistLength = operators4Note.allowlist.length();
-        for (uint256 i = allowlistLength; i > 0; i--) {
+        for (uint256 i = allowlistLength; i > 0;) {
             operators4Note.allowlist.remove(operators4Note.allowlist.at(i - 1));
+            unchecked{ i--; }
         }
+    }
 
+    function _updateOperators4Note(DataTypes.Operators4Note storage operators4Note, address[] calldata blocklist, address[] calldata allowlist) internal{
         // grant blocklist roles
-        for (uint256 i = 0; i < blocklist.length; i++) {
+        for (uint256 i = 0; i < blocklist.length;) {
             operators4Note.blocklist.add(blocklist[i]);
+            unchecked { i++; }
         }
-
-        // grant allowlist roles
-        for (uint256 i = 0; i < allowlist.length; i++) {
+        for (uint256 i = 0; i < allowlist.length;) {
             operators4Note.allowlist.add(allowlist[i]);
+            unchecked { i++; }
         }
-        emit Events.GrantOperators4Note(characterId, noteId, blocklist, allowlist);
     }
 
     /**
