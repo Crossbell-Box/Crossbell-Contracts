@@ -42,17 +42,26 @@ library OperatorLogic {
         address[] calldata allowlist,
         mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
     ) external {
-        delete _operators4Note[characterId][noteId];
         DataTypes.Operators4Note storage operators4Note = _operators4Note[characterId][noteId];
+        // clear all iterms in blocklist and allowlist first
+        uint256 blocklistLength = operators4Note.blocklist.length();
+        for (uint256 i = blocklistLength; i > 0; i--) {
+            operators4Note.blocklist.remove(operators4Note.blocklist.at(i - 1));
+        }
+
+        uint256 allowlistLength = operators4Note.allowlist.length();
+        for (uint256 i = allowlistLength; i > 0; i--) {
+            operators4Note.allowlist.remove(operators4Note.allowlist.at(i - 1));
+        }
 
         // grant blocklist roles
         for (uint256 i = 0; i < blocklist.length; i++) {
-            operators4Note.blocklists.add(blocklist[i]);
+            operators4Note.blocklist.add(blocklist[i]);
         }
 
         // grant allowlist roles
         for (uint256 i = 0; i < allowlist.length; i++) {
-            operators4Note.allowlists.add(allowlist[i]);
+            operators4Note.allowlist.add(allowlist[i]);
         }
         emit Events.GrantOperators4Note(characterId, noteId, blocklist, allowlist);
     }
