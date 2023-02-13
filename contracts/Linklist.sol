@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-
+// slither-disable-start unused-return
 pragma solidity 0.8.16;
 
 import "./interfaces/ILinklist.sol";
@@ -374,11 +374,13 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         return _linkTypes[tokenId];
     }
 
+    // slither-disable-start naming-convention
     // solhint-disable-next-line func-name-mixedcase
     function Uri(uint256 tokenId) external view override returns (string memory) {
         return _getTokenUri(tokenId);
     }
 
+    // slither-disable-end naming-convention
     function totalSupply() public view override returns (uint256) {
         return _tokenCount;
     }
@@ -387,6 +389,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         return _linklistBalances[characterId];
     }
 
+    // slither-disable-next-line calls-loop
     function balanceOf(
         address account
     ) public view override(IERC721, ERC721) returns (uint256 balance) {
@@ -444,3 +447,4 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         // users should never transfer a linklist directly
     }
 }
+// slither-disable-end unused-return

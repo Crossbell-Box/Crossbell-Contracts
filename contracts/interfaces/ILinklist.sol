@@ -137,8 +137,11 @@ interface ILinklist {
 
     function getLinkType(uint256 tokenId) external view returns (bytes32);
 
+    // slither-disable-start naming-convention
     // solhint-disable func-name-mixedcase
     function Uri(uint256 tokenId) external view returns (string memory);
+
+    // slither-disable-end naming-convention
 
     function characterOwnerOf(uint256 tokenId) external view returns (uint256);
 
