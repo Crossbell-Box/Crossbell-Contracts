@@ -2,6 +2,8 @@
 
 ## DataTypes
 
+A standard library of data types.
+
 ### MigrateData
 
 ```solidity
@@ -339,10 +341,8 @@ struct ERC721Struct {
 
 ```solidity
 struct Operators4Note {
-  uint256 blocklistId;
-  mapping(uint256 => struct EnumerableSet.AddressSet) blocklists;
-  uint256 allowlistId;
-  mapping(uint256 => struct EnumerableSet.AddressSet) allowlists;
+  struct EnumerableSet.AddressSet blocklists;
+  struct EnumerableSet.AddressSet allowlists;
 }
 ```
 

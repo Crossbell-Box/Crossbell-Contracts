@@ -2,6 +2,8 @@
 
 ## ApprovalLinkModule4Note
 
+This is a simple LinkModule implementation, inheriting from the ILinkModule4Note interface.
+
 ### _approvedByCharacterByNoteByOwner
 
 ```solidity
