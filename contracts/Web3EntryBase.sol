@@ -789,20 +789,22 @@ contract Web3EntryBase is
         address to,
         uint256 tokenId
     ) internal virtual override {
-        // clear operators
-        uint256 len = _operatorsByCharacter[tokenId].length();
-        address[] memory operators = _operatorsByCharacter[tokenId].values();
-        for (uint256 i = 0; i < len; i++) {
-            // if character is transferred from newbieVilla contract,
-            // don't clear operator
-            if (from != _newbieVilla) {
+        // if character is transferred from newbieVilla contract,
+        // don't clear operator
+        if (from != _newbieVilla) {
+            uint256 len = _operatorsByCharacter[tokenId].length();
+            address[] memory operators = _operatorsByCharacter[tokenId].values();
+            // clear operators
+            for (uint256 i = 0; i < len; i++) {
                 _clearOperator(tokenId, operators[i]);
             }
         }
+
         if (_primaryCharacterByAddress[from] == tokenId) {
             // reset primary character
             _primaryCharacterByAddress[from] = 0;
         }
+
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
