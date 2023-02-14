@@ -26,6 +26,8 @@ contract Web3EntryStorage {
     mapping(uint256 => address) internal _linkModules4Linklist;
 
     // tokenAddress => tokenId => linkModule4ERC721
+    /// @dev disable `uninitialized-state` check, as linkmodule for erc721 is not enabled currently
+    // slither-disable-next-line uninitialized-state
     mapping(address => mapping(uint256 => address)) internal _linkModules4ERC721;
 
     // address => linkModule4Address
