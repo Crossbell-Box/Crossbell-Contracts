@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable comprehensive-interface
+// slither-disable-start calls-loop
 pragma solidity 0.8.16;
 
 import "../interfaces/IWeb3Entry.sol";
@@ -12,8 +13,6 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 
 contract Periphery is Initializable {
     address public web3Entry;
-
-    bool private _linklistInitialized; // obsoleted slot
     address public linklist;
 
     function initialize(address web3Entry_, address linklist_) external initializer {
@@ -87,7 +86,7 @@ contract Periphery is Initializable {
 
         uint256 len = linkingCharacterIds.length;
 
-        uint256 count;
+        uint256 count = 0;
         for (uint256 i = 0; i < len; i++) {
             if (_exists(linkingCharacterIds[i])) {
                 count++;
@@ -95,11 +94,10 @@ contract Periphery is Initializable {
         }
 
         results = new uint256[](count);
-        uint256 j;
+        uint256 j = 0;
         for (uint256 i = 0; i < len; i++) {
             if (_exists(linkingCharacterIds[i])) {
-                results[j] = linkingCharacterIds[i];
-                j++;
+                results[j++] = linkingCharacterIds[i];
             }
         }
     }
@@ -188,6 +186,7 @@ contract Periphery is Initializable {
         uint256 fromProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(account);
         if (fromProfileId == 0) {
             // create character first
+            // slither-disable-next-line unused-return
             IWeb3Entry(web3Entry).createCharacter(
                 DataTypes.CreateCharacterData({
                     to: account,
@@ -233,4 +232,5 @@ contract Periphery is Initializable {
     function _exists(uint256 characterId) internal view returns (bool) {
         return IWeb3Entry(web3Entry).getCharacter(characterId).characterId != 0;
     }
+    // slither-disable-end calls-loop
 }

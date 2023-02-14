@@ -44,7 +44,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      */
     event Withdraw(address to, uint256 characterId, address token, uint256 amount);
 
-    modifier _notExpired(uint256 expires) {
+    modifier notExpired(uint256 expires) {
         require(expires >= block.timestamp, "NewbieVilla: receipt has expired");
         _;
     }
@@ -111,7 +111,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
         uint256 nonce,
         uint256 expires,
         bytes memory proof
-    ) external _notExpired(expires) {
+    ) external notExpired(expires) {
         bytes32 signedData = _prefixed(
             keccak256(abi.encodePacked(address(this), characterId, nonce, expires))
         );
@@ -120,13 +120,13 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
             "NewbieVilla: unauthorized withdraw"
         );
 
-        // transfer web3Entry nft
-        IERC721(web3Entry).safeTransferFrom(address(this), to, characterId);
-
-        // send token
         uint256 amount = _balances[characterId];
         _balances[characterId] = 0;
+        // send token
         IERC777(_token).send(to, amount, ""); // solhint-disable-line check-send-result
+
+        // transfer web3Entry nft
+        IERC721(web3Entry).safeTransferFrom(address(this), to, characterId);
 
         emit Withdraw(to, characterId, _token, amount);
     }

@@ -89,6 +89,7 @@ contract Tips is Initializable, IERC777Recipient {
          * and `toNoteId`(optional),  which are all uint256 type, so the length of data is 64 or 96.
          */
         bytes memory data = userData.length > 0 ? userData : operatorData;
+        //slither-disable-start uninitialized-local
         if (data.length == 64) {
             // tip character
             // slither-disable-next-line variable-scope
@@ -105,6 +106,7 @@ contract Tips is Initializable, IERC777Recipient {
         } else {
             revert("Tips: unknown receiving");
         }
+        //slither-disable-end uninitialized-local
     }
 
     /**
