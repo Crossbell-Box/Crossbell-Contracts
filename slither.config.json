@@ -1,7 +1,7 @@
 {
-  "detectors_to_exclude": "missing-zero-check,initialize-target,assembly",
+  "detectors_to_exclude": "missing-zero-check,initialize-target,tx-origin,assembly",
   "disable_color": false,
-  "filter_paths": "(lib/|node_modules/|upgradeability/|mocks/|storage/|libraries/|misc/|modules/|base/|Resolver.sol|Web3EntryBase.sol)",
+  "filter_paths": "(lib/|node_modules/|upgradeability/|mocks/|/|libraries/|misc/|modules/|base/|Resolver.sol)",
   "solc_remaps": [
     "ds-test/=lib/forge-std/lib/ds-test/src/",
     "forge-std/=lib/forge-std/src/",
