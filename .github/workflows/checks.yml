@@ -47,7 +47,8 @@ jobs:
         uses: codespell-project/actions-codespell@v1.0
         with:
           check_filenames: true
-          skip: ./.git,./docs,package-lock.json,yarn.lock
+          ignore_words_file: .codespellignore
+          skip: ./.git,package-lock.json,yarn.lock
 
   solhint:
     runs-on: ubuntu-latest
