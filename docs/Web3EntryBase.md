@@ -479,14 +479,6 @@ function _clearOperator(uint256 tokenId, address operator) internal
 function _isOperatorAllowedForNote(uint256 characterId, uint256 noteId, address operator) internal view returns (bool)
 ```
 
-### _checkBit
-
-```solidity
-function _checkBit(uint256 x, uint256 i) internal pure returns (bool)
-```
-
-__checkBit checks if the value of the i'th bit of x is 1_
-
 ### _checkHandleExists
 
 ```solidity
@@ -552,4 +544,12 @@ function _validateHandle(string handle) internal pure
 ```solidity
 function _validateChar(bytes1 c) internal pure
 ```
+
+### _checkBit
+
+```solidity
+function _checkBit(uint256 x, uint256 i) internal pure returns (bool)
+```
+
+__checkBit checks if the value of the i'th bit of x is 1_
 

@@ -15,11 +15,22 @@ function grantOperators4Note(uint256 characterId, uint256 noteId, address[] bloc
 ```
 
 Set blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.
-     @dev The blocklistId and allowlistId increase by 1 every time this function is called.
      @param characterId The character Id of the note owner.
      @param noteId The note Id to grant.
      @param blocklist The addresses list of blocked operators.
      @param allowlist The addresses list of allowed operators.
+
+### _clearOperators4Note
+
+```solidity
+function _clearOperators4Note(struct DataTypes.Operators4Note operators4Note) internal
+```
+
+### _updateOperators4Note
+
+```solidity
+function _updateOperators4Note(struct DataTypes.Operators4Note operators4Note, address[] blocklist, address[] allowlist) internal
+```
 
 ### _bitmapFilter
 

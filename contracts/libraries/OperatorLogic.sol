@@ -30,7 +30,6 @@ library OperatorLogic {
 
     /**
      @notice Set blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.
-     @dev The blocklistId and allowlistId increase by 1 every time this function is called.
      @param characterId The character Id of the note owner.
      @param noteId The note Id to grant.
      @param blocklist The addresses list of blocked operators.
@@ -44,21 +43,51 @@ library OperatorLogic {
         mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
     ) external {
         DataTypes.Operators4Note storage operators4Note = _operators4Note[characterId][noteId];
+        // clear all iterms in blocklist and allowlist first
+        _clearOperators4Note(operators4Note);
 
-        operators4Note.blocklistId++;
-        uint256 currentId = operators4Note.blocklistId; // the current id of blocklists
-        // grant blocklist roles
-        for (uint256 i = 0; i < blocklist.length; i++) {
-            operators4Note.blocklists[currentId].add(blocklist[i]);
-        }
+        // update blocklist and allowlist
+        _updateOperators4Note(operators4Note, blocklist, allowlist);
 
-        operators4Note.allowlistId++;
-        currentId = operators4Note.allowlistId; // the current id of allowlists
-        // grant allowlist roles
-        for (uint256 i = 0; i < allowlist.length; i++) {
-            operators4Note.allowlists[currentId].add(allowlist[i]);
-        }
         emit Events.GrantOperators4Note(characterId, noteId, blocklist, allowlist);
+    }
+
+    function _clearOperators4Note(DataTypes.Operators4Note storage operators4Note) internal {
+        uint256 blocklistLength = operators4Note.blocklist.length();
+        for (uint256 i = blocklistLength; i > 0; ) {
+            operators4Note.blocklist.remove(operators4Note.blocklist.at(i - 1));
+            unchecked {
+                i--;
+            }
+        }
+
+        uint256 allowlistLength = operators4Note.allowlist.length();
+        for (uint256 i = allowlistLength; i > 0; ) {
+            operators4Note.allowlist.remove(operators4Note.allowlist.at(i - 1));
+            unchecked {
+                i--;
+            }
+        }
+    }
+
+    function _updateOperators4Note(
+        DataTypes.Operators4Note storage operators4Note,
+        address[] calldata blocklist,
+        address[] calldata allowlist
+    ) internal {
+        // grant blocklist roles
+        for (uint256 i = 0; i < blocklist.length; ) {
+            operators4Note.blocklist.add(blocklist[i]);
+            unchecked {
+                i++;
+            }
+        }
+        for (uint256 i = 0; i < allowlist.length; ) {
+            operators4Note.allowlist.add(allowlist[i]);
+            unchecked {
+                i++;
+            }
+        }
     }
 
     /**
