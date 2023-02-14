@@ -15,4 +15,6 @@ contract Web3EntryExtendStorage {
     // characterId => noteId => Operators4Note
     // only for set note uri
     mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) internal _operators4Note; // slot 26
+
+    address internal _newbieVilla; // address of newbieVilla contract
 }

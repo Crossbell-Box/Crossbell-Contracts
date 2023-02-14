@@ -6,6 +6,9 @@ import "../../contracts/Web3Entry.sol";
 import "../../contracts/Linklist.sol";
 import "../../contracts/misc/Periphery.sol";
 import "../../contracts/misc/CharacterBoundToken.sol";
+import "../../contracts/misc/NewbieVilla.sol";
+import "../../contracts/mocks/MiraToken.sol";
+import "../../contracts/misc/Tips.sol";
 import "../../contracts/libraries/DataTypes.sol";
 import "../../contracts/MintNFT.sol";
 import "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
@@ -19,12 +22,21 @@ contract SetUp is Test {
     Web3Entry public web3Entry;
     Linklist public linklist;
     Periphery public periphery;
+    NewbieVilla public newbieVilla;
+    MiraToken public token;
+    Tips public tips;
     MintNFT public mintNFT;
     ApprovalLinkModule4Character public linkModule4Character;
     NFT public nft;
     CharacterBoundToken public cbt;
     TransparentUpgradeableProxy public proxyWeb3Entry;
+
     address public admin = address(0x999999999999999999999999999999);
+
+    address public constant xsyncOperator = address(0xffff4444);
+    uint256 public constant newbieAdminPrivateKey = 1;
+    address public newbieAdmin = vm.addr(newbieAdminPrivateKey);
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
     // solhint-disable-next-line function-max-lines
     function _setUp() internal {
@@ -56,6 +68,15 @@ contract SetUp is Test {
         // deploy periphery
         periphery = new Periphery();
 
+        // deploy newbieVilla
+        newbieVilla = new NewbieVilla();
+
+        // deploy tips
+        tips = new Tips();
+
+        // deploy token
+        token = new MiraToken("Mira Token", "MIRA", address(this));
+
         // deploy linkModule4Character
         linkModule4Character = new ApprovalLinkModule4Character(address(web3Entry));
 
@@ -68,7 +89,8 @@ contract SetUp is Test {
             Const.WEB3_ENTRY_NFT_SYMBOL,
             address(linklist),
             address(mintNFT),
-            address(periphery) // periphery
+            address(periphery),
+            address(newbieVilla)
         );
         // initialize linklist
         linklist.initialize(
@@ -78,6 +100,14 @@ contract SetUp is Test {
         );
         // initialize periphery
         periphery.initialize(address(web3Entry), address(linklist));
+
+        // initialize newbieVilla
+        newbieVilla.initialize(address(web3Entry), xsyncOperator, address(token), newbieAdmin);
+        vm.prank(newbieAdmin);
+        newbieVilla.grantRole(ADMIN_ROLE, newbieAdmin);
+
+        // initialize tips
+        tips.initialize(address(web3Entry), address(token));
 
         // deploy NFT for test
         nft = new NFT();

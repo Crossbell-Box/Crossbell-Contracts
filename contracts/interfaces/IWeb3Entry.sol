@@ -10,7 +10,8 @@ interface IWeb3Entry {
         string calldata symbol_,
         address linklist_,
         address mintNFTImpl_,
-        address periphery_
+        address periphery_,
+        address newbieVilla_
     ) external;
 
     ////////////////////////////////////////////////////////
