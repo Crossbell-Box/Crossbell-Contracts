@@ -29,7 +29,7 @@ contract BaseInvariants is Test, SetUp, Utils {
         tips = new Tips();
         tips.initialize(address(web3Entry), address(token));
 
-        transferHandler = new TransferHandler(address(tips), address(token));
+        transferHandler = new TransferHandler(address(tips), address(token), address(web3Entry));
 
         _excludedContracts = [address(web3Entry), address(proxyWeb3Entry)];
     }
@@ -46,11 +46,6 @@ contract BaseInvariants is Test, SetUp, Utils {
         for (uint256 i; i < actors.length; ++i) {
             sumOfBalances += token.balanceOf(actors[i]);
         }
-        assertEq(
-            token.totalSupply(),
-            sumOfBalances
-        );
+        assertEq(token.totalSupply(), sumOfBalances);
     }
-
-    
 }
