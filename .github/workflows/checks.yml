@@ -40,6 +40,10 @@ jobs:
         run: FOUNDRY_PROFILE=ci yarn test
       - name: Run Coverage
         run: forge coverage --report lcov
+      - name: Install lcov
+        run: apt-get install lcov
+      - name: Remove unwanted files
+        run: lcov --remove ./lcov.info -o ./lcov.info.pruned 'test'
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
@@ -47,7 +51,7 @@ jobs:
           directory: .
           env_vars: OS,PYTHON
           fail_ci_if_error: true
-          files: ./lcov.info
+          files: ./lcov.info.pruned
           name: grappa-coverage
           verbose: true
 
