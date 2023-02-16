@@ -1,7 +1,7 @@
 # Run me by typing `mythx analyze` in the directory of the yml file! :)
 
-output: mythx.json
-confirm: true
+ci: true # make the workflow fail on high severity issues
+confirm: true #  automatic confirmation of multiple file submissions (equivalent to --yes)
 
 analyze:
   mode: standard

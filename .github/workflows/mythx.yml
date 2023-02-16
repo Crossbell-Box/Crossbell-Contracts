@@ -1,4 +1,4 @@
-name: Mythx
+name: Mythx Security Analysis
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ jobs:
       - name: Set up node
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
@@ -42,18 +42,7 @@ jobs:
           solc-select use 0.8.16
 
       - name: Submit code to Mythx
-        run: |
-          mythx --api-key ${{ secrets.MYTHX_API_KEY }} \
-            --yes \
-            analyze \
-            --mode standard \
-            --async \
-            --create-group \
-            --group-name "@crossbell/crossbell-contracts" \
-            --solc-version 0.8.16 \
-            --remap-import "@openzeppelin/=$(pwd)/node_modules/@openzeppelin/" \
-            contracts/Web3EntryBase.sol  --include Web3EntryBase \
-            contracts/Linklist.sol  --include Linklist \
-            contracts/misc/NewbieVilla.sol  --include NewbieVilla \
-            contracts/misc/Tips.sol  --include Tips \
-            contracts/misc/Periphery.sol  --include Periphery
+        # use configs from .mythx.yml
+        run: mythx analyze
+        env:
+          MYTHX_API_KEY: ${{ secrets.MYTHX_API_KEY }}
