@@ -38,6 +38,18 @@ jobs:
         run: yarn sync
       - name: Run Tests
         run: FOUNDRY_PROFILE=ci yarn test
+      - name: Run Coverage
+        run: forge coverage --report lcov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: .
+          env_vars: OS,PYTHON
+          fail_ci_if_error: true
+          files: ./lcov.info
+          name: grappa-coverage
+          verbose: true
 
   codespell:
     runs-on: ubuntu-latest
@@ -47,7 +59,8 @@ jobs:
         uses: codespell-project/actions-codespell@v1.0
         with:
           check_filenames: true
-          skip: ./.git,./docs,package-lock.json,yarn.lock
+          ignore_words_file: .codespellignore
+          skip: ./.git,package-lock.json,yarn.lock
 
   solhint:
     runs-on: ubuntu-latest

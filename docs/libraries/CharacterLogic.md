@@ -5,7 +5,7 @@
 ### createCharacter
 
 ```solidity
-function createCharacter(struct DataTypes.CreateCharacterData vars, bool validateHandle, uint256 characterId, mapping(bytes32 => uint256) _characterIdByHandleHash, mapping(uint256 => struct DataTypes.Character) _characterById) external
+function createCharacter(struct DataTypes.CreateCharacterData vars, uint256 characterId, mapping(bytes32 => uint256) _characterIdByHandleHash, mapping(uint256 => struct DataTypes.Character) _characterById) external
 ```
 
 ### setSocialToken
@@ -24,11 +24,5 @@ function setCharacterLinkModule(uint256 characterId, address linkModule, bytes l
 
 ```solidity
 function setHandle(uint256 characterId, string newHandle, mapping(bytes32 => uint256) _characterIdByHandleHash, mapping(uint256 => struct DataTypes.Character) _characterById) external
-```
-
-### _validateHandle
-
-```solidity
-function _validateHandle(string handle) private pure
 ```
 

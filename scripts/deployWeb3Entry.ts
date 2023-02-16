@@ -17,7 +17,7 @@ async function main() {
     const linklist = "0xFc8C75bD5c26F50798758f387B698f207a016b6A";
     const mintNFTImpl = "0x7bB160FAbC629a8B288499cE9B48eEabD46CF3e1";
     const periphery = "0x96e96b7AF62D628cE7eb2016D2c1D2786614eA73";
-    const resolver = "0xa5fa5302Be191fA9f8e7C35Cf5758D8bfDF4C90f";
+    const newbieVilla = "0xD0c83f0BB2c61D55B3d33950b70C59ba2f131caA";
 
     // We get the contract to deploy
 
@@ -53,7 +53,7 @@ async function main() {
         linklist,
         mintNFTImpl,
         periphery,
-        resolver,
+        newbieVilla,
     );
 
     console.log("LinkModuleLogic deployed to:", linkModuleLogic.address);

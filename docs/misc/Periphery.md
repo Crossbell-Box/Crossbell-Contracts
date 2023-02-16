@@ -8,12 +8,6 @@
 address web3Entry
 ```
 
-### _linklistInitialized
-
-```solidity
-bool _linklistInitialized
-```
-
 ### linklist
 
 ```solidity

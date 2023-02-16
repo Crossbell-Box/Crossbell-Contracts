@@ -10,7 +10,8 @@ interface IWeb3Entry {
         string calldata symbol_,
         address linklist_,
         address mintNFTImpl_,
-        address periphery_
+        address periphery_,
+        address newbieVilla_
     ) external;
 
     ////////////////////////////////////////////////////////
@@ -34,6 +35,8 @@ interface IWeb3Entry {
         address operator,
         uint256 permissionBitMap
     ) external;
+
+    function migrateOperatorSyncPermissions(uint256[] calldata characterIds) external;
 
     function grantOperators4Note(
         uint256 characterId,

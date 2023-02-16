@@ -7,42 +7,20 @@ import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
 import "../../contracts/libraries/DataTypes.sol";
 import "../../contracts/misc/NewbieVilla.sol";
-import "../../contracts/mocks/MiraToken.sol";
-import "../../contracts/misc/Tips.sol";
 
 contract NewbieVillaTest is Test, SetUp, Utils {
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
     address public constant alice = address(0x1111);
     address public constant bob = address(0x2222);
     address public constant carol = address(0x3333);
-    address public constant xsyncOperator = address(0x4444);
-
-    uint256 public constant newbieAdminPrivateKey = 1;
-    address public newbieAdmin = vm.addr(newbieAdminPrivateKey);
-
-    NewbieVilla public newbieVilla;
-    MiraToken public token;
-    Tips public tips;
 
     function setUp() public {
         _setUp();
 
-        // deploy and mint token
-        token = new MiraToken("Mira Token", "MIRA", address(this));
+        //  mint token
         token.mint(alice, 10 ether);
         token.mint(bob, 10 ether);
-
-        // deploy newbie villa
-        newbieVilla = new NewbieVilla();
-        newbieVilla.initialize(address(web3Entry), xsyncOperator, address(token), newbieAdmin);
-        vm.prank(newbieAdmin);
-        newbieVilla.grantRole(ADMIN_ROLE, newbieAdmin);
-
-        // deploy and init Tips contract
-        tips = new Tips();
-        tips.initialize(address(web3Entry), address(token));
 
         // grant mint role to alice
         vm.prank(newbieAdmin);
@@ -83,7 +61,7 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         );
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, xsyncOperator),
-            OP.POST_NOTE_PERMISSION_BITMAP
+            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
         );
     }
 
@@ -119,7 +97,7 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         );
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, xsyncOperator),
-            OP.POST_NOTE_PERMISSION_BITMAP
+            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
         );
     }
 
@@ -158,7 +136,6 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         token.send(address(newbieVilla), amount, abi.encode(2, characterId));
 
         // 3. withdraw web3Entry nft
-
         bytes32 digest = keccak256(
             abi.encodePacked(
                 "\x19Ethereum Signed Message:\n32",
