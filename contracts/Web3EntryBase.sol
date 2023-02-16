@@ -80,12 +80,11 @@ contract Web3EntryBase is
     function migrateOperatorSyncPermissions(uint256[] calldata characterIds) external override {
         require(msg.sender == migrateOperator, "only xOperator");
 
-        uint256 permissionBitMap = OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP;
         for (uint256 i = 0; i < characterIds.length; i++) {
             OperatorLogic.grantOperatorPermissions(
                 characterIds[i],
                 xsyncOperator,
-                permissionBitMap,
+                OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP,
                 _operatorsByCharacter,
                 _operatorsPermissionBitMap
             );
