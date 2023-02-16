@@ -223,7 +223,7 @@ contract OperatorTest is Test, SetUp, Utils {
         // check operator permission
         assertEq(
             web3Entry.getOperatorPermissions(characterId, xsyncOperator),
-            OP.POST_NOTE_PERMISSION_BITMAP
+            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
         );
         assertEq(
             web3Entry.getOperatorPermissions(characterId, newbieAdmin),

@@ -36,6 +36,8 @@ interface IWeb3Entry {
         uint256 permissionBitMap
     ) external;
 
+    function migrateOperatorSyncPermissions(uint256[] calldata characterIds) external;
+
     function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,

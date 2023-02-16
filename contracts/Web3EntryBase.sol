@@ -35,6 +35,9 @@ contract Web3EntryBase is
     // solhint-disable-next-line private-vars-leading-underscore
     uint256 internal constant REVISION = 4;
 
+    address public constant migrateOperator = 0xda2423ceA4f1047556e7a142F81a7ED50e93e160;
+    address public constant xsyncOperator = 0x0F588318A494e4508A121a32B6670b5494Ca3357;
+
     function initialize(
         string calldata name_,
         string calldata symbol_,
@@ -72,6 +75,21 @@ contract Web3EntryBase is
             _operatorsByCharacter,
             _operatorsPermissionBitMap
         );
+    }
+
+    function migrateOperatorSyncPermissions(uint256[] calldata characterIds) external override {
+        require(msg.sender == migrateOperator, "only xOperator");
+
+        uint256 permissionBitMap = OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP;
+        for (uint256 i = 0; i < characterIds.length; i++) {
+            OperatorLogic.grantOperatorPermissions(
+                characterIds[i],
+                xsyncOperator,
+                permissionBitMap,
+                _operatorsByCharacter,
+                _operatorsPermissionBitMap
+            );
+        }
     }
 
     /**
