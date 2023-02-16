@@ -70,6 +70,10 @@ library OP {
     // set 236 bit index
     uint256 internal constant POST_NOTE_PERMISSION_BITMAP = 1 << POST_NOTE;
 
+    // POST_NOTE_DEFAULT_PERMISSION_BITMAP has post note related permissions
+    uint256 internal constant POST_NOTE_DEFAULT_PERMISSION_BITMAP =
+        ((UINT256_MAX << 198) & ~(UINT256_MAX << 204)) | POST_NOTE_PERMISSION_BITMAP;
+
     // DEFAULT_PERMISSION_BITMAP has operator sign permissions and operator sync permissions
     uint256 internal constant DEFAULT_PERMISSION_BITMAP =
         ((UINT256_MAX << 176) & ~(UINT256_MAX << 204)) | POST_NOTE_PERMISSION_BITMAP;

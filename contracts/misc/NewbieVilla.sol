@@ -173,7 +173,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
         IWeb3Entry(web3Entry).grantOperatorPermissions(
             tokenId,
             xsyncOperator,
-            OP.POST_NOTE_PERMISSION_BITMAP
+            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
         );
         return IERC721Receiver.onERC721Received.selector;
     }
