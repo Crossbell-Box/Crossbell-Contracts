@@ -205,6 +205,7 @@ contract Web3EntryBase is
         DataTypes.createThenLinkCharacterData calldata vars
     ) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.CREATE_THEN_LINK_CHARACTER);
+        // slither-disable-next-line reentrancy-no-eth
         _createThenLinkCharacter(vars.fromCharacterId, vars.to, vars.linkType, "0x");
     }
 

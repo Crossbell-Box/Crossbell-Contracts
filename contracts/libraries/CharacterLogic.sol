@@ -63,7 +63,7 @@ library CharacterLogic {
     ) external {
         _character.linkModule = linkModule;
 
-        bytes memory returnData;
+        bytes memory returnData = "";
         if (linkModule != address(0)) {
             returnData = ILinkModule4Character(linkModule).initializeLinkModule(
                 characterId,
