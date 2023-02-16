@@ -41,7 +41,7 @@ jobs:
       - name: Run Coverage
         run: forge coverage --report lcov
       - name: Install lcov
-        run: apt-get install lcov
+        run: sudo apt-get update && sudo apt-get install lcov
       - name: Remove unwanted files
         run: lcov --remove ./lcov.info -o ./lcov.info.pruned 'test'
       - name: Upload coverage to Codecov
