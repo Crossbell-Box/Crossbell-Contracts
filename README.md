@@ -19,7 +19,7 @@
   </p>
 
 [![lint](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/lint.yml/badge.svg)](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/lint.yml)
-[![test](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/test.yml/badge.svg)](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/test.yml)
+[![tests](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/tests.yml/badge.svg)](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/tests.yml)
 [![checks](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/checks.yml/badge.svg)](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/checks.yml)
 [![Mythx Security Analysis](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/mythx.yml/badge.svg)](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/mythx.yml)
 [![codecov](https://codecov.io/gh/crossbell-box/crossbell-contracts/branch/main/graph/badge.svg?token=OMBZW48AWJ)](https://codecov.io/gh/crossbell-box/crossbell-contracts)
