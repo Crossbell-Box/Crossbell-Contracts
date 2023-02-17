@@ -1,4 +1,4 @@
-name: Mythx Security Analysis
+name: Mythx
 
 on:
   workflow_dispatch:
