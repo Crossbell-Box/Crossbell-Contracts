@@ -18,6 +18,12 @@
     <a href="https://github.com/Crossbell-Box/Crossbell-Contracts/issues">Report Bug</a>
   </p>
 
+[![checks](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/checks.yml/badge.svg)](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/checks.yml)
+[![lint](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/lint.yml/badge.svg)](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/lint.yml)
+[![tests](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/tests.yml/badge.svg)](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/tests.yml)
+[![MythXBadge](https://badgen.net/https/api.mythx.io/v1/projects/ef657427-cfc2-44f9-99ab-a2d45ef7ee6a/badge/data?cache=300&icon=https://raw.githubusercontent.com/ConsenSys/mythx-github-badge/main/logo_white.svg)](https://docs.mythx.io/dashboard/github-badges)
+[![codecov](https://codecov.io/gh/crossbell-box/crossbell-contracts/branch/main/graph/badge.svg?token=OMBZW48AWJ)](https://codecov.io/gh/crossbell-box/crossbell-contracts)
+
 ## 🐳 Introduction
 
 Crossbell is an **ownership** **platform** composed of
