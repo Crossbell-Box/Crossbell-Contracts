@@ -1,0 +1,19 @@
+name: codespell
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  codespell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run CodeSpell
+      - uses: codespell-project/actions-codespell@master
+        with:
+          check_filenames: true
+          ignore_words_file: .codespellignore
+          skip: ./.git,package-lock.json,yarn.lock

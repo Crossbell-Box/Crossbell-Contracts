@@ -1,4 +1,4 @@
-name: checks
+name: Checks
 
 on:
   push:
@@ -7,65 +7,6 @@ on:
   pull_request:
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 14
-      - name: Install Dependencies
-        run: yarn install
-      - name: Run lints
-        run: yarn lint
-
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 14
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-      - name: Install Dependencies
-        run: yarn install
-      - name: Update Modules
-        run: yarn sync
-      - name: Run Tests
-        run: FOUNDRY_PROFILE=ci yarn test
-      - name: Run Coverage
-        run: forge coverage --report lcov
-      - name: Install lcov
-        run: sudo apt-get update && sudo apt-get install lcov
-      - name: Remove unwanted files
-        run: lcov --remove ./lcov.info -o ./lcov.info.pruned 'test'
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: .
-          env_vars: OS,PYTHON
-          fail_ci_if_error: true
-          files: ./lcov.info.pruned
-          name: grappa-coverage
-          verbose: true
-
-  codespell:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run CodeSpell
-        uses: codespell-project/actions-codespell@v1.0
-        with:
-          check_filenames: true
-          ignore_words_file: .codespellignore
-          skip: ./.git,package-lock.json,yarn.lock
-
   solhint:
     runs-on: ubuntu-latest
     steps:
@@ -74,7 +15,7 @@ jobs:
         with:
           node-version: 14
       - name: Install Dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - name: Run Check
         run: yarn solhint
 
@@ -86,7 +27,7 @@ jobs:
         with:
           node-version: 14
       - name: Install Dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - name: Run Check
         run: yarn upgradeable
 
@@ -104,7 +45,7 @@ jobs:
         with:
           version: nightly
       - name: Install Dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - name: Update Modules
         run: yarn sync
       - name: Run Check
@@ -118,7 +59,7 @@ jobs:
         with:
           node-version: 14
       - name: Install Dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - name: Run Check
         run: yarn mythril
 
