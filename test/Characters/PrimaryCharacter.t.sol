@@ -109,4 +109,38 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         assertEq(userCharacter.noteCount, 0);
         assertEq(userCharacter.characterId, 0);
     }
+
+    function testTransferPrimaryCharacter() public {
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
+        // check states
+        assertEq(web3Entry.getPrimaryCharacterId(alice), Const.FIRST_CHARACTER_ID);
+        assertEq(web3Entry.isPrimaryCharacter(Const.FIRST_CHARACTER_ID), true);
+
+        // alice transfers primary character to bob
+        vm.prank(alice);
+        web3Entry.transferFrom(alice, bob, Const.FIRST_CHARACTER_ID);
+
+        // check states
+        assertEq(web3Entry.getPrimaryCharacterId(alice), 0);
+        assertEq(web3Entry.isPrimaryCharacter(Const.FIRST_CHARACTER_ID), false);
+    }
+
+    function testTransferNonPrimaryCharacter() public {
+        // create characters
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, alice));
+
+        // check states
+        assertEq(web3Entry.isPrimaryCharacter(Const.SECOND_CHARACTER_ID), false);
+
+        // alice transfers non primary character to bob
+        vm.prank(alice);
+        web3Entry.transferFrom(alice, bob, Const.SECOND_CHARACTER_ID);
+
+        // check states
+        assertEq(web3Entry.getPrimaryCharacterId(alice), Const.FIRST_CHARACTER_ID);
+        assertEq(web3Entry.isPrimaryCharacter(Const.FIRST_CHARACTER_ID), true);
+        assertEq(web3Entry.getPrimaryCharacterId(bob), 0);
+        assertEq(web3Entry.isPrimaryCharacter(Const.SECOND_CHARACTER_ID), false);
+    }
 }
