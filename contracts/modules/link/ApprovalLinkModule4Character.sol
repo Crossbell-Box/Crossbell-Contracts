@@ -15,7 +15,7 @@ contract ApprovalLinkModule4Character is ILinkModule4Character, ModuleBase {
         internal _approvedByCharacterByOwner;
 
     // solhint-disable-next-line no-empty-blocks
-    constructor(address web3Entry) ModuleBase(web3Entry) {}
+    constructor(address web3Entry_) ModuleBase(web3Entry_) {}
 
     function initializeLinkModule(
         uint256 characterId,

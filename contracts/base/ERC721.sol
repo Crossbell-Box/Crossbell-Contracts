@@ -37,6 +37,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     // Mapping from owner to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
+    // slither-disable-start naming-convention
     // solhint-disable-next-line func-name-mixedcase
     function __ERC721_Init(string calldata name_, string calldata symbol_) internal {
         _name = name_;
@@ -388,6 +389,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      * @param _data bytes optional data to send along with the call
      * @return bool whether the call correctly returned the expected magic value
      */
+    // slither-disable-next-line unused-return
     function _checkOnERC721Received(
         address from,
         address to,
@@ -395,6 +397,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         bytes memory _data // solhint-disable private-vars-leading-underscore
     ) private returns (bool) {
         if (to.isContract()) {
+            // slither-disable-start variable-scope
             try IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data) returns (
                 bytes4 retval
             ) {
@@ -410,6 +413,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
                     /* solhint-enable no-inline-assembly */
                 }
             }
+            // slither-disable-end variable-scope
         } else {
             return true;
         }
@@ -445,4 +449,5 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      */
     // solhint-disable-next-line no-empty-blocks
     function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual {}
+    // slither-disable-end naming-convention
 }

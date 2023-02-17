@@ -15,7 +15,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         internal _approvedByCharacterByNoteByOwner;
 
     // solhint-disable-next-line no-empty-blocks
-    constructor(address web3Entry) ModuleBase(web3Entry) {}
+    constructor(address web3Entry_) ModuleBase(web3Entry_) {}
 
     function initializeMintModule(
         uint256 characterId,

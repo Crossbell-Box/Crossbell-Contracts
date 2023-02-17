@@ -1,0 +1,6 @@
+| Name                 | Type    | Slot | Offset | Bytes | Contract                               |
+|----------------------|---------|------|--------|-------|----------------------------------------|
+| _initialized         | uint8   | 0    | 0      | 1     | contracts/misc/Periphery.sol:Periphery |
+| _initializing        | bool    | 0    | 1      | 1     | contracts/misc/Periphery.sol:Periphery |
+| web3Entry            | address | 0    | 2      | 20    | contracts/misc/Periphery.sol:Periphery |
+| linklist             | address | 1    | 0      | 20    | contracts/misc/Periphery.sol:Periphery |

@@ -25,7 +25,7 @@ contract FeeMintModule is IMintModule4Note, ModuleBase {
     mapping(uint256 => mapping(uint256 => CharacterNoteData)) internal _dataByNoteByCharacter;
 
     // solhint-disable-next-line no-empty-blocks
-    constructor(address web3Entry) ModuleBase(web3Entry) {}
+    constructor(address web3Entry_) ModuleBase(web3Entry_) {}
 
     function initializeMintModule(
         uint256 characterId,

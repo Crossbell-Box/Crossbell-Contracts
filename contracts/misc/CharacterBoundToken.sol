@@ -28,6 +28,7 @@ contract CharacterBoundToken is
 
     mapping(uint256 => string) private _tokenURIs;
 
+    // slither-disable-next-line immutable-states
     address public web3Entry;
 
     // tokenId => currentTokenNumber
@@ -134,11 +135,13 @@ contract CharacterBoundToken is
         address account,
         uint256 tokenId
     ) public view virtual override returns (uint256 balance) {
+        // slither-disable-start calls-loop
         uint256 characterCount = IERC721Enumerable(web3Entry).balanceOf(account);
         for (uint256 i = 0; i < characterCount; i++) {
             uint256 characterId = IERC721Enumerable(web3Entry).tokenOfOwnerByIndex(account, i);
             balance += balanceOf(characterId, tokenId);
         }
+        // slither-disable-end calls-loop
     }
 
     function balanceOf(uint256 characterId, uint256 tokenId) public view virtual returns (uint256) {

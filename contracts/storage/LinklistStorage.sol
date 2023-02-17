@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable max-states-count
+// slither-disable-start naming-convention
 pragma solidity 0.8.16;
 
 import "../libraries/DataTypes.sol";
@@ -24,7 +25,8 @@ contract LinklistStorage {
     mapping(uint256 => EnumerableSet.UintSet) internal _linkingLinklists;
 
     // tokenId => linkKeys
-    mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkKeys; // this slot is not used
+    // slither-disable-next-line unused-state
+    mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkKeys; // unused slot
     // linkKey => linking ERC721
     mapping(bytes32 => DataTypes.ERC721Struct) internal _linkingERC721s;
     // linkKey => linking Note
@@ -35,7 +37,8 @@ contract LinklistStorage {
     mapping(bytes32 => string) internal _linkingAnys;
 
     // tokenId => characterId
-    mapping(uint256 => uint256) internal _currentTakeOver; // this slot is not used
+    // slither-disable-next-line unused-state
+    mapping(uint256 => uint256) internal _currentTakeOver; //unused slot
     mapping(uint256 => string) internal _uris; // tokenId => tokenURI
 
     // linkKey sets
@@ -45,3 +48,4 @@ contract LinklistStorage {
     mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkingCharacterLinkKeys;
     mapping(uint256 => EnumerableSet.Bytes32Set) internal _linkingAnyKeys;
 }
+// slither-disable-end naming-convention

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-
+// slither-disable-start naming-convention
 pragma solidity 0.8.16;
 
 import "../libraries/DataTypes.sol";
@@ -26,6 +26,8 @@ contract Web3EntryStorage {
     mapping(uint256 => address) internal _linkModules4Linklist;
 
     // tokenAddress => tokenId => linkModule4ERC721
+    /// @dev disable `uninitialized-state` check, as linkmodule for erc721 is not enabled currently
+    // slither-disable-next-line uninitialized-state
     mapping(address => mapping(uint256 => address)) internal _linkModules4ERC721;
 
     // address => linkModule4Address
@@ -37,3 +39,4 @@ contract Web3EntryStorage {
     // solhint-disable-next-line private-vars-leading-underscore, var-name-mixedcase
     address internal MINT_NFT_IMPL;
 }
+// slither-disable-end naming-convention

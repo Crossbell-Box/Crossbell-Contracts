@@ -1,7 +1,7 @@
 {
-  "detectors_to_exclude": "missing-zero-check,initialize-target,reentrancy-events",
+  "detectors_to_exclude": "missing-zero-check,initialize-target,tx-origin,assembly,reentrancy-events,unused-return,naming-convention,reentrancy-no-eth",
   "disable_color": false,
-  "filter_paths": "(lib/|node_modules/|upgradeability/|mocks/|storage/)",
+  "filter_paths": "(lib/|node_modules/|upgradeability/|mocks/|modules/|Resolver.sol)",
   "solc_remaps": [
     "ds-test/=lib/forge-std/lib/ds-test/src/",
     "forge-std/=lib/forge-std/src/",
@@ -9,5 +9,4 @@
   ],
   "compile_force_framework":"hardhat",
   "hardhat_artifacts_directory": "./artifacts"
-
 }

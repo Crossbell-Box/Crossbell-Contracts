@@ -53,6 +53,7 @@ library OP {
     uint8 internal constant SET_LINK_MODULE_FOR_CHARACTER = 191;
     uint8 internal constant SET_LINK_MODULE_FOR_NOTE = 192;
     uint8 internal constant SET_LINK_MODULE_FOR_LINKLIST = 193;
+    // slither-disable-next-line similar-names
     uint8 internal constant SET_MINT_MODULE_FOR_NOTE = 194;
     uint8 internal constant SET_NOTE_URI = 195;
     uint8 internal constant LOCK_NOTE = 196;

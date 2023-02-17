@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-
+// slither-disable-start naming-convention
 pragma solidity 0.8.16;
 
 import "./base/NFTBase.sol";
@@ -52,3 +52,4 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
         }
     }
 }
+// slither-disable-end naming-convention

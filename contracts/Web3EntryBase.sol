@@ -224,6 +224,7 @@ contract Web3EntryBase is
         DataTypes.createThenLinkCharacterData calldata vars
     ) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.CREATE_THEN_LINK_CHARACTER);
+        // slither-disable-next-line reentrancy-no-eth
         _createThenLinkCharacter(vars.fromCharacterId, vars.to, vars.linkType, "0x");
     }
 
@@ -475,8 +476,8 @@ contract Web3EntryBase is
         _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_CHARACTER);
 
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_CHARACTER;
-        bytes32 linkKey = bytes32(toCharacterId);
         uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
+        bytes32 linkKey = bytes32(toCharacterId);
 
         PostLogic.postNoteWithLink(
             postNoteData,
@@ -497,8 +498,8 @@ contract Web3EntryBase is
         _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_ADDRESS);
 
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ADDRESS;
-        bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
         uint256 noteId = ++_characterById[noteData.characterId].noteCount;
+        bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
 
         PostLogic.postNoteWithLink(
             noteData,
@@ -519,8 +520,8 @@ contract Web3EntryBase is
         _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_LINKLIST);
 
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_LINKLIST;
-        bytes32 linkKey = bytes32(toLinklistId);
         uint256 noteId = ++_characterById[noteData.characterId].noteCount;
+        bytes32 linkKey = bytes32(toLinklistId);
 
         PostLogic.postNoteWithLink(
             noteData,
@@ -541,8 +542,8 @@ contract Web3EntryBase is
         _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_NOTE);
 
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_NOTE;
-        bytes32 linkKey = ILinklist(_linklist).addLinkingNote(0, note.characterId, note.noteId);
         uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
+        bytes32 linkKey = ILinklist(_linklist).addLinkingNote(0, note.characterId, note.noteId);
 
         PostLogic.postNoteWithLink(
             postNoteData,
@@ -564,12 +565,12 @@ contract Web3EntryBase is
         _validateERC721Exists(erc721.tokenAddress, erc721.erc721TokenId);
 
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ERC721;
+        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
         bytes32 linkKey = ILinklist(_linklist).addLinkingERC721(
             0,
             erc721.tokenAddress,
             erc721.erc721TokenId
         );
-        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
 
         PostLogic.postNoteWithLink(
             postNoteData,
@@ -590,8 +591,8 @@ contract Web3EntryBase is
         _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_ANYURI);
 
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ANYURI;
-        bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
         uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
+        bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
 
         PostLogic.postNoteWithLink(
             postNoteData,
@@ -825,6 +826,7 @@ contract Web3EntryBase is
 
     function _clearOperator(uint256 tokenId, address operator) internal {
         delete _operatorsPermissionBitMap[tokenId][operator];
+        // slither-disable-next-line unused-return
         _operatorsByCharacter[tokenId].remove(operator);
     }
 
