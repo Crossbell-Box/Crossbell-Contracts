@@ -817,7 +817,8 @@ contract Web3EntryBase is
             }
         }
 
-        if (_primaryCharacterByAddress[from] != 0) {
+        // reset if `tokenId` is primary character of `from` account
+        if (_primaryCharacterByAddress[from] == tokenId) {
             _primaryCharacterByAddress[from] = 0;
         }
 
