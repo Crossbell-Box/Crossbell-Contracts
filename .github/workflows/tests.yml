@@ -36,7 +36,8 @@ jobs:
         run: lcov --remove ./lcov.info -o ./lcov.info.pruned 'test/*' \
                   'scripts/*' 'contracts/mocks/*' 'contracts/misc/Periphery.sol' \
                   'contracts/libraries/*' 'contracts/base/*' \
-                  'contracts/modules/*' 'contracts/upgradeability/*'
+                  'contracts/modules/link/*' 'contracts/modules/mint/*' \
+                  'contracts/upgradeability/*'
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
