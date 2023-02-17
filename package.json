@@ -39,6 +39,7 @@
         "solhint": "make solhint",
         "upgradeable": "make upgradeable",
         "mythril": "make mythril",
+        "mythx": "make mythx",
         "manticore": "make manticore",
         "storage-layout": "make storage-layout",
         "remap": "forge remappings > remappings.txt",

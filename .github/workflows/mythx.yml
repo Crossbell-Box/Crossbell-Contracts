@@ -1,0 +1,48 @@
+name: Mythx Security Analysis
+
+on:
+  workflow_dispatch:
+
+jobs:
+  mythx:
+    name: Submit to Mythx
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install node dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install pip3
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Install mythx CLI
+        run: |
+          pip3 install mythx-cli
+
+      - name: Install solc-select
+        run: |
+          pip3 install solc-select
+
+      - name: Install solc 0.8.16
+        run: |
+          solc-select install 0.8.16
+          solc-select use 0.8.16
+
+      - name: Submit code to Mythx
+        # use configs from .mythx.yml
+        run: mythx analyze
+        env:
+          MYTHX_API_KEY: ${{ secrets.MYTHX_API_KEY }}

@@ -38,6 +38,10 @@ mythril :
 	@echo " > \033[32mChecking contracts with mythril...\033[0m"
 	./tools/mythril.sh
 
+mythx :
+	@echo " > \033[32mChecking contracts with mythx...\033[0m"
+	mythx analyze
+
 manticore :
 	@echo " > \033[32mChecking contracts with manticore...\033[0m"
 	./tools/manticore/manticore.sh
