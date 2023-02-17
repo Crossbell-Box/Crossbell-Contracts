@@ -33,7 +33,10 @@ jobs:
       - name: Install lcov
         run: sudo apt-get update && sudo apt-get install lcov
       - name: Remove unwanted files
-        run: lcov --remove ./lcov.info -o ./lcov.info.pruned 'test'
+        run: lcov --remove ./lcov.info -o ./lcov.info.pruned 'test/*' \
+                  'scripts/*' 'scripts/*' 'contracts/mocks/*'  \
+                  'contracts/libraries/*' 'contracts/base/*' \
+                  'contracts/modules/*' 'contracts/upgradeability/*'
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
