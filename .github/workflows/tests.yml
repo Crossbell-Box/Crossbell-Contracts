@@ -33,11 +33,11 @@ jobs:
       - name: Install lcov
         run: sudo apt-get update && sudo apt-get install lcov
       - name: Remove unwanted files
-        run: lcov --remove ./lcov.info -o ./lcov.info.pruned 'test/*' \
-                  'scripts/*' 'contracts/mocks/*' 'contracts/misc/Periphery.sol' \
-                  'contracts/libraries/*' 'contracts/base/*' \
-                  'contracts/modules/link/*' 'contracts/modules/mint/*' \
-                  'contracts/upgradeability/*'
+        run: |
+          lcov --remove lcov.info 'test/*' -o lcov.info
+          lcov --remove lcov.info 'contracts/mocks/*' 'contracts/misc/Periphery.sol' -o lcov.info
+          lcov --remove lcov.info 'contracts/libraries/*' 'contracts/base/*' -o lcov.info
+          lcov --remove lcov.info 'contracts/modules/*'  'contracts/upgradeability/*' -o lcov.info
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
