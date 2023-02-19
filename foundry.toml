@@ -22,3 +22,12 @@ libs = ["node_modules", "lib"]
 # Extreme Fuzzing CI Profile :P
 [profile.ci]
 fuzz_runs = 256
+
+[invariant]
+runs = 2000
+depth = 25
+fail_on_revert = false
+call_override = false
+dictionary_weight = 80
+include_storage = true
+include_push_bytes = true
