@@ -5,6 +5,7 @@ pragma solidity 0.8.16;
 import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
 import "../../contracts/misc/Tips.sol";
+import "forge-std/console.sol";
 import "../../contracts/mocks/MiraToken.sol";
 import "./TipHandler.sol";
 import "../helpers/SetUp.sol";
@@ -53,5 +54,36 @@ contract InvariantTips is Test, SetUp, Utils {
             }
         }
         assertEq(tipHandler.sumOfTips(), sumOfBalances);
+    }
+
+    function invariant_call_summary() public view {
+        console.log("\nCall Summary\n");
+        console.log(
+            "TipHandler.CreateTipper         ",
+            tipHandler.numCalls(bytes32("TipHandler.CreateTipper"))
+        );
+        console.log(
+            "TipHandler.CreateTo         ",
+            tipHandler.numCalls(bytes32("TipHandler.CreateTo"))
+        );
+        console.log(
+            "TipHandler.TipCharacter         ",
+            tipHandler.numCalls(bytes32("TipHandler.TipCharacter"))
+        );
+        console.log("TipHandler.FundTiper", tipHandler.numCalls(bytes32("TipHandler.FundTiper")));
+        console.log(
+            "TipHandler.CreateCharacterForActor",
+            tipHandler.numCalls(bytes32("TipHandler.CreateCharacter"))
+        );
+        console.log("------------------");
+        assert(true);
+        console.log(
+            "Sum",
+            tipHandler.numCalls(bytes32("TipHandler.CreateTipper")) +
+                tipHandler.numCalls(bytes32("TipHandler.CreateTo")) +
+                tipHandler.numCalls(bytes32("TipHandler.TipCharacter")) +
+                tipHandler.numCalls(bytes32("TipHandler.FundTiper")) +
+                tipHandler.numCalls(bytes32("TipHandler.CreateCharacter"))
+        );
     }
 }

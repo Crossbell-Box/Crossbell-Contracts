@@ -29,12 +29,14 @@ contract TipHandler is Utils {
     uint256 public constant MIRA_TOTAL_SUPPLY = 100000 ether;
 
     modifier createTipper(address tipper) {
+        numCalls["TipHandler.CreateTiper"]++;
         _currentTipper = tipper;
         _actors.add(_currentTipper);
         _;
     }
 
     modifier createTo(address to) {
+        numCalls["TipHandler.CreateTo"]++;
         _currentTo = to;
         _actors.add(_currentTo);
         _;
@@ -59,9 +61,9 @@ contract TipHandler is Utils {
         uint256 fundAmount,
         uint256 tipAmount
     ) public createTipper(msg.sender) createTo(to) {
+        numCalls["TipHandler.TipCharacter"]++;
         console2.log("starting tip character..., the random tipper is", _currentTipper);
         console2.log("starting tip character..., the random to is", _currentTo);
-        numCalls["TransferHandler.tip"]++;
 
         fundAmount = bound(fundAmount, 0, token.balanceOf(miraAdmin));
         fundTiper(fundAmount);
@@ -79,6 +81,7 @@ contract TipHandler is Utils {
     }
 
     function fundTiper(uint256 amount) public {
+        numCalls["TipHandler.FundTiper"]++;
         amount = bound(amount, 0, address(miraAdmin).balance);
         vm.prank(miraAdmin);
         bool success = token.transfer(_currentTipper, amount);
@@ -87,6 +90,7 @@ contract TipHandler is Utils {
     }
 
     function createCharacterForActor(address actor) public returns (uint256) {
+        numCalls["TipHandler.CreateCharacter"]++;
         uint256 characterId = web3Entry.getPrimaryCharacterId(actor);
         if (characterId == 0) {
             characterId = web3Entry.createCharacter(
