@@ -480,17 +480,37 @@ contract LinklistTest is Test, SetUp, Utils {
         assertEq(uri, Const.MOCK_NEW_TOKEN_URI);
     }
 
-    function testTotalSupply() public {
-        // TODO add fuzz test
+    function testTotalSupply(uint256 amount) public {
+        vm.assume(amount > 0);
+        vm.assume(amount < 100);
+        vm.startPrank(address(web3Entry));
+
+        for (uint256 i = 1; i <= amount; i++) {
+            uint256 tokenId = linklist.totalSupply() + 1;
+            linklist.mint(Const.FIRST_CHARACTER_ID, Const.FollowLinkType, tokenId);
+        }
+
         uint256 totalSupply = linklist.totalSupply();
-        assertEq(totalSupply, 1);
+        uint256 expectedTotalSupply = amount + 1; //plus 1 here because there's one minted in setUp()
+        console.log(totalSupply);
+        console.log(expectedTotalSupply);
+        assertEq(totalSupply, expectedTotalSupply);
     }
 
-    function testBalanceOf() public {
+    function testBalanceOf(uint256 amount) public {
+        vm.assume(amount > 0);
+        vm.assume(amount < 100);
+        vm.startPrank(address(web3Entry));
+
+        for (uint256 i = 1; i <= amount; i++) {
+            uint256 tokenId = linklist.totalSupply() + 1;
+            linklist.mint(Const.FIRST_CHARACTER_ID, Const.FollowLinkType, tokenId);
+        }
+
         uint256 balanceOfCharacter = linklist.balanceOf(1);
-        assertEq(balanceOfCharacter, 1);
+        assertEq(balanceOfCharacter, 1 + amount);
 
         uint256 balanceOfAddress = linklist.balanceOf(alice);
-        assertEq(balanceOfAddress, 1);
+        assertEq(balanceOfAddress, 1 + amount);
     }
 }
