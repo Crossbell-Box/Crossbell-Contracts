@@ -25,16 +25,16 @@ library PostLogic {
         DataTypes.Note storage note = _noteByIdByCharacter[characterId][noteId];
 
         // save note
+        note.contentUri = vars.contentUri;
         if (linkItemType != bytes32(0)) {
             note.linkItemType = linkItemType;
             note.linkKey = linkKey;
         }
-        note.contentUri = vars.contentUri;
-        note.linkModule = vars.linkModule;
-        note.mintModule = vars.mintModule;
 
         // init link module
         if (vars.linkModule != address(0)) {
+            note.linkModule = vars.linkModule;
+
             bytes memory linkModuleReturnData = ILinkModule4Note(vars.linkModule)
                 .initializeLinkModule(characterId, noteId, vars.linkModuleInitData);
 
@@ -49,6 +49,8 @@ library PostLogic {
 
         // init mint module
         if (vars.mintModule != address(0)) {
+            note.mintModule = vars.mintModule;
+
             bytes memory mintModuleReturnData = IMintModule4Note(vars.mintModule)
                 .initializeMintModule(characterId, noteId, vars.mintModuleInitData);
 
