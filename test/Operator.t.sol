@@ -743,8 +743,12 @@ contract OperatorTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
-        // periphery can
+        // owner behind periphery can
         vm.prank(address(periphery), alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+
+        // operator behind periphery can
+        vm.prank(address(periphery), bob);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
         // bob can

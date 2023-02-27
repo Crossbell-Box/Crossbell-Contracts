@@ -14,11 +14,13 @@ import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import "./helpers/Const.sol";
 import "./helpers/SetUp.sol";
 import "./helpers/utils.sol";
+import "./helpers/ReinitializeWeb3Entry.sol";
 
 contract UpgradeWeb3Entry is Test, Utils {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     Web3EntryBase public web3EntryBaseImpl;
+    ReinitializeWeb3Entry public reinitializeWeb3Entry;
     Web3EntryBase public web3EntryBase;
     Web3Entry public web3EntryImpl;
     Web3Entry public web3Entry;
@@ -44,6 +46,57 @@ contract UpgradeWeb3Entry is Test, Utils {
             mintNFT,
             periphery,
             newbieVilla
+        );
+    }
+
+    function testInitialize() public {
+        web3EntryBaseImpl = new Web3EntryBase();
+        proxyWeb3Entry = new TransparentUpgradeableProxy(address(web3EntryBaseImpl), admin, "");
+        Web3EntryBase(address(proxyWeb3Entry)).initialize(
+            Const.WEB3_ENTRY_NFT_NAME,
+            Const.WEB3_ENTRY_NFT_SYMBOL,
+            linkList,
+            mintNFT,
+            periphery,
+            newbieVilla
+        );
+
+        // reinitialize with higher version
+        reinitializeWeb3Entry = new ReinitializeWeb3Entry();
+        vm.prank(admin);
+        proxyWeb3Entry.upgradeTo(address(reinitializeWeb3Entry));
+        ReinitializeWeb3Entry(address(proxyWeb3Entry)).initialize(
+            Const.WEB3_ENTRY_NFT_NAME,
+            Const.WEB3_ENTRY_NFT_SYMBOL
+        );
+    }
+
+    function testInitializeFail() public {
+        // can't initialize twize
+        vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
+        Web3EntryBase(address(proxyWeb3Entry)).initialize(
+            Const.WEB3_ENTRY_NFT_NAME,
+            Const.WEB3_ENTRY_NFT_SYMBOL,
+            linkList,
+            mintNFT,
+            periphery,
+            newbieVilla
+        );
+
+        // can't reinitialize once reach limit
+        reinitializeWeb3Entry = new ReinitializeWeb3Entry();
+        vm.prank(admin);
+        // initialize version = 2
+        proxyWeb3Entry.upgradeTo(address(reinitializeWeb3Entry));
+        ReinitializeWeb3Entry(address(proxyWeb3Entry)).initialize(
+            Const.WEB3_ENTRY_NFT_NAME,
+            Const.WEB3_ENTRY_NFT_SYMBOL
+        );
+        // initialize version = 3, reinitialize
+        vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
+        ReinitializeWeb3Entry(address(proxyWeb3Entry)).initialize(
+            Const.WEB3_ENTRY_NFT_NAME,
+            Const.WEB3_ENTRY_NFT_SYMBOL
         );
     }
 
