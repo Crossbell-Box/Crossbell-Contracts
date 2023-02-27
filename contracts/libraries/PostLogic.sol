@@ -22,14 +22,16 @@ library PostLogic {
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external {
         uint256 characterId = vars.characterId;
+        DataTypes.Note storage note = _noteByIdByCharacter[characterId][noteId];
+
         // save note
         if (linkItemType != bytes32(0)) {
-            _noteByIdByCharacter[characterId][noteId].linkItemType = linkItemType;
-            _noteByIdByCharacter[characterId][noteId].linkKey = linkKey;
+            note.linkItemType = linkItemType;
+            note.linkKey = linkKey;
         }
-        _noteByIdByCharacter[characterId][noteId].contentUri = vars.contentUri;
-        _noteByIdByCharacter[characterId][noteId].linkModule = vars.linkModule;
-        _noteByIdByCharacter[characterId][noteId].mintModule = vars.mintModule;
+        note.contentUri = vars.contentUri;
+        note.linkModule = vars.linkModule;
+        note.mintModule = vars.mintModule;
 
         // init link module
         if (vars.linkModule != address(0)) {
