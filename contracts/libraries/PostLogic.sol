@@ -114,19 +114,19 @@ library PostLogic {
         uint256 noteId,
         string memory handle,
         address mintNFTImpl
-    ) internal returns (address) {
-        address mintNFT = Clones.clone(mintNFTImpl);
+    ) internal returns (address mintNFT) {
+        mintNFT = Clones.clone(mintNFTImpl);
 
         bytes4 firstBytes = bytes4(bytes(handle));
+        string memory strCharacterId = characterId.toString();
+        string memory strNoteId = noteId.toString();
 
         string memory name = string(
-            abi.encodePacked(handle, "-Note-", characterId.toString(), "-", noteId.toString())
+            abi.encodePacked(handle, "-Note-", strCharacterId, "-", strNoteId)
         );
         string memory symbol = string(
-            abi.encodePacked(firstBytes, "-Note-", characterId.toString(), "-", noteId.toString())
+            abi.encodePacked(firstBytes, "-Note-", strCharacterId, "-", strNoteId)
         );
-
         IMintNFT(mintNFT).initialize(characterId, noteId, address(this), name, symbol);
-        return mintNFT;
     }
 }
