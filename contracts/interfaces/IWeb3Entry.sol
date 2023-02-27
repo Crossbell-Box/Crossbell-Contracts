@@ -99,11 +99,13 @@ interface IWeb3Entry {
 
     function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external;
 
-    function mintNote(DataTypes.MintNoteData calldata vars) external returns (uint256);
+    function mintNote(DataTypes.MintNoteData calldata vars) external returns (uint256 tokenId);
 
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external;
 
-    function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256);
+    function postNote(
+        DataTypes.PostNoteData calldata postNoteData
+    ) external returns (uint256 noteId);
 
     function setNoteUri(uint256 characterId, uint256 noteId, string calldata newUri) external;
 
@@ -112,32 +114,32 @@ interface IWeb3Entry {
     function deleteNote(uint256 characterId, uint256 noteId) external;
 
     function postNote4Character(
-        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.PostNoteData calldata vars,
         uint256 toCharacterId
     ) external returns (uint256);
 
     function postNote4Address(
-        DataTypes.PostNoteData calldata noteData,
+        DataTypes.PostNoteData calldata vars,
         address ethAddress
     ) external returns (uint256);
 
     function postNote4Linklist(
-        DataTypes.PostNoteData calldata noteData,
+        DataTypes.PostNoteData calldata vars,
         uint256 toLinklistId
     ) external returns (uint256);
 
     function postNote4Note(
-        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.PostNoteData calldata vars,
         DataTypes.NoteStruct calldata note
     ) external returns (uint256);
 
     function postNote4ERC721(
-        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.PostNoteData calldata vars,
         DataTypes.ERC721Struct calldata erc721
     ) external returns (uint256);
 
     function postNote4AnyUri(
-        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.PostNoteData calldata vars,
         string calldata uri
     ) external returns (uint256);
 

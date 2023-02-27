@@ -22,17 +22,19 @@ library PostLogic {
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external {
         uint256 characterId = vars.characterId;
+        DataTypes.Note storage note = _noteByIdByCharacter[characterId][noteId];
+
         // save note
+        note.contentUri = vars.contentUri;
         if (linkItemType != bytes32(0)) {
-            _noteByIdByCharacter[characterId][noteId].linkItemType = linkItemType;
-            _noteByIdByCharacter[characterId][noteId].linkKey = linkKey;
+            note.linkItemType = linkItemType;
+            note.linkKey = linkKey;
         }
-        _noteByIdByCharacter[characterId][noteId].contentUri = vars.contentUri;
-        _noteByIdByCharacter[characterId][noteId].linkModule = vars.linkModule;
-        _noteByIdByCharacter[characterId][noteId].mintModule = vars.mintModule;
 
         // init link module
         if (vars.linkModule != address(0)) {
+            note.linkModule = vars.linkModule;
+
             bytes memory linkModuleReturnData = ILinkModule4Note(vars.linkModule)
                 .initializeLinkModule(characterId, noteId, vars.linkModuleInitData);
 
@@ -47,6 +49,8 @@ library PostLogic {
 
         // init mint module
         if (vars.mintModule != address(0)) {
+            note.mintModule = vars.mintModule;
+
             bytes memory mintModuleReturnData = IMintModule4Note(vars.mintModule)
                 .initializeMintModule(characterId, noteId, vars.mintModuleInitData);
 
@@ -68,24 +72,19 @@ library PostLogic {
         address to,
         bytes calldata mintModuleData,
         address mintNFTImpl,
-        mapping(uint256 => DataTypes.Character) storage _characterById,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external returns (uint256 tokenId) {
-        address mintNFT = _noteByIdByCharacter[characterId][noteId].mintNFT;
+        DataTypes.Note storage note = _noteByIdByCharacter[characterId][noteId];
+        address mintNFT = note.mintNFT;
         if (mintNFT == address(0)) {
-            mintNFT = _deployMintNFT(
-                characterId,
-                noteId,
-                _characterById[characterId].handle,
-                mintNFTImpl
-            );
-            _noteByIdByCharacter[characterId][noteId].mintNFT = mintNFT;
+            mintNFT = _deployMintNFT(characterId, noteId, mintNFTImpl);
+            note.mintNFT = mintNFT;
         }
 
         // mint nft
         tokenId = IMintNFT(mintNFT).mint(to);
 
-        address mintModule = _noteByIdByCharacter[characterId][noteId].mintModule;
+        address mintModule = note.mintModule;
         if (mintModule != address(0)) {
             IMintModule4Note(mintModule).processMint(to, characterId, noteId, mintModuleData);
         }
@@ -107,21 +106,18 @@ library PostLogic {
     function _deployMintNFT(
         uint256 characterId,
         uint256 noteId,
-        string memory handle,
         address mintNFTImpl
-    ) internal returns (address) {
-        address mintNFT = Clones.clone(mintNFTImpl);
-
-        bytes4 firstBytes = bytes4(bytes(handle));
-
-        string memory name = string(
-            abi.encodePacked(handle, "-Note-", characterId.toString(), "-", noteId.toString())
-        );
-        string memory symbol = string(
-            abi.encodePacked(firstBytes, "-Note-", characterId.toString(), "-", noteId.toString())
+    ) internal returns (address mintNFT) {
+        string memory symbol = string.concat(
+            "Note-",
+            characterId.toString(),
+            "-",
+            noteId.toString()
         );
 
-        IMintNFT(mintNFT).initialize(characterId, noteId, address(this), name, symbol);
-        return mintNFT;
+        // deploy nft contract
+        mintNFT = Clones.clone(mintNFTImpl);
+        // initialize nft
+        IMintNFT(mintNFT).initialize(characterId, noteId, address(this), symbol, symbol);
     }
 }
