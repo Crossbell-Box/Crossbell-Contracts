@@ -429,8 +429,7 @@ contract Web3EntryBase is
     function postNote(DataTypes.PostNoteData calldata vars) external override returns (uint256) {
         _validateCallerPermission(vars.characterId, OP.POST_NOTE);
 
-        uint256 noteId = ++_characterById[vars.characterId].noteCount;
-
+        uint256 noteId = _nextNoteId(vars.characterId);
         PostLogic.postNoteWithLink(vars, noteId, 0, 0, "", _noteByIdByCharacter);
         return noteId;
     }
@@ -470,17 +469,17 @@ contract Web3EntryBase is
     }
 
     function postNote4Character(
-        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.PostNoteData calldata vars,
         uint256 toCharacterId
     ) external override returns (uint256) {
-        _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_CHARACTER);
+        _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_CHARACTER);
 
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_CHARACTER;
-        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
+        uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = bytes32(toCharacterId);
 
         PostLogic.postNoteWithLink(
-            postNoteData,
+            vars,
             noteId,
             linkItemType,
             linkKey,
@@ -492,17 +491,17 @@ contract Web3EntryBase is
     }
 
     function postNote4Address(
-        DataTypes.PostNoteData calldata noteData,
+        DataTypes.PostNoteData calldata vars,
         address ethAddress
     ) external override returns (uint256) {
-        _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_ADDRESS);
+        _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ADDRESS);
 
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ADDRESS;
-        uint256 noteId = ++_characterById[noteData.characterId].noteCount;
+        uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
 
         PostLogic.postNoteWithLink(
-            noteData,
+            vars,
             noteId,
             linkItemType,
             linkKey,
@@ -514,17 +513,17 @@ contract Web3EntryBase is
     }
 
     function postNote4Linklist(
-        DataTypes.PostNoteData calldata noteData,
+        DataTypes.PostNoteData calldata vars,
         uint256 toLinklistId
     ) external override returns (uint256) {
-        _validateCallerPermission(noteData.characterId, OP.POST_NOTE_FOR_LINKLIST);
+        _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_LINKLIST);
 
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_LINKLIST;
-        uint256 noteId = ++_characterById[noteData.characterId].noteCount;
+        uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = bytes32(toLinklistId);
 
         PostLogic.postNoteWithLink(
-            noteData,
+            vars,
             noteId,
             linkItemType,
             linkKey,
@@ -536,17 +535,17 @@ contract Web3EntryBase is
     }
 
     function postNote4Note(
-        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.PostNoteData calldata vars,
         DataTypes.NoteStruct calldata note
     ) external override returns (uint256) {
-        _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_NOTE);
+        _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_NOTE);
 
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_NOTE;
-        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
+        uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = ILinklist(_linklist).addLinkingNote(0, note.characterId, note.noteId);
 
         PostLogic.postNoteWithLink(
-            postNoteData,
+            vars,
             noteId,
             linkItemType,
             linkKey,
@@ -558,14 +557,14 @@ contract Web3EntryBase is
     }
 
     function postNote4ERC721(
-        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.PostNoteData calldata vars,
         DataTypes.ERC721Struct calldata erc721
     ) external override returns (uint256) {
-        _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_ERC721);
+        _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ERC721);
         _validateERC721Exists(erc721.tokenAddress, erc721.erc721TokenId);
 
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ERC721;
-        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
+        uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = ILinklist(_linklist).addLinkingERC721(
             0,
             erc721.tokenAddress,
@@ -573,7 +572,7 @@ contract Web3EntryBase is
         );
 
         PostLogic.postNoteWithLink(
-            postNoteData,
+            vars,
             noteId,
             linkItemType,
             linkKey,
@@ -585,17 +584,17 @@ contract Web3EntryBase is
     }
 
     function postNote4AnyUri(
-        DataTypes.PostNoteData calldata postNoteData,
+        DataTypes.PostNoteData calldata vars,
         string calldata uri
     ) external override returns (uint256) {
-        _validateCallerPermission(postNoteData.characterId, OP.POST_NOTE_FOR_ANYURI);
+        _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ANYURI);
 
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ANYURI;
-        uint256 noteId = ++_characterById[postNoteData.characterId].noteCount;
+        uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
 
         PostLogic.postNoteWithLink(
-            postNoteData,
+            vars,
             noteId,
             linkItemType,
             linkKey,
@@ -823,6 +822,10 @@ contract Web3EntryBase is
         }
 
         super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    function _nextNoteId(uint256 characterId) internal returns (uint256) {
+        return ++_characterById[characterId].noteCount;
     }
 
     function _clearOperator(uint256 tokenId, address operator) internal {
