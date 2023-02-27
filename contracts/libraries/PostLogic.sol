@@ -75,7 +75,8 @@ library PostLogic {
         mapping(uint256 => DataTypes.Character) storage _characterById,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external returns (uint256 tokenId) {
-        address mintNFT = _noteByIdByCharacter[characterId][noteId].mintNFT;
+        DataTypes.Note storage note = _noteByIdByCharacter[characterId][noteId];
+        address mintNFT = note.mintNFT;
         if (mintNFT == address(0)) {
             mintNFT = _deployMintNFT(
                 characterId,
@@ -83,13 +84,13 @@ library PostLogic {
                 _characterById[characterId].handle,
                 mintNFTImpl
             );
-            _noteByIdByCharacter[characterId][noteId].mintNFT = mintNFT;
+            note.mintNFT = mintNFT;
         }
 
         // mint nft
         tokenId = IMintNFT(mintNFT).mint(to);
 
-        address mintModule = _noteByIdByCharacter[characterId][noteId].mintModule;
+        address mintModule = note.mintModule;
         if (mintModule != address(0)) {
             IMintModule4Note(mintModule).processMint(to, characterId, noteId, mintModuleData);
         }

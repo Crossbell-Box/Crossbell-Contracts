@@ -99,11 +99,13 @@ interface IWeb3Entry {
 
     function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external;
 
-    function mintNote(DataTypes.MintNoteData calldata vars) external returns (uint256);
+    function mintNote(DataTypes.MintNoteData calldata vars) external returns (uint256 tokenId);
 
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external;
 
-    function postNote(DataTypes.PostNoteData calldata postNoteData) external returns (uint256);
+    function postNote(
+        DataTypes.PostNoteData calldata postNoteData
+    ) external returns (uint256 noteId);
 
     function setNoteUri(uint256 characterId, uint256 noteId, string calldata newUri) external;
 

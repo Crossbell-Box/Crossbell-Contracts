@@ -397,19 +397,20 @@ contract Web3EntryBase is
         );
     }
 
-    function mintNote(DataTypes.MintNoteData calldata vars) external override returns (uint256) {
+    function mintNote(
+        DataTypes.MintNoteData calldata vars
+    ) external override returns (uint256 tokenId) {
         _validateNoteExists(vars.characterId, vars.noteId);
 
-        return
-            PostLogic.mintNote(
-                vars.characterId,
-                vars.noteId,
-                vars.to,
-                vars.mintModuleData,
-                MINT_NFT_IMPL,
-                _characterById,
-                _noteByIdByCharacter
-            );
+        tokenId = PostLogic.mintNote(
+            vars.characterId,
+            vars.noteId,
+            vars.to,
+            vars.mintModuleData,
+            MINT_NFT_IMPL,
+            _characterById,
+            _noteByIdByCharacter
+        );
     }
 
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external override {
@@ -426,12 +427,13 @@ contract Web3EntryBase is
         );
     }
 
-    function postNote(DataTypes.PostNoteData calldata vars) external override returns (uint256) {
+    function postNote(
+        DataTypes.PostNoteData calldata vars
+    ) external override returns (uint256 noteId) {
         _validateCallerPermission(vars.characterId, OP.POST_NOTE);
 
-        uint256 noteId = _nextNoteId(vars.characterId);
+        noteId = _nextNoteId(vars.characterId);
         PostLogic.postNoteWithLink(vars, noteId, 0, 0, "", _noteByIdByCharacter);
-        return noteId;
     }
 
     function setNoteUri(
