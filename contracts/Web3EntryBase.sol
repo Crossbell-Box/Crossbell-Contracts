@@ -408,7 +408,6 @@ contract Web3EntryBase is
             vars.to,
             vars.mintModuleData,
             MINT_NFT_IMPL,
-            _characterById,
             _noteByIdByCharacter
         );
     }

@@ -72,18 +72,12 @@ library PostLogic {
         address to,
         bytes calldata mintModuleData,
         address mintNFTImpl,
-        mapping(uint256 => DataTypes.Character) storage _characterById,
         mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
     ) external returns (uint256 tokenId) {
         DataTypes.Note storage note = _noteByIdByCharacter[characterId][noteId];
         address mintNFT = note.mintNFT;
         if (mintNFT == address(0)) {
-            mintNFT = _deployMintNFT(
-                characterId,
-                noteId,
-                _characterById[characterId].handle,
-                mintNFTImpl
-            );
+            mintNFT = _deployMintNFT(characterId, noteId, mintNFTImpl);
             note.mintNFT = mintNFT;
         }
 
@@ -112,21 +106,18 @@ library PostLogic {
     function _deployMintNFT(
         uint256 characterId,
         uint256 noteId,
-        string memory handle,
         address mintNFTImpl
     ) internal returns (address mintNFT) {
+        string memory symbol = string.concat(
+            "Note-",
+            characterId.toString(),
+            "-",
+            noteId.toString()
+        );
+
+        // deploy nft contract
         mintNFT = Clones.clone(mintNFTImpl);
-
-        bytes4 firstBytes = bytes4(bytes(handle));
-        string memory strCharacterId = characterId.toString();
-        string memory strNoteId = noteId.toString();
-
-        string memory name = string(
-            abi.encodePacked(handle, "-Note-", strCharacterId, "-", strNoteId)
-        );
-        string memory symbol = string(
-            abi.encodePacked(firstBytes, "-Note-", strCharacterId, "-", strNoteId)
-        );
-        IMintNFT(mintNFT).initialize(characterId, noteId, address(this), name, symbol);
+        // initialize nft
+        IMintNFT(mintNFT).initialize(characterId, noteId, address(this), symbol, symbol);
     }
 }
