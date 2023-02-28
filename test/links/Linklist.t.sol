@@ -27,12 +27,10 @@ contract LinklistTest is Test, SetUp, Utils {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
     }
 
-    function testMint() public {
+    function testMintx() public {
         // link character
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Transfer(address(0), Const.FIRST_CHARACTER_ID, 1);
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Transfer(address(0), alice, 1);
         vm.prank(alice);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
@@ -51,24 +49,18 @@ contract LinklistTest is Test, SetUp, Utils {
         assertEq(linklist.characterOwnerOf(1), Const.FIRST_CHARACTER_ID);
         assertEq(linklist.getOwnerCharacterId(1), 1);
         assertEq(linklist.Uri(1), "");
-    }
 
-    function testMintFail() public {
-        // link character
-        vm.prank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
-                new bytes(0)
-            )
-        );
-
-        // mint an existing token id
-        vm.expectRevert(abi.encodeWithSelector(ErrTokenIdAlreadyExists.selector));
+        // mint linklist directly by web3Entry
         vm.prank(address(web3Entry));
-        linklist.mint(1, Const.FollowLinkType, 1);
+        linklist.mint(1, Const.FollowLinkType);
+        // check state
+        assertEq(linklist.totalSupply(), 2);
+        assertEq(linklist.balanceOf(alice), 2);
+        assertEq(linklist.balanceOf(Const.FIRST_CHARACTER_ID), 2);
+        assertEq(linklist.ownerOf(2), alice);
+        assertEq(linklist.characterOwnerOf(2), Const.FIRST_CHARACTER_ID);
+        assertEq(linklist.getOwnerCharacterId(2), 1);
+        assertEq(linklist.Uri(2), "");
     }
 
     function testSetUri() public {

@@ -11,7 +11,7 @@ interface ILinklist {
         address web3Entry_
     ) external;
 
-    function mint(uint256 characterId, bytes32 linkType, uint256 tokenId) external;
+    function mint(uint256 characterId, bytes32 linkType) external returns (uint256 tokenId);
 
     function setUri(uint256 tokenId, string memory newUri) external;
 

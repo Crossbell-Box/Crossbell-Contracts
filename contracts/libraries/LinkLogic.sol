@@ -304,9 +304,8 @@ library LinkLogic {
     ) internal returns (uint256 linklistId) {
         linklistId = _attachedLinklists[fromCharacterId][linkType];
         if (linklistId == 0) {
-            linklistId = IERC721Enumerable(linklist).totalSupply() + 1;
             // mint linkList nft
-            ILinklist(linklist).mint(fromCharacterId, linkType, linklistId);
+            linklistId = ILinklist(linklist).mint(fromCharacterId, linkType);
 
             // attach linkList
             _attachedLinklists[fromCharacterId][linkType] = linklistId;
