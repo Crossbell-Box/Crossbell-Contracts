@@ -27,7 +27,7 @@ contract LinklistTest is Test, SetUp, Utils {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
     }
 
-    function testMintx() public {
+    function testMint() public {
         // link character
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Transfer(address(0), Const.FIRST_CHARACTER_ID, 1);
@@ -61,6 +61,15 @@ contract LinklistTest is Test, SetUp, Utils {
         assertEq(linklist.characterOwnerOf(2), Const.FIRST_CHARACTER_ID);
         assertEq(linklist.getOwnerCharacterId(2), 1);
         assertEq(linklist.Uri(2), "");
+    }
+
+    function testMintFail() public {
+        // caller is not web3Entry contract
+        vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
+        linklist.mint(1, Const.FollowLinkType);
+
+        // check state
+        assertEq(linklist.totalSupply(), 0);
     }
 
     function testSetUri() public {
