@@ -61,18 +61,24 @@ contract UpgradeWeb3Entry is Test, Utils {
             newbieVilla
         );
 
+        // check status
+        assertEq(Web3EntryBase(address(proxyWeb3Entry)).name(), Const.WEB3_ENTRY_NFT_NAME);
+        assertEq(Web3EntryBase(address(proxyWeb3Entry)).symbol(), Const.WEB3_ENTRY_NFT_SYMBOL);
+
         // reinitialize with higher version
         reinitializeWeb3Entry = new ReinitializeWeb3Entry();
         vm.prank(admin);
         proxyWeb3Entry.upgradeTo(address(reinitializeWeb3Entry));
         ReinitializeWeb3Entry(address(proxyWeb3Entry)).initialize(
-            Const.WEB3_ENTRY_NFT_NAME,
-            Const.WEB3_ENTRY_NFT_SYMBOL
+            "NEW_WEB3_ENTRY_NFT_NAME",
+            "NEW_WEB3_ENTRY_NFT_SYMBOL"
         );
+        assertEq(Web3EntryBase(address(proxyWeb3Entry)).name(), "NEW_WEB3_ENTRY_NFT_NAME");
+        assertEq(Web3EntryBase(address(proxyWeb3Entry)).symbol(), "NEW_WEB3_ENTRY_NFT_SYMBOL");
     }
 
     function testInitializeFail() public {
-        // can't initialize twize
+        // can't initialize twice
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
         Web3EntryBase(address(proxyWeb3Entry)).initialize(
             Const.WEB3_ENTRY_NFT_NAME,

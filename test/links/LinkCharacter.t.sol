@@ -68,6 +68,12 @@ contract LinkProfileTest is Test, SetUp, Utils {
                 new bytes(0)
             )
         );
+
+        // check state
+        assertEq(linklist.getOwnerCharacterId(1), Const.FIRST_CHARACTER_ID);
+        assertEq(linklist.getLinkingCharacterIds(1).length, 1);
+        assertEq(linklist.getLinkingCharacterIds(1)[0], 2);
+        assertEq(linklist.getLinkingCharacterListLength(1), 1);
     }
 
     function testLinkCharacterFail() public {
@@ -158,6 +164,11 @@ contract LinkProfileTest is Test, SetUp, Utils {
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
+
+        // check state
+        assertEq(linklist.getOwnerCharacterId(1), Const.FIRST_CHARACTER_ID);
+        assertEq(linklist.getLinkingCharacterIds(1).length, 0);
+        assertEq(linklist.getLinkingCharacterListLength(1), 0);
     }
 
     function testUnlinkCharacterFail() public {
@@ -240,5 +251,11 @@ contract LinkProfileTest is Test, SetUp, Utils {
                 Const.FollowLinkType
             )
         );
+
+        // check state
+        assertEq(linklist.getOwnerCharacterId(1), Const.FIRST_CHARACTER_ID);
+        assertEq(linklist.getLinkingCharacterIds(1).length, 1);
+        assertEq(linklist.getLinkingCharacterIds(1)[0], 3);
+        assertEq(linklist.getLinkingCharacterListLength(1), 1);
     }
 }
