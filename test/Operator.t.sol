@@ -474,6 +474,7 @@ contract OperatorTest is Test, SetUp, Utils {
                 new bytes(0)
             )
         );
+
         // postNote4Character
         web3Entry.postNote4Character(
             makePostNoteData(Const.FIRST_CHARACTER_ID),

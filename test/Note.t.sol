@@ -552,4 +552,106 @@ contract NoteTest is Test, SetUp, Utils {
         address nftAddress = note.mintNFT;
         assertEq(IERC721Enumerable(nftAddress).totalSupply(), 10);
     }
+
+    // solhint-disable-next-line function-max-lines
+    function testSetMintModule4Note() public {
+        vm.prank(alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+
+        // owner can setMintModule4Note
+        vm.prank(alice);
+        expectEmit(CheckAll);
+        emit Events.SetMintModule4Note(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            address(approvalMintModule),
+            new bytes(0),
+            block.timestamp
+        );
+        web3Entry.setMintModule4Note(DataTypes.setMintModule4NoteData(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            address(approvalMintModule),
+            new bytes(0)
+        ));
+
+        // operator can setMintModule4Note
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            Const.FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+        vm.prank(bob);
+        web3Entry.setMintModule4Note(DataTypes.setMintModule4NoteData(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            address(approvalMintModule),
+            new bytes(0)
+        ));
+
+        // owner behind periphery can 
+        vm.prank(address(periphery), alice);
+        web3Entry.setMintModule4Note(DataTypes.setMintModule4NoteData(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            address(approvalMintModule),
+            new bytes(0)
+        ));
+
+        // operator behind periphery can
+        vm.prank(address(periphery), bob);
+        web3Entry.setMintModule4Note(DataTypes.setMintModule4NoteData(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            address(approvalMintModule),
+            new bytes(0)
+        ));
+    }
+
+    function testSetMintModule4NoteFail() public {
+        vm.prank(alice);
+        web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+
+        // not owner nor operator can't
+        vm.prank(bob);
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        web3Entry.setMintModule4Note(DataTypes.setMintModule4NoteData(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            address(approvalMintModule),
+            new bytes(0)
+        ));
+
+        // can't setMintModule4Note for notes don't exist
+        vm.prank(alice);
+        vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
+        web3Entry.setMintModule4Note(DataTypes.setMintModule4NoteData(
+            Const.FIRST_CHARACTER_ID,
+            Const.SECOND_NOTE_ID,
+            address(approvalMintModule),
+            new bytes(0)
+        ));
+
+        // can't setMintModule4Note for notes that's locked
+        vm.startPrank(alice);
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        vm.expectRevert(abi.encodeWithSelector(ErrNoteLocked.selector));
+        web3Entry.setMintModule4Note(DataTypes.setMintModule4NoteData(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            address(approvalMintModule),
+            new bytes(0)
+        ));
+
+        // can't setMintModule4Note for notes that's deleted
+        web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        vm.expectRevert(abi.encodeWithSelector(ErrNoteIsDeleted.selector));
+        web3Entry.setMintModule4Note(DataTypes.setMintModule4NoteData(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            address(approvalMintModule),
+            new bytes(0)
+        ));
+    }
 }
