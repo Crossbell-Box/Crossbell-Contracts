@@ -40,6 +40,12 @@ contract SetUp is Test {
     address public newbieAdmin = vm.addr(newbieAdminPrivateKey);
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
+    address public constant alice = address(0x1111);
+    address public constant bob = address(0x2222);
+    address public constant carol = address(0x3333);
+    address public constant dick = address(0x4444);
+    address public constant erik = address(0x5555);
+
     // solhint-disable-next-line function-max-lines
     function _setUp() internal {
         // deploy erc1820

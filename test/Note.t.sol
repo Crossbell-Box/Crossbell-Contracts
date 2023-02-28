@@ -13,9 +13,6 @@ import "./helpers/utils.sol";
 import "./helpers/SetUp.sol";
 
 contract NoteTest is Test, SetUp, Utils {
-    address public alice = address(0x1111);
-    address public bob = address(0x2222);
-
     function setUp() public {
         _setUp();
 

@@ -11,10 +11,6 @@ import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
 
 contract LinkLinklistTest is Test, SetUp, Utils {
-    address public alice = address(0x1111);
-    address public bob = address(0x2222);
-    address public carol = address(0x3333);
-
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
@@ -24,7 +20,7 @@ contract LinkLinklistTest is Test, SetUp, Utils {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
 
         vm.prank(address(web3Entry));
-        linklist.mint(Const.FIRST_CHARACTER_ID, Const.FollowLinkType, 1);
+        linklist.mint(Const.FIRST_CHARACTER_ID, Const.FollowLinkType);
     }
 
     function testLinkLinklist() public {

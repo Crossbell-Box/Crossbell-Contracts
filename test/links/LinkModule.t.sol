@@ -10,11 +10,6 @@ import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
 
 contract LinkModuleTest is Test, SetUp, Utils {
-    address public alice = address(0x1111);
-    address public bob = address(0x2222);
-    address public carol = address(0x3333);
-    address public dick = address(0x4444);
-
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();

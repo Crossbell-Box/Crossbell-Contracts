@@ -11,9 +11,6 @@ import "../../contracts/misc/CharacterBoundToken.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract CbtTest is Test, SetUp, Utils {
-    address public alice = address(0x1111);
-    address public bob = address(0x2222);
-
     uint256 public amount = 1;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;

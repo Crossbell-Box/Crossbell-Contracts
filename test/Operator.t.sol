@@ -17,12 +17,6 @@ import "../contracts/modules/link/ApprovalLinkModule4Note.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract OperatorTest is Test, SetUp, Utils {
-    address public constant alice = address(0x1111);
-    address public constant bob = address(0x2222);
-    address public constant carol = address(0x3333);
-    address public constant dick = address(0x4444);
-    address public constant erik = address(0x5555);
-
     address[] public blocklist = [bob];
     address[] public allowlist = [carol, dick];
 
