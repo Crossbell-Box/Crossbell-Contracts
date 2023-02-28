@@ -68,9 +68,7 @@ contract LinklistTest is Test, SetUp, Utils {
     function testMint() public {
         // link character
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Transfer(address(0), Const.FIRST_CHARACTER_ID, 2);
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Transfer(address(0), alice, 2);
+        emit Transfer(address(0), Const.FIRST_CHARACTER_ID, 1);
         vm.prank(alice);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
@@ -82,17 +80,13 @@ contract LinklistTest is Test, SetUp, Utils {
         );
 
         // check state
-        // alice should have 2 linklists, because there's already one follow list in setUp.
-        assertEq(linklist.totalSupply(), 2);
-        assertEq(linklist.balanceOf(alice), 2);
-        assertEq(linklist.balanceOf(Const.FIRST_CHARACTER_ID), 2);
-        assertEq(linklist.ownerOf(2), alice);
-        assertEq(linklist.characterOwnerOf(2), Const.FIRST_CHARACTER_ID);
-        assertEq(linklist.getOwnerCharacterId(2), 1);
-        assertEq(linklist.Uri(2), "");
-        assertEq(linklist.getLinkingCharacterIds(2).length, 1);
-        assertEq(linklist.getLinkingCharacterIds(2)[0], 2);
-        assertEq(linklist.getLinkType(1), Const.FollowLinkType);
+        assertEq(linklist.totalSupply(), 1);
+        assertEq(linklist.balanceOf(alice), 1);
+        assertEq(linklist.balanceOf(Const.FIRST_CHARACTER_ID), 1);
+        assertEq(linklist.ownerOf(1), alice);
+        assertEq(linklist.characterOwnerOf(1), Const.FIRST_CHARACTER_ID);
+        assertEq(linklist.getOwnerCharacterId(1), 1);
+        assertEq(linklist.Uri(1), "");
     }
 
     function testMintFail() public {
@@ -106,15 +100,9 @@ contract LinklistTest is Test, SetUp, Utils {
                 new bytes(0)
             )
         );
-        // only web3Entry can mint
-        vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
-        vm.prank(bob);
-        linklist.mint(2, Const.FollowLinkType, 2);
 
-        // mint an existing token id
-        vm.expectRevert(abi.encodeWithSelector(ErrTokenIdAlreadyExists.selector));
-        vm.prank(address(web3Entry));
-        linklist.mint(1, Const.FollowLinkType, 1);
+        // check state
+        assertEq(linklist.totalSupply(), 0);
     }
 
     function testSetUri() public {

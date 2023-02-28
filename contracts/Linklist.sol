@@ -32,25 +32,19 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         emit Events.LinklistNFTInitialized(block.timestamp);
     }
 
-    function mint(uint256 characterId, bytes32 linkType, uint256 tokenId) external override {
+    function mint(
+        uint256 characterId,
+        bytes32 linkType
+    ) external override returns (uint256 tokenId) {
         _validateCallerIsWeb3Entry();
-        if (_linklistOwners[tokenId] != 0) revert ErrTokenIdAlreadyExists();
 
+        tokenId = ++_tokenCount;
         _linkTypes[tokenId] = linkType;
-
         // mint tokenId to characterId
         _linklistOwners[tokenId] = characterId;
-        _linklistBalances[characterId] += 1;
-        _tokenCount += 1;
+        _linklistBalances[characterId]++;
 
         emit Transfer(address(0), characterId, tokenId);
-
-        // emit erc721 transfer event
-        emit IERC721.Transfer(
-            address(0),
-            IERC721Enumerable(Web3Entry).ownerOf(characterId),
-            tokenId
-        );
     }
 
     /**
