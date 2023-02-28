@@ -58,7 +58,7 @@ library LinkLogic {
     function linkNote(
         DataTypes.linkNoteData calldata vars,
         address linklist,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter,
+        address linkModule,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
         address linker = IERC721Enumerable(address(this)).ownerOf(vars.fromCharacterId);
@@ -73,7 +73,6 @@ library LinkLogic {
         ILinklist(linklist).addLinkingNote(linklistId, vars.toCharacterId, vars.toNoteId);
 
         // process link
-        address linkModule = _noteByIdByCharacter[vars.toCharacterId][vars.toNoteId].linkModule;
         if (linkModule != address(0)) {
             try
                 ILinkModule4Note(linkModule).processLink(
