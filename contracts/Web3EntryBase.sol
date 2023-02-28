@@ -232,7 +232,12 @@ contract Web3EntryBase is
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_NOTE);
         _validateNoteExists(vars.toCharacterId, vars.toNoteId);
 
-        LinkLogic.linkNote(vars, _linklist, _noteByIdByCharacter, _attachedLinklists);
+        LinkLogic.linkNote(
+            vars,
+            _linklist,
+            _noteByIdByCharacter[vars.toCharacterId][vars.toNoteId].linkModule,
+            _attachedLinklists
+        );
     }
 
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external override {
