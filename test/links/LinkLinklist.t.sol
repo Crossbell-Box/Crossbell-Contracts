@@ -123,9 +123,13 @@ contract LinkLinklistTest is Test, SetUp, Utils {
             )
         );
 
-        // unlink a non-existing character
-        web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(Const.FIRST_CHARACTER_ID, 99999, Const.FollowLinkType)
+       // unlink a non-existing character
+        web3Entry.unlinkLinklist(
+            DataTypes.unlinkLinklistData(
+                Const.FIRST_CHARACTER_ID,
+                Const.SECOND_LINKLIST_ID,
+                Const.FollowLinkType
+            )
         );
         vm.stopPrank();
 
@@ -140,7 +144,7 @@ contract LinkLinklistTest is Test, SetUp, Utils {
         assertEq(linklist.getLinkingLinklistLength(Const.SECOND_LINKLIST_ID), 0);
     }
 
-    function testUnlinkCharacterFail() public {
+    function testUnlinkLinklistFail() public {
         vm.prank(alice);
         web3Entry.linkLinklist(
             DataTypes.linkLinklistData(

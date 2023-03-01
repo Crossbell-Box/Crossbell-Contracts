@@ -22,9 +22,7 @@ contract LinkERC721Test is Test, SetUp, Utils {
 
     // solhint-disable-next-line function-max-lines
     function testLinkERC721() public {
-        // mint an nft
         nft.mint(bob);
-
         vm.prank(alice);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Events.LinkERC721(Const.FIRST_CHARACTER_ID, address(nft), 1, Const.LikeLinkType, 1);
@@ -140,12 +138,14 @@ contract LinkERC721Test is Test, SetUp, Utils {
     }
 
     function testUnlinkERC721Fail() public {
+        nft.mint(bob);
         vm.prank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
+        web3Entry.linkERC721(
+            DataTypes.linkERC721Data(
                 Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                address(nft),
+                1,
+                Const.LikeLinkType,
                 new bytes(0)
             )
         );
@@ -153,11 +153,12 @@ contract LinkERC721Test is Test, SetUp, Utils {
         // unlink
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(
+        web3Entry.unlinkERC721(
+            DataTypes.unlinkERC721Data(
                 Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType
+                address(nft),
+                1,
+                Const.LikeLinkType
             )
         );
     }
