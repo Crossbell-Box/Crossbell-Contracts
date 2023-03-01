@@ -20,7 +20,6 @@ contract UpgradeWeb3Entry is Test, Utils {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     Web3EntryBase public web3EntryBaseImpl;
-    ReinitializeWeb3Entry public reinitializeWeb3Entry;
     Web3EntryBase public web3EntryBase;
     Web3Entry public web3EntryImpl;
     Web3Entry public web3Entry;
@@ -50,6 +49,7 @@ contract UpgradeWeb3Entry is Test, Utils {
     }
 
     function testInitialize() public {
+        ReinitializeWeb3Entry reinitializeWeb3Entry;
         web3EntryBaseImpl = new Web3EntryBase();
         proxyWeb3Entry = new TransparentUpgradeableProxy(address(web3EntryBaseImpl), admin, "");
         Web3EntryBase(address(proxyWeb3Entry)).initialize(
@@ -78,6 +78,7 @@ contract UpgradeWeb3Entry is Test, Utils {
     }
 
     function testInitializeFail() public {
+        ReinitializeWeb3Entry reinitializeWeb3Entry;
         // can't initialize twice
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
         Web3EntryBase(address(proxyWeb3Entry)).initialize(
