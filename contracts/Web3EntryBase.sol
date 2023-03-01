@@ -138,7 +138,16 @@ contract Web3EntryBase is
         // mint character nft
         _safeMint(vars.to, characterId);
 
-        CharacterLogic.createCharacter(vars, characterId, _characterIdByHandleHash, _characterById);
+        CharacterLogic.createCharacter(
+            vars.to,
+            vars.handle,
+            vars.uri,
+            vars.linkModule,
+            vars.linkModuleInitData,
+            characterId,
+            _characterIdByHandleHash,
+            _characterById
+        );
 
         // set primary character
         if (_primaryCharacterByAddress[vars.to] == 0) {
@@ -214,7 +223,9 @@ contract Web3EntryBase is
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
 
         LinkLogic.unlinkCharacter(
-            vars,
+            vars.fromCharacterId,
+            vars.toCharacterId,
+            vars.linkType,
             _linklist,
             _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
@@ -233,7 +244,11 @@ contract Web3EntryBase is
         _validateNoteExists(vars.toCharacterId, vars.toNoteId);
 
         LinkLogic.linkNote(
-            vars,
+            vars.fromCharacterId,
+            vars.toCharacterId,
+            vars.toNoteId,
+            vars.linkType,
+            vars.data,
             _linklist,
             _noteByIdByCharacter[vars.toCharacterId][vars.toNoteId].linkModule,
             _attachedLinklists
@@ -243,20 +258,37 @@ contract Web3EntryBase is
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_NOTE);
 
-        LinkLogic.unlinkNote(vars, _linklist, _attachedLinklists);
+        LinkLogic.unlinkNote(
+            vars.fromCharacterId,
+            vars.toCharacterId,
+            vars.toNoteId,
+            vars.linkType,
+            _linklist,
+            _attachedLinklists
+        );
     }
 
     function linkERC721(DataTypes.linkERC721Data calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ERC721);
 
-        LinkLogic.linkERC721(vars, _linklist, _attachedLinklists);
+        LinkLogic.linkERC721(
+            vars.fromCharacterId,
+            vars.tokenAddress,
+            vars.tokenId,
+            vars.linkType,
+            _linklist,
+            _attachedLinklists
+        );
     }
 
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ERC721);
 
         LinkLogic.unlinkERC721(
-            vars,
+            vars.fromCharacterId,
+            vars.tokenAddress,
+            vars.tokenId,
+            vars.linkType,
             _linklist,
             _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
@@ -265,14 +297,22 @@ contract Web3EntryBase is
     function linkAddress(DataTypes.linkAddressData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ADDRESS);
 
-        LinkLogic.linkAddress(vars, _linklist, _attachedLinklists);
+        LinkLogic.linkAddress(
+            vars.fromCharacterId,
+            vars.ethAddress,
+            vars.linkType,
+            _linklist,
+            _attachedLinklists
+        );
     }
 
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ADDRESS);
 
         LinkLogic.unlinkAddress(
-            vars,
+            vars.fromCharacterId,
+            vars.ethAddress,
+            vars.linkType,
             _linklist,
             _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
@@ -281,14 +321,22 @@ contract Web3EntryBase is
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ANYURI);
 
-        LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists);
+        LinkLogic.linkAnyUri(
+            vars.fromCharacterId,
+            vars.toUri,
+            vars.linkType,
+            _linklist,
+            _attachedLinklists
+        );
     }
 
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ANYURI);
 
         LinkLogic.unlinkAnyUri(
-            vars,
+            vars.fromCharacterId,
+            vars.toUri,
+            vars.linkType,
             _linklist,
             _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
@@ -297,14 +345,22 @@ contract Web3EntryBase is
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_LINKLIST);
 
-        LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists);
+        LinkLogic.linkLinklist(
+            vars.fromCharacterId,
+            vars.toLinkListId,
+            vars.linkType,
+            _linklist,
+            _attachedLinklists
+        );
     }
 
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_LINKLIST);
 
         LinkLogic.unlinkLinklist(
-            vars,
+            vars.fromCharacterId,
+            vars.toLinkListId,
+            vars.linkType,
             _linklist,
             _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
@@ -771,13 +827,11 @@ contract Web3EntryBase is
         _safeMint(to, characterId);
 
         CharacterLogic.createCharacter(
-            DataTypes.CreateCharacterData({
-                to: to,
-                handle: string(abi.encodePacked(to)),
-                uri: "",
-                linkModule: address(0),
-                linkModuleInitData: ""
-            }),
+            to,
+            string(abi.encodePacked(to)),
+            "",
+            address(0),
+            "",
             characterId,
             _characterIdByHandleHash,
             _characterById

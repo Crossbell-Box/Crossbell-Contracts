@@ -123,7 +123,7 @@ contract LinkLinklistTest is Test, SetUp, Utils {
             )
         );
 
-       // unlink a non-existing character
+        // unlink a non-existing character
         web3Entry.unlinkLinklist(
             DataTypes.unlinkLinklistData(
                 Const.FIRST_CHARACTER_ID,
