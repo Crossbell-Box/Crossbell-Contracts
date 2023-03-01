@@ -152,12 +152,15 @@ contract LinkERC721Test is Test, SetUp, Utils {
     }
 
     function testUnlinkERC721Fail() public {
+        vm.prank(address(web3Entry));
+        nft.mint(bob);
         vm.prank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
+        web3Entry.linkERC721(
+            DataTypes.linkERC721Data(
                 Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                address(nft),
+                1,
+                Const.LikeLinkType,
                 new bytes(0)
             )
         );
@@ -165,11 +168,12 @@ contract LinkERC721Test is Test, SetUp, Utils {
         // unlink
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(
+        web3Entry.unlinkERC721(
+            DataTypes.unlinkERC721Data(
                 Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType
+                address(nft),
+                1,
+                Const.LikeLinkType
             )
         );
     }
