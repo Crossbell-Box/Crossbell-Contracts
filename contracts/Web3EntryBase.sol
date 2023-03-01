@@ -248,7 +248,6 @@ contract Web3EntryBase is
 
     function linkERC721(DataTypes.linkERC721Data calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ERC721);
-        _validateERC721Exists(vars.tokenAddress, vars.tokenId);
 
         LinkLogic.linkERC721(vars, _linklist, _attachedLinklists);
     }
@@ -567,7 +566,6 @@ contract Web3EntryBase is
         DataTypes.ERC721Struct calldata erc721
     ) external override returns (uint256) {
         _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ERC721);
-        _validateERC721Exists(erc721.tokenAddress, erc721.erc721TokenId);
 
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ERC721;
         uint256 noteId = _nextNoteId(vars.characterId);
@@ -944,11 +942,6 @@ contract Web3EntryBase is
 
     function _validateCharacterExists(uint256 characterId) internal view {
         if (!_exists(characterId)) revert ErrCharacterNotExists(characterId);
-    }
-
-    function _validateERC721Exists(address tokenAddress, uint256 tokenId) internal view {
-        address owner = IERC721(tokenAddress).ownerOf(tokenId);
-        if (address(0) == owner) revert ErrREC721NotExists();
     }
 
     function _validateNoteExists(uint256 characterId, uint256 noteId) internal view {
