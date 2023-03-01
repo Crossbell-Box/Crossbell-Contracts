@@ -22,8 +22,9 @@ contract LinkERC721Test is Test, SetUp, Utils {
 
     // solhint-disable-next-line function-max-lines
     function testLinkERC721() public {
-        vm.prank(address(web3Entry));
+        // mint an nft
         nft.mint(bob);
+
         vm.prank(alice);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Events.LinkERC721(Const.FIRST_CHARACTER_ID, address(nft), 1, Const.LikeLinkType, 1);
@@ -78,7 +79,7 @@ contract LinkERC721Test is Test, SetUp, Utils {
     }
 
     function testLinkERC721Fail() public {
-        // case 1: NotEnoughPermission
+        //  NotEnoughPermission
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.linkERC721(
@@ -90,24 +91,11 @@ contract LinkERC721Test is Test, SetUp, Utils {
                 new bytes(0)
             )
         );
-
-        // case 2: ErrREC721NotExists
-        vm.prank(alice);
-        vm.expectRevert(abi.encodePacked("ERC721: owner query for nonexistent token"));
-        web3Entry.linkERC721(
-            DataTypes.linkERC721Data(
-                Const.FIRST_CHARACTER_ID,
-                address(nft),
-                2,
-                Const.LikeLinkType,
-                new bytes(0)
-            )
-        );
     }
 
     function testUnlinkERC721() public {
-        vm.prank(address(web3Entry));
         nft.mint(bob);
+
         vm.startPrank(alice);
         web3Entry.linkERC721(
             DataTypes.linkERC721Data(

@@ -35,9 +35,6 @@ error ErrNotEnoughPermissionForThisNote();
 /// @dev Target address already has primary character
 error ErrTargetAlreadyHasPrimaryCharacter();
 
-/// @dev ERC721 token does not exist
-error ErrREC721NotExists();
-
 /// @dev Note has been deleted
 error ErrNoteIsDeleted();
 

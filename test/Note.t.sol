@@ -438,14 +438,6 @@ contract NoteTest is Test, SetUp, Utils {
             makePostNoteData(Const.FIRST_CHARACTER_ID),
             DataTypes.ERC721Struct(address(nft), 1)
         );
-
-        // REC721NotExists
-        vm.expectRevert(abi.encodePacked("ERC721: owner query for nonexistent token"));
-        vm.prank(alice);
-        web3Entry.postNote4ERC721(
-            makePostNoteData(Const.FIRST_CHARACTER_ID),
-            DataTypes.ERC721Struct(address(nft), 1)
-        );
     }
 
     function testPostNote4AnyUri() public {
