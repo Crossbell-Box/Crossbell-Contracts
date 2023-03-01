@@ -87,7 +87,6 @@ contract LinkUriTest is Test, SetUp, Utils {
     }
 
     function testUnlinkUri() public {
-        vm.prank(address(web3Entry));
         nft.mint(bob);
         vm.startPrank(alice);
         web3Entry.linkAnyUri(

@@ -87,7 +87,6 @@ contract LinkAddressTest is Test, SetUp, Utils {
     }
 
     function testUnlinkAddress() public {
-        vm.prank(address(web3Entry));
         nft.mint(bob);
         vm.startPrank(alice);
         web3Entry.linkAddress(

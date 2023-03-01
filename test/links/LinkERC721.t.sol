@@ -22,7 +22,6 @@ contract LinkERC721Test is Test, SetUp, Utils {
 
     // solhint-disable-next-line function-max-lines
     function testLinkERC721() public {
-        vm.prank(address(web3Entry));
         nft.mint(bob);
         vm.prank(alice);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
@@ -106,7 +105,6 @@ contract LinkERC721Test is Test, SetUp, Utils {
     }
 
     function testUnlinkERC721() public {
-        vm.prank(address(web3Entry));
         nft.mint(bob);
         vm.startPrank(alice);
         web3Entry.linkERC721(
@@ -152,7 +150,6 @@ contract LinkERC721Test is Test, SetUp, Utils {
     }
 
     function testUnlinkERC721Fail() public {
-        vm.prank(address(web3Entry));
         nft.mint(bob);
         vm.prank(alice);
         web3Entry.linkERC721(
