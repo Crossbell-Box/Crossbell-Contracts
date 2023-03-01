@@ -87,6 +87,7 @@ contract LinkLinklistTest is Test, SetUp, Utils {
         );
     }
 
+    // solhint-disable-next-line function-max-lines
     function testUnlinkLinklist() public {
         vm.startPrank(alice);
         web3Entry.linkLinklist(
@@ -123,7 +124,7 @@ contract LinkLinklistTest is Test, SetUp, Utils {
             )
         );
 
-       // unlink a non-existing character
+        // unlink a non-existing character
         web3Entry.unlinkLinklist(
             DataTypes.unlinkLinklistData(
                 Const.FIRST_CHARACTER_ID,

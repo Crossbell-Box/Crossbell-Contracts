@@ -18,7 +18,8 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         token.mint(alice, 10 ether);
         token.mint(bob, 10 ether);
 
-        // grant mint role to alice
+        // grant mint role to alice, so alice will be the admin and all characters created by
+        // email users will be owned by alice for custodian.
         vm.prank(newbieAdmin);
         newbieVilla.grantRole(ADMIN_ROLE, alice);
     }
@@ -47,8 +48,9 @@ contract NewbieVillaTest is Test, SetUp, Utils {
 
         // check operators
         address[] memory operators = web3Entry.getOperators(Const.FIRST_CHARACTER_ID);
-        assertEq(operators[0], alice);
+        assertEq(operators[0], alice); // msg.sender will be granted as operator
         assertEq(operators[1], xsyncOperator);
+        assertEq(operators.length, 2);
 
         // check operator permission bitmap
         assertEq(
@@ -87,10 +89,12 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         assertEq(operators[1], xsyncOperator);
 
         // check operator permission bitmap
+        // alice(NewbieVilla admin) has DEFAULT_PERMISSION_BITMAP.
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, alice),
             OP.DEFAULT_PERMISSION_BITMAP
         );
+        // xsyncOperator has POST_NOTE_DEFAULT_PERMISSION_BITMAP
         assertEq(
             web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, xsyncOperator),
             OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
@@ -115,7 +119,8 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         nft.safeTransferFrom(address(bob), address(newbieVilla), Const.FIRST_CHARACTER_ID);
     }
 
-    function testWithdrawNewbieOut() public {
+    function testWithdrawNewbieOut(uint256 amount) public {
+        vm.assume(amount > 0 && amount < 10 ether);
         address to = carol;
         uint256 characterId = Const.FIRST_CHARACTER_ID;
         uint256 nonce = 1;
