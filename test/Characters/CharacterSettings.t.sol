@@ -10,9 +10,6 @@ import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
 
 contract CharacterSettingsTest is Test, SetUp, Utils {
-    address public alice = address(0x1111);
-    address public bob = address(0x2222);
-
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();

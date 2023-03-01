@@ -8,10 +8,6 @@ import "../../contracts/misc/Tips.sol";
 import "../../contracts/mocks/MiraToken.sol";
 
 contract TipsTest is Test, SetUp, Utils {
-    address public alice = address(0x1111);
-    address public bob = address(0x2222);
-    address public carol = address(0x333);
-
     uint256 public constant initialBalance = 10 ether;
 
     // custom errors

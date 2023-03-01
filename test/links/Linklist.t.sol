@@ -11,10 +11,6 @@ import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
 
 contract LinklistTest is Test, SetUp, Utils {
-    address public alice = address(0x1111);
-    address public bob = address(0x2222);
-    address public carol = address(0x3333);
-
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
@@ -30,13 +26,13 @@ contract LinklistTest is Test, SetUp, Utils {
     function testMint() public {
         // link character
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Transfer(address(0), Const.FIRST_CHARACTER_ID, 1);
+        emit Transfer(address(0), Const.FIRST_CHARACTER_ID, Const.FIRST_LINKLIST_ID);
         vm.prank(alice);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
                 Const.FIRST_CHARACTER_ID,
                 Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                Const.LikeLinkType,
                 new bytes(0)
             )
         );
@@ -49,24 +45,23 @@ contract LinklistTest is Test, SetUp, Utils {
         assertEq(linklist.characterOwnerOf(1), Const.FIRST_CHARACTER_ID);
         assertEq(linklist.getOwnerCharacterId(1), 1);
         assertEq(linklist.Uri(1), "");
-
-        // mint linklist directly by web3Entry
-        vm.prank(address(web3Entry));
-        linklist.mint(1, Const.FollowLinkType);
-        // check state
-        assertEq(linklist.totalSupply(), 2);
-        assertEq(linklist.balanceOf(alice), 2);
-        assertEq(linklist.balanceOf(Const.FIRST_CHARACTER_ID), 2);
-        assertEq(linklist.ownerOf(2), alice);
-        assertEq(linklist.characterOwnerOf(2), Const.FIRST_CHARACTER_ID);
-        assertEq(linklist.getOwnerCharacterId(2), 1);
-        assertEq(linklist.Uri(2), "");
+        assertEq(linklist.getLinkingCharacterIds(1).length, 1);
+        assertEq(linklist.getLinkingCharacterIds(1)[0], 2);
+        assertEq(linklist.getLinkType(1), Const.LikeLinkType);
     }
 
     function testMintFail() public {
-        // caller is not web3Entry contract
-        vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
-        linklist.mint(1, Const.FollowLinkType);
+        // not owner can't link character
+        vm.prank(bob);
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                Const.SECOND_CHARACTER_ID,
+                Const.FollowLinkType,
+                new bytes(0)
+            )
+        );
 
         // check state
         assertEq(linklist.totalSupply(), 0);
@@ -94,6 +89,10 @@ contract LinklistTest is Test, SetUp, Utils {
         linklist.setUri(1, Const.MOCK_NEW_TOKEN_URI);
         // check linklist uri
         assertEq(linklist.Uri(1), Const.MOCK_NEW_TOKEN_URI);
+
+        // check state
+        string memory uri = linklist.Uri(1);
+        assertEq(uri, Const.MOCK_NEW_TOKEN_URI);
     }
 
     function testSetUriFail() public {
@@ -112,5 +111,37 @@ contract LinklistTest is Test, SetUp, Utils {
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3EntryOrNotOwner.selector));
         vm.prank(bob);
         linklist.setUri(1, Const.MOCK_TOKEN_URI);
+    }
+
+    function testTotalSupply(uint256 amount) public {
+        vm.assume(amount > 0);
+        vm.assume(amount < 100);
+        vm.startPrank(address(web3Entry));
+
+        for (uint256 i = 1; i <= amount; i++) {
+            linklist.mint(Const.FIRST_CHARACTER_ID, Const.FollowLinkType);
+        }
+
+        uint256 totalSupply = linklist.totalSupply();
+        uint256 expectedTotalSupply = amount;
+        console.log(totalSupply);
+        console.log(expectedTotalSupply);
+        assertEq(totalSupply, expectedTotalSupply);
+    }
+
+    function testBalanceOf(uint256 amount) public {
+        vm.assume(amount > 0);
+        vm.assume(amount < 100);
+        vm.startPrank(address(web3Entry));
+
+        for (uint256 i = 1; i <= amount; i++) {
+            linklist.mint(Const.FIRST_CHARACTER_ID, Const.FollowLinkType);
+        }
+
+        uint256 balanceOfCharacter = linklist.balanceOf(1);
+        assertEq(balanceOfCharacter, amount);
+
+        uint256 balanceOfAddress = linklist.balanceOf(alice);
+        assertEq(balanceOfAddress, amount);
     }
 }

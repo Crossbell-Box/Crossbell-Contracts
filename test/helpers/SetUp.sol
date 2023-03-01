@@ -14,6 +14,7 @@ import "../../contracts/MintNFT.sol";
 import "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import "../../contracts/modules/link/ApprovalLinkModule4Character.sol";
 import "../../contracts/modules/mint/ApprovalMintModule.sol";
+import "../../contracts/modules/mint/ApprovalMintModule.sol";
 import "../../contracts/mocks/NFT.sol";
 import "./Const.sol";
 import "./utils.sol";
@@ -27,6 +28,7 @@ contract SetUp is Test {
     Tips public tips;
     MintNFT public mintNFT;
     ApprovalLinkModule4Character public linkModule4Character;
+    ApprovalMintModule public approvalMintModule;
     NFT public nft;
     CharacterBoundToken public cbt;
     TransparentUpgradeableProxy public proxyWeb3Entry;
@@ -37,6 +39,12 @@ contract SetUp is Test {
     uint256 public constant newbieAdminPrivateKey = 1;
     address public newbieAdmin = vm.addr(newbieAdminPrivateKey);
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+
+    address public constant alice = address(0x1111);
+    address public constant bob = address(0x2222);
+    address public constant carol = address(0x3333);
+    address public constant dick = address(0x4444);
+    address public constant erik = address(0x5555);
 
     // solhint-disable-next-line function-max-lines
     function _setUp() internal {
@@ -79,6 +87,8 @@ contract SetUp is Test {
 
         // deploy linkModule4Character
         linkModule4Character = new ApprovalLinkModule4Character(address(web3Entry));
+        // deploy mintModule4Note
+        approvalMintModule = new ApprovalMintModule(address(web3Entry));
 
         // deploy cbt
         cbt = new CharacterBoundToken(address(web3Entry));

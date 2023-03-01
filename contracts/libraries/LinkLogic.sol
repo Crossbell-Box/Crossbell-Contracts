@@ -295,6 +295,10 @@ library LinkLogic {
         emit Events.UnlinkAnyUri(vars.fromCharacterId, vars.toUri, vars.linkType);
     }
 
+    /**
+     * @notice  Returns the linklistId if the linklist already exists, Otherwise, creates a new 
+        linklist and return its ID.
+     */
     function _mintLinklist(
         uint256 fromCharacterId,
         bytes32 linkType,

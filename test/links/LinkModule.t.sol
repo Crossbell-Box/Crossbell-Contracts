@@ -10,11 +10,6 @@ import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
 
 contract LinkModuleTest is Test, SetUp, Utils {
-    address public alice = address(0x1111);
-    address public bob = address(0x2222);
-    address public carol = address(0x3333);
-    address public dick = address(0x4444);
-
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
@@ -52,6 +47,35 @@ contract LinkModuleTest is Test, SetUp, Utils {
         vm.prank(dick);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(3, 2, Const.LikeLinkType, new bytes(1))
+        );
+    }
+
+    function testSetLinkModule4Address() public {
+        // owner can setMintModule4Note
+        vm.prank(alice);
+        // TODO: tackle with return data(implement ApprovalLinkModule4Address.sol)
+        // expectEmit(CheckAll);
+        // emit Events.SetLinkModule4Address(
+        //     alice,
+        //     address(0),
+        //     new bytes(0),
+        //     block.timestamp
+        // );
+        web3Entry.setLinkModule4Address(
+            DataTypes.setLinkModule4AddressData(alice, address(0), new bytes(0))
+        );
+
+        // check module
+        address module = web3Entry.getLinkModule4Address(alice);
+        assertEq(module, address(0));
+    }
+
+    function testSetLinkModule4AddressFail() public {
+        // not owner can't
+        vm.prank(bob);
+        vm.expectRevert(abi.encodeWithSelector(ErrNotAddressOwner.selector));
+        web3Entry.setLinkModule4Address(
+            DataTypes.setLinkModule4AddressData(alice, address(0), new bytes(0))
         );
     }
 }

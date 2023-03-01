@@ -11,10 +11,6 @@ import "../../contracts/misc/NewbieVilla.sol";
 contract NewbieVillaTest is Test, SetUp, Utils {
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
-    address public constant alice = address(0x1111);
-    address public constant bob = address(0x2222);
-    address public constant carol = address(0x3333);
-
     function setUp() public {
         _setUp();
 

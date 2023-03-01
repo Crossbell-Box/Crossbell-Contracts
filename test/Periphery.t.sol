@@ -12,11 +12,6 @@ import "../contracts/Web3Entry.sol";
 import "../contracts/libraries/DataTypes.sol";
 
 contract PeripheryTest is Test, SetUp, Utils {
-    address public constant alice = address(0x1111);
-    address public constant bob = address(0x2222);
-    address public constant carol = address(0x3333);
-    address public constant dick = address(0x4444);
-
     function setUp() public {
         _setUp();
 
