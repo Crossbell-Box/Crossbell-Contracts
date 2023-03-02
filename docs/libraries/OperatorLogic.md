@@ -8,6 +8,18 @@
 function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap, mapping(uint256 => struct EnumerableSet.AddressSet) _operatorsByCharacter, mapping(uint256 => mapping(address => uint256)) _operatorsPermissionBitMap) external
 ```
 
+Grant permission to a given operator for a character.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | The ID of the character to set operator for. |
+| operator | address | The operator address to set. |
+| permissionBitMap | uint256 | The permission bitmap for the operator. |
+| _operatorsByCharacter | mapping(uint256 &#x3D;&gt; struct EnumerableSet.AddressSet) |  |
+| _operatorsPermissionBitMap | mapping(uint256 &#x3D;&gt; mapping(address &#x3D;&gt; uint256)) |  |
+
 ### grantOperators4Note
 
 ```solidity

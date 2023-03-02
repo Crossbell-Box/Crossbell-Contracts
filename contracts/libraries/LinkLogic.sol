@@ -13,6 +13,15 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 library LinkLogic {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
+    /**
+     * @notice  Link any characterId more than primary characterId..
+     * @param   fromCharacterId  The characterId to sponsor a link action.
+     * @param   toCharacterId  The characterId to be linked.
+     * @param   linkType  linkType, like “follow”.
+     * @param   data  The data to pass to the link module, if any.
+     * @param   linklist  The linklist contract address.
+     * @param   linkModule  The linkModule address of the character to link.
+     */
     function linkCharacter(
         uint256 fromCharacterId,
         uint256 toCharacterId,
@@ -38,6 +47,14 @@ library LinkLogic {
         emit Events.LinkCharacter(linker, fromCharacterId, toCharacterId, linkType, linklistId);
     }
 
+    /**
+     * @notice  Unlinks a given character.
+     * @param   fromCharacterId  The characterId to sponsor a unlink action.
+     * @param   toCharacterId  The characterId to be unlinked.
+     * @param   linkType  linkType, like “follow”.
+     * @param   linklist  The linklist contract address.
+     * @param   linklistId  The ID of the linklist to unlink.
+     */
     function unlinkCharacter(
         uint256 fromCharacterId,
         uint256 toCharacterId,
@@ -52,6 +69,16 @@ library LinkLogic {
         emit Events.UnlinkCharacter(linker, fromCharacterId, toCharacterId, linkType);
     }
 
+    /**
+     * @notice  Links a given note..
+     * @param   fromCharacterId  The characterId to sponsor a link action.
+     * @param   toCharacterId  The owner characterId of the note to link.
+     * @param   toNoteId  The id of the note to link.
+     * @param   linkType  The linkType, like “follow”.
+     * @param   data  The data to pass to the link module, if any.
+     * @param   linklist  The linklist contract address..
+     * @param   linkModule  The linkModule address of the note to link
+     */
     function linkNote(
         uint256 fromCharacterId,
         uint256 toCharacterId,
@@ -78,6 +105,14 @@ library LinkLogic {
         emit Events.LinkNote(fromCharacterId, toCharacterId, toNoteId, linkType, linklistId);
     }
 
+    /**
+     * @notice  Unlinks a given note.
+     * @param   fromCharacterId  The character Id to sponsor an unlink action.
+     * @param   toCharacterId  The characterId of note to unlink.
+     * @param   toNoteId  The id of note to unlink.
+     * @param   linkType  LinkType, like “follow”.
+     * @param   linklist  The linklist contract address.
+     */
     function unlinkNote(
         uint256 fromCharacterId,
         uint256 toCharacterId,
@@ -97,6 +132,13 @@ library LinkLogic {
         emit Events.UnlinkNote(fromCharacterId, toCharacterId, toNoteId, linkType, linklistId);
     }
 
+    /**
+     * @notice  Links a characterLink.
+     * @param   fromCharacterId  The from character id of characterLink.
+     * @param   toCharacterId  The to character id of characterLink.
+     * @param   linkType  The linkType of characterLink.
+     * @param   linklist  The linklist contract address.
+     */
     function linkCharacterLink(
         uint256 fromCharacterId,
         uint256 toCharacterId,
@@ -122,6 +164,14 @@ library LinkLogic {
         );
     }
 
+    /**
+     * @notice  Unlinks a characterLink..
+     * @param   fromCharacterId  The from character id of characterLink.
+     * @param   toCharacterId  The to character id of characterLink.
+     * @param   linkType  The linkType of characterLink.
+     * @param   linklist  The linklist contract address.
+     * @param   linklistId  The ID of the linklist to unlink.
+     */
     function unlinkCharacterLink(
         uint256 fromCharacterId,
         uint256 toCharacterId,
@@ -145,6 +195,13 @@ library LinkLogic {
         );
     }
 
+    /**
+     * @notice  Links a linklist.
+     * @param   fromCharacterId  The character id to sponsor an link action.
+     * @param   toLinkListId  The linklist if to link.
+     * @param   linkType  LinkType, like “follow”.
+     * @param   linklist  The linklist contract address.
+     */
     function linkLinklist(
         uint256 fromCharacterId,
         uint256 toLinkListId,
@@ -160,6 +217,14 @@ library LinkLogic {
         emit Events.LinkLinklist(fromCharacterId, toLinkListId, linkType, linklistId);
     }
 
+    /**
+     * @notice  Unlinks a linklist.
+     * @param   fromCharacterId  The character id to sponsor an unlink action.
+     * @param   toLinkListId  The linklist if to unlink.
+     * @param   linkType  LinkType, like “follow”.
+     * @param   linklist  The linklist contract address.
+     * @param   linklistId  The ID of the linklist to unlink..
+     */
     function unlinkLinklist(
         uint256 fromCharacterId,
         uint256 toLinkListId,
@@ -173,6 +238,14 @@ library LinkLogic {
         emit Events.UnlinkLinklist(fromCharacterId, toLinkListId, linkType, linklistId);
     }
 
+    /**
+     * @notice  Links an ERC721 token.
+     * @param   fromCharacterId  The character Id to sponsor an link action.
+     * @param   tokenAddress  The token address of ERC721 to link.
+     * @param   tokenId  The token id of ERC721 to link.
+     * @param   linkType  linkType, like “follow”.
+     * @param   linklist  The linklist contract address.
+     */
     function linkERC721(
         uint256 fromCharacterId,
         address tokenAddress,
@@ -189,6 +262,15 @@ library LinkLogic {
         emit Events.LinkERC721(fromCharacterId, tokenAddress, tokenId, linkType, linklistId);
     }
 
+    /**
+     * @notice  Unlinks an ERC721 token.
+     * @param   fromCharacterId  The character Id to sponsor an unlink action.
+     * @param   tokenAddress  The token address of ERC721 to unlink.
+     * @param   tokenId  The token id of ERC721 to unlink.
+     * @param   linkType  LinkType, like “follow”.
+     * @param   linklist  The linklist contract address.
+     * @param   linklistId  The ID of the linklist to unlink.
+     */
     function unlinkERC721(
         uint256 fromCharacterId,
         address tokenAddress,
@@ -203,6 +285,13 @@ library LinkLogic {
         emit Events.UnlinkERC721(fromCharacterId, tokenAddress, tokenId, linkType, linklistId);
     }
 
+    /**
+     * @notice  Create a link to a given address.
+     * @param   fromCharacterId  The character id to init the link.
+     * @param   ethAddress  The address to link.
+     * @param   linkType  LinkType, like “follow”.
+     * @param   linklist  The linklist contract address.
+     */
     function linkAddress(
         uint256 fromCharacterId,
         address ethAddress,
@@ -218,6 +307,14 @@ library LinkLogic {
         emit Events.LinkAddress(fromCharacterId, ethAddress, linkType, linklistId);
     }
 
+    /**
+     * @notice  Unlinks a given address.
+     * @param   fromCharacterId  The character id to init the unlink.
+     * @param   ethAddress  The address to unlink.
+     * @param   linkType  LinkType, like “follow”..
+     * @param   linklist  The linklist contract address.
+     * @param   linklistId  The ID of the linklist to unlink.
+     */
     function unlinkAddress(
         uint256 fromCharacterId,
         address ethAddress,
@@ -231,6 +328,13 @@ library LinkLogic {
         emit Events.UnlinkAddress(fromCharacterId, ethAddress, linkType);
     }
 
+    /**
+     * @notice  Links any uri.
+     * @param   fromCharacterId  The character Id to sponsor an link action.
+     * @param   toUri  The uri to link.
+     * @param   linkType  LinkType, like “follow”.
+     * @param   linklist  The linklist contract address.
+     */
     function linkAnyUri(
         uint256 fromCharacterId,
         string calldata toUri,
@@ -246,6 +350,14 @@ library LinkLogic {
         emit Events.LinkAnyUri(fromCharacterId, toUri, linkType, linklistId);
     }
 
+    /**
+     * @notice  Unlinks any uri.
+     * @param   fromCharacterId  The character Id to sponsor an unlink action.
+     * @param   toUri  The uri to unlink.
+     * @param   linkType  LinkType, like “follow”.
+     * @param   linklist  The linklist contract address.
+     * @param   linklistId  The ID of the linklist to unlink.
+     */
     function unlinkAnyUri(
         uint256 fromCharacterId,
         string calldata toUri,

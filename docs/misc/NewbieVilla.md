@@ -65,10 +65,10 @@ _Emitted when the web3Entry character nft is withdrawn._
 | token | address | Addresses of token withdrawn. |
 | amount | uint256 | Amount of token withdrawn. |
 
-### _notExpired
+### notExpired
 
 ```solidity
-modifier _notExpired(uint256 expires)
+modifier notExpired(uint256 expires)
 ```
 
 ### initialize

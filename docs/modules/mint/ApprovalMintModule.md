@@ -13,7 +13,7 @@ mapping(address => mapping(uint256 => mapping(uint256 => mapping(address => bool
 ### constructor
 
 ```solidity
-constructor(address web3Entry) public
+constructor(address web3Entry_) public
 ```
 
 ### initializeMintModule

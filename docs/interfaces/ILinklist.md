@@ -11,7 +11,7 @@ function initialize(string name_, string symbol_, address web3Entry_) external
 ### mint
 
 ```solidity
-function mint(uint256 characterId, bytes32 linkType, uint256 tokenId) external
+function mint(uint256 characterId, bytes32 linkType) external returns (uint256 tokenId)
 ```
 
 ### setUri

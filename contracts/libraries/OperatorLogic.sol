@@ -10,6 +10,12 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 library OperatorLogic {
     using EnumerableSet for EnumerableSet.AddressSet;
 
+    /**
+     * @notice  Grant permission to a given operator for a character.
+     * @param   characterId  The ID of the character to set operator for.
+     * @param   operator  The operator address to set.
+     * @param   permissionBitMap  The permission bitmap for the operator.
+     */
     function grantOperatorPermissions(
         uint256 characterId,
         address operator,

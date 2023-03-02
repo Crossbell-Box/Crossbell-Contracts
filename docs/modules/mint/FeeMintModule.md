@@ -23,7 +23,7 @@ mapping(uint256 => mapping(uint256 => struct CharacterNoteData)) _dataByNoteByCh
 ### constructor
 
 ```solidity
-constructor(address web3Entry) public
+constructor(address web3Entry_) public
 ```
 
 ### initializeMintModule

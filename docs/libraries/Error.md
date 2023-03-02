@@ -88,14 +88,6 @@ error ErrTargetAlreadyHasPrimaryCharacter()
 
 _Target address already has primary character_
 
-## ErrREC721NotExists
-
-```solidity
-error ErrREC721NotExists()
-```
-
-_ERC721 token does not exist_
-
 ## ErrNoteIsDeleted
 
 ```solidity

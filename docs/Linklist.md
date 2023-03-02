@@ -17,7 +17,7 @@ function initialize(string name_, string symbol_, address web3Entry_) external
 ### mint
 
 ```solidity
-function mint(uint256 characterId, bytes32 linkType, uint256 tokenId) external
+function mint(uint256 characterId, bytes32 linkType) external returns (uint256 tokenId)
 ```
 
 ### setUri
@@ -25,6 +25,17 @@ function mint(uint256 characterId, bytes32 linkType, uint256 tokenId) external
 ```solidity
 function setUri(uint256 tokenId, string newUri) external
 ```
+
+Set URI for a linklist. You can set any URI for your linklist, and the functionality of this URI 
+     is undetermined and expandable. One scenario that comes to mind is setting a cover for your liked notes 
+     or following list in your bookmarks.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| tokenId | uint256 | Linklist ID. |
+| newUri | string | Any URI. |
 
 ### addLinkingCharacterId
 

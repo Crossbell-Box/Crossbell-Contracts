@@ -5,7 +5,7 @@
 ### initialize
 
 ```solidity
-function initialize(string name_, string symbol_, address linklist_, address mintNFTImpl_, address periphery_) external
+function initialize(string name_, string symbol_, address linklist_, address mintNFTImpl_, address periphery_, address newbieVilla_) external
 ```
 
 ### createCharacter
@@ -44,6 +44,12 @@ function setPrimaryCharacterId(uint256 characterId) external
 
 ```solidity
 function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) external
+```
+
+### migrateOperatorSyncPermissions
+
+```solidity
+function migrateOperatorSyncPermissions(uint256[] characterIds) external
 ```
 
 ### grantOperators4Note
@@ -151,7 +157,7 @@ function setLinkModule4Address(struct DataTypes.setLinkModule4AddressData vars) 
 ### mintNote
 
 ```solidity
-function mintNote(struct DataTypes.MintNoteData vars) external returns (uint256)
+function mintNote(struct DataTypes.MintNoteData vars) external returns (uint256 tokenId)
 ```
 
 ### setMintModule4Note
@@ -163,7 +169,7 @@ function setMintModule4Note(struct DataTypes.setMintModule4NoteData vars) extern
 ### postNote
 
 ```solidity
-function postNote(struct DataTypes.PostNoteData vars) external returns (uint256)
+function postNote(struct DataTypes.PostNoteData postNoteData) external returns (uint256 noteId)
 ```
 
 ### setNoteUri
@@ -187,37 +193,37 @@ function deleteNote(uint256 characterId, uint256 noteId) external
 ### postNote4Character
 
 ```solidity
-function postNote4Character(struct DataTypes.PostNoteData postNoteData, uint256 toCharacterId) external returns (uint256)
+function postNote4Character(struct DataTypes.PostNoteData vars, uint256 toCharacterId) external returns (uint256)
 ```
 
 ### postNote4Address
 
 ```solidity
-function postNote4Address(struct DataTypes.PostNoteData noteData, address ethAddress) external returns (uint256)
+function postNote4Address(struct DataTypes.PostNoteData vars, address ethAddress) external returns (uint256)
 ```
 
 ### postNote4Linklist
 
 ```solidity
-function postNote4Linklist(struct DataTypes.PostNoteData noteData, uint256 toLinklistId) external returns (uint256)
+function postNote4Linklist(struct DataTypes.PostNoteData vars, uint256 toLinklistId) external returns (uint256)
 ```
 
 ### postNote4Note
 
 ```solidity
-function postNote4Note(struct DataTypes.PostNoteData postNoteData, struct DataTypes.NoteStruct note) external returns (uint256)
+function postNote4Note(struct DataTypes.PostNoteData vars, struct DataTypes.NoteStruct note) external returns (uint256)
 ```
 
 ### postNote4ERC721
 
 ```solidity
-function postNote4ERC721(struct DataTypes.PostNoteData postNoteData, struct DataTypes.ERC721Struct erc721) external returns (uint256)
+function postNote4ERC721(struct DataTypes.PostNoteData vars, struct DataTypes.ERC721Struct erc721) external returns (uint256)
 ```
 
 ### postNote4AnyUri
 
 ```solidity
-function postNote4AnyUri(struct DataTypes.PostNoteData postNoteData, string uri) external returns (uint256)
+function postNote4AnyUri(struct DataTypes.PostNoteData vars, string uri) external returns (uint256)
 ```
 
 ### getOperators

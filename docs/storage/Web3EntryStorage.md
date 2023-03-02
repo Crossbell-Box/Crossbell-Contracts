@@ -44,6 +44,8 @@ mapping(uint256 => address) _linkModules4Linklist
 mapping(address => mapping(uint256 => address)) _linkModules4ERC721
 ```
 
+_disable `uninitialized-state` check, as linkmodule for erc721 is not enabled currently_
+
 ### _linkModules4Address
 
 ```solidity
