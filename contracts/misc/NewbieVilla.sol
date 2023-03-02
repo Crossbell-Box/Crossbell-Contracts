@@ -5,6 +5,7 @@ pragma solidity 0.8.16;
 import "../interfaces/IWeb3Entry.sol";
 import "../libraries/OP.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol";
@@ -110,13 +111,13 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
         uint256 characterId,
         uint256 nonce,
         uint256 expires,
-        bytes memory proof
+        bytes calldata proof
     ) external notExpired(expires) {
-        bytes32 signedData = _prefixed(
+        bytes32 signedData = ECDSA.toEthSignedMessageHash(
             keccak256(abi.encodePacked(address(this), characterId, nonce, expires))
         );
         require(
-            hasRole(ADMIN_ROLE, _recoverSigner(signedData, proof)),
+            hasRole(ADMIN_ROLE, ECDSA.recover(signedData, proof)),
             "NewbieVilla: unauthorized withdraw"
         );
 
@@ -217,34 +218,5 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      */
     function getToken() external view returns (address) {
         return _token;
-    }
-
-    function _splitSignature(
-        bytes memory sig
-    ) internal pure returns (uint8 v, bytes32 r, bytes32 s) {
-        require(sig.length == 65, "NewbieVilla: wrong signature length");
-
-        /* solhint-disable no-inline-assembly */
-        assembly {
-            // first 32 bytes, after the length prefix.
-            r := mload(add(sig, 32))
-            // second 32 bytes.
-            s := mload(add(sig, 64))
-            // final byte (first byte of the next 32 bytes).
-            v := byte(0, mload(add(sig, 96)))
-        }
-        /* solhint-enable no-inline-assembly */
-
-        return (v, r, s);
-    }
-
-    function _recoverSigner(bytes32 message, bytes memory sig) internal pure returns (address) {
-        (uint8 v, bytes32 r, bytes32 s) = _splitSignature(sig);
-
-        return ecrecover(message, v, r, s);
-    }
-
-    function _prefixed(bytes32 hash) internal pure returns (bytes32) {
-        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
     }
 }
