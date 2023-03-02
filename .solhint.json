@@ -31,6 +31,6 @@
     "var-name-mixedcase": "error",
     "visibility-modifier-order": "error",
     "no-global-import": "off",
-    "no-console": "off"
+    "no-console": "warn"
   }
 }
