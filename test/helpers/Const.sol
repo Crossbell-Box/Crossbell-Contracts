@@ -35,7 +35,7 @@ library Const {
     string public constant MOCK_CHARACTER_HANDLE3 = "0xcrossbell-3-eth";
     string public constant MOCK_CHARACTER_HANDLE4 = "0xcrossbell-4-eth";
     string public constant MOCK_CHARACTER_URI =
-        "https://raw.githubusercontent.com/Crossbell-Box/Crossbell-Contracts/main/examples/sampleProfile.json";
+        "https://raw.githubusercontent.com/Crossbell-Box/Crossbell-Contracts/main/examples/sampleCharacter.json";
     string public constant MOCK_URI = "ipfs://QmadFPhP7n5rJkACMY6QqhtLtKgX1ixoySmxQNrU4Wo5JW";
     string public constant MOCK_CONTENT_URI =
         "ipfs://QmfHKajYAGcaWaBXGsEWory9ensGsesN2GwWedVEuzk5Gg";

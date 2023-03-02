@@ -9,7 +9,7 @@ import "../helpers/Const.sol";
 import "../helpers/utils.sol";
 import "../helpers/SetUp.sol";
 
-contract LinkProfileTest is Test, SetUp, Utils {
+contract LinkCharacterTest is Test, SetUp, Utils {
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();

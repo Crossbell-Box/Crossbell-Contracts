@@ -183,8 +183,8 @@ contract Periphery is Initializable {
         address[] memory toAddresses,
         bytes32 linkType
     ) internal {
-        uint256 fromProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(account);
-        if (fromProfileId == 0) {
+        uint256 fromCharacterId = IWeb3Entry(web3Entry).getPrimaryCharacterId(account);
+        if (fromCharacterId == 0) {
             // create character first
             // slither-disable-next-line unused-return
             IWeb3Entry(web3Entry).createCharacter(
@@ -197,21 +197,21 @@ contract Periphery is Initializable {
                 })
             );
             // get primary character id
-            fromProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(account);
+            fromCharacterId = IWeb3Entry(web3Entry).getPrimaryCharacterId(account);
         } else {
             if (bytes(uri).length > 0) {
                 // set character uri
-                IWeb3Entry(web3Entry).setCharacterUri(fromProfileId, uri);
+                IWeb3Entry(web3Entry).setCharacterUri(fromCharacterId, uri);
             }
         }
 
         // link
         for (uint256 i = 0; i < toAddresses.length; i++) {
-            uint256 toProfileId = IWeb3Entry(web3Entry).getPrimaryCharacterId(toAddresses[i]);
-            if (toProfileId == 0) {
+            uint256 toCharacterId = IWeb3Entry(web3Entry).getPrimaryCharacterId(toAddresses[i]);
+            if (toCharacterId == 0) {
                 IWeb3Entry(web3Entry).createThenLinkCharacter(
                     DataTypes.createThenLinkCharacterData({
-                        fromCharacterId: fromProfileId,
+                        fromCharacterId: fromCharacterId,
                         to: toAddresses[i],
                         linkType: linkType
                     })
@@ -219,8 +219,8 @@ contract Periphery is Initializable {
             } else {
                 IWeb3Entry(web3Entry).linkCharacter(
                     DataTypes.linkCharacterData({
-                        fromCharacterId: fromProfileId,
-                        toCharacterId: toProfileId,
+                        fromCharacterId: fromCharacterId,
+                        toCharacterId: toCharacterId,
                         linkType: linkType,
                         data: ""
                     })
