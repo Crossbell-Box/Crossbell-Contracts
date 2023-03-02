@@ -125,7 +125,6 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         uint256 characterId = Const.FIRST_CHARACTER_ID;
         uint256 nonce = 1;
         uint256 expires = block.timestamp + 10 minutes;
-        uint256 amount = 1 ether;
 
         // 1. create and transfer web3Entry nft to newbieVilla
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, newbieAdmin));
