@@ -29,6 +29,8 @@
     "state-visibility": "error",
     "use-forbidden-name": "error",
     "var-name-mixedcase": "error",
-    "visibility-modifier-order": "error"
+    "visibility-modifier-order": "error",
+    "no-global-import": "off",
+    "no-console": "off"
   }
 }
