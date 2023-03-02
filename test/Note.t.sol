@@ -3,7 +3,6 @@
 pragma solidity 0.8.16;
 
 import "forge-std/Test.sol";
-import "forge-std/console2.sol";
 import "../contracts/Web3Entry.sol";
 import "../contracts/libraries/DataTypes.sol";
 import "../contracts/libraries/Constants.sol";
@@ -380,7 +379,6 @@ contract NoteTest is Test, SetUp, Utils {
             Const.SECOND_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
-        console.logBytes32(note.linkItemType);
         matchNote(
             note,
             Constants.LINK_ITEM_TYPE_NOTE,

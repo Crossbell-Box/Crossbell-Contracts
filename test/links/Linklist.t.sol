@@ -2,7 +2,6 @@
 pragma solidity 0.8.16;
 
 import "forge-std/Test.sol";
-import "forge-std/console2.sol";
 import "../../contracts/Web3Entry.sol";
 import "../../contracts/libraries/DataTypes.sol";
 import "../../contracts/libraries/Error.sol";
@@ -124,8 +123,6 @@ contract LinklistTest is Test, SetUp, Utils {
 
         uint256 totalSupply = linklist.totalSupply();
         uint256 expectedTotalSupply = amount;
-        console.log(totalSupply);
-        console.log(expectedTotalSupply);
         assertEq(totalSupply, expectedTotalSupply);
     }
 
