@@ -336,7 +336,7 @@ contract OperatorTest is Test, SetUp, Utils {
         // bob can postNote
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         // bob can setCharacterUri
-        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/character");
         // bob can linkCharacter
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
