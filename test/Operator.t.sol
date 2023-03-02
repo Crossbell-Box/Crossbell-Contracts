@@ -3,7 +3,6 @@
 pragma solidity 0.8.16;
 
 import "forge-std/Test.sol";
-import "forge-std/console2.sol";
 import "./helpers/Const.sol";
 import "./helpers/utils.sol";
 import "./helpers/SetUp.sol";
