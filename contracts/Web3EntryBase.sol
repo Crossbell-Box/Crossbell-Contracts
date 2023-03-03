@@ -21,9 +21,11 @@ import "./libraries/Error.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts/utils/Multicall.sol";
 
 contract Web3EntryBase is
     IWeb3Entry,
+    Multicall,
     NFTBase,
     Web3EntryStorage,
     Initializable,

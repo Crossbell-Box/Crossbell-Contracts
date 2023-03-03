@@ -57,6 +57,51 @@ contract NoteTest is Test, SetUp, Utils {
         );
     }
 
+    function testPostNoteWithMulticall() public {
+        bytes[] memory data = new bytes[](2);
+        data[0] = abi.encodeWithSelector(
+            IWeb3Entry.postNote.selector,
+            makePostNoteData(Const.FIRST_CHARACTER_ID)
+        );
+        data[1] = abi.encodeWithSelector(
+            IWeb3Entry.postNote.selector,
+            makePostNoteData(Const.FIRST_CHARACTER_ID)
+        );
+
+        // multicall
+        vm.prank(alice);
+        web3Entry.multicall(data);
+
+        // check note
+        DataTypes.Note memory note = web3Entry.getNote(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+        matchNote(
+            note,
+            Const.bytes32Zero,
+            Const.bytes32Zero,
+            Const.MOCK_NOTE_URI,
+            address(0),
+            address(0),
+            address(0),
+            false,
+            false
+        );
+        note = web3Entry.getNote(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID);
+        matchNote(
+            note,
+            Const.bytes32Zero,
+            Const.bytes32Zero,
+            Const.MOCK_NOTE_URI,
+            address(0),
+            address(0),
+            address(0),
+            false,
+            false
+        );
+    }
+
     function testUpdateNote() public {
         // post note
         vm.startPrank(alice);
