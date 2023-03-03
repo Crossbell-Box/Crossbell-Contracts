@@ -1,1 +1,26 @@
-book/
+# Hardhat dependencies
+node_modules
+# Foundry dependencies
+lib 
+.env
+coverage
+coverage.json
+typechain
+
+cache
+cache_hardhat
+cache_foundry
+artifacts_hardhat
+artifacts_foundry
+
+# Ignore Environment Variables!
+.env
+.env.prod
+
+# Ignore all vscode settings
+.vscode/
+
+# Ignore flattened files
+flattened.txt
+node_modules
+out/
