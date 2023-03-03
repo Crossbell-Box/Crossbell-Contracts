@@ -640,7 +640,6 @@ contract Web3EntryBase is
     ) external view override returns (address[] memory blocklist, address[] memory allowlist) {
         blocklist = _operators4Note[characterId][noteId].blocklist.values();
         allowlist = _operators4Note[characterId][noteId].allowlist.values();
-        return (blocklist, allowlist);
     }
 
     /**
