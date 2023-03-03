@@ -29,7 +29,7 @@ Create a character.
 function setSocialToken(uint256 characterId, address tokenAddress, mapping(uint256 => struct DataTypes.Character) _characterById) external
 ```
 
-Sets a social token for a given character..
+Sets a social token for a given character.
 
 #### Parameters
 
@@ -45,7 +45,7 @@ Sets a social token for a given character..
 function setCharacterLinkModule(uint256 characterId, address linkModule, bytes linkModuleInitData, struct DataTypes.Character _character) external
 ```
 
-Sets link module for a given character..
+Sets link module for a given character.
 
 #### Parameters
 

@@ -78,7 +78,7 @@ Sets link module for a given linklist.
 function setLinkModule4ERC721(address tokenAddress, uint256 tokenId, address linkModule, bytes linkModuleInitData, mapping(address => mapping(uint256 => address)) _linkModules4ERC721) external
 ```
 
-Sets link module for a given ERC721 token..
+Sets link module for a given ERC721 token.
 
 #### Parameters
 

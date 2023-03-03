@@ -69,7 +69,7 @@ contract Web3EntryBase is
             _operatorsPermissionBitMap
         );
     }
-    
+
     function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
@@ -101,7 +101,16 @@ contract Web3EntryBase is
         // mint character nft
         _safeMint(vars.to, characterId);
 
-        CharacterLogic.createCharacter(vars, characterId, _characterIdByHandleHash, _characterById);
+        CharacterLogic.createCharacter(
+            vars.to,
+            vars.handle,
+            vars.uri,
+            vars.linkModule,
+            vars.linkModuleInitData,
+            characterId,
+            _characterIdByHandleHash,
+            _characterById
+        );
     }
 
     /// @inheritdoc IWeb3Entry

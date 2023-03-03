@@ -28,11 +28,33 @@ This method creates a character with the given parameters to the given address.
 function setHandle(uint256 characterId, string newHandle) external
 ```
 
+Sets new handle for a given character.
+
+_Owner permission only._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | The character id to set new handle for. |
+| newHandle | string | New handle to set. |
+
 ### setSocialToken
 
 ```solidity
 function setSocialToken(uint256 characterId, address tokenAddress) external
 ```
+
+Sets a social token for a given character.
+
+_Owner permission only._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | The characterId to set social token for. |
+| tokenAddress | address | Token address to be set. |
 
 ### setCharacterUri
 
@@ -40,11 +62,30 @@ function setSocialToken(uint256 characterId, address tokenAddress) external
 function setCharacterUri(uint256 characterId, string newUri) external
 ```
 
+Sets a new URI for a given character.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | The characterId to to be set. |
+| newUri | string | New URI to be set. |
+
 ### setPrimaryCharacterId
 
 ```solidity
 function setPrimaryCharacterId(uint256 characterId) external
 ```
+
+Sets a given character as primary.
+
+_Owner permission only._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | The character id to to be set. |
 
 ### grantOperatorPermissions
 
@@ -63,12 +104,6 @@ _Every bit in permissionBitMap stands for a corresponding method in Web3Entry. m
 | characterId | uint256 | ID of your character that you want to authorize. |
 | operator | address | Address to grant operator permissions to. |
 | permissionBitMap | uint256 | Bitmap used for finer grained operator permissions controls. |
-
-### migrateOperatorSyncPermissions
-
-```solidity
-function migrateOperatorSyncPermissions(uint256[] characterIds) external
-```
 
 ### grantOperators4Note
 
@@ -92,6 +127,15 @@ Grant operators allowlist and blocklist roles of a note.
 ```solidity
 function setLinklistUri(uint256 linkListId, string uri) external
 ```
+
+Sets a new metadataURI for a given link list..
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| linkListId | uint256 | The linklist id to set for. |
+| uri | string | The metadata uri to set. |
 
 ### linkAddress
 
@@ -186,7 +230,7 @@ function setLinkModule4Address(struct DataTypes.setLinkModule4AddressData vars) 
 Set linkModule for an address.
 
 _Operators can't setLinkModule4Address, because this linkModule is for 
-     addresses and is irrelevan to characters._
+     addresses and is irrelevant to characters._
 
 ### mintNote
 
@@ -212,17 +256,49 @@ function postNote(struct DataTypes.PostNoteData postNoteData) external returns (
 function setNoteUri(uint256 characterId, uint256 noteId, string newUri) external
 ```
 
+Set URI for a note.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | The character ID of the note owner. |
+| noteId | uint256 | The ID of the note to set. |
+| newUri | string | The new URI. |
+
 ### lockNote
 
 ```solidity
 function lockNote(uint256 characterId, uint256 noteId) external
 ```
 
+Lock a note and put it into a immutable state where no modifications are 
+     allowed. Locked notes are usually assumed as final versions.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | The character ID of the note owner. |
+| noteId | uint256 | The ID of the note to lock. |
+
 ### deleteNote
 
 ```solidity
 function deleteNote(uint256 characterId, uint256 noteId) external
 ```
+
+Delete a note.
+
+_Deleting a note doesn't essentially mean that the txs or contents are being removed due to the
+      immutability of blockchain itself, but the deleted notes will be tagged as `deleted` after calling `deleteNote`._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | The character ID of the note owner. |
+| noteId | uint256 | The ID of the note to delete. |
 
 ### postNote4Character
 

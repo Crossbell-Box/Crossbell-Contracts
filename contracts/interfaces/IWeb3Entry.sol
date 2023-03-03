@@ -75,8 +75,6 @@ interface IWeb3Entry {
         uint256 permissionBitMap
     ) external;
 
-  
-
     /**
      * @notice Grant operators allowlist and blocklist roles of a note.
      * @param characterId ID of character that you want to set.

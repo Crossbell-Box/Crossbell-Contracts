@@ -189,21 +189,3 @@ Returns the address of mira token contract.
 | ---- | ---- | ----------- |
 | [0] | address | The address of mira token contract. |
 
-### _splitSignature
-
-```solidity
-function _splitSignature(bytes sig) internal pure returns (uint8 v, bytes32 r, bytes32 s)
-```
-
-### _recoverSigner
-
-```solidity
-function _recoverSigner(bytes32 message, bytes sig) internal pure returns (address)
-```
-
-### _prefixed
-
-```solidity
-function _prefixed(bytes32 hash) internal pure returns (bytes32)
-```
-

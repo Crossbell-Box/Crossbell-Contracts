@@ -8,7 +8,7 @@
 function linkCharacter(uint256 fromCharacterId, uint256 toCharacterId, bytes32 linkType, bytes data, address linklist, address linkModule, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
 ```
 
-Link any characterId more than primary characterId..
+Link any characterId.
 
 #### Parameters
 
@@ -46,7 +46,7 @@ Unlinks a given character.
 function linkNote(uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId, bytes32 linkType, bytes data, address linklist, address linkModule, mapping(uint256 => mapping(bytes32 => uint256)) _attachedLinklists) external
 ```
 
-Links a given note..
+Links a given note.
 
 #### Parameters
 
@@ -57,7 +57,7 @@ Links a given note..
 | toNoteId | uint256 | The id of the note to link. |
 | linkType | bytes32 | The linkType, like “follow”. |
 | data | bytes | The data to pass to the link module, if any. |
-| linklist | address | The linklist contract address.. |
+| linklist | address | The linklist contract address. |
 | linkModule | address | The linkModule address of the note to link |
 | _attachedLinklists | mapping(uint256 &#x3D;&gt; mapping(bytes32 &#x3D;&gt; uint256)) |  |
 
@@ -104,7 +104,7 @@ Links a characterLink.
 function unlinkCharacterLink(uint256 fromCharacterId, uint256 toCharacterId, bytes32 linkType, address linklist, uint256 linklistId) external
 ```
 
-Unlinks a characterLink..
+Unlinks a characterLink.
 
 #### Parameters
 
@@ -150,7 +150,7 @@ Unlinks a linklist.
 | toLinkListId | uint256 | The linklist if to unlink. |
 | linkType | bytes32 | LinkType, like “follow”. |
 | linklist | address | The linklist contract address. |
-| linklistId | uint256 | The ID of the linklist to unlink.. |
+| linklistId | uint256 | The ID of the linklist to unlink. |
 
 ### linkERC721
 
@@ -222,7 +222,7 @@ Unlinks a given address.
 | ---- | ---- | ----------- |
 | fromCharacterId | uint256 | The character id to init the unlink. |
 | ethAddress | address | The address to unlink. |
-| linkType | bytes32 | LinkType, like “follow”.. |
+| linkType | bytes32 | LinkType, like “follow”. |
 | linklist | address | The linklist contract address. |
 | linklistId | uint256 | The ID of the linklist to unlink. |
 
