@@ -1,3 +1,0 @@
-core:
-  timeout: 360
-  compress_states: false
