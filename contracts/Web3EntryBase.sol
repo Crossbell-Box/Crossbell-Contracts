@@ -139,11 +139,6 @@ contract Web3EntryBase is
         _safeMint(vars.to, characterId);
 
         CharacterLogic.createCharacter(vars, characterId, _characterIdByHandleHash, _characterById);
-
-        // set primary character
-        if (_primaryCharacterByAddress[vars.to] == 0) {
-            _primaryCharacterByAddress[vars.to] = characterId;
-        }
     }
 
     // owner permission
@@ -782,9 +777,6 @@ contract Web3EntryBase is
             _characterIdByHandleHash,
             _characterById
         );
-
-        // set primary character
-        _primaryCharacterByAddress[to] = characterId;
 
         // link character
         LinkLogic.linkCharacter(
