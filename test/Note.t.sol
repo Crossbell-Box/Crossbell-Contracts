@@ -3,7 +3,6 @@
 pragma solidity 0.8.16;
 
 import "forge-std/Test.sol";
-import "forge-std/console2.sol";
 import "../contracts/Web3Entry.sol";
 import "../contracts/libraries/DataTypes.sol";
 import "../contracts/libraries/Constants.sol";
@@ -45,6 +44,51 @@ contract NoteTest is Test, SetUp, Utils {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
+        matchNote(
+            note,
+            Const.bytes32Zero,
+            Const.bytes32Zero,
+            Const.MOCK_NOTE_URI,
+            address(0),
+            address(0),
+            address(0),
+            false,
+            false
+        );
+    }
+
+    function testPostNoteWithMulticall() public {
+        bytes[] memory data = new bytes[](2);
+        data[0] = abi.encodeWithSelector(
+            IWeb3Entry.postNote.selector,
+            makePostNoteData(Const.FIRST_CHARACTER_ID)
+        );
+        data[1] = abi.encodeWithSelector(
+            IWeb3Entry.postNote.selector,
+            makePostNoteData(Const.FIRST_CHARACTER_ID)
+        );
+
+        // multicall
+        vm.prank(alice);
+        web3Entry.multicall(data);
+
+        // check note
+        DataTypes.Note memory note = web3Entry.getNote(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+        matchNote(
+            note,
+            Const.bytes32Zero,
+            Const.bytes32Zero,
+            Const.MOCK_NOTE_URI,
+            address(0),
+            address(0),
+            address(0),
+            false,
+            false
+        );
+        note = web3Entry.getNote(Const.FIRST_CHARACTER_ID, Const.SECOND_NOTE_ID);
         matchNote(
             note,
             Const.bytes32Zero,
@@ -380,7 +424,6 @@ contract NoteTest is Test, SetUp, Utils {
             Const.SECOND_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
-        console.logBytes32(note.linkItemType);
         matchNote(
             note,
             Constants.LINK_ITEM_TYPE_NOTE,
@@ -474,46 +517,58 @@ contract NoteTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
+        // bob mints a note
         vm.prank(bob);
         web3Entry.mintNote(
             DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
         );
-        // check mint note
+
+        vm.prank(alice);
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        // bob mints a locked note
+        vm.prank(bob);
+        web3Entry.mintNote(
+            DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
+        );
+
+        // check state
         DataTypes.Note memory note = web3Entry.getNote(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
         address nftAddress = note.mintNFT;
         assertEq(IERC721(nftAddress).ownerOf(1), bob);
-
-        // mint locked note
-        vm.prank(alice);
-        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
-        vm.prank(bob);
-        web3Entry.mintNote(
-            DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
-        );
-
+        assertEq(IERC721(nftAddress).ownerOf(2), bob);
         assertEq(IERC721Enumerable(nftAddress).totalSupply(), 2);
+        // check note uri
+        assertEq(note.contentUri, IERC721Metadata(nftAddress).tokenURI(1));
+        assertEq(note.contentUri, IERC721Metadata(nftAddress).tokenURI(2));
     }
 
     function testMintNoteFail() public {
+        // case 1: note not exists
         vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
-        vm.prank(bob);
         web3Entry.mintNote(
             DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
         );
 
+        // case 2: note is deleted
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
         vm.stopPrank();
         // mint a deleted note
         vm.expectRevert(abi.encodeWithSelector(ErrNoteIsDeleted.selector));
-        vm.prank(bob);
         web3Entry.mintNote(
             DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
         );
+
+        // check state
+        DataTypes.Note memory note = web3Entry.getNote(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+        assertEq(note.mintNFT, address(0));
     }
 
     function testMintNoteTotalSupply() public {

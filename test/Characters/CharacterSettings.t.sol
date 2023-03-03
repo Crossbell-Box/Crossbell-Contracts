@@ -2,7 +2,6 @@
 pragma solidity 0.8.16;
 
 import "forge-std/Test.sol";
-import "forge-std/console2.sol";
 import "../../contracts/Web3Entry.sol";
 import "../../contracts/libraries/DataTypes.sol";
 import "../helpers/Const.sol";
@@ -15,7 +14,7 @@ contract CharacterSettingsTest is Test, SetUp, Utils {
         _setUp();
     }
 
-    function testCharacterHandle() public {
+    function testSetCharacterUri() public {
         DataTypes.CreateCharacterData memory characterData = makeCharacterData(
             Const.MOCK_CHARACTER_HANDLE,
             alice

@@ -18,6 +18,7 @@
     "max-line-length": ["error", 120],
     "max-states-count": ["warn",15],
     "modifier-name-mixedcase": "error",
+    "no-console": "error",
     "no-empty-blocks": "error",
     "no-unused-vars": "error",
     "not-rely-on-time": "off",
@@ -29,6 +30,7 @@
     "state-visibility": "error",
     "use-forbidden-name": "error",
     "var-name-mixedcase": "error",
-    "visibility-modifier-order": "error"
+    "visibility-modifier-order": "error",
+    "no-global-import": "off"
   }
 }

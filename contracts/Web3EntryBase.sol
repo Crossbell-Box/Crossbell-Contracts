@@ -21,9 +21,11 @@ import "./libraries/Error.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts/utils/Multicall.sol";
 
 contract Web3EntryBase is
     IWeb3Entry,
+    Multicall,
     NFTBase,
     Web3EntryStorage,
     Initializable,
@@ -34,9 +36,6 @@ contract Web3EntryBase is
 
     // solhint-disable-next-line private-vars-leading-underscore
     uint256 internal constant REVISION = 4;
-
-    address public constant OPERATOR = 0xda2423ceA4f1047556e7a142F81a7ED50e93e160;
-    address public constant XSYNC_OPERATOR = 0x0F588318A494e4508A121a32B6670b5494Ca3357;
 
     function initialize(
         string calldata name_,
@@ -70,22 +69,7 @@ contract Web3EntryBase is
             _operatorsPermissionBitMap
         );
     }
-
-    function migrateOperatorSyncPermissions(uint256[] calldata characterIds) external override {
-        require(msg.sender == OPERATOR, "only operator");
-
-        for (uint256 i = 0; i < characterIds.length; i++) {
-            OperatorLogic.grantOperatorPermissions(
-                characterIds[i],
-                XSYNC_OPERATOR,
-                OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP,
-                _operatorsByCharacter,
-                _operatorsPermissionBitMap
-            );
-        }
-    }
-
-    /// @inheritdoc IWeb3Entry
+    
     function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
@@ -117,21 +101,7 @@ contract Web3EntryBase is
         // mint character nft
         _safeMint(vars.to, characterId);
 
-        CharacterLogic.createCharacter(
-            vars.to,
-            vars.handle,
-            vars.uri,
-            vars.linkModule,
-            vars.linkModuleInitData,
-            characterId,
-            _characterIdByHandleHash,
-            _characterById
-        );
-
-        // set primary character
-        if (_primaryCharacterByAddress[vars.to] == 0) {
-            _primaryCharacterByAddress[vars.to] = characterId;
-        }
+        CharacterLogic.createCharacter(vars, characterId, _characterIdByHandleHash, _characterById);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -659,7 +629,6 @@ contract Web3EntryBase is
     ) external view override returns (address[] memory blocklist, address[] memory allowlist) {
         blocklist = _operators4Note[characterId][noteId].blocklist.values();
         allowlist = _operators4Note[characterId][noteId].allowlist.values();
-        return (blocklist, allowlist);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -789,9 +758,6 @@ contract Web3EntryBase is
             _characterById
         );
 
-        // set primary character
-        _primaryCharacterByAddress[to] = characterId;
-
         // link character
         LinkLogic.linkCharacter(
             fromCharacterId,
@@ -816,22 +782,35 @@ contract Web3EntryBase is
         address to,
         uint256 tokenId
     ) internal virtual override {
-        // don't clear operator if character is transferred from newbieVilla contract
+        //  clear operators if character is transferred from non-newbieVilla contract
         if (from != _newbieVilla) {
+            // clear operators
             uint256 len = _operatorsByCharacter[tokenId].length();
             address[] memory operators = _operatorsByCharacter[tokenId].values();
-            // clear operators
             for (uint256 i = 0; i < len; i++) {
                 _clearOperator(tokenId, operators[i]);
             }
-        }
 
-        // reset if `tokenId` is primary character of `from` account
-        if (_primaryCharacterByAddress[from] == tokenId) {
-            _primaryCharacterByAddress[from] = 0;
+            // reset if `tokenId` is primary character of `from` account
+            if (_primaryCharacterByAddress[from] == tokenId) {
+                _primaryCharacterByAddress[from] = 0;
+            }
         }
 
         super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    function _afterTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual override {
+        // set primary character if `to` account has no primary character
+        if (_primaryCharacterByAddress[to] == 0) {
+            _primaryCharacterByAddress[to] = tokenId;
+        }
+
+        super._afterTokenTransfer(from, to, tokenId);
     }
 
     function _nextNoteId(uint256 characterId) internal returns (uint256) {

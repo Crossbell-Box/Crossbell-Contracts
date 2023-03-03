@@ -3,7 +3,6 @@
 pragma solidity 0.8.16;
 
 import "forge-std/Test.sol";
-import "forge-std/console2.sol";
 import "./helpers/Const.sol";
 import "./helpers/utils.sol";
 import "./helpers/SetUp.sol";
@@ -123,6 +122,25 @@ contract OperatorTest is Test, SetUp, Utils {
 
         assertEq(blocklist_, allowlist);
         assertEq(allowlist_, blocklist);
+        // check operator note permission
+        for (uint256 i = 0; i < allowlist_.length; i++) {
+            assertTrue(
+                web3Entry.isOperatorAllowedForNote(
+                    Const.FIRST_CHARACTER_ID,
+                    Const.FIRST_NOTE_ID,
+                    allowlist_[i]
+                )
+            );
+        }
+        for (uint256 i = 0; i < blocklist_.length; i++) {
+            assertFalse(
+                web3Entry.isOperatorAllowedForNote(
+                    Const.FIRST_CHARACTER_ID,
+                    Const.FIRST_NOTE_ID,
+                    blocklist_[i]
+                )
+            );
+        }
     }
 
     function testGrantOperators4NoteFail() public {
@@ -337,7 +355,7 @@ contract OperatorTest is Test, SetUp, Utils {
         // bob can postNote
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         // bob can setCharacterUri
-        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/profile");
+        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, "https://example.com/character");
         // bob can linkCharacter
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(

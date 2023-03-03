@@ -75,7 +75,7 @@ interface IWeb3Entry {
         uint256 permissionBitMap
     ) external;
 
-    function migrateOperatorSyncPermissions(uint256[] calldata characterIds) external;
+  
 
     /**
      * @notice Grant operators allowlist and blocklist roles of a note.

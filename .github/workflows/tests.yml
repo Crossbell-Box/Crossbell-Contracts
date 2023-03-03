@@ -17,7 +17,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
@@ -36,7 +36,7 @@ jobs:
         run: |
           lcov --remove lcov.info 'test/*' -o lcov.info
           lcov --remove lcov.info 'contracts/mocks/*' 'contracts/misc/Periphery.sol' -o lcov.info
-          lcov --remove lcov.info 'contracts/libraries/*' 'contracts/base/*' -o lcov.info
+          lcov --remove lcov.info 'contracts/base/*' -o lcov.info
           lcov --remove lcov.info 'contracts/modules/*'  'contracts/upgradeability/*' -o lcov.info
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
