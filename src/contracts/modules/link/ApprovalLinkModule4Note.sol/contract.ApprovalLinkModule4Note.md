@@ -1,0 +1,65 @@
+# ApprovalLinkModule4Note
+[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/3060ff9b47459c3bc54ac39115cb04b01451f340/contracts/modules/link/ApprovalLinkModule4Note.sol)
+
+**Inherits:**
+[ILinkModule4Note](/contracts/interfaces/ILinkModule4Note.sol/contract.ILinkModule4Note.md), [ModuleBase](/contracts/modules/ModuleBase.sol/contract.ModuleBase.md)
+
+This is a simple LinkModule implementation, inheriting from the ILinkModule4Note interface.
+
+
+## State Variables
+### _approvedByCharacterByNoteByOwner
+
+```solidity
+mapping(address => mapping(uint256 => mapping(uint256 => mapping(address => bool)))) internal
+    _approvedByCharacterByNoteByOwner;
+```
+
+
+## Functions
+### constructor
+
+
+```solidity
+constructor(address web3Entry_) ModuleBase(web3Entry_);
+```
+
+### initializeLinkModule
+
+
+```solidity
+function initializeLinkModule(uint256 characterId, uint256 noteId, bytes calldata data)
+    external
+    override
+    returns (bytes memory);
+```
+
+### approve
+
+
+```solidity
+function approve(uint256 characterId, uint256 noteId, address[] calldata addresses, bool[] calldata toApprove)
+    external;
+```
+
+### processLink
+
+
+```solidity
+function processLink(address caller, uint256 characterId, uint256 noteId, bytes calldata)
+    external
+    view
+    override
+    onlyWeb3Entry;
+```
+
+### isApproved
+
+
+```solidity
+function isApproved(address characterOwner, uint256 characterId, uint256 noteId, address toCheck)
+    external
+    view
+    returns (bool);
+```
+
