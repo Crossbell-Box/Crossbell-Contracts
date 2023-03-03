@@ -498,10 +498,6 @@ contract NoteTest is Test, SetUp, Utils {
         // check note uri
         assertEq(note.contentUri, IERC721Metadata(nftAddress).tokenURI(1));
         assertEq(note.contentUri, IERC721Metadata(nftAddress).tokenURI(2));
-        // check source note pointer
-        (uint256 characterId, uint256 noteId) = IMintNFT(nftAddress).getSourceNotePointer();
-        assertEq(characterId, Const.FIRST_CHARACTER_ID);
-        assertEq(noteId, Const.FIRST_NOTE_ID);
     }
 
     function testMintNoteFail() public {

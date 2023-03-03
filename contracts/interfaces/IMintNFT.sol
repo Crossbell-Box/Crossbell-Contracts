@@ -12,6 +12,4 @@ interface IMintNFT {
     ) external;
 
     function mint(address to) external returns (uint256);
-
-    function getSourceNotePointer() external view returns (uint256, uint256);
 }
