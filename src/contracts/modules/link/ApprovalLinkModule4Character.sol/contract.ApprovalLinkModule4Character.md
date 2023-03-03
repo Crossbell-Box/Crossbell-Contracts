@@ -1,5 +1,5 @@
 # ApprovalLinkModule4Character
-[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/34b32749a8bd5815fbe2026db07c401bb7f54d20/contracts/modules/link/ApprovalLinkModule4Character.sol)
+[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/7dd103c70343d6410d08f7bb25b0b513c4d92016/contracts/modules/link/ApprovalLinkModule4Character.sol)
 
 **Inherits:**
 [ILinkModule4Character](/contracts/interfaces/ILinkModule4Character.sol/contract.ILinkModule4Character.md), [ModuleBase](/contracts/modules/ModuleBase.sol/contract.ModuleBase.md)

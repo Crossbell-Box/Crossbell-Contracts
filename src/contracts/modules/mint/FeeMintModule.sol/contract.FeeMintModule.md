@@ -1,5 +1,5 @@
 # FeeMintModule
-[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/34b32749a8bd5815fbe2026db07c401bb7f54d20/contracts/modules/mint/FeeMintModule.sol)
+[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/7dd103c70343d6410d08f7bb25b0b513c4d92016/contracts/modules/mint/FeeMintModule.sol)
 
 **Inherits:**
 [IMintModule4Note](/contracts/interfaces/IMintModule4Note.sol/contract.IMintModule4Note.md), [ModuleBase](/contracts/modules/ModuleBase.sol/contract.ModuleBase.md)
