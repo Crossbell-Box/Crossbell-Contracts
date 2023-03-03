@@ -810,22 +810,35 @@ contract Web3EntryBase is
         address to,
         uint256 tokenId
     ) internal virtual override {
-        // don't clear operator if character is transferred from newbieVilla contract
+        //  clear operators if character is transferred from non-newbieVilla contract
         if (from != _newbieVilla) {
+            // clear operators
             uint256 len = _operatorsByCharacter[tokenId].length();
             address[] memory operators = _operatorsByCharacter[tokenId].values();
-            // clear operators
             for (uint256 i = 0; i < len; i++) {
                 _clearOperator(tokenId, operators[i]);
             }
-        }
 
-        // reset if `tokenId` is primary character of `from` account
-        if (_primaryCharacterByAddress[from] == tokenId) {
-            _primaryCharacterByAddress[from] = 0;
+            // reset if `tokenId` is primary character of `from` account
+            if (_primaryCharacterByAddress[from] == tokenId) {
+                _primaryCharacterByAddress[from] = 0;
+            }
         }
 
         super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    function _afterTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual override {
+        // set primary character if `to` account has no primary character
+        if (_primaryCharacterByAddress[to] == 0) {
+            _primaryCharacterByAddress[to] = tokenId;
+        }
+
+        super._afterTokenTransfer(from, to, tokenId);
     }
 
     function _nextNoteId(uint256 characterId) internal returns (uint256) {
