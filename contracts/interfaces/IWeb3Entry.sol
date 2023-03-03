@@ -32,12 +32,34 @@ interface IWeb3Entry {
         DataTypes.CreateCharacterData calldata vars
     ) external returns (uint256 characterId);
 
+    /**
+     * @notice  Sets new handle for a given character.
+     * @dev Owner permission only.
+     * @param   characterId  The character id to set new handle for.
+     * @param   newHandle  New handle to set.
+     */
     function setHandle(uint256 characterId, string calldata newHandle) external;
 
+    /**
+     * @notice  Sets a social token for a given character.
+     * @dev Owner permission only.
+     * @param   characterId  The characterId to set social token for.
+     * @param   tokenAddress  Token address to be set.
+     */
     function setSocialToken(uint256 characterId, address tokenAddress) external;
 
+    /**
+     * @notice  Sets a new URI for a given character.
+     * @param   characterId  The characterId to to be set.
+     * @param   newUri  New URI to be set.
+     */
     function setCharacterUri(uint256 characterId, string calldata newUri) external;
 
+    /**
+     * @notice  Sets a given character as primary.
+     * @dev Owner permission only.
+     * @param   characterId  The character id to to be set.
+     */
     function setPrimaryCharacterId(uint256 characterId) external;
 
     /**
@@ -69,6 +91,11 @@ interface IWeb3Entry {
         address[] calldata allowlist
     ) external;
 
+    /**
+     * @notice  Sets a new metadataURI for a given link list..
+     * @param   linkListId  The linklist id to set for.
+     * @param   uri  The metadata uri to set.
+     */
     function setLinklistUri(uint256 linkListId, string calldata uri) external;
 
     function linkAddress(DataTypes.linkAddressData calldata vars) external;
@@ -124,7 +151,7 @@ interface IWeb3Entry {
     /**
      * @notice Set linkModule for an address.
      * @dev Operators can't setLinkModule4Address, because this linkModule is for 
-     addresses and is irrelevan to characters.
+     addresses and is irrelevant to characters.
      */
     function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external;
 
@@ -136,10 +163,29 @@ interface IWeb3Entry {
         DataTypes.PostNoteData calldata postNoteData
     ) external returns (uint256 noteId);
 
+    /**
+     * @notice  Set URI for a note.
+     * @param   characterId  The character ID of the note owner.
+     * @param   noteId  The ID of the note to set.
+     * @param   newUri  The new URI.
+     */
     function setNoteUri(uint256 characterId, uint256 noteId, string calldata newUri) external;
 
+    /**
+     * @notice  Lock a note and put it into a immutable state where no modifications are 
+     allowed. Locked notes are usually assumed as final versions.
+     * @param   characterId  The character ID of the note owner.
+     * @param   noteId  The ID of the note to lock.
+     */
     function lockNote(uint256 characterId, uint256 noteId) external;
 
+    /**
+     * @notice  Delete a note.
+     * @dev     Deleting a note doesn't essentially mean that the txs or contents are being removed due to the
+      immutability of blockchain itself, but the deleted notes will be tagged as `deleted` after calling `deleteNote`.
+     * @param   characterId  The character ID of the note owner.
+     * @param   noteId  The ID of the note to delete.
+     */
     function deleteNote(uint256 characterId, uint256 noteId) external;
 
     function postNote4Character(

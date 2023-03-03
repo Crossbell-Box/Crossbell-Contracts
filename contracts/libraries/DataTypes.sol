@@ -203,7 +203,7 @@ library DataTypes {
      * @param contentURI The URI associated with this note.
      * @param linkModule The address of the current link module of this note, can be empty.
      * @param mintModule  The address of the current mint module of this note, can be empty.
-     * @param mintNFT The address of the mintNFT associated with this note, if any..
+     * @param mintNFT The address of the mintNFT associated with this note, if any.
      * @param deleted Whether the note is deleted.
      * @param locked Whether the note is locked. If the note is locked, its owner can't set not uri anymore.
      */

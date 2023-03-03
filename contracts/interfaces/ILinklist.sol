@@ -13,6 +13,13 @@ interface ILinklist {
 
     function mint(uint256 characterId, bytes32 linkType) external returns (uint256 tokenId);
 
+    /**
+     * @notice  Set URI for a linklist. You can set any URI for your linklist, and the functionality of this URI 
+     is undetermined and expandable. One scenario that comes to mind is setting a cover for your liked notes 
+     or following list in your bookmarks.
+     * @param   tokenId  Linklist ID.
+     * @param   newUri  Any URI.
+     */
     function setUri(uint256 tokenId, string memory newUri) external;
 
     /////////////////////////////////

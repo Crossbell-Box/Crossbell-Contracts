@@ -50,7 +50,7 @@ library CharacterLogic {
     }
 
     /**
-     * @notice  Sets a social token for a given character..
+     * @notice  Sets a social token for a given character.
      * @param   characterId  	The characterId to set social token for.
      * @param   tokenAddress  Token address to be set.
      */
@@ -65,7 +65,7 @@ library CharacterLogic {
     }
 
     /**
-     * @notice  Sets link module for a given character..
+     * @notice  Sets link module for a given character.
      * @param   characterId  The character id to set link module for.
      * @param   linkModule  The link module to set.
      * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.

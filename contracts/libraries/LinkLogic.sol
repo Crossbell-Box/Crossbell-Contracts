@@ -14,7 +14,7 @@ library LinkLogic {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     /**
-     * @notice  Link any characterId more than primary characterId..
+     * @notice  Link any characterId.
      * @param   fromCharacterId  The characterId to sponsor a link action.
      * @param   toCharacterId  The characterId to be linked.
      * @param   linkType  linkType, like “follow”.
@@ -70,13 +70,13 @@ library LinkLogic {
     }
 
     /**
-     * @notice  Links a given note..
+     * @notice  Links a given note.
      * @param   fromCharacterId  The characterId to sponsor a link action.
      * @param   toCharacterId  The owner characterId of the note to link.
      * @param   toNoteId  The id of the note to link.
      * @param   linkType  The linkType, like “follow”.
      * @param   data  The data to pass to the link module, if any.
-     * @param   linklist  The linklist contract address..
+     * @param   linklist  The linklist contract address.
      * @param   linkModule  The linkModule address of the note to link
      */
     function linkNote(
@@ -165,7 +165,7 @@ library LinkLogic {
     }
 
     /**
-     * @notice  Unlinks a characterLink..
+     * @notice  Unlinks a characterLink.
      * @param   fromCharacterId  The from character id of characterLink.
      * @param   toCharacterId  The to character id of characterLink.
      * @param   linkType  The linkType of characterLink.
@@ -223,7 +223,7 @@ library LinkLogic {
      * @param   toLinkListId  The linklist if to unlink.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
-     * @param   linklistId  The ID of the linklist to unlink..
+     * @param   linklistId  The ID of the linklist to unlink.
      */
     function unlinkLinklist(
         uint256 fromCharacterId,
@@ -311,7 +311,7 @@ library LinkLogic {
      * @notice  Unlinks a given address.
      * @param   fromCharacterId  The character id to init the unlink.
      * @param   ethAddress  The address to unlink.
-     * @param   linkType  LinkType, like “follow”..
+     * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
      * @param   linklistId  The ID of the linklist to unlink.
      */

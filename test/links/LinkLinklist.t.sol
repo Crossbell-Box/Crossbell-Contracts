@@ -87,6 +87,7 @@ contract LinkLinklistTest is Test, SetUp, Utils {
         );
     }
 
+    // solhint-disable-next-line function-max-lines
     function testUnlinkLinklist() public {
         vm.startPrank(alice);
         web3Entry.linkLinklist(

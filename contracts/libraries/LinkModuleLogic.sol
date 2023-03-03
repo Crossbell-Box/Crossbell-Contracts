@@ -130,7 +130,7 @@ library LinkModuleLogic {
     }
 
     /**
-     * @notice  Sets link module for a given ERC721 token..
+     * @notice  Sets link module for a given ERC721 token.
      * @param   tokenAddress  The token address of erc721 to set link module for.
      * @param   tokenId  The token id of erc721 to set link module for.
      * @param   linkModule  The link module to set.

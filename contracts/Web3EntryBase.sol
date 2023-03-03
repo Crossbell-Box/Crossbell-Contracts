@@ -134,7 +134,7 @@ contract Web3EntryBase is
         }
     }
 
-    // owner permission
+    /// @inheritdoc IWeb3Entry
     function setHandle(uint256 characterId, string calldata newHandle) external override {
         _validateCallerPermission(characterId, OP.SET_HANDLE);
 
@@ -147,7 +147,7 @@ contract Web3EntryBase is
         CharacterLogic.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
     }
 
-    // owner permission
+    /// @inheritdoc IWeb3Entry
     function setSocialToken(uint256 characterId, address tokenAddress) external override {
         _validateCallerPermission(characterId, OP.SET_SOCIAL_TOKEN);
 
@@ -157,7 +157,7 @@ contract Web3EntryBase is
         CharacterLogic.setSocialToken(characterId, tokenAddress, _characterById);
     }
 
-    // owner permission
+    /// @inheritdoc IWeb3Entry
     function setPrimaryCharacterId(uint256 characterId) external override {
         _validateCallerIsCharacterOwner(characterId);
 
@@ -167,7 +167,7 @@ contract Web3EntryBase is
         emit Events.SetPrimaryCharacterId(msg.sender, characterId, oldCharacterId);
     }
 
-    // opSign permission
+    /// @inheritdoc IWeb3Entry
     function setCharacterUri(uint256 characterId, string calldata newUri) external override {
         _validateCallerPermission(characterId, OP.SET_CHARACTER_URI);
         _characterById[characterId].uri = newUri;
@@ -175,7 +175,7 @@ contract Web3EntryBase is
         emit Events.SetCharacterUri(characterId, newUri);
     }
 
-    // opSign permission
+    /// @inheritdoc IWeb3Entry
     function setLinklistUri(uint256 linklistId, string calldata uri) external override {
         uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
         _validateCallerPermission(ownerCharacterId, OP.SET_LINKLIST_URI);
@@ -470,6 +470,7 @@ contract Web3EntryBase is
         PostLogic.postNoteWithLink(vars, noteId, 0, 0, "", _noteByIdByCharacter);
     }
 
+    /// @inheritdoc IWeb3Entry
     function setNoteUri(
         uint256 characterId,
         uint256 noteId,
@@ -482,10 +483,7 @@ contract Web3EntryBase is
         PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
     }
 
-    /**
-     * @notice lockNote put a note into a immutable state where no modifications are 
-     allowed. You should call this method to announce that this is the final version.
-     */
+    /// @inheritdoc IWeb3Entry
     function lockNote(uint256 characterId, uint256 noteId) external override {
         _validateCallerPermission(characterId, OP.LOCK_NOTE);
         _validateNoteExists(characterId, noteId);
@@ -495,6 +493,7 @@ contract Web3EntryBase is
         emit Events.LockNote(characterId, noteId);
     }
 
+    /// @inheritdoc IWeb3Entry
     function deleteNote(uint256 characterId, uint256 noteId) external override {
         _validateCallerPermission(characterId, OP.DELETE_NOTE);
         _validateNoteExists(characterId, noteId);
