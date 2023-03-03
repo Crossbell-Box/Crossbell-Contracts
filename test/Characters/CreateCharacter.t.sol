@@ -27,17 +27,24 @@ contract CreateCharacterTest is Test, SetUp, Utils {
         vm.prank(bob);
         web3Entry.createCharacter(characterData);
 
-        address owner = web3Entry.ownerOf(Const.FIRST_CHARACTER_ID);
-        uint256 totalSupply = web3Entry.totalSupply();
+        // check state
+        assertEq(web3Entry.ownerOf(Const.FIRST_CHARACTER_ID), bob);
+        assertEq(web3Entry.totalSupply(), 1);
         DataTypes.Character memory character = web3Entry.getCharacterByHandle(
             Const.MOCK_CHARACTER_HANDLE
         );
-
-        assertEq(owner, bob);
-        assertEq(totalSupply, 1);
         assertEq(character.characterId, Const.FIRST_CHARACTER_ID);
         assertEq(character.handle, Const.MOCK_CHARACTER_HANDLE);
         assertEq(character.uri, Const.MOCK_CHARACTER_URI);
+        assertEq(web3Entry.getHandle(Const.FIRST_CHARACTER_ID), Const.MOCK_CHARACTER_HANDLE);
+        // get character by calling `getCharacter`
+        DataTypes.Character memory character2 = web3Entry.getCharacter(Const.FIRST_CHARACTER_ID);
+        assertEq(character2.characterId, character.characterId);
+        assertEq(character2.handle, character.handle);
+        assertEq(character2.uri, character.uri);
+        assertEq(character2.noteCount, character.noteCount);
+        assertEq(character2.socialToken, character.socialToken);
+        assertEq(character2.linkModule, character.linkModule);
     }
 
     // solhint-disable-next-line function-max-lines
