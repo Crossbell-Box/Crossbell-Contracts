@@ -472,46 +472,58 @@ contract NoteTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
 
+        // bob mints a note
         vm.prank(bob);
         web3Entry.mintNote(
             DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
         );
-        // check mint note
+
+        vm.prank(alice);
+        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        // bob mints a locked note
+        vm.prank(bob);
+        web3Entry.mintNote(
+            DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
+        );
+
+        // check state
         DataTypes.Note memory note = web3Entry.getNote(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID
         );
         address nftAddress = note.mintNFT;
         assertEq(IERC721(nftAddress).ownerOf(1), bob);
-
-        // mint locked note
-        vm.prank(alice);
-        web3Entry.lockNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
-        vm.prank(bob);
-        web3Entry.mintNote(
-            DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
-        );
-
+        assertEq(IERC721(nftAddress).ownerOf(2), bob);
         assertEq(IERC721Enumerable(nftAddress).totalSupply(), 2);
+        // check note uri
+        assertEq(note.contentUri, IERC721Metadata(nftAddress).tokenURI(1));
+        assertEq(note.contentUri, IERC721Metadata(nftAddress).tokenURI(2));
     }
 
     function testMintNoteFail() public {
+        // case 1: note not exists
         vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
-        vm.prank(bob);
         web3Entry.mintNote(
             DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
         );
 
+        // case 2: note is deleted
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
         web3Entry.deleteNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
         vm.stopPrank();
         // mint a deleted note
         vm.expectRevert(abi.encodeWithSelector(ErrNoteIsDeleted.selector));
-        vm.prank(bob);
         web3Entry.mintNote(
             DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
         );
+
+        // check state
+        DataTypes.Note memory note = web3Entry.getNote(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+        assertEq(note.mintNFT, address(0));
     }
 
     function testMintNoteTotalSupply() public {

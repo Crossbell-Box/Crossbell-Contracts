@@ -42,10 +42,6 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
         return _tokenIdCounter.current();
     }
 
-    function getSourcePublicationPointer() external view override returns (uint256, uint256) {
-        return (_characterId, _noteId);
-    }
-
     function tokenURI(uint256 tokenId) public view override returns (string memory uri) {
         if (_exists(tokenId)) {
             uri = IWeb3Entry(Web3Entry).getNote(_characterId, _noteId).contentUri;
