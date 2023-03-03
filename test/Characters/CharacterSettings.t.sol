@@ -14,7 +14,7 @@ contract CharacterSettingsTest is Test, SetUp, Utils {
         _setUp();
     }
 
-    function testCharacterHandle() public {
+    function testSetCharacterUri() public {
         DataTypes.CreateCharacterData memory characterData = makeCharacterData(
             Const.MOCK_CHARACTER_HANDLE,
             alice

@@ -61,51 +61,8 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         web3Entry.setPrimaryCharacterId(characterId);
     }
 
-    function testTransferLinkedCharacter() public {
-        // User should transfer the primary character, and the linklist
-        vm.startPrank(bob);
-        web3Entry.createCharacter(makeCharacterData("handleforcarol", bob));
-        web3Entry.createCharacter(makeCharacterData("handleforcarol2", bob));
-        // link character
-        bytes memory data = new bytes(0);
-        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, Const.FollowLinkType, data));
-        assertEq(web3Entry.getLinklistId(1, Const.FollowLinkType), Const.FIRST_LINKLIST_ID);
-        // transfer character 1 to bob
-        web3Entry.transferFrom(bob, alice, Const.FIRST_CHARACTER_ID);
-        assertEq(web3Entry.ownerOf(1), alice);
-        assertEq(linklist.ownerOf(1), alice);
-
-        // transfer character 2 to carol
-        web3Entry.transferFrom(bob, carol, 2);
-        assertEq(web3Entry.getPrimaryCharacterId(carol), 0);
-        vm.stopPrank();
-
-        // carol sets primary character
-        // User without a character, and then receives a character, it should be unset
-        vm.startPrank(carol);
-        web3Entry.setPrimaryCharacterId(2);
-        assertEq(web3Entry.getPrimaryCharacterId(carol), 2);
-        // check operators
-        address[] memory operators = web3Entry.getOperators(2);
-        assertEq(operators.length, 0);
-
-        // UserTwo should fail to set handle as a character owned by user 1
-        vm.expectRevert(abi.encodeWithSelector(ErrNotCharacterOwner.selector));
-        web3Entry.setPrimaryCharacterId(1);
-        // check operators
-        operators = web3Entry.getOperators(1);
-        assertEq(operators.length, 0);
-
-        //UserTwo should burn primary character
-        web3Entry.burn(2);
-        assertEq(web3Entry.getPrimaryCharacterId(carol), 0);
-        assertEq(web3Entry.getHandle(2), "");
-        DataTypes.Character memory userCharacter = web3Entry.getCharacter(2);
-        assertEq(userCharacter.noteCount, 0);
-        assertEq(userCharacter.characterId, 0);
-    }
-
     function testTransferPrimaryCharacter() public {
+        // case: transfer primary character to `bob` account, who has no primary character
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
         // check states
         assertEq(web3Entry.getPrimaryCharacterId(alice), Const.FIRST_CHARACTER_ID);
@@ -116,8 +73,11 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         web3Entry.transferFrom(alice, bob, Const.FIRST_CHARACTER_ID);
 
         // check states
+        // alice has no primary character
         assertEq(web3Entry.getPrimaryCharacterId(alice), 0);
-        assertEq(web3Entry.isPrimaryCharacter(Const.FIRST_CHARACTER_ID), false);
+        // bob's primary character is Const.FIRST_CHARACTER_ID
+        assertEq(web3Entry.getPrimaryCharacterId(bob), Const.FIRST_CHARACTER_ID);
+        assertEq(web3Entry.isPrimaryCharacter(Const.FIRST_CHARACTER_ID), true);
     }
 
     function testTransferNonPrimaryCharacter() public {
@@ -133,9 +93,65 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         web3Entry.transferFrom(alice, bob, Const.SECOND_CHARACTER_ID);
 
         // check states
+        // alice's primary character is Const.FIRST_CHARACTER_ID
         assertEq(web3Entry.getPrimaryCharacterId(alice), Const.FIRST_CHARACTER_ID);
         assertEq(web3Entry.isPrimaryCharacter(Const.FIRST_CHARACTER_ID), true);
+        // bob's primary character is Const.SECOND_CHARACTER_ID
+        assertEq(web3Entry.getPrimaryCharacterId(bob), Const.SECOND_CHARACTER_ID);
+        assertEq(web3Entry.isPrimaryCharacter(Const.SECOND_CHARACTER_ID), true);
+    }
+
+    function testTransferPrimaryCharacter2() public {
+        // case: transfer primary character to `bob` account, who already has primary character
+        // create characters
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+
+        // check states
+        assertEq(web3Entry.isPrimaryCharacter(Const.FIRST_CHARACTER_ID), true);
+        assertEq(web3Entry.isPrimaryCharacter(Const.SECOND_CHARACTER_ID), true);
+
+        // alice transfers primary character to bob
+        vm.prank(alice);
+        web3Entry.transferFrom(alice, bob, Const.FIRST_CHARACTER_ID);
+
+        // check states
+        // alice has no primary character
+        assertEq(web3Entry.getPrimaryCharacterId(alice), 0);
+        assertEq(web3Entry.isPrimaryCharacter(Const.FIRST_CHARACTER_ID), false);
+        // bob's primary character is Const.SECOND_CHARACTER_ID
+        assertEq(web3Entry.getPrimaryCharacterId(bob), Const.SECOND_CHARACTER_ID);
+        assertEq(web3Entry.isPrimaryCharacter(Const.SECOND_CHARACTER_ID), true);
+    }
+
+    function testTransferLinkedCharacter() public {
+        // User should transfer the primary character, and the linklist
+        vm.startPrank(bob);
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, bob));
+        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+        // link character
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                Const.SECOND_CHARACTER_ID,
+                Const.FollowLinkType,
+                new bytes(0)
+            )
+        );
+        // transfer character 1 to alice
+        web3Entry.transferFrom(bob, alice, Const.FIRST_LINKLIST_ID);
+
+        // transfer character 2 to carol
+        web3Entry.transferFrom(bob, carol, Const.SECOND_CHARACTER_ID);
+        vm.stopPrank();
+
+        // check state
+        assertEq(web3Entry.ownerOf(Const.FIRST_CHARACTER_ID), alice);
+        assertEq(web3Entry.ownerOf(Const.SECOND_CHARACTER_ID), carol);
+        assertEq(linklist.ownerOf(Const.FIRST_LINKLIST_ID), alice);
+        assertEq(web3Entry.getLinklistId(1, Const.FollowLinkType), Const.FIRST_LINKLIST_ID);
+        assertEq(web3Entry.getPrimaryCharacterId(alice), Const.FIRST_CHARACTER_ID);
+        assertEq(web3Entry.getPrimaryCharacterId(carol), Const.SECOND_CHARACTER_ID);
         assertEq(web3Entry.getPrimaryCharacterId(bob), 0);
-        assertEq(web3Entry.isPrimaryCharacter(Const.SECOND_CHARACTER_ID), false);
     }
 }

@@ -122,6 +122,25 @@ contract OperatorTest is Test, SetUp, Utils {
 
         assertEq(blocklist_, allowlist);
         assertEq(allowlist_, blocklist);
+        // check operator note permission
+        for (uint256 i = 0; i < allowlist_.length; i++) {
+            assertTrue(
+                web3Entry.isOperatorAllowedForNote(
+                    Const.FIRST_CHARACTER_ID,
+                    Const.FIRST_NOTE_ID,
+                    allowlist_[i]
+                )
+            );
+        }
+        for (uint256 i = 0; i < blocklist_.length; i++) {
+            assertFalse(
+                web3Entry.isOperatorAllowedForNote(
+                    Const.FIRST_CHARACTER_ID,
+                    Const.FIRST_NOTE_ID,
+                    blocklist_[i]
+                )
+            );
+        }
     }
 
     function testGrantOperators4NoteFail() public {
