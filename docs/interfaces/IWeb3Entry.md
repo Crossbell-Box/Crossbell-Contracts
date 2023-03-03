@@ -14,7 +14,13 @@ function initialize(string name_, string symbol_, address linklist_, address min
 function createCharacter(struct DataTypes.CreateCharacterData vars) external returns (uint256 characterId)
 ```
 
-EXTERNAL  FUNCTIONS
+This method creates a character with the given parameters to the given address.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| vars | struct DataTypes.CreateCharacterData | The CreateCharacterData struct containing the following parameters:      * to: The address receiving the character.      * handle: The handle to set for the character.      * uri: The URI to set for the character metadata.      * linkModule: The link module to use, can be the zero address.      * linkModuleInitData: The link module initialization data, if any. |
 
 ### setHandle
 
@@ -46,6 +52,18 @@ function setPrimaryCharacterId(uint256 characterId) external
 function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) external
 ```
 
+Grant an address as an operator and authorize it with custom permissions.
+
+_Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | ID of your character that you want to authorize. |
+| operator | address | Address to grant operator permissions to. |
+| permissionBitMap | uint256 | Bitmap used for finer grained operator permissions controls. |
+
 ### migrateOperatorSyncPermissions
 
 ```solidity
@@ -57,6 +75,17 @@ function migrateOperatorSyncPermissions(uint256[] characterIds) external
 ```solidity
 function grantOperators4Note(uint256 characterId, uint256 noteId, address[] blocklist, address[] allowlist) external
 ```
+
+Grant operators allowlist and blocklist roles of a note.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | ID of character that you want to set. |
+| noteId | uint256 | ID of note that you want to set. |
+| blocklist | address[] | blocklist addresses that you want to grant. |
+| allowlist | address[] | allowlist addresses that you want to grant. |
 
 ### setLinklistUri
 
@@ -154,6 +183,11 @@ function setLinkModule4Linklist(struct DataTypes.setLinkModule4LinklistData vars
 function setLinkModule4Address(struct DataTypes.setLinkModule4AddressData vars) external
 ```
 
+Set linkModule for an address.
+
+_Operators can't setLinkModule4Address, because this linkModule is for 
+     addresses and is irrelevan to characters._
+
 ### mintNote
 
 ```solidity
@@ -232,7 +266,22 @@ function postNote4AnyUri(struct DataTypes.PostNoteData vars, string uri) externa
 function getOperators(uint256 characterId) external view returns (address[])
 ```
 
-VIEW FUNCTIONS
+Get operator list of a character. This operator list has only a sole purpose, which is
+keeping records of keys of `operatorsPermissionBitMap`. Thus, addresses queried by this function
+not always have operator permissions. Keep in mind don't use this function to check
+authorizations!!!
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | ID of your character that you want to check. |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | address[] | All keys of operatorsPermission4NoteBitMap. |
 
 ### getOperatorPermissions
 
@@ -240,17 +289,57 @@ VIEW FUNCTIONS
 function getOperatorPermissions(uint256 characterId, address operator) external view returns (uint256)
 ```
 
+Get permission bitmap of an operator.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | ID of character that you want to check. |
+| operator | address | Address to grant operator permissions to. |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | uint256 | Permission bitmap of this operator. |
+
 ### getOperators4Note
 
 ```solidity
 function getOperators4Note(uint256 characterId, uint256 noteId) external view returns (address[] blocklist, address[] allowlist)
 ```
 
+Get operators blocklist and allowlist for a note.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | ID of character to query. |
+| noteId | uint256 | ID of note to query. |
+
 ### isOperatorAllowedForNote
 
 ```solidity
 function isOperatorAllowedForNote(uint256 characterId, uint256 noteId, address operator) external view returns (bool)
 ```
+
+Query if a operator has permission for a note.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| characterId | uint256 | ID of character that you want to query. |
+| noteId | uint256 | ID of note that you want to query. |
+| operator | address | Address to query. |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | true if Operator has permission for a note, otherwise false. |
 
 ### getPrimaryCharacterId
 
