@@ -18,6 +18,16 @@ interface IWeb3Entry {
     ///     EXTERNAL  FUNCTIONS
     ////////////////////////////////////////////////////////
 
+    /**
+     * This method creates a character with the given parameters to the given address.
+     *
+     * @param vars The CreateCharacterData struct containing the following parameters:
+     *      * to: The address receiving the character.
+     *      * handle: The handle to set for the character.
+     *      * uri: The URI to set for the character metadata.
+     *      * linkModule: The link module to use, can be the zero address.
+     *      * linkModuleInitData: The link module initialization data, if any.
+     */
     function createCharacter(
         DataTypes.CreateCharacterData calldata vars
     ) external returns (uint256 characterId);
@@ -30,6 +40,13 @@ interface IWeb3Entry {
 
     function setPrimaryCharacterId(uint256 characterId) external;
 
+    /**
+     * @notice Grant an address as an operator and authorize it with custom permissions.
+     * @param characterId ID of your character that you want to authorize.
+     * @param operator Address to grant operator permissions to.
+     * @param permissionBitMap Bitmap used for finer grained operator permissions controls.
+     * @dev Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol.
+     */
     function grantOperatorPermissions(
         uint256 characterId,
         address operator,
@@ -38,6 +55,13 @@ interface IWeb3Entry {
 
     function migrateOperatorSyncPermissions(uint256[] calldata characterIds) external;
 
+    /**
+     * @notice Grant operators allowlist and blocklist roles of a note.
+     * @param characterId ID of character that you want to set.
+     * @param noteId ID of note that you want to set.
+     * @param blocklist blocklist addresses that you want to grant.
+     * @param allowlist allowlist addresses that you want to grant.
+     */
     function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
@@ -97,6 +121,11 @@ interface IWeb3Entry {
 
     function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external;
 
+    /**
+     * @notice Set linkModule for an address.
+     * @dev Operators can't setLinkModule4Address, because this linkModule is for 
+     addresses and is irrelevan to characters.
+     */
     function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external;
 
     function mintNote(DataTypes.MintNoteData calldata vars) external returns (uint256 tokenId);
@@ -146,18 +175,45 @@ interface IWeb3Entry {
     ////////////////////////////////////////////////////////
     ///      VIEW FUNCTIONS
     ////////////////////////////////////////////////////////
+
+    /**
+     * @notice Get operator list of a character. This operator list has only a sole purpose, which is
+     * keeping records of keys of `operatorsPermissionBitMap`. Thus, addresses queried by this function
+     * not always have operator permissions. Keep in mind don't use this function to check
+     * authorizations!!!
+     * @param characterId ID of your character that you want to check.
+     * @return All keys of operatorsPermission4NoteBitMap.
+     */
     function getOperators(uint256 characterId) external view returns (address[] memory);
 
+    /**
+     * @notice Get permission bitmap of an operator.
+     * @param characterId ID of character that you want to check.
+     * @param operator Address to grant operator permissions to.
+     * @return Permission bitmap of this operator.
+     */
     function getOperatorPermissions(
         uint256 characterId,
         address operator
     ) external view returns (uint256);
 
+    /**
+     * @notice Get operators blocklist and allowlist for a note.
+     * @param characterId ID of character to query.
+     * @param noteId ID of note to query.
+     */
     function getOperators4Note(
         uint256 characterId,
         uint256 noteId
     ) external view returns (address[] memory blocklist, address[] memory allowlist);
 
+    /**
+     * @notice Query if a operator has permission for a note.
+     * @param characterId ID of character that you want to query.
+     * @param noteId ID of note that you want to query.
+     * @param operator Address to query.
+     * @return true if Operator has permission for a note, otherwise false.
+     */
     function isOperatorAllowedForNote(
         uint256 characterId,
         uint256 noteId,
