@@ -1,5 +1,5 @@
 # ApprovalLinkModule4Note
-[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/3060ff9b47459c3bc54ac39115cb04b01451f340/contracts/modules/link/ApprovalLinkModule4Note.sol)
+[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/34b32749a8bd5815fbe2026db07c401bb7f54d20/contracts/modules/link/ApprovalLinkModule4Note.sol)
 
 **Inherits:**
 [ILinkModule4Note](/contracts/interfaces/ILinkModule4Note.sol/contract.ILinkModule4Note.md), [ModuleBase](/contracts/modules/ModuleBase.sol/contract.ModuleBase.md)
