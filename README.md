@@ -18,6 +18,8 @@
     <a href="https://github.com/Crossbell-Box/Crossbell-Contracts/issues">Report Bug</a>
   </p>
 
+
+[![Docs](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/docs.yml/badge.svg)](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/docs.yml)
 [![lint](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/lint.yml/badge.svg)](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/lint.yml)
 [![tests](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/tests.yml/badge.svg)](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/tests.yml)
 [![checks](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/checks.yml/badge.svg)](https://github.com/Crossbell-Box/Crossbell-Contracts/actions/workflows/checks.yml)
