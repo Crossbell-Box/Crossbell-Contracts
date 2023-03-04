@@ -1,5 +1,5 @@
 # Tips
-[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/638047aa8a24788643a179bc4e4bad5b13618581/contracts/misc/Tips.sol)
+[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/d4bcd4403377f0886ae184e5f617e94fbdfa377b(/Crossbell-Contracts/contracts/misc/Tips.sol)
 
 **Inherits:**
 Initializable, IERC777Recipient
@@ -108,7 +108,7 @@ Emits the `ThankCharacter` event.
 User should call `send` erc777 token to the Tips contract, with `fromCharacterId`
 and `toCharacterId` encoded in the `data`.
 `send` interface is
-[IERC777-send](https://docs.openzeppelin.com/contracts/2.x/api/token/erc777#IERC777-send-address-uint256-bytes-),
+[IERC777-send](https://docs.openzeppelin.com(/Crossbell-Contracts/contracts/2.x/api/token/erc777#IERC777-send-address-uint256-bytes-),
 and parameters encode refers [AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode) .
 Requirements:
 - The `from` account must be the character owner of `fromCharacterId.

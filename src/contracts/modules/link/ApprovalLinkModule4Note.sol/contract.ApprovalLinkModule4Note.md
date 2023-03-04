@@ -1,8 +1,8 @@
 # ApprovalLinkModule4Note
-[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/638047aa8a24788643a179bc4e4bad5b13618581/contracts/modules/link/ApprovalLinkModule4Note.sol)
+[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/d4bcd4403377f0886ae184e5f617e94fbdfa377b(/Crossbell-Contracts/contracts/modules/link/ApprovalLinkModule4Note.sol)
 
 **Inherits:**
-[ILinkModule4Note](/contracts/interfaces/ILinkModule4Note.sol/contract.ILinkModule4Note.md), [ModuleBase](/contracts/modules/ModuleBase.sol/contract.ModuleBase.md)
+[ILinkModule4Note]((/Crossbell-Contracts/contracts/interfaces/ILinkModule4Note.sol/contract.ILinkModule4Note.md), [ModuleBase]((/Crossbell-Contracts/contracts/modules/ModuleBase.sol/contract.ModuleBase.md)
 
 This is a simple LinkModule implementation, inheriting from the ILinkModule4Note interface.
 
