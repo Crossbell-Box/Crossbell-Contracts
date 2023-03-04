@@ -1,8 +1,8 @@
 # MiraToken
-[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/d4bcd4403377f0886ae184e5f617e94fbdfa377b(/Crossbell-Contracts/contracts/mocks/MiraToken.sol)
+[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/638047aa8a24788643a179bc4e4bad5b13618581/contracts/mocks/MiraToken.sol)
 
 **Inherits:**
-Context, AccessControlEnumerable, [IERC20Mintable]((/Crossbell-Contracts/contracts/interfaces/IERC20Mintable.sol/contract.IERC20Mintable.md), ERC777
+Context, AccessControlEnumerable, [IERC20Mintable](/contracts/interfaces/IERC20Mintable.sol/contract.IERC20Mintable.md), ERC777
 
 
 ## State Variables

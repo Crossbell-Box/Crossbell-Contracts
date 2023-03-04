@@ -1,8 +1,8 @@
 # FeeMintModule
-[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/d4bcd4403377f0886ae184e5f617e94fbdfa377b(/Crossbell-Contracts/contracts/modules/mint/FeeMintModule.sol)
+[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/638047aa8a24788643a179bc4e4bad5b13618581/contracts/modules/mint/FeeMintModule.sol)
 
 **Inherits:**
-[IMintModule4Note]((/Crossbell-Contracts/contracts/interfaces/IMintModule4Note.sol/contract.IMintModule4Note.md), [ModuleBase]((/Crossbell-Contracts/contracts/modules/ModuleBase.sol/contract.ModuleBase.md)
+[IMintModule4Note](/contracts/interfaces/IMintModule4Note.sol/contract.IMintModule4Note.md), [ModuleBase](/contracts/modules/ModuleBase.sol/contract.ModuleBase.md)
 
 This is a simple MintModule implementation, inheriting from the IMintModule4Note interface.
 
