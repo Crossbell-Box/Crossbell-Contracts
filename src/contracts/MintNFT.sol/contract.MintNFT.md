@@ -1,5 +1,5 @@
 # MintNFT
-[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/638047aa8a24788643a179bc4e4bad5b13618581/contracts/MintNFT.sol)
+[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/301046e95eacfa631ca751822adb220cbb30103a/contracts/MintNFT.sol)
 
 **Inherits:**
 [NFTBase](/contracts/base/NFTBase.sol/contract.NFTBase.md), [IMintNFT](/contracts/interfaces/IMintNFT.sol/contract.IMintNFT.md), Initializable

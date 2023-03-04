@@ -1,5 +1,5 @@
 # LinkLogic
-[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/638047aa8a24788643a179bc4e4bad5b13618581/contracts/libraries/LinkLogic.sol)
+[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/301046e95eacfa631ca751822adb220cbb30103a/contracts/libraries/LinkLogic.sol)
 
 
 ## Functions
