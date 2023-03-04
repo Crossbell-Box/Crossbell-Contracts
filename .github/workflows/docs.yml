@@ -23,7 +23,7 @@ jobs:
           version: nightly
 
       - name: Setup Pages
-        uses: actions/configure-pages@v2
+        uses: actions/configure-pages@v3
 
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
