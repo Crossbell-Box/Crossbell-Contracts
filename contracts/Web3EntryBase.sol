@@ -113,17 +113,7 @@ contract Web3EntryBase is
     function createCharacter(
         DataTypes.CreateCharacterData calldata vars
     ) external override returns (uint256 characterId) {
-        // check if the handle exists
-        _checkHandleExists(keccak256(bytes(vars.handle)));
-
-        // check if the handle is valid
-        _validateHandle(vars.handle);
-
-        characterId = ++_characterCounter;
-        // mint character nft
-        _safeMint(vars.to, characterId);
-
-        CharacterLogic.createCharacter(vars, characterId, _characterIdByHandleHash, _characterById);
+        return _createCharacter(vars, true);
     }
 
     // owner permission
@@ -202,10 +192,31 @@ contract Web3EntryBase is
 
     function createThenLinkCharacter(
         DataTypes.createThenLinkCharacterData calldata vars
-    ) external override {
+    ) external override returns (uint256 characterId) {
         _validateCallerPermission(vars.fromCharacterId, OP.CREATE_THEN_LINK_CHARACTER);
-        // slither-disable-next-line reentrancy-no-eth
-        _createThenLinkCharacter(vars.fromCharacterId, vars.to, vars.linkType, "0x");
+
+        // create character
+        characterId = _createCharacter(
+            DataTypes.CreateCharacterData({
+                to: vars.to,
+                handle: _addressToHexString(vars.to),
+                uri: "",
+                linkModule: address(0),
+                linkModuleInitData: ""
+            }),
+            false
+        );
+
+        // link character
+        LinkLogic.linkCharacter(
+            vars.fromCharacterId,
+            characterId,
+            vars.linkType,
+            "",
+            _linklist,
+            address(0),
+            _attachedLinklists
+        );
     }
 
     function linkNote(DataTypes.linkNoteData calldata vars) external override {
@@ -734,43 +745,31 @@ contract Web3EntryBase is
         return _characterById[characterId].uri;
     }
 
-    function _createThenLinkCharacter(
-        uint256 fromCharacterId,
-        address to,
-        bytes32 linkType,
-        bytes memory data
-    ) internal {
-        if (_primaryCharacterByAddress[to] != 0) revert ErrTargetAlreadyHasPrimaryCharacter();
+    function _createCharacter(
+        DataTypes.CreateCharacterData memory vars,
+        bool validateHandle
+    ) internal returns (uint256 characterId) {
+        // check if the handle exists
+        _checkHandleExists(keccak256(bytes(vars.handle)));
 
-        // check if the to handle exists
-        _checkHandleExists(keccak256(abi.encodePacked(to)));
+        // check if the handle is valid
+        if (validateHandle) {
+            _validateHandle(vars.handle);
+        }
 
-        uint256 characterId = ++_characterCounter;
+        characterId = ++_characterCounter;
         // mint character nft
-        _safeMint(to, characterId);
+        _safeMint(vars.to, characterId);
 
         CharacterLogic.createCharacter(
-            DataTypes.CreateCharacterData({
-                to: to,
-                handle: _addressToHexString(to),
-                uri: "",
-                linkModule: address(0),
-                linkModuleInitData: ""
-            }),
+            vars.to,
+            vars.handle,
+            vars.uri,
+            vars.linkModule,
+            vars.linkModuleInitData,
             characterId,
             _characterIdByHandleHash,
             _characterById
-        );
-
-        // link character
-        LinkLogic.linkCharacter(
-            fromCharacterId,
-            characterId,
-            linkType,
-            data,
-            _linklist,
-            address(0),
-            _attachedLinklists
         );
     }
 
@@ -942,14 +941,13 @@ contract Web3EntryBase is
         if (_noteByIdByCharacter[characterId][noteId].locked) revert ErrNoteLocked();
     }
 
-    function _validateHandle(string calldata handle) internal pure {
-        bytes calldata byteHandle = bytes(handle);
-        if (
-            byteHandle.length > Constants.MAX_HANDLE_LENGTH ||
-            byteHandle.length < Constants.MIN_HANDLE_LENGTH
-        ) revert ErrHandleLengthInvalid();
+    function _validateHandle(string memory handle) internal pure {
+        bytes memory byteHandle = bytes(handle);
+        uint256 len = byteHandle.length;
+        if (len > Constants.MAX_HANDLE_LENGTH || len < Constants.MIN_HANDLE_LENGTH)
+            revert ErrHandleLengthInvalid();
 
-        for (uint256 i = 0; i < byteHandle.length; ) {
+        for (uint256 i = 0; i < len; ) {
             _validateChar(byteHandle[i]);
 
             unchecked {

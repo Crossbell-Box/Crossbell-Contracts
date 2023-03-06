@@ -14,35 +14,30 @@ library CharacterLogic {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     function createCharacter(
-        DataTypes.CreateCharacterData calldata vars,
+        address to,
+        string memory handle,
+        string memory uri,
+        address linkModule,
+        bytes memory linkModuleInitData,
         uint256 characterId,
         mapping(bytes32 => uint256) storage _characterIdByHandleHash,
         mapping(uint256 => DataTypes.Character) storage _characterById
     ) external {
-        bytes32 handleHash = keccak256(bytes(vars.handle));
+        bytes32 handleHash = keccak256(bytes(handle));
         _characterIdByHandleHash[handleHash] = characterId;
 
         _characterById[characterId].characterId = characterId;
-        _characterById[characterId].handle = vars.handle;
-        _characterById[characterId].uri = vars.uri;
+        _characterById[characterId].handle = handle;
+        _characterById[characterId].uri = uri;
 
         // init link module
-        if (vars.linkModule != address(0)) {
-            _characterById[characterId].linkModule = vars.linkModule;
+        if (linkModule != address(0)) {
+            _characterById[characterId].linkModule = linkModule;
 
-            ILinkModule4Character(vars.linkModule).initializeLinkModule(
-                characterId,
-                vars.linkModuleInitData
-            );
+            ILinkModule4Character(linkModule).initializeLinkModule(characterId, linkModuleInitData);
         }
 
-        emit Events.CharacterCreated(
-            characterId,
-            msg.sender,
-            vars.to,
-            vars.handle,
-            block.timestamp
-        );
+        emit Events.CharacterCreated(characterId, msg.sender, to, handle, block.timestamp);
     }
 
     function setSocialToken(
