@@ -255,4 +255,27 @@ contract LinkCharacterTest is Test, SetUp, Utils {
         // check new character handle
         assertEq(web3Entry.getHandle(3), Strings.toHexString(address(0x56789)));
     }
+
+    function testCreateThenLinkCharacterFail() public {
+        vm.startPrank(alice);
+        web3Entry.createThenLinkCharacter(
+            DataTypes.createThenLinkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                address(0x56789),
+                Const.FollowLinkType
+            )
+        );
+
+        // link twice fail
+        vm.expectRevert(abi.encodeWithSelector(ErrHandleExists.selector));
+        web3Entry.createThenLinkCharacter(
+            DataTypes.createThenLinkCharacterData(
+                Const.FIRST_CHARACTER_ID,
+                address(0x56789),
+                Const.FollowLinkType
+            )
+        );
+
+        vm.stopPrank();
+    }
 }
