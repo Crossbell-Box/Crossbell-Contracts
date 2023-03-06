@@ -93,12 +93,14 @@ contract Tips is Initializable, IERC777Recipient {
         require(address(this) == to, "Tips: invalid receiver");
 
         bytes memory data = userData.length > 0 ? userData : operatorData;
-        //slither-disable-start uninitialized-local
+        // slither-disable-start uninitialized-local
+        // abi encoded bytes of (fromCharacterId, toCharacter)
         if (data.length == 64) {
             // tip character
             // slither-disable-next-line variable-scope
             (uint256 fromCharacterId, uint256 toCharacterId) = abi.decode(data, (uint256, uint256));
             _tipCharacter(from, fromCharacterId, toCharacterId, _token, amount);
+            // abi encoded bytes of (fromCharacterId, toCharacter, noteId)
         } else if (data.length == 96) {
             // tip character for note
             // slither-disable-next-line variable-scope
