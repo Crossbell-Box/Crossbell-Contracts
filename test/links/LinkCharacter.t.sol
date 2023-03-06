@@ -252,5 +252,7 @@ contract LinkCharacterTest is Test, SetUp, Utils {
         assertEq(linklist.getLinkingCharacterIds(1).length, 1);
         assertEq(linklist.getLinkingCharacterIds(1)[0], 3);
         assertEq(linklist.getLinkingCharacterListLength(1), 1);
+        // check new character handle
+        assertEq(web3Entry.getHandle(3), Strings.toHexString(address(0x56789)));
     }
 }

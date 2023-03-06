@@ -752,7 +752,7 @@ contract Web3EntryBase is
         CharacterLogic.createCharacter(
             DataTypes.CreateCharacterData({
                 to: to,
-                handle: string(abi.encodePacked(to)),
+                handle: _addressToHexString(to),
                 uri: "",
                 linkModule: address(0),
                 linkModuleInitData: ""
@@ -969,5 +969,26 @@ contract Web3EntryBase is
      */
     function _checkBit(uint256 x, uint256 i) internal pure returns (bool) {
         return (x >> i) & 1 == 1;
+    }
+
+    /**
+     * @dev _addressToHexString converts an address to its ASCII `string hexadecimal representation.
+     */
+    function _addressToHexString(address addr) internal pure returns (string memory) {
+        bytes16 symbols = "0123456789abcdef";
+        uint256 value = uint256(uint160(addr));
+
+        bytes memory buffer = new bytes(42);
+        buffer[0] = "0";
+        buffer[1] = "x";
+        for (uint256 i = 41; i > 1; ) {
+            buffer[i] = symbols[value & 0xf];
+            value >>= 4;
+
+            unchecked {
+                --i;
+            }
+        }
+        return string(buffer);
     }
 }
