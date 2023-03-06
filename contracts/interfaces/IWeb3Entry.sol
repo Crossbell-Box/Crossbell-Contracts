@@ -30,6 +30,8 @@ interface IWeb3Entry {
 
     function setPrimaryCharacterId(uint256 characterId) external;
 
+    function setDefaultHandles(uint256[] calldata characterIds) external;
+
     function grantOperatorPermissions(
         uint256 characterId,
         address operator,

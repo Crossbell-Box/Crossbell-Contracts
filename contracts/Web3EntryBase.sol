@@ -54,6 +54,28 @@ contract Web3EntryBase is
         emit Events.Web3EntryInitialized(block.timestamp);
     }
 
+    function setDefaultHandles(uint256[] calldata characterIds) external override {
+        for (uint256 i = 0; i < characterIds.length; i++) {
+            uint256 characterId = characterIds[i];
+            address owner = ownerOf(characterId);
+            uint256 primaryCharacterId = _primaryCharacterByAddress[owner];
+            if (
+                primaryCharacterId == characterId &&
+                keccak256(abi.encodePacked(_characterById[primaryCharacterId].handle)) ==
+                keccak256(abi.encodePacked(owner))
+            ) {
+                try
+                    CharacterLogic.setHandle(
+                        characterId,
+                        _addressToHexString(owner),
+                        _characterIdByHandleHash,
+                        _characterById
+                    )
+                {} catch {} // solhint-disable-line no-empty-blocks
+            }
+        }
+    }
+
     /**
      * @notice Grant an address as an operator and authorize it with custom permissions.
      * @param characterId ID of your character that you want to authorize.
