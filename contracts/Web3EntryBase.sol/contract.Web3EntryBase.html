@@ -146,7 +146,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="web3entrybase"><a class="header" href="#web3entrybase">Web3EntryBase</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/a49dbe49577ae85a9f912339fde855b055549cc5/contracts/Web3EntryBase.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/c81f463fd39f4c59775572d2c75ae3806c9d4954/contracts/Web3EntryBase.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/contracts/interfaces/IWeb3Entry.sol/contract.IWeb3Entry.html">IWeb3Entry</a>, Multicall, <a href="/contracts/base/NFTBase.sol/contract.NFTBase.html">NFTBase</a>, <a href="/contracts/storage/Web3EntryStorage.sol/contract.Web3EntryStorage.html">Web3EntryStorage</a>, Initializable, <a href="/contracts/storage/Web3EntryExtendStorage.sol/contract.Web3EntryExtendStorage.html">Web3EntryExtendStorage</a></p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
@@ -163,6 +163,9 @@
     address periphery_,
     address newbieVilla_
 ) external override reinitializer(2);
+</code></pre>
+<h3 id="setdefaulthandles"><a class="header" href="#setdefaulthandles">setDefaultHandles</a></h3>
+<pre><code class="language-solidity">function setDefaultHandles(uint256[] calldata characterIds) external override;
 </code></pre>
 <h3 id="grantoperatorpermissions"><a class="header" href="#grantoperatorpermissions">grantOperatorPermissions</a></h3>
 <p>Grant an address as an operator and authorize it with custom permissions.</p>
@@ -224,7 +227,10 @@
 <pre><code class="language-solidity">function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external override;
 </code></pre>
 <h3 id="createthenlinkcharacter"><a class="header" href="#createthenlinkcharacter">createThenLinkCharacter</a></h3>
-<pre><code class="language-solidity">function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars) external override;
+<pre><code class="language-solidity">function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars)
+    external
+    override
+    returns (uint256 characterId);
 </code></pre>
 <h3 id="linknote"><a class="header" href="#linknote">linkNote</a></h3>
 <pre><code class="language-solidity">function linkNote(DataTypes.linkNoteData calldata vars) external override;
@@ -442,8 +448,10 @@ authorizations!!!</p>
 <h3 id="tokenuri"><a class="header" href="#tokenuri">tokenURI</a></h3>
 <pre><code class="language-solidity">function tokenURI(uint256 characterId) public view override returns (string memory);
 </code></pre>
-<h3 id="_createthenlinkcharacter"><a class="header" href="#_createthenlinkcharacter">_createThenLinkCharacter</a></h3>
-<pre><code class="language-solidity">function _createThenLinkCharacter(uint256 fromCharacterId, address to, bytes32 linkType, bytes memory data) internal;
+<h3 id="_createcharacter"><a class="header" href="#_createcharacter">_createCharacter</a></h3>
+<pre><code class="language-solidity">function _createCharacter(DataTypes.CreateCharacterData memory vars, bool validateHandle)
+    internal
+    returns (uint256 characterId);
 </code></pre>
 <h3 id="_beforetokentransfer"><a class="header" href="#_beforetokentransfer">_beforeTokenTransfer</a></h3>
 <p><em>Operators will be reset to blank before the characters are transferred in order to grant the
@@ -492,7 +500,7 @@ Permissions4Note is left unset, because permissions for notes are always stricte
 <pre><code class="language-solidity">function _validateNoteNotLocked(uint256 characterId, uint256 noteId) internal view;
 </code></pre>
 <h3 id="_validatehandle"><a class="header" href="#_validatehandle">_validateHandle</a></h3>
-<pre><code class="language-solidity">function _validateHandle(string calldata handle) internal pure;
+<pre><code class="language-solidity">function _validateHandle(string memory handle) internal pure;
 </code></pre>
 <h3 id="_validatechar"><a class="header" href="#_validatechar">_validateChar</a></h3>
 <pre><code class="language-solidity">function _validateChar(bytes1 c) internal pure;
@@ -500,6 +508,10 @@ Permissions4Note is left unset, because permissions for notes are always stricte
 <h3 id="_checkbit"><a class="header" href="#_checkbit">_checkBit</a></h3>
 <p><em>_checkBit checks if the value of the i'th bit of x is 1</em></p>
 <pre><code class="language-solidity">function _checkBit(uint256 x, uint256 i) internal pure returns (bool);
+</code></pre>
+<h3 id="_addresstohexstring"><a class="header" href="#_addresstohexstring">_addressToHexString</a></h3>
+<p><em>_addressToHexString converts an address to its ASCII `string hexadecimal representation.</em></p>
+<pre><code class="language-solidity">function _addressToHexString(address addr) internal pure returns (string memory);
 </code></pre>
 
                     </main>

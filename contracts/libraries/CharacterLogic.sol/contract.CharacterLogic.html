@@ -146,11 +146,15 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="characterlogic"><a class="header" href="#characterlogic">CharacterLogic</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/a49dbe49577ae85a9f912339fde855b055549cc5/contracts/libraries/CharacterLogic.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/c81f463fd39f4c59775572d2c75ae3806c9d4954/contracts/libraries/CharacterLogic.sol">Git Source</a></p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="createcharacter"><a class="header" href="#createcharacter">createCharacter</a></h3>
 <pre><code class="language-solidity">function createCharacter(
-    DataTypes.CreateCharacterData calldata vars,
+    address to,
+    string memory handle,
+    string memory uri,
+    address linkModule,
+    bytes memory linkModuleInitData,
     uint256 characterId,
     mapping(bytes32 =&gt; uint256) storage _characterIdByHandleHash,
     mapping(uint256 =&gt; DataTypes.Character) storage _characterById
