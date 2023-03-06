@@ -236,13 +236,15 @@ contract LinkCharacterTest is Test, SetUp, Utils {
     }
 
     function testCreateThenLinkCharacter() public {
+        address to = address(0x56789);
+
         vm.prank(alice);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Events.LinkCharacter(alice, Const.FIRST_CHARACTER_ID, 3, Const.FollowLinkType, 1);
         web3Entry.createThenLinkCharacter(
             DataTypes.createThenLinkCharacterData(
                 Const.FIRST_CHARACTER_ID,
-                address(0x56789),
+                to,
                 Const.FollowLinkType
             )
         );
@@ -250,10 +252,14 @@ contract LinkCharacterTest is Test, SetUp, Utils {
         // check state
         assertEq(linklist.getOwnerCharacterId(1), Const.FIRST_CHARACTER_ID);
         assertEq(linklist.getLinkingCharacterIds(1).length, 1);
-        assertEq(linklist.getLinkingCharacterIds(1)[0], 3);
+        assertEq(linklist.getLinkingCharacterIds(1)[0], Const.THIRD_CHARACTER_ID);
         assertEq(linklist.getLinkingCharacterListLength(1), 1);
-        // check new character handle
-        assertEq(web3Entry.getHandle(3), Strings.toHexString(address(0x56789)));
+        // check new character
+        DataTypes.Character memory character = web3Entry.getCharacter(Const.THIRD_CHARACTER_ID);
+        assertEq(character.handle, Strings.toHexString(to));
+        assertEq(character.characterId, Const.THIRD_CHARACTER_ID);
+        assertEq(web3Entry.getHandle(3), Strings.toHexString(to));
+        assertEq(web3Entry.getPrimaryCharacterId(to), Const.THIRD_CHARACTER_ID);
     }
 
     function testCreateThenLinkCharacterFail() public {
