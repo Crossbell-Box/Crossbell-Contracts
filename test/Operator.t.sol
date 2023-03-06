@@ -80,6 +80,7 @@ contract OperatorTest is Test, SetUp, Utils {
         );
     }
 
+    // solhint-disable-next-line function-max-lines
     function testGrantOperators4Note() public {
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
