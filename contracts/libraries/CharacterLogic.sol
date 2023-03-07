@@ -14,7 +14,7 @@ library CharacterLogic {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     /**
-     * @notice  Create a character.
+     * @notice  Creates a character.
      * @param   to  The address to mint the character to.
      * @param   handle  The handle to set for the new character.
      * @param   uri  The URI to set for the new character’s metadata.
@@ -51,7 +51,7 @@ library CharacterLogic {
 
     /**
      * @notice  Sets a social token for a given character.
-     * @param   characterId  	The characterId to set social token for.
+     * @param   characterId  	The character ID to set social token for.
      * @param   tokenAddress  Token address to be set.
      */
     function setSocialToken(
@@ -66,7 +66,7 @@ library CharacterLogic {
 
     /**
      * @notice  Sets link module for a given character.
-     * @param   characterId  The character id to set link module for.
+     * @param   characterId  The character ID to set link module for.
      * @param   linkModule  The link module to set.
      * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
      */
@@ -90,7 +90,7 @@ library CharacterLogic {
 
     /**
      * @notice  Sets new handle for a given character.
-     * @param   characterId  The character id to set new handle for.
+     * @param   characterId  The character ID to set new handle for.
      * @param   newHandle  New handle to set.
      */
     function setHandle(

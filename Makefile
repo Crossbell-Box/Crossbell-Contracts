@@ -61,6 +61,3 @@ lint :; npx prettier --write "{contracts,test,scripts}/**/*.{sol,ts}"
 
 # Generate Gas Snapshots
 snapshot :; forge clean && forge snapshot
-
-# generate docs
-docgen :; npx hardhat docgen

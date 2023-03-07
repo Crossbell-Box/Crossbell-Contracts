@@ -13,8 +13,8 @@ import "../interfaces/ILinkModule4Address.sol";
 library LinkModuleLogic {
     /**
      * @notice  Sets link module for a given note.
-     * @param   characterId  The character id to set link module for.
-     * @param   noteId  The note id to set link module for.
+     * @param   characterId  The character ID to set link module for.
+     * @param   noteId  The note ID to set link module for.
      * @param   linkModule  The link module to set.
      * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
      */
@@ -72,8 +72,8 @@ library LinkModuleLogic {
 
     /**
      * @notice  Sets the mint module for a given note.
-     * @param   characterId  The character id of note to set the mint module for.
-     * @param   noteId  The note id of note.
+     * @param   characterId  The character ID of note to set the mint module for.
+     * @param   noteId  The note ID of note.
      * @param   mintModule  The mint module to set for note.
      * @param   mintModuleInitData  The data to pass to the mint module.
      */
@@ -105,7 +105,7 @@ library LinkModuleLogic {
 
     /**
      * @notice  Sets link module for a given linklist.
-     * @param   linklistId  The linklist id to set link module for.
+     * @param   linklistId  The linklist ID to set link module for.
      * @param   linkModule  The link module to set.
      * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
      */
@@ -132,7 +132,7 @@ library LinkModuleLogic {
     /**
      * @notice  Sets link module for a given ERC721 token.
      * @param   tokenAddress  The token address of erc721 to set link module for.
-     * @param   tokenId  The token id of erc721 to set link module for.
+     * @param   tokenId  The token ID of erc721 to set link module for.
      * @param   linkModule  The link module to set.
      * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
      */

@@ -14,9 +14,9 @@ library LinkLogic {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     /**
-     * @notice  Link any characterId.
-     * @param   fromCharacterId  The characterId to sponsor a link action.
-     * @param   toCharacterId  The characterId to be linked.
+     * @notice  Links any characterId.
+     * @param   fromCharacterId  The character ID to sponsor a link action.
+     * @param   toCharacterId  The character ID to be linked.
      * @param   linkType  linkType, like “follow”.
      * @param   data  The data to pass to the link module, if any.
      * @param   linklist  The linklist contract address.
@@ -49,8 +49,8 @@ library LinkLogic {
 
     /**
      * @notice  Unlinks a given character.
-     * @param   fromCharacterId  The characterId to sponsor a unlink action.
-     * @param   toCharacterId  The characterId to be unlinked.
+     * @param   fromCharacterId  The character ID to sponsor a unlink action.
+     * @param   toCharacterId  The character ID to be unlinked.
      * @param   linkType  linkType, like “follow”.
      * @param   linklist  The linklist contract address.
      * @param   linklistId  The ID of the linklist to unlink.
@@ -71,7 +71,7 @@ library LinkLogic {
 
     /**
      * @notice  Links a given note.
-     * @param   fromCharacterId  The characterId to sponsor a link action.
+     * @param   fromCharacterId  The character ID to sponsor a link action.
      * @param   toCharacterId  The owner characterId of the note to link.
      * @param   toNoteId  The id of the note to link.
      * @param   linkType  The linkType, like “follow”.
@@ -107,8 +107,8 @@ library LinkLogic {
 
     /**
      * @notice  Unlinks a given note.
-     * @param   fromCharacterId  The character Id to sponsor an unlink action.
-     * @param   toCharacterId  The characterId of note to unlink.
+     * @param   fromCharacterId  The character ID to sponsor an unlink action.
+     * @param   toCharacterId  The character ID of note to unlink.
      * @param   toNoteId  The id of note to unlink.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
@@ -134,8 +134,8 @@ library LinkLogic {
 
     /**
      * @notice  Links a characterLink.
-     * @param   fromCharacterId  The from character id of characterLink.
-     * @param   toCharacterId  The to character id of characterLink.
+     * @param   fromCharacterId  The from character ID of characterLink.
+     * @param   toCharacterId  The to character ID of characterLink.
      * @param   linkType  The linkType of characterLink.
      * @param   linklist  The linklist contract address.
      */
@@ -166,8 +166,8 @@ library LinkLogic {
 
     /**
      * @notice  Unlinks a characterLink.
-     * @param   fromCharacterId  The from character id of characterLink.
-     * @param   toCharacterId  The to character id of characterLink.
+     * @param   fromCharacterId  The from character ID of characterLink.
+     * @param   toCharacterId  The to character ID of characterLink.
      * @param   linkType  The linkType of characterLink.
      * @param   linklist  The linklist contract address.
      * @param   linklistId  The ID of the linklist to unlink.
@@ -197,7 +197,7 @@ library LinkLogic {
 
     /**
      * @notice  Links a linklist.
-     * @param   fromCharacterId  The character id to sponsor an link action.
+     * @param   fromCharacterId  The character ID to sponsor an link action.
      * @param   toLinkListId  The linklist if to link.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
@@ -219,7 +219,7 @@ library LinkLogic {
 
     /**
      * @notice  Unlinks a linklist.
-     * @param   fromCharacterId  The character id to sponsor an unlink action.
+     * @param   fromCharacterId  The character ID to sponsor an unlink action.
      * @param   toLinkListId  The linklist if to unlink.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
@@ -240,9 +240,9 @@ library LinkLogic {
 
     /**
      * @notice  Links an ERC721 token.
-     * @param   fromCharacterId  The character Id to sponsor an link action.
+     * @param   fromCharacterId  The character ID to sponsor an link action.
      * @param   tokenAddress  The token address of ERC721 to link.
-     * @param   tokenId  The token id of ERC721 to link.
+     * @param   tokenId  The token ID of ERC721 to link.
      * @param   linkType  linkType, like “follow”.
      * @param   linklist  The linklist contract address.
      */
@@ -264,9 +264,9 @@ library LinkLogic {
 
     /**
      * @notice  Unlinks an ERC721 token.
-     * @param   fromCharacterId  The character Id to sponsor an unlink action.
+     * @param   fromCharacterId  The character ID to sponsor an unlink action.
      * @param   tokenAddress  The token address of ERC721 to unlink.
-     * @param   tokenId  The token id of ERC721 to unlink.
+     * @param   tokenId  The token ID of ERC721 to unlink.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
      * @param   linklistId  The ID of the linklist to unlink.
@@ -286,8 +286,8 @@ library LinkLogic {
     }
 
     /**
-     * @notice  Create a link to a given address.
-     * @param   fromCharacterId  The character id to init the link.
+     * @notice  Creates a link to a given address.
+     * @param   fromCharacterId  The character ID to init the link.
      * @param   ethAddress  The address to link.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
@@ -309,7 +309,7 @@ library LinkLogic {
 
     /**
      * @notice  Unlinks a given address.
-     * @param   fromCharacterId  The character id to init the unlink.
+     * @param   fromCharacterId  The character ID to init the unlink.
      * @param   ethAddress  The address to unlink.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
@@ -330,7 +330,7 @@ library LinkLogic {
 
     /**
      * @notice  Links any uri.
-     * @param   fromCharacterId  The character Id to sponsor an link action.
+     * @param   fromCharacterId  The character ID to sponsor an link action.
      * @param   toUri  The uri to link.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
@@ -352,7 +352,7 @@ library LinkLogic {
 
     /**
      * @notice  Unlinks any uri.
-     * @param   fromCharacterId  The character Id to sponsor an unlink action.
+     * @param   fromCharacterId  The character ID to sponsor an unlink action.
      * @param   toUri  The uri to unlink.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.

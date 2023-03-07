@@ -11,7 +11,7 @@ library OperatorLogic {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /**
-     * @notice  Grant permission to a given operator for a character.
+     * @notice  Grants permission to a given operator for a character.
      * @param   characterId  The ID of the character to set operator for.
      * @param   operator  The operator address to set.
      * @param   permissionBitMap  The permission bitmap for the operator.
@@ -35,9 +35,9 @@ library OperatorLogic {
     }
 
     /**
-     @notice Set blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.
-     @param characterId The character Id of the note owner.
-     @param noteId The note Id to grant.
+     @notice Sets blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.
+     @param characterId The character ID of the note owner.
+     @param noteId The note ID to grant.
      @param blocklist The addresses list of blocked operators.
      @param allowlist The addresses list of allowed operators.
      */
@@ -97,7 +97,7 @@ library OperatorLogic {
     }
 
     /**
-     * @dev _bitmapFilter unsets bits of non-existent permission IDs to zero.
+     * @dev _bitmapFilter unsets bits of non-existent permission IDs to zero. <br>
      * These unset permission IDs are meaningless now, but they are reserved for future use,
      * so it's best to leave them blank and avoid messing up with future methods.
      */
