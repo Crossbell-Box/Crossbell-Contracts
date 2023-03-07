@@ -146,29 +146,34 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="op"><a class="header" href="#op">OP</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/5eacfc3115a8fc4742e12321c174d4bc749042c8/contracts/libraries/OP.sol">Git Source</a></p>
-<p> In Crossbell's operator system, every uint8 stands for a single method in Web3Entry.sol. <br>
-For most cases, we recommend simply granting operators the OPERATOR_SIGN_PERMISSION_BITMAP,
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/5689c877912704babfcdf82b63fbf85807995f3b/contracts/libraries/OP.sol">Git Source</a></p>
+<p>In Crossbell's operator system, every uint8 stands for a single method in Web3Entry.sol. <br>
+For most cases, we recommend simply granting operators the <code>OPERATOR_SIGN_PERMISSION_BITMAP</code>,
 which gives operator full permissions aside from owner permissions and future permissions, but for
 those who're more aware of access control, the custom permission bitmap is all yours,
 and you can find every customizable methods below. <br>
-`OPERATOR_SIGN_PERMISSION_BITMAP` have access to all methods in `OPERATOR_SYNC_PERMISSION_BITMAP`
+<code>OPERATOR_SIGN_PERMISSION_BITMAP</code> have access to all methods in <code>OPERATOR_SYNC_PERMISSION_BITMAP</code>
 plus more permissions for signing. <br>
 Permissions are laid out in a increasing order of power.
-so the bitmap looks like this:
-</p>
+so the bitmap looks like this:</p>
 <table>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
 <tr>
-<td>opSync</td>
-<td>opSign</td>
-<td>future</td>
+<td>operator sync</td>
+<td>operator sign</td>
+<td>future reserved</td>
 <td>owner</td>
 <tr>
 <tr>
-<td>255, 236</td>
-<td>235, 176</td>
-<td>175, 21</td>
-<td>20, 0</td>
+<td>[255 - 236]</td>
+<td>[235 - 176]</td>
+<td>[175 - 21]</td>
+<td>[20 - 0]</td>
 <tr>
 </table>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
