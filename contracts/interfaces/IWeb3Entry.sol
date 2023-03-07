@@ -104,7 +104,9 @@ interface IWeb3Entry {
 
     function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external;
 
-    function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars) external;
+    function createThenLinkCharacter(
+        DataTypes.createThenLinkCharacterData calldata vars
+    ) external returns (uint256 characterId);
 
     function linkNote(DataTypes.linkNoteData calldata vars) external;
 

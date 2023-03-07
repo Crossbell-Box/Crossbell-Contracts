@@ -57,8 +57,9 @@ contract Tips is Initializable, IERC777Recipient {
     );
 
     /**
-     * @notice Initialize the contract.
+     * @notice Initialize the contract, setting web3Entry address and token address.
      * @param web3Entry_ Address of web3Entry.
+     * @param token_ Address of token.
      */
     function initialize(address web3Entry_, address token_) external initializer {
         _web3Entry = web3Entry_;
@@ -72,6 +73,13 @@ contract Tips is Initializable, IERC777Recipient {
         );
     }
 
+    /**
+     * @dev Called by an {IERC777} token contract whenever tokens are being
+     * moved or created into a registered account `to` (this contract).
+     *
+     * The userData/operatorData should be an abi encoded bytes of `fromCharacterId`, `toCharacter`
+     * and `toNoteId`(optional),  which are all uint256 type, so the length of data is 64 or 96.
+     */
     /// @inheritdoc IERC777Recipient
     function tokensReceived(
         address,
@@ -84,17 +92,15 @@ contract Tips is Initializable, IERC777Recipient {
         require(msg.sender == _token, "Tips: invalid token");
         require(address(this) == to, "Tips: invalid receiver");
 
-        /**
-         * @dev The userData/operatorData should be an abi encoded bytes of `fromCharacterId`, `toCharacter`
-         * and `toNoteId`(optional),  which are all uint256 type, so the length of data is 64 or 96.
-         */
         bytes memory data = userData.length > 0 ? userData : operatorData;
-        //slither-disable-start uninitialized-local
+        // slither-disable-start uninitialized-local
+        // abi encoded bytes of (fromCharacterId, toCharacter)
         if (data.length == 64) {
             // tip character
             // slither-disable-next-line variable-scope
             (uint256 fromCharacterId, uint256 toCharacterId) = abi.decode(data, (uint256, uint256));
             _tipCharacter(from, fromCharacterId, toCharacterId, _token, amount);
+            // abi encoded bytes of (fromCharacterId, toCharacter, noteId)
         } else if (data.length == 96) {
             // tip character for note
             // slither-disable-next-line variable-scope
@@ -128,7 +134,8 @@ contract Tips is Initializable, IERC777Recipient {
     /**
      * @notice Tips a character by transferring `amount` tokens
      * from the `fromCharacterId` account to `toCharacterId` account.
-     * Emits the `ThankCharacter` event.
+     *
+     * Emits the `TipCharacter` event.
      *
      * User should call `send` erc777 token to the Tips contract, with `fromCharacterId`
      * and `toCharacterId` encoded in the `data`.
@@ -161,7 +168,8 @@ contract Tips is Initializable, IERC777Recipient {
     /**
      * @notice Tips a character's note by transferring `amount` tokens
      * from the `fromCharacterId` account to `toCharacterId` account.
-     * Emits the `ThankNote` event.
+     *
+     * Emits the `TipCharacterForNote` event.
      *
      * User should call `send` erc777 token to the Tips contract, with `fromCharacterId`,
      *  `toCharacterId` and `toNoteId` encoded in the `data`.

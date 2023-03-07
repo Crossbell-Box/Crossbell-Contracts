@@ -24,10 +24,10 @@ library CharacterLogic {
      */
     function createCharacter(
         address to,
-        string calldata handle,
-        string calldata uri,
+        string memory handle,
+        string memory uri,
         address linkModule,
-        bytes calldata linkModuleInitData,
+        bytes memory linkModuleInitData,
         uint256 characterId,
         mapping(bytes32 => uint256) storage _characterIdByHandleHash,
         mapping(uint256 => DataTypes.Character) storage _characterById

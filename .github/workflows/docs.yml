@@ -1,0 +1,44 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Update Modules
+        run: yarn sync
+
+      - name: Generate docs
+        run: forge doc --build
+
+      - name: Upload Artifact
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/book
+          publish_branch: gh-pages
+          full_commit_message: ${{ github.event.head_commit.message }}
