@@ -75,7 +75,7 @@ contract Tips is Initializable, IERC777Recipient {
 
     /**
      * @dev Called by an {IERC777} token contract whenever tokens are being
-     * moved or created into a registered account `to` (this contract).
+     * moved or created into a registered account `to` (this contract). <br>
      *
      * The userData/operatorData should be an abi encoded bytes of `fromCharacterId`, `toCharacter`
      * and `toNoteId`(optional),  which are all uint256 type, so the length of data is 64 or 96.
@@ -133,17 +133,18 @@ contract Tips is Initializable, IERC777Recipient {
 
     /**
      * @notice Tips a character by transferring `amount` tokens
-     * from the `fromCharacterId` account to `toCharacterId` account.
+     * from the `fromCharacterId` account to `toCharacterId` account. <br>
      *
-     * Emits the `TipCharacter` event.
+     * Emits the `TipCharacter` event. <br>
      *
      * User should call `send` erc777 token to the Tips contract, with `fromCharacterId`
-     * and `toCharacterId` encoded in the `data`.
+     * and `toCharacterId` encoded in the `data`. <br>
      * `send` interface is
      * [IERC777-send](https://docs.openzeppelin.com/contracts/2.x/api/token/erc777#IERC777-send-address-uint256-bytes-),
-     * and parameters encode refers [AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode) .
+     * and parameters encode refers 
+     * [AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode).<br>
      *
-     * Requirements:
+     * <b> Requirements: </b>
      * - The `from` account must be the character owner of `fromCharacterId.
      * @param from The caller's account who sends token.
      * @param fromCharacterId The token ID of character that calls this contract.
@@ -167,14 +168,14 @@ contract Tips is Initializable, IERC777Recipient {
 
     /**
      * @notice Tips a character's note by transferring `amount` tokens
-     * from the `fromCharacterId` account to `toCharacterId` account.
+     * from the `fromCharacterId` account to `toCharacterId` account. <br>
      *
-     * Emits the `TipCharacterForNote` event.
+     * Emits the `TipCharacterForNote` event. <br>
      *
      * User should call `send` erc777 token to the Tips contract, with `fromCharacterId`,
-     *  `toCharacterId` and `toNoteId` encoded in the `data`.
+     *  `toCharacterId` and `toNoteId` encoded in the `data`. <br>
      *
-     * Requirements:
+     * <b> Requirements: </b>
      * - The `from` account must be the character owner of `fromCharacterId.
      * @param from The caller's account who sends token.
      * @param fromCharacterId The token ID of character that calls this contract.

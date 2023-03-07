@@ -13,6 +13,15 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 library CharacterLogic {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
+    /**
+     * @notice  Creates a character.
+     * @param   to  The address to mint the character to.
+     * @param   handle  The handle to set for the new character.
+     * @param   uri  The URI to set for the new character’s metadata.
+     * @param   linkModule  The link module to set for the new character or the zero address.
+     * @param   linkModuleInitData  Arbitrary data to be decoded in the link module for initialization.
+     * @param   characterId The ID of the new character.
+     */
     function createCharacter(
         address to,
         string memory handle,
@@ -40,6 +49,11 @@ library CharacterLogic {
         emit Events.CharacterCreated(characterId, msg.sender, to, handle, block.timestamp);
     }
 
+    /**
+     * @notice  Sets a social token for a given character.
+     * @param   characterId  	The character ID to set social token for.
+     * @param   tokenAddress  Token address to be set.
+     */
     function setSocialToken(
         uint256 characterId,
         address tokenAddress,
@@ -50,6 +64,12 @@ library CharacterLogic {
         emit Events.SetSocialToken(msg.sender, characterId, tokenAddress);
     }
 
+    /**
+     * @notice  Sets link module for a given character.
+     * @param   characterId  The character ID to set link module for.
+     * @param   linkModule  The link module to set.
+     * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
+     */
     function setCharacterLinkModule(
         uint256 characterId,
         address linkModule,
@@ -68,6 +88,11 @@ library CharacterLogic {
         emit Events.SetLinkModule4Character(characterId, linkModule, returnData, block.timestamp);
     }
 
+    /**
+     * @notice  Sets new handle for a given character.
+     * @param   characterId  The character ID to set new handle for.
+     * @param   newHandle  New handle to set.
+     */
     function setHandle(
         uint256 characterId,
         string calldata newHandle,

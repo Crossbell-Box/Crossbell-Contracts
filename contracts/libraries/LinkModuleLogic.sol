@@ -11,6 +11,13 @@ import "../interfaces/ILinkModule4Linklist.sol";
 import "../interfaces/ILinkModule4Address.sol";
 
 library LinkModuleLogic {
+    /**
+     * @notice  Sets link module for a given note.
+     * @param   characterId  The character ID to set link module for.
+     * @param   noteId  The note ID to set link module for.
+     * @param   linkModule  The link module to set.
+     * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
+     */
     function setLinkModule4Note(
         uint256 characterId,
         uint256 noteId,
@@ -37,6 +44,12 @@ library LinkModuleLogic {
         }
     }
 
+    /**
+     * @notice  Sets link module for a given address.
+     * @param   account  The address to set link module for.
+     * @param   linkModule  The link module to set.
+     * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
+     */
     function setLinkModule4Address(
         address account,
         address linkModule,
@@ -57,6 +70,13 @@ library LinkModuleLogic {
         }
     }
 
+    /**
+     * @notice  Sets the mint module for a given note.
+     * @param   characterId  The character ID of note to set the mint module for.
+     * @param   noteId  The note ID of note.
+     * @param   mintModule  The mint module to set for note.
+     * @param   mintModuleInitData  The data to pass to the mint module.
+     */
     function setMintModule4Note(
         uint256 characterId,
         uint256 noteId,
@@ -83,6 +103,12 @@ library LinkModuleLogic {
         }
     }
 
+    /**
+     * @notice  Sets link module for a given linklist.
+     * @param   linklistId  The linklist ID to set link module for.
+     * @param   linkModule  The link module to set.
+     * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
+     */
     function setLinkModule4Linklist(
         uint256 linklistId,
         address linkModule,
@@ -103,6 +129,13 @@ library LinkModuleLogic {
         }
     }
 
+    /**
+     * @notice  Sets link module for a given ERC721 token.
+     * @param   tokenAddress  The token address of erc721 to set link module for.
+     * @param   tokenId  The token ID of erc721 to set link module for.
+     * @param   linkModule  The link module to set.
+     * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
+     */
     function setLinkModule4ERC721(
         address tokenAddress,
         uint256 tokenId,

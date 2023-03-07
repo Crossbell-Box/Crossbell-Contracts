@@ -37,6 +37,7 @@ contract Web3EntryBase is
     // solhint-disable-next-line private-vars-leading-underscore
     uint256 internal constant REVISION = 4;
 
+    /// @inheritdoc IWeb3Entry
     function initialize(
         string calldata name_,
         string calldata symbol_,
@@ -54,13 +55,7 @@ contract Web3EntryBase is
         emit Events.Web3EntryInitialized(block.timestamp);
     }
 
-    /**
-     * @notice Grant an address as an operator and authorize it with custom permissions.
-     * @param characterId ID of your character that you want to authorize.
-     * @param operator Address to grant operator permissions to.
-     * @param permissionBitMap Bitmap used for finer grained operator permissions controls.
-     * @dev Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol.
-     */
+    /// @inheritdoc IWeb3Entry
     function grantOperatorPermissions(
         uint256 characterId,
         address operator,
@@ -76,13 +71,7 @@ contract Web3EntryBase is
         );
     }
 
-    /**
-     * @notice Grant operators allowlist and blocklist roles of a note.
-     * @param characterId ID of character that you want to set.
-     * @param noteId ID of note that you want to set.
-     * @param blocklist blocklist addresses that you want to grant.
-     * @param allowlist allowlist addresses that you want to grant.
-     */
+    /// @inheritdoc IWeb3Entry
     function grantOperators4Note(
         uint256 characterId,
         uint256 noteId,
@@ -100,23 +89,14 @@ contract Web3EntryBase is
         );
     }
 
-    /**
-     * This method creates a character with the given parameters to the given address.
-     *
-     * @param vars The CreateCharacterData struct containing the following parameters:
-     *      * to: The address receiving the character.
-     *      * handle: The handle to set for the character.
-     *      * uri: The URI to set for the character metadata.
-     *      * linkModule: The link module to use, can be the zero address.
-     *      * linkModuleInitData: The link module initialization data, if any.
-     */
+    /// @inheritdoc IWeb3Entry
     function createCharacter(
         DataTypes.CreateCharacterData calldata vars
     ) external override returns (uint256 characterId) {
         return _createCharacter(vars, true);
     }
 
-    // owner permission
+    /// @inheritdoc IWeb3Entry
     function setHandle(uint256 characterId, string calldata newHandle) external override {
         _validateCallerPermission(characterId, OP.SET_HANDLE);
 
@@ -129,7 +109,7 @@ contract Web3EntryBase is
         CharacterLogic.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
     }
 
-    // owner permission
+    /// @inheritdoc IWeb3Entry
     function setSocialToken(uint256 characterId, address tokenAddress) external override {
         _validateCallerPermission(characterId, OP.SET_SOCIAL_TOKEN);
 
@@ -139,7 +119,7 @@ contract Web3EntryBase is
         CharacterLogic.setSocialToken(characterId, tokenAddress, _characterById);
     }
 
-    // owner permission
+    /// @inheritdoc IWeb3Entry
     function setPrimaryCharacterId(uint256 characterId) external override {
         _validateCallerIsCharacterOwner(characterId);
 
@@ -149,7 +129,7 @@ contract Web3EntryBase is
         emit Events.SetPrimaryCharacterId(msg.sender, characterId, oldCharacterId);
     }
 
-    // opSign permission
+    /// @inheritdoc IWeb3Entry
     function setCharacterUri(uint256 characterId, string calldata newUri) external override {
         _validateCallerPermission(characterId, OP.SET_CHARACTER_URI);
         _characterById[characterId].uri = newUri;
@@ -157,7 +137,7 @@ contract Web3EntryBase is
         emit Events.SetCharacterUri(characterId, newUri);
     }
 
-    // opSign permission
+    /// @inheritdoc IWeb3Entry
     function setLinklistUri(uint256 linklistId, string calldata uri) external override {
         uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
         _validateCallerPermission(ownerCharacterId, OP.SET_LINKLIST_URI);
@@ -165,6 +145,7 @@ contract Web3EntryBase is
         ILinklist(_linklist).setUri(linklistId, uri);
     }
 
+    /// @inheritdoc IWeb3Entry
     function linkCharacter(DataTypes.linkCharacterData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
         _validateCharacterExists(vars.toCharacterId);
@@ -180,16 +161,20 @@ contract Web3EntryBase is
         );
     }
 
+    /// @inheritdoc IWeb3Entry
     function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
 
         LinkLogic.unlinkCharacter(
-            vars,
+            vars.fromCharacterId,
+            vars.toCharacterId,
+            vars.linkType,
             _linklist,
             _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
     }
 
+    /// @inheritdoc IWeb3Entry
     function createThenLinkCharacter(
         DataTypes.createThenLinkCharacterData calldata vars
     ) external override returns (uint256 characterId) {
@@ -219,83 +204,138 @@ contract Web3EntryBase is
         );
     }
 
+    /// @inheritdoc IWeb3Entry
     function linkNote(DataTypes.linkNoteData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_NOTE);
         _validateNoteExists(vars.toCharacterId, vars.toNoteId);
 
         LinkLogic.linkNote(
-            vars,
+            vars.fromCharacterId,
+            vars.toCharacterId,
+            vars.toNoteId,
+            vars.linkType,
+            vars.data,
             _linklist,
             _noteByIdByCharacter[vars.toCharacterId][vars.toNoteId].linkModule,
             _attachedLinklists
         );
     }
 
+    /// @inheritdoc IWeb3Entry
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_NOTE);
 
-        LinkLogic.unlinkNote(vars, _linklist, _attachedLinklists);
+        LinkLogic.unlinkNote(
+            vars.fromCharacterId,
+            vars.toCharacterId,
+            vars.toNoteId,
+            vars.linkType,
+            _linklist,
+            _attachedLinklists
+        );
     }
 
+    /// @inheritdoc IWeb3Entry
     function linkERC721(DataTypes.linkERC721Data calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ERC721);
 
-        LinkLogic.linkERC721(vars, _linklist, _attachedLinklists);
+        LinkLogic.linkERC721(
+            vars.fromCharacterId,
+            vars.tokenAddress,
+            vars.tokenId,
+            vars.linkType,
+            _linklist,
+            _attachedLinklists
+        );
     }
 
+    /// @inheritdoc IWeb3Entry
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ERC721);
 
         LinkLogic.unlinkERC721(
-            vars,
+            vars.fromCharacterId,
+            vars.tokenAddress,
+            vars.tokenId,
+            vars.linkType,
             _linklist,
             _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
     }
 
+    /// @inheritdoc IWeb3Entry
     function linkAddress(DataTypes.linkAddressData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ADDRESS);
 
-        LinkLogic.linkAddress(vars, _linklist, _attachedLinklists);
+        LinkLogic.linkAddress(
+            vars.fromCharacterId,
+            vars.ethAddress,
+            vars.linkType,
+            _linklist,
+            _attachedLinklists
+        );
     }
 
+    /// @inheritdoc IWeb3Entry
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ADDRESS);
 
         LinkLogic.unlinkAddress(
-            vars,
+            vars.fromCharacterId,
+            vars.ethAddress,
+            vars.linkType,
             _linklist,
             _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
     }
 
+    /// @inheritdoc IWeb3Entry
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ANYURI);
 
-        LinkLogic.linkAnyUri(vars, _linklist, _attachedLinklists);
+        LinkLogic.linkAnyUri(
+            vars.fromCharacterId,
+            vars.toUri,
+            vars.linkType,
+            _linklist,
+            _attachedLinklists
+        );
     }
 
+    /// @inheritdoc IWeb3Entry
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ANYURI);
 
         LinkLogic.unlinkAnyUri(
-            vars,
+            vars.fromCharacterId,
+            vars.toUri,
+            vars.linkType,
             _linklist,
             _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
     }
 
+    /// @inheritdoc IWeb3Entry
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_LINKLIST);
 
-        LinkLogic.linkLinklist(vars, _linklist, _attachedLinklists);
+        LinkLogic.linkLinklist(
+            vars.fromCharacterId,
+            vars.toLinkListId,
+            vars.linkType,
+            _linklist,
+            _attachedLinklists
+        );
     }
 
+    /// @inheritdoc IWeb3Entry
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_LINKLIST);
 
         LinkLogic.unlinkLinklist(
-            vars,
+            vars.fromCharacterId,
+            vars.toLinkListId,
+            vars.linkType,
             _linklist,
             _attachedLinklists[vars.fromCharacterId][vars.linkType]
         );
@@ -358,6 +398,7 @@ contract Web3EntryBase is
      */
     //////////////////////////////////////////////////////////////
 
+    /// @inheritdoc IWeb3Entry
     function setLinkModule4Linklist(
         DataTypes.setLinkModule4LinklistData calldata vars
     ) external override {
@@ -374,11 +415,7 @@ contract Web3EntryBase is
         );
     }
 
-    /**
-     * @notice Set linkModule for an address.
-     * @dev Operators can't setLinkModule4Address, because this linkModule is for 
-     addresses and is irrelevan to characters.
-     */
+    /// @inheritdoc IWeb3Entry
     function setLinkModule4Address(
         DataTypes.setLinkModule4AddressData calldata vars
     ) external override {
@@ -392,6 +429,7 @@ contract Web3EntryBase is
         );
     }
 
+    /// @inheritdoc IWeb3Entry
     function mintNote(
         DataTypes.MintNoteData calldata vars
     ) external override returns (uint256 tokenId) {
@@ -407,6 +445,7 @@ contract Web3EntryBase is
         );
     }
 
+    /// @inheritdoc IWeb3Entry
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external override {
         _validateCallerPermission(vars.characterId, OP.SET_MINT_MODULE_FOR_NOTE);
         _validateNoteExists(vars.characterId, vars.noteId);
@@ -421,6 +460,7 @@ contract Web3EntryBase is
         );
     }
 
+    /// @inheritdoc IWeb3Entry
     function postNote(
         DataTypes.PostNoteData calldata vars
     ) external override returns (uint256 noteId) {
@@ -430,6 +470,7 @@ contract Web3EntryBase is
         PostLogic.postNoteWithLink(vars, noteId, 0, 0, "", _noteByIdByCharacter);
     }
 
+    /// @inheritdoc IWeb3Entry
     function setNoteUri(
         uint256 characterId,
         uint256 noteId,
@@ -442,10 +483,7 @@ contract Web3EntryBase is
         PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
     }
 
-    /**
-     * @notice lockNote put a note into a immutable state where no modifications are 
-     allowed. You should call this method to announce that this is the final version.
-     */
+    /// @inheritdoc IWeb3Entry
     function lockNote(uint256 characterId, uint256 noteId) external override {
         _validateCallerPermission(characterId, OP.LOCK_NOTE);
         _validateNoteExists(characterId, noteId);
@@ -455,6 +493,7 @@ contract Web3EntryBase is
         emit Events.LockNote(characterId, noteId);
     }
 
+    /// @inheritdoc IWeb3Entry
     function deleteNote(uint256 characterId, uint256 noteId) external override {
         _validateCallerPermission(characterId, OP.DELETE_NOTE);
         _validateNoteExists(characterId, noteId);
@@ -464,6 +503,7 @@ contract Web3EntryBase is
         emit Events.DeleteNote(characterId, noteId);
     }
 
+    /// @inheritdoc IWeb3Entry
     function postNote4Character(
         DataTypes.PostNoteData calldata vars,
         uint256 toCharacterId
@@ -486,6 +526,7 @@ contract Web3EntryBase is
         return noteId;
     }
 
+    /// @inheritdoc IWeb3Entry
     function postNote4Address(
         DataTypes.PostNoteData calldata vars,
         address ethAddress
@@ -508,6 +549,7 @@ contract Web3EntryBase is
         return noteId;
     }
 
+    /// @inheritdoc IWeb3Entry
     function postNote4Linklist(
         DataTypes.PostNoteData calldata vars,
         uint256 toLinklistId
@@ -530,6 +572,7 @@ contract Web3EntryBase is
         return noteId;
     }
 
+    /// @inheritdoc IWeb3Entry
     function postNote4Note(
         DataTypes.PostNoteData calldata vars,
         DataTypes.NoteStruct calldata note
@@ -552,6 +595,7 @@ contract Web3EntryBase is
         return noteId;
     }
 
+    /// @inheritdoc IWeb3Entry
     function postNote4ERC721(
         DataTypes.PostNoteData calldata vars,
         DataTypes.ERC721Struct calldata erc721
@@ -578,6 +622,7 @@ contract Web3EntryBase is
         return noteId;
     }
 
+    /// @inheritdoc IWeb3Entry
     function postNote4AnyUri(
         DataTypes.PostNoteData calldata vars,
         string calldata uri
@@ -600,24 +645,12 @@ contract Web3EntryBase is
         return noteId;
     }
 
-    /**
-     * @notice Get operator list of a character. This operator list has only a sole purpose, which is
-     * keeping records of keys of `operatorsPermissionBitMap`. Thus, addresses queried by this function
-     * not always have operator permissions. Keep in mind don't use this function to check
-     * authorizations!!!
-     * @param characterId ID of your character that you want to check.
-     * @return All keys of operatorsPermission4NoteBitMap.
-     */
+    /// @inheritdoc IWeb3Entry
     function getOperators(uint256 characterId) external view override returns (address[] memory) {
         return _operatorsByCharacter[characterId].values();
     }
 
-    /**
-     * @notice Get permission bitmap of an operator.
-     * @param characterId ID of character that you want to check.
-     * @param operator Address to grant operator permissions to.
-     * @return Permission bitmap of this operator.
-     */
+    /// @inheritdoc IWeb3Entry
     function getOperatorPermissions(
         uint256 characterId,
         address operator
@@ -625,11 +658,7 @@ contract Web3EntryBase is
         return _operatorsPermissionBitMap[characterId][operator];
     }
 
-    /**
-     * @notice Get operators blocklist and allowlist for a note.
-     * @param characterId ID of character to query.
-     * @param noteId ID of note to query.
-     */
+    /// @inheritdoc IWeb3Entry
     function getOperators4Note(
         uint256 characterId,
         uint256 noteId
@@ -638,13 +667,7 @@ contract Web3EntryBase is
         allowlist = _operators4Note[characterId][noteId].allowlist.values();
     }
 
-    /**
-     * @notice Query if a operator has permission for a note.
-     * @param characterId ID of character that you want to query.
-     * @param noteId ID of note that you want to query.
-     * @param operator Address to query.
-     * @return true if Operator has permission for a note, otherwise false.
-     */
+    /// @inheritdoc IWeb3Entry
     function isOperatorAllowedForNote(
         uint256 characterId,
         uint256 noteId,
@@ -653,21 +676,25 @@ contract Web3EntryBase is
         return _isOperatorAllowedForNote(characterId, noteId, operator);
     }
 
+    /// @inheritdoc IWeb3Entry
     function getPrimaryCharacterId(address account) external view override returns (uint256) {
         return _primaryCharacterByAddress[account];
     }
 
+    /// @inheritdoc IWeb3Entry
     function isPrimaryCharacter(uint256 characterId) external view override returns (bool) {
         address account = ownerOf(characterId);
         return characterId == _primaryCharacterByAddress[account];
     }
 
+    /// @inheritdoc IWeb3Entry
     function getCharacter(
         uint256 characterId
     ) external view override returns (DataTypes.Character memory) {
         return _characterById[characterId];
     }
 
+    /// @inheritdoc IWeb3Entry
     function getCharacterByHandle(
         string calldata handle
     ) external view override returns (DataTypes.Character memory) {
@@ -676,14 +703,17 @@ contract Web3EntryBase is
         return _characterById[characterId];
     }
 
+    /// @inheritdoc IWeb3Entry
     function getHandle(uint256 characterId) external view override returns (string memory) {
         return _characterById[characterId].handle;
     }
 
+    /// @inheritdoc IWeb3Entry
     function getCharacterUri(uint256 characterId) external view override returns (string memory) {
         return tokenURI(characterId);
     }
 
+    /// @inheritdoc IWeb3Entry
     function getNote(
         uint256 characterId,
         uint256 noteId
@@ -691,14 +721,17 @@ contract Web3EntryBase is
         return _noteByIdByCharacter[characterId][noteId];
     }
 
+    /// @inheritdoc IWeb3Entry
     function getLinkModule4Address(address account) external view override returns (address) {
         return _linkModules4Address[account];
     }
 
+    /// @inheritdoc IWeb3Entry
     function getLinkModule4Linklist(uint256 tokenId) external view override returns (address) {
         return _linkModules4Linklist[tokenId];
     }
 
+    /// @inheritdoc IWeb3Entry
     function getLinkModule4ERC721(
         address tokenAddress,
         uint256 tokenId
@@ -706,10 +739,12 @@ contract Web3EntryBase is
         return _linkModules4ERC721[tokenAddress][tokenId];
     }
 
+    /// @inheritdoc IWeb3Entry
     function getLinklistUri(uint256 tokenId) external view override returns (string memory) {
         return ILinklist(_linklist).Uri(tokenId);
     }
 
+    /// @inheritdoc IWeb3Entry
     function getLinklistId(
         uint256 characterId,
         bytes32 linkType
@@ -717,14 +752,17 @@ contract Web3EntryBase is
         return _attachedLinklists[characterId][linkType];
     }
 
+    /// @inheritdoc IWeb3Entry
     function getLinklistType(uint256 linkListId) external view override returns (bytes32) {
         return ILinklist(_linklist).getLinkType(linkListId);
     }
 
+    /// @inheritdoc IWeb3Entry
     function getLinklistContract() external view override returns (address) {
         return _linklist;
     }
 
+    /// @inheritdoc IWeb3Entry
     function getRevision() external pure override returns (uint256) {
         return REVISION;
     }
