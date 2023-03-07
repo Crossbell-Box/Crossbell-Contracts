@@ -80,12 +80,13 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
     }
 
     /**
-     * @notice  Withdraw character#`characterId` to `to` using the nonce, expires and the proof.
-     * Emits the `Withdraw` event.
-     * @dev     Proof is the signature from someone with the ADMIN_ROLE. The message to sign is
-     * the packed data of this contract's address, `characterId`, `nonce` and `expires`.
+    
+     * @notice  Withdraw character#`characterId` to `to` using the nonce, expires and the proof. <br>
+     * Emits the `Withdraw` event. <br>
+     * @dev Proof is the signature from someone with the ADMIN_ROLE. The message to sign is
+     * the packed data of this contract's address, `characterId`, `nonce` and `expires`. <br>
      *
-     * Here's an example to generate a proof:
+     * Here's an example to generate a proof: <br>
      * ```
      *     digest = ethers.utils.arrayify(
      *          ethers.utils.solidityKeccak256(
@@ -96,10 +97,10 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      *      proof = await owner.signMessage(digest);
      * ```
      *
-     * Requirements:
+     * <b> Requirements: </b>:
      * - `expires` is greater than the current timestamp
-     * - `proof` is signed by the one with the ADMIN_ROLE
-     *
+     * - `proof` is signed by the one with the ADMIN_ROLE 
+     * 
      * @param   to  Receiver of the withdrawn character.
      * @param   characterId  The token id of the character to withdraw.
      * @param   nonce  Random nonce used to generate the proof.
@@ -136,9 +137,9 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * @dev  Whenever a character `tokenId` is transferred to this contract via {IERC721-safeTransferFrom}
      * by `operator` from `from`, this function is called. `data` will be decoded as an address and set as
      * the operator of the character. If the `data` is empty, the `operator` will be default operator of the
-     * character.
+     * character. <br>
      *
-     * Requirements:
+     * <b> Requirements: </b>:
      *
      * - `msg.sender` must be address of Web3Entry.
      * - `operator` must has ADMIN_ROLE.
@@ -180,6 +181,16 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
     }
 
     /// @inheritdoc IERC777Recipient
+    /**
+     * @notice  Receives tokens. Only specific tokens are accepted, so be careful not to send tokens to this 
+     address randomly.
+     * @dev     The userData/operatorData should be an abi-encoded bytes of `fromCharacterId` and `toCharacter`,
+     * which are both uint256 type, so the length of data is 64.
+     * @param   to  The Newbie Villa contract address.
+     * @param   amount  The amount of token sent.
+     * @param   userData  The abi-encoded bytes of `fromCharacterId` and `toCharacter`.
+     * @param   operatorData  The abi-encoded bytes of `fromCharacterId` and `toCharacter`.
+     */
     function tokensReceived(
         address,
         address,
@@ -190,11 +201,6 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
     ) external override(IERC777Recipient) {
         require(msg.sender == _token, "NewbieVilla: invalid token");
         require(address(this) == to, "NewbieVilla: invalid receiver");
-
-        /**
-         * @dev The userData/operatorData should be an abi encoded bytes of `fromCharacterId` and `toCharacter`,
-         * which are both uint256 type, so the length of data is 64.
-         */
         bytes memory data = userData.length > 0 ? userData : operatorData;
 
         if (data.length == 64) {
@@ -206,7 +212,9 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
     }
 
     /**
-     * @dev Returns the amount of tokens owned by `characterId`.
+     * @notice  Returns the amount of tokens owned by `characterId`.
+     * @param   characterId  The character ID to query.
+     * @return  uint256  The amount of tokens owned by the character.
      */
     function balanceOf(uint256 characterId) external view returns (uint256) {
         return _balances[characterId];

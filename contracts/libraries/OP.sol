@@ -3,7 +3,7 @@
 pragma solidity 0.8.16;
 
 /**
-* <b> In Crossbell's operator system, every uint8 stands for a single method in Web3Entry.sol. <br>
+* <p> In Crossbell's operator system, every uint8 stands for a single method in Web3Entry.sol. <br>
 * For most cases, we recommend simply granting operators the OPERATOR_SIGN_PERMISSION_BITMAP,
 * which gives operator full permissions aside from owner permissions and future permissions, but for
 * those who're more aware of access control, the custom permission bitmap is all yours,
@@ -14,7 +14,7 @@ pragma solidity 0.8.16;
 
 * Permissions are laid out in a increasing order of power.
 * so the bitmap looks like this:
-</b>
+</p>
 
 <table>
 <tr>
