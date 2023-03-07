@@ -146,9 +146,10 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="linkmodulelogic"><a class="header" href="#linkmodulelogic">LinkModuleLogic</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/edaed4452b5ed73b53330a35c920c68772f0dc46/contracts/libraries/LinkModuleLogic.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/5eacfc3115a8fc4742e12321c174d4bc749042c8/contracts/libraries/LinkModuleLogic.sol">Git Source</a></p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="setlinkmodule4note"><a class="header" href="#setlinkmodule4note">setLinkModule4Note</a></h3>
+<p>Sets link module for a given note.</p>
 <pre><code class="language-solidity">function setLinkModule4Note(
     uint256 characterId,
     uint256 noteId,
@@ -157,7 +158,17 @@
     mapping(uint256 =&gt; mapping(uint256 =&gt; DataTypes.Note)) storage _noteByIdByCharacter
 ) external;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>characterId</code></td><td><code>uint256</code></td><td>The character ID to set link module for.</td></tr>
+<tr><td><code>noteId</code></td><td><code>uint256</code></td><td>The note ID to set link module for.</td></tr>
+<tr><td><code>linkModule</code></td><td><code>address</code></td><td>The link module to set.</td></tr>
+<tr><td><code>linkModuleInitData</code></td><td><code>bytes</code></td><td>The data to pass to the link module for initialization, if any.</td></tr>
+<tr><td><code>_noteByIdByCharacter</code></td><td><code>mapping(uint256 =&gt; mapping(uint256 =&gt; Note.DataTypes))</code></td><td></td></tr>
+</tbody></table>
+</div>
 <h3 id="setlinkmodule4address"><a class="header" href="#setlinkmodule4address">setLinkModule4Address</a></h3>
+<p>Sets link module for a given address.</p>
 <pre><code class="language-solidity">function setLinkModule4Address(
     address account,
     address linkModule,
@@ -165,7 +176,16 @@
     mapping(address =&gt; address) storage _linkModules4Address
 ) external;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>account</code></td><td><code>address</code></td><td>The address to set link module for.</td></tr>
+<tr><td><code>linkModule</code></td><td><code>address</code></td><td>The link module to set.</td></tr>
+<tr><td><code>linkModuleInitData</code></td><td><code>bytes</code></td><td>The data to pass to the link module for initialization, if any.</td></tr>
+<tr><td><code>_linkModules4Address</code></td><td><code>mapping(address =&gt; address)</code></td><td></td></tr>
+</tbody></table>
+</div>
 <h3 id="setmintmodule4note"><a class="header" href="#setmintmodule4note">setMintModule4Note</a></h3>
+<p>Sets the mint module for a given note.</p>
 <pre><code class="language-solidity">function setMintModule4Note(
     uint256 characterId,
     uint256 noteId,
@@ -174,7 +194,17 @@
     mapping(uint256 =&gt; mapping(uint256 =&gt; DataTypes.Note)) storage _noteByIdByCharacter
 ) external;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>characterId</code></td><td><code>uint256</code></td><td>The character ID of note to set the mint module for.</td></tr>
+<tr><td><code>noteId</code></td><td><code>uint256</code></td><td>The note ID of note.</td></tr>
+<tr><td><code>mintModule</code></td><td><code>address</code></td><td>The mint module to set for note.</td></tr>
+<tr><td><code>mintModuleInitData</code></td><td><code>bytes</code></td><td>The data to pass to the mint module.</td></tr>
+<tr><td><code>_noteByIdByCharacter</code></td><td><code>mapping(uint256 =&gt; mapping(uint256 =&gt; Note.DataTypes))</code></td><td></td></tr>
+</tbody></table>
+</div>
 <h3 id="setlinkmodule4linklist"><a class="header" href="#setlinkmodule4linklist">setLinkModule4Linklist</a></h3>
+<p>Sets link module for a given linklist.</p>
 <pre><code class="language-solidity">function setLinkModule4Linklist(
     uint256 linklistId,
     address linkModule,
@@ -182,7 +212,16 @@
     mapping(uint256 =&gt; address) storage _linkModules4Linklist
 ) external;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>linklistId</code></td><td><code>uint256</code></td><td>The linklist ID to set link module for.</td></tr>
+<tr><td><code>linkModule</code></td><td><code>address</code></td><td>The link module to set.</td></tr>
+<tr><td><code>linkModuleInitData</code></td><td><code>bytes</code></td><td>The data to pass to the link module for initialization, if any.</td></tr>
+<tr><td><code>_linkModules4Linklist</code></td><td><code>mapping(uint256 =&gt; address)</code></td><td></td></tr>
+</tbody></table>
+</div>
 <h3 id="setlinkmodule4erc721"><a class="header" href="#setlinkmodule4erc721">setLinkModule4ERC721</a></h3>
+<p>Sets link module for a given ERC721 token.</p>
 <pre><code class="language-solidity">function setLinkModule4ERC721(
     address tokenAddress,
     uint256 tokenId,
@@ -191,7 +230,15 @@
     mapping(address =&gt; mapping(uint256 =&gt; address)) storage _linkModules4ERC721
 ) external;
 </code></pre>
-
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>tokenAddress</code></td><td><code>address</code></td><td>The token address of erc721 to set link module for.</td></tr>
+<tr><td><code>tokenId</code></td><td><code>uint256</code></td><td>The token ID of erc721 to set link module for.</td></tr>
+<tr><td><code>linkModule</code></td><td><code>address</code></td><td>The link module to set.</td></tr>
+<tr><td><code>linkModuleInitData</code></td><td><code>bytes</code></td><td>The data to pass to the link module for initialization, if any.</td></tr>
+<tr><td><code>_linkModules4ERC721</code></td><td><code>mapping(address =&gt; mapping(uint256 =&gt; address))</code></td><td></td></tr>
+</tbody></table>
+</div>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">

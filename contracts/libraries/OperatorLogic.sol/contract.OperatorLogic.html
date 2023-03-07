@@ -146,9 +146,10 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="operatorlogic"><a class="header" href="#operatorlogic">OperatorLogic</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/edaed4452b5ed73b53330a35c920c68772f0dc46/contracts/libraries/OperatorLogic.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/5eacfc3115a8fc4742e12321c174d4bc749042c8/contracts/libraries/OperatorLogic.sol">Git Source</a></p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="grantoperatorpermissions"><a class="header" href="#grantoperatorpermissions">grantOperatorPermissions</a></h3>
+<p>Grants permission to a given operator for a character.</p>
 <pre><code class="language-solidity">function grantOperatorPermissions(
     uint256 characterId,
     address operator,
@@ -157,8 +158,17 @@
     mapping(uint256 =&gt; mapping(address =&gt; uint256)) storage _operatorsPermissionBitMap
 ) external;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>characterId</code></td><td><code>uint256</code></td><td>The ID of the character to set operator for.</td></tr>
+<tr><td><code>operator</code></td><td><code>address</code></td><td>The operator address to set.</td></tr>
+<tr><td><code>permissionBitMap</code></td><td><code>uint256</code></td><td>The permission bitmap for the operator.</td></tr>
+<tr><td><code>_operatorsByCharacter</code></td><td><code>mapping(uint256 =&gt; AddressSet.EnumerableSet)</code></td><td></td></tr>
+<tr><td><code>_operatorsPermissionBitMap</code></td><td><code>mapping(uint256 =&gt; mapping(address =&gt; uint256))</code></td><td></td></tr>
+</tbody></table>
+</div>
 <h3 id="grantoperators4note"><a class="header" href="#grantoperators4note">grantOperators4Note</a></h3>
-<p>Set blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.</p>
+<p>Sets blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.</p>
 <pre><code class="language-solidity">function grantOperators4Note(
     uint256 characterId,
     uint256 noteId,
@@ -169,8 +179,8 @@
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>characterId</code></td><td><code>uint256</code></td><td>The character Id of the note owner.</td></tr>
-<tr><td><code>noteId</code></td><td><code>uint256</code></td><td>The note Id to grant.</td></tr>
+<tr><td><code>characterId</code></td><td><code>uint256</code></td><td>The character ID of the note owner.</td></tr>
+<tr><td><code>noteId</code></td><td><code>uint256</code></td><td>The note ID to grant.</td></tr>
 <tr><td><code>blocklist</code></td><td><code>address[]</code></td><td>The addresses list of blocked operators.</td></tr>
 <tr><td><code>allowlist</code></td><td><code>address[]</code></td><td>The addresses list of allowed operators.</td></tr>
 <tr><td><code>_operators4Note</code></td><td><code>mapping(uint256 =&gt; mapping(uint256 =&gt; Operators4Note.DataTypes))</code></td><td></td></tr>
@@ -187,7 +197,7 @@
 ) internal;
 </code></pre>
 <h3 id="_bitmapfilter"><a class="header" href="#_bitmapfilter">_bitmapFilter</a></h3>
-<p><em>_bitmapFilter unsets bits of non-existent permission IDs to zero.
+<p><em>_bitmapFilter unsets bits of non-existent permission IDs to zero. <br>
 These unset permission IDs are meaningless now, but they are reserved for future use,
 so it's best to leave them blank and avoid messing up with future methods.</em></p>
 <pre><code class="language-solidity">function _bitmapFilter(uint256 bitmap) internal pure returns (uint256);

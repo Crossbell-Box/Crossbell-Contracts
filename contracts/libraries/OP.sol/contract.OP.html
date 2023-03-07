@@ -146,19 +146,31 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="op"><a class="header" href="#op">OP</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/edaed4452b5ed73b53330a35c920c68772f0dc46/contracts/libraries/OP.sol">Git Source</a></p>
-<p><em>every uint8 stands for a single method in Web3Entry.sol.
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/5eacfc3115a8fc4742e12321c174d4bc749042c8/contracts/libraries/OP.sol">Git Source</a></p>
+<p> In Crossbell's operator system, every uint8 stands for a single method in Web3Entry.sol. <br>
 For most cases, we recommend simply granting operators the OPERATOR_SIGN_PERMISSION_BITMAP,
 which gives operator full permissions aside from owner permissions and future permissions, but for
 those who're more aware of access control, the custom permission bitmap is all yours,
-and you can find every customizable methods below.
-<code>OPERATOR_SIGN_PERMISSION_BITMAP</code> have access to all methods in <code>OPERATOR_SYNC_PERMISSION_BITMAP</code>
-plus more permissions for signing.
+and you can find every customizable methods below. <br>
+`OPERATOR_SIGN_PERMISSION_BITMAP` have access to all methods in `OPERATOR_SYNC_PERMISSION_BITMAP`
+plus more permissions for signing. <br>
 Permissions are laid out in a increasing order of power.
 so the bitmap looks like this:
-|   opSync   |   opSign   |   future   |  owner   |
-|------------|------------|------------|----------|
-|255------236|235------176|175-------21|20-------0|</em></p>
+</p>
+<table>
+<tr>
+<td>opSync</td>
+<td>opSign</td>
+<td>future</td>
+<td>owner</td>
+<tr>
+<tr>
+<td>255, 236</td>
+<td>235, 176</td>
+<td>175, 21</td>
+<td>20, 0</td>
+<tr>
+</table>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
 <h3 id="uint256_max"><a class="header" href="#uint256_max">UINT256_MAX</a></h3>
 <pre><code class="language-solidity">uint256 internal constant UINT256_MAX = ~uint256(0);
