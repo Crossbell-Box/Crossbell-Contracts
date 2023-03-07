@@ -141,7 +141,7 @@ contract Tips is Initializable, IERC777Recipient {
      * and `toCharacterId` encoded in the `data`. <br>
      * `send` interface is
      * [IERC777-send](https://docs.openzeppelin.com/contracts/2.x/api/token/erc777#IERC777-send-address-uint256-bytes-),
-     * and parameters encode refers 
+     * and parameters encode refers
      * [AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode).<br>
      *
      * <b> Requirements: </b>
