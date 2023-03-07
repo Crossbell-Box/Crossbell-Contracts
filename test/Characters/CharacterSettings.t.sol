@@ -56,6 +56,7 @@ contract CharacterSettingsTest is Test, SetUp, Utils {
         assertEq(character.characterId, 0);
     }
 
+    // solhint-disable-next-line function-max-lines
     function testSetHandleFail() public {
         // not owner can't set handle
         vm.prank(bob);
@@ -77,6 +78,74 @@ contract CharacterSettingsTest is Test, SetUp, Utils {
         vm.prank(alice);
         vm.expectRevert(abi.encodeWithSelector(ErrHandleExists.selector));
         web3Entry.setHandle(Const.FIRST_CHARACTER_ID, Const.MOCK_CHARACTER_HANDLE);
+
+        // handle length > 31
+        vm.startPrank(alice);
+        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
+        web3Entry.setHandle(Const.FIRST_CHARACTER_ID, "da2423cea4f1047556e7a142f81a7eda");
+
+        // empty handle
+        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
+        web3Entry.setHandle(Const.FIRST_CHARACTER_ID, "");
+
+        // handle length < 3
+        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
+        web3Entry.setHandle(Const.FIRST_CHARACTER_ID, "a");
+        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
+        web3Entry.setHandle(Const.FIRST_CHARACTER_ID, "ab");
+
+        // invalid character handle
+        // string memory s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()+|[]:,";
+        string[42] memory handles = [
+            "abA",
+            "abB",
+            "abC",
+            "abD",
+            "abE",
+            "abF",
+            "abG",
+            "abH",
+            "abI",
+            "abJ",
+            "abK",
+            "abL",
+            "abM",
+            "abN",
+            "abO",
+            "abP",
+            "abQ",
+            "abR",
+            "abS",
+            "abT",
+            "abU",
+            "abV",
+            "abW",
+            "abX",
+            "abY",
+            "abZ",
+            "ab!",
+            "ab@",
+            "ab#",
+            "ab$",
+            "ab%",
+            "ab^",
+            "ab&",
+            "ab*",
+            "ab(",
+            "ab)",
+            "ab+",
+            "ab|",
+            "ab[",
+            "ab]",
+            "ab:",
+            "ab,"
+        ];
+
+        for (uint256 i = 0; i < handles.length; i++) {
+            // set handle fail
+            vm.expectRevert(abi.encodeWithSelector(ErrHandleContainsInvalidCharacters.selector));
+            web3Entry.setHandle(Const.FIRST_CHARACTER_ID, handles[i]);
+        }
     }
 
     /// setSocialToken
