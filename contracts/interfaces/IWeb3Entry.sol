@@ -14,10 +14,6 @@ interface IWeb3Entry {
         address newbieVilla_
     ) external;
 
-    ////////////////////////////////////////////////////////
-    ///     EXTERNAL  FUNCTIONS
-    ////////////////////////////////////////////////////////
-
     /**
      * This method creates a character with the given parameters to the given address.
      *
@@ -217,10 +213,6 @@ interface IWeb3Entry {
         DataTypes.PostNoteData calldata vars,
         string calldata uri
     ) external returns (uint256);
-
-    ////////////////////////////////////////////////////////
-    ///      VIEW FUNCTIONS
-    ////////////////////////////////////////////////////////
 
     /**
      * @notice Get operator list of a character. This operator list has only a sole purpose, which is
