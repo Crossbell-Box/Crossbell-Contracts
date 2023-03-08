@@ -11,8 +11,12 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
  * @notice This is a simple MintModule implementation, inheriting from the IMintModule4Note interface.
  */
 contract ApprovalMintModule is IMintModule4Note, ModuleBase {
-    mapping(address => mapping(uint256 => mapping(uint256 => mapping(address => bool))))
+    // characterId => noteId => address => isApproved
+    mapping(uint256 => mapping(uint256 => mapping(address => bool)))
         internal _approvedByCharacterByNoteByOwner;
+    error ErrNotCharacterOwner();
+    error ErrInvalidParams();
+    error ErrNotApproved();
 
     // solhint-disable-next-line no-empty-blocks
     constructor(address web3Entry_) ModuleBase(web3Entry_) {}
@@ -21,14 +25,14 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         uint256 characterId,
         uint256 noteId,
         bytes calldata data
-    ) external override returns (bytes memory) {
-        address owner = IERC721(web3Entry).ownerOf(characterId);
+    ) external override onlyWeb3Entry returns (bytes memory) {
+        // address owner = IERC721(web3Entry).ownerOf(characterId);
 
         if (data.length > 0) {
             address[] memory addresses = abi.decode(data, (address[]));
             uint256 addressesLength = addresses.length;
             for (uint256 i = 0; i < addressesLength; ) {
-                _approvedByCharacterByNoteByOwner[owner][characterId][noteId][addresses[i]] = true;
+                _approvedByCharacterByNoteByOwner[characterId][noteId][addresses[i]] = true;
                 unchecked {
                     ++i;
                 }
@@ -52,15 +56,16 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         address[] calldata addresses,
         bool[] calldata toApprove
     ) external {
-        require(addresses.length == toApprove.length, "InitParamsInvalid");
+        // msg.sender should be the character owner
         address owner = IERC721(web3Entry).ownerOf(characterId);
-        require(msg.sender == owner, "NotCharacterOwner");
+        if (msg.sender != owner) revert ErrNotCharacterOwner();
+
+        // check Params
+        if (addresses.length != toApprove.length) revert ErrInvalidParams();
 
         uint256 addressesLength = addresses.length;
         for (uint256 i = 0; i < addressesLength; ) {
-            _approvedByCharacterByNoteByOwner[owner][characterId][noteId][addresses[i]] = toApprove[
-                i
-            ];
+            _approvedByCharacterByNoteByOwner[characterId][noteId][addresses[i]] = toApprove[i];
             unchecked {
                 ++i;
             }
@@ -78,17 +83,12 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         uint256 noteId,
         bytes calldata
     ) external view override onlyWeb3Entry {
-        address owner = IERC721(web3Entry).ownerOf(characterId);
-
-        require(
-            _approvedByCharacterByNoteByOwner[owner][characterId][noteId][to],
-            "ApprovalMintModule: NotApproved"
-        );
+        if (_approvedByCharacterByNoteByOwner[characterId][noteId][to] != true)
+            revert ErrNotApproved();
     }
 
     /**
      * @notice Checks whether the `account` is approved to mint specified note .
-     * @param characterOwner Address of character owner.
      * @param characterId ID of character to query.
      * @param noteId  ID of note to query.
      * @param account Address of account to query.
@@ -96,11 +96,10 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
      */
     // solhint-disable-next-line comprehensive-interface
     function isApproved(
-        address characterOwner,
         uint256 characterId,
         uint256 noteId,
         address account
     ) external view returns (bool) {
-        return _approvedByCharacterByNoteByOwner[characterOwner][characterId][noteId][account];
+        return _approvedByCharacterByNoteByOwner[characterId][noteId][account];
     }
 }
