@@ -14,7 +14,7 @@ import "../../contracts/MintNFT.sol";
 import "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import "../../contracts/modules/link/ApprovalLinkModule4Character.sol";
 import "../../contracts/modules/mint/ApprovalMintModule.sol";
-import "../../contracts/modules/mint/ApprovalMintModule.sol";
+import "../../contracts/modules/mint/ApprovalWithAmountMintModule.sol";
 import "../../contracts/mocks/NFT.sol";
 import "./Const.sol";
 import "./utils.sol";
@@ -29,6 +29,7 @@ contract SetUp is Test {
     MintNFT public mintNFT;
     ApprovalLinkModule4Character public linkModule4Character;
     ApprovalMintModule public approvalMintModule;
+    ApprovalWithAmountMintModule public approvalWithAmountMintModule;
     NFT public nft;
     CharacterBoundToken public cbt;
     TransparentUpgradeableProxy public proxyWeb3Entry;
@@ -89,6 +90,7 @@ contract SetUp is Test {
         linkModule4Character = new ApprovalLinkModule4Character(address(web3Entry));
         // deploy mintModule4Note
         approvalMintModule = new ApprovalMintModule(address(web3Entry));
+        approvalWithAmountMintModule = new ApprovalWithAmountMintModule(address(web3Entry));
 
         // deploy cbt
         cbt = new CharacterBoundToken(address(web3Entry));
