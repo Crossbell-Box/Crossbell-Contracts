@@ -16,9 +16,35 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
 
     function setUp() public {
         _setUp();
+
         // create character
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+    }
+
+    function testInitializeMintModule() public {
+        vm.prank(address(web3Entry));
+        // call initializeMintModule
+    }
+
+    function testInitializeMintModuleFail() public {
+        vm.prank(address(web3Entry));
+    }
+
+    function testApprove() public {
+        vm.prank(address(web3Entry));
+    }
+
+    function testApproveFail() public {
+        vm.prank(address(web3Entry));
+    }
+
+    function testProcessMint() public {
+        vm.prank(address(web3Entry));
+    }
+
+    function testProcessMintFail() public {
+        vm.prank(address(web3Entry));
     }
 
     // solhint-disable-next-line function-max-lines
