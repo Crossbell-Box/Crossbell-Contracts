@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
-import "../interfaces/IERC20Mintable.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
-import "@openzeppelin/contracts/token/ERC777/ERC777.sol";
+import {IERC20Mintable} from "../interfaces/IERC20Mintable.sol";
+import {AccessControlEnumerable} from "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {ERC777} from "@openzeppelin/contracts/token/ERC777/ERC777.sol";
+import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
-contract MiraToken is Context, AccessControlEnumerable, IERC20Mintable, ERC777 {
+contract MiraToken is AccessControlEnumerable, IERC20Mintable, ERC777 {
     bytes32 public constant BLOCK_ROLE = keccak256("BLOCK_ROLE");
 
     constructor(

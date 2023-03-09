@@ -2,8 +2,9 @@
 
 pragma solidity 0.8.16;
 
-import "./ERC721Enumerable.sol";
-import "../libraries/Events.sol";
+import {ERC721} from "./ERC721.sol";
+import {ERC721Enumerable} from "./ERC721Enumerable.sol";
+import {Events} from "../libraries/Events.sol";
 
 abstract contract NFTBase is ERC721Enumerable {
     function _initialize(string calldata name, string calldata symbol) internal {

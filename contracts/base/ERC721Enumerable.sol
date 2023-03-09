@@ -2,8 +2,11 @@
 
 pragma solidity 0.8.16;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
-import "./ERC721.sol";
+import {
+    IERC721Enumerable
+} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {ERC721} from "./ERC721.sol";
+import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 
 abstract contract ERC721Enumerable is ERC721, IERC721Enumerable {
     // Mapping from owner to list of owned token IDs

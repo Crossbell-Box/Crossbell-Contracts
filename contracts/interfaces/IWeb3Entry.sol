@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.16;
 
-import "../libraries/DataTypes.sol";
+import {DataTypes} from "../libraries/DataTypes.sol";
 
 interface IWeb3Entry {
     function initialize(

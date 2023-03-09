@@ -2,7 +2,7 @@
 // slither-disable-start naming-convention
 pragma solidity 0.8.16;
 
-import "../libraries/DataTypes.sol";
+import {DataTypes} from "../libraries/DataTypes.sol";
 
 contract Web3EntryStorage {
     // characterId => Character

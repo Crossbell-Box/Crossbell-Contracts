@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.16;
 
-import "../../interfaces/ILinkModule4Note.sol";
-import "../ModuleBase.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {ILinkModule4Note} from "../../interfaces/ILinkModule4Note.sol";
+import {ModuleBase} from "../ModuleBase.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /**
  * @title ApprovalLinkModule4Note

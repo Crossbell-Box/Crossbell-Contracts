@@ -2,13 +2,13 @@
 // solhint-disable  private-vars-leading-underscore
 pragma solidity 0.8.16;
 
-import "./Events.sol";
-import "./DataTypes.sol";
-import "../interfaces/ILinklist.sol";
-import "../interfaces/ILinkModule4Character.sol";
-import "../interfaces/ILinkModule4Note.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {Events} from "./Events.sol";
+import {DataTypes} from "./DataTypes.sol";
+import {ILinklist} from "../interfaces/ILinklist.sol";
+import {ILinkModule4Character} from "../interfaces/ILinkModule4Character.sol";
+import {ILinkModule4Note} from "../interfaces/ILinkModule4Note.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 library LinkLogic {
     using EnumerableSet for EnumerableSet.Bytes32Set;
@@ -31,7 +31,7 @@ library LinkLogic {
         address linkModule,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
-        address linker = IERC721Enumerable(address(this)).ownerOf(fromCharacterId);
+        address linker = IERC721(address(this)).ownerOf(fromCharacterId);
         uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist, _attachedLinklists);
 
         // add to link list
@@ -62,7 +62,7 @@ library LinkLogic {
         address linklist,
         uint256 linklistId
     ) external {
-        address linker = IERC721Enumerable(address(this)).ownerOf(fromCharacterId);
+        address linker = IERC721(address(this)).ownerOf(fromCharacterId);
         // remove from link list
         ILinklist(linklist).removeLinkingCharacterId(linklistId, toCharacterId);
 
@@ -89,7 +89,7 @@ library LinkLogic {
         address linkModule,
         mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
     ) external {
-        address linker = IERC721Enumerable(address(this)).ownerOf(fromCharacterId);
+        address linker = IERC721(address(this)).ownerOf(fromCharacterId);
         uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist, _attachedLinklists);
 
         // add to link list

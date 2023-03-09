@@ -2,9 +2,10 @@
 
 pragma solidity 0.8.16;
 
-import "../../interfaces/IMintModule4Note.sol";
-import "../ModuleBase.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IMintModule4Note} from "../../interfaces/IMintModule4Note.sol";
+import {ModuleBase} from "../ModuleBase.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @dev A struct containing associated data with each note.

@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
-import "forge-std/Test.sol";
-import "../../contracts/Web3Entry.sol";
-import "../../contracts/libraries/DataTypes.sol";
-import "../../contracts/libraries/Error.sol";
-import "../helpers/Const.sol";
-import "../helpers/utils.sol";
-import "../helpers/SetUp.sol";
+import {Test} from "forge-std/Test.sol";
+import {Web3Entry} from "../../contracts/Web3Entry.sol";
+import {Events} from "../../contracts/libraries/Events.sol";
+import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
+import {
+    ErrNotEnoughPermission,
+    ErrCallerNotWeb3EntryOrNotOwner
+} from "../../contracts/libraries/Error.sol";
+import {Const} from "../helpers/Const.sol";
+import {Utils} from "../helpers/Utils.sol";
+import {SetUp} from "../helpers/SetUp.sol";
 
 contract LinklistTest is Test, SetUp, Utils {
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
