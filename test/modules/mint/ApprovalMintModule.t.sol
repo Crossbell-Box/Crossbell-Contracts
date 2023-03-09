@@ -22,29 +22,61 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
     }
 
-    function testInitializeMintModule() public {
-        vm.prank(address(web3Entry));
-        // call initializeMintModule
-    }
-
-    function testInitializeMintModuleFail() public {
-        vm.prank(address(web3Entry));
-    }
-
-    function testApprove() public {
-        vm.prank(address(web3Entry));
-    }
-
-    function testApproveFail() public {
-        vm.prank(address(web3Entry));
-    }
-
     function testProcessMint() public {
-        vm.prank(address(web3Entry));
+        vm.prank(alice);
+        web3Entry.postNote(
+            DataTypes.PostNoteData(
+                Const.FIRST_CHARACTER_ID,
+                Const.MOCK_NOTE_URI,
+                address(0x0),
+                new bytes(0),
+                address(approvalMintModule),
+                abi.encode(addressList1),
+                false
+            )
+        );
+        vm.startPrank(address(web3Entry));
+        ApprovalMintModule(address(approvalMintModule)).processMint(
+            alice,
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            ""
+        );
+        ApprovalMintModule(address(approvalMintModule)).processMint(
+            bob,
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            ""
+        );
     }
 
     function testProcessMintFail() public {
-        vm.prank(address(web3Entry));
+        // not approved
+        vm.startPrank(address(web3Entry));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotApproved.selector));
+        ApprovalMintModule(address(approvalMintModule)).processMint(
+            alice,
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            ""
+        );
+        vm.expectRevert(abi.encodeWithSelector(ErrNotApproved.selector));
+        ApprovalMintModule(address(approvalMintModule)).processMint(
+            bob,
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            ""
+        );
+        vm.stopPrank();
+
+        // only web3Entry can call
+        vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
+        ApprovalMintModule(address(approvalMintModule)).processMint(
+            bob,
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            ""
+        );
     }
 
     // solhint-disable-next-line function-max-lines
@@ -257,6 +289,15 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         address noteNft = note.mintNFT;
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
         IMintNFT(noteNft).initialize(1, 1, address(web3Entry), "name", "symbol");
+    }
+
+    function testInitializeMintModule() public {
+        vm.prank(address(web3Entry));
+        IMintModule4Note(address(approvalMintModule)).initializeMintModule(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            ""
+        );
     }
 
     function testInitializeMintModuleFail() public {
