@@ -9,14 +9,11 @@ import {Events} from "../contracts/libraries/Events.sol";
 import {OP} from "../contracts/libraries/OP.sol";
 import {Constants} from "../contracts/libraries/Constants.sol";
 import {
-    ErrNotAddressOwner,
-    ErrNotCharacterOwner,
     ErrNotEnoughPermission,
     ErrNotEnoughPermissionForThisNote,
-    ErrCharacterNotExists,
-    ErrNoteIsDeleted,
     ErrNoteNotExists,
-    ErrNoteLocked
+    ErrNoteLocked,
+    ErrNoteIsDeleted
 } from "../contracts/libraries/Error.sol";
 import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import {Const} from "./helpers/Const.sol";

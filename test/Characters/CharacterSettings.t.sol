@@ -5,20 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {Web3Entry} from "../../contracts/Web3Entry.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {Events} from "../../contracts/libraries/Events.sol";
-import {
-    ErrSocialTokenExists,
-    ErrNotAddressOwner,
-    ErrHandleExists,
-    ErrNotCharacterOwner,
-    ErrNotEnoughPermission,
-    ErrNotEnoughPermissionForThisNote,
-    ErrCharacterNotExists,
-    ErrNoteIsDeleted,
-    ErrNoteNotExists,
-    ErrNoteLocked,
-    ErrHandleLengthInvalid,
-    ErrHandleContainsInvalidCharacters
-} from "../../contracts/libraries/Error.sol";
+import {ErrHandleExists, ErrNotEnoughPermission} from "../../contracts/libraries/Error.sol";
 import {Const} from "../helpers/Const.sol";
 import {Utils} from "../helpers/Utils.sol";
 import {SetUp} from "../helpers/SetUp.sol";

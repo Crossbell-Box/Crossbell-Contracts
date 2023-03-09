@@ -6,16 +6,6 @@ import {Web3Entry} from "../../contracts/Web3Entry.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {Events} from "../../contracts/libraries/Events.sol";
 import {
-    ErrSocialTokenExists,
-    ErrNotAddressOwner,
-    ErrHandleExists,
-    ErrNotCharacterOwner,
-    ErrNotEnoughPermission,
-    ErrNotEnoughPermissionForThisNote,
-    ErrCharacterNotExists,
-    ErrNoteIsDeleted,
-    ErrNoteNotExists,
-    ErrNoteLocked,
     ErrHandleLengthInvalid,
     ErrHandleContainsInvalidCharacters
 } from "../../contracts/libraries/Error.sol";
