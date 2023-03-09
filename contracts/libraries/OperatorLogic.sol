@@ -2,10 +2,10 @@
 // solhint-disable  private-vars-leading-underscore
 pragma solidity 0.8.16;
 
-import "./Events.sol";
-import "./DataTypes.sol";
-import "./OP.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {Events} from "./Events.sol";
+import {DataTypes} from "./DataTypes.sol";
+import {OP} from "./OP.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 library OperatorLogic {
     using EnumerableSet for EnumerableSet.AddressSet;

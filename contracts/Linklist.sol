@@ -2,17 +2,21 @@
 // slither-disable-start unused-return
 pragma solidity 0.8.16;
 
-import "./interfaces/ILinklist.sol";
-import "./interfaces/IWeb3Entry.sol";
-import "./base/NFTBase.sol";
-import "./libraries/Events.sol";
-import "./libraries/DataTypes.sol";
-import "./libraries/Constants.sol";
-import "./libraries/Error.sol";
-import "./storage/LinklistStorage.sol";
-import "./storage/LinklistExtendStorage.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {ILinklist} from "./interfaces/ILinklist.sol";
+import {IWeb3Entry} from "./interfaces/IWeb3Entry.sol";
+import {NFTBase} from "./base/NFTBase.sol";
+import {ERC721} from "./base/ERC721.sol";
+import {Events} from "./libraries/Events.sol";
+import {DataTypes} from "./libraries/DataTypes.sol";
+import {ErrCallerNotWeb3Entry, ErrCallerNotWeb3EntryOrNotOwner} from "./libraries/Error.sol";
+import {LinklistStorage} from "./storage/LinklistStorage.sol";
+import {LinklistExtendStorage} from "./storage/LinklistExtendStorage.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {
+    IERC721Enumerable
+} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, LinklistExtendStorage {
     using EnumerableSet for EnumerableSet.UintSet;
@@ -388,7 +392,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     function balanceOf(
         address account
     ) public view override(IERC721, ERC721) returns (uint256 balance) {
-        uint256 characterCount = IERC721Enumerable(Web3Entry).balanceOf(account);
+        uint256 characterCount = IERC721(Web3Entry).balanceOf(account);
         for (uint256 i = 0; i < characterCount; i++) {
             uint256 characterId = IERC721Enumerable(Web3Entry).tokenOfOwnerByIndex(account, i);
             balance += balanceOf(characterId);
@@ -406,7 +410,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
 
     function ownerOf(uint256 tokenId) public view override(IERC721, ERC721) returns (address) {
         uint256 characterId = characterOwnerOf(tokenId);
-        address owner = IERC721Enumerable(Web3Entry).ownerOf(characterId);
+        address owner = IERC721(Web3Entry).ownerOf(characterId);
         return owner;
     }
 

@@ -3,13 +3,13 @@
 // slither-disable-start calls-loop
 pragma solidity 0.8.16;
 
-import "../interfaces/IWeb3Entry.sol";
-import "../interfaces/ILinklist.sol";
-import "../libraries/DataTypes.sol";
-import "../libraries/Error.sol";
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/utils/math/Math.sol";
+import {IWeb3Entry} from "../interfaces/IWeb3Entry.sol";
+import {ILinklist} from "../interfaces/ILinklist.sol";
+import {DataTypes} from "../libraries/DataTypes.sol";
+import {ErrArrayLengthMismatch} from "../libraries/Error.sol";
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 contract Periphery is Initializable {
     address public web3Entry;

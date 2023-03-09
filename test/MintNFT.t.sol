@@ -2,12 +2,11 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.16;
 
-import "forge-std/Test.sol";
-import "../contracts/MintNFT.sol";
-import "../contracts/libraries/Error.sol";
-import "./helpers/Const.sol";
-import "./helpers/utils.sol";
-import "./helpers/SetUp.sol";
+import {Test} from "forge-std/Test.sol";
+import {ErrCallerNotWeb3Entry} from "../contracts/libraries/Error.sol";
+import {MintNFT} from "../contracts/MintNFT.sol";
+import {Utils} from "./helpers/Utils.sol";
+import {SetUp} from "./helpers/SetUp.sol";
 
 contract MintNFTTest is Test, Utils {
     address public alice = address(0x1111);

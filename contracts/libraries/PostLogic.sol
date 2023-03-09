@@ -2,13 +2,13 @@
 // solhint-disable private-vars-leading-underscore
 pragma solidity 0.8.16;
 
-import "./DataTypes.sol";
-import "./Events.sol";
-import "../interfaces/ILinkModule4Note.sol";
-import "../interfaces/IMintModule4Note.sol";
-import "../interfaces/IMintNFT.sol";
-import "@openzeppelin/contracts/proxy/Clones.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
+import {DataTypes} from "./DataTypes.sol";
+import {Events} from "./Events.sol";
+import {ILinkModule4Note} from "../interfaces/ILinkModule4Note.sol";
+import {IMintModule4Note} from "../interfaces/IMintModule4Note.sol";
+import {IMintNFT} from "../interfaces/IMintNFT.sol";
+import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 library PostLogic {
     using Strings for uint256;

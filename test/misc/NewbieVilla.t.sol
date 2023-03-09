@@ -2,11 +2,15 @@
 // solhint-disable comprehensive-interface,check-send-result,multiple-sends
 pragma solidity 0.8.16;
 
-import "../helpers/Const.sol";
-import "../helpers/utils.sol";
-import "../helpers/SetUp.sol";
-import "../../contracts/libraries/DataTypes.sol";
-import "../../contracts/misc/NewbieVilla.sol";
+import {Test} from "forge-std/Test.sol";
+import {Const} from "../helpers/Const.sol";
+import {Utils} from "../helpers/Utils.sol";
+import {SetUp} from "../helpers/SetUp.sol";
+import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
+import {NewbieVilla} from "../../contracts/misc/NewbieVilla.sol";
+import {Web3Entry} from "../../contracts/Web3Entry.sol";
+import {NFT} from "../../contracts/mocks/NFT.sol";
+import {OP} from "../../contracts/libraries/OP.sol";
 
 contract NewbieVillaTest is Test, SetUp, Utils {
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
