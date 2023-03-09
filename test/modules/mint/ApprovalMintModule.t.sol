@@ -48,6 +48,12 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         );
 
         // approved addresses in init can mint
+        expectEmit(CheckAll);
+        emit Events.MintNFTInitialized(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            block.timestamp
+        );
         web3Entry.mintNote(
             DataTypes.MintNoteData(
                 Const.FIRST_CHARACTER_ID,
@@ -192,5 +198,38 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
         vm.prank(address(alice));
         IMintNFT(address(noteNft)).mint(alice);
+    }
+
+    function testInitializeMintNFTFail() public {
+        vm.prank(alice);
+        web3Entry.postNote(
+            DataTypes.PostNoteData(
+                Const.FIRST_CHARACTER_ID,
+                Const.MOCK_NOTE_URI,
+                address(0x0),
+                new bytes(0),
+                address(approvalMintModule),
+                abi.encode(addressList1),
+                false
+            )
+        );
+        // approved addresses in init can mint
+        web3Entry.mintNote(
+            DataTypes.MintNoteData(
+                Const.FIRST_CHARACTER_ID,
+                Const.FIRST_NOTE_ID,
+                alice,
+                new bytes(0)
+            )
+        );
+
+        // can't initialize twice
+        DataTypes.Note memory note = web3Entry.getNote(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+        address noteNft = note.mintNFT;
+        vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
+        IMintNFT(noteNft).initialize(1, 1, address(web3Entry), "name", "symbol");
     }
 }
