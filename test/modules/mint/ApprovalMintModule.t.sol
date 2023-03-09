@@ -22,7 +22,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
     }
 
     // solhint-disable-next-line function-max-lines
-    function testMintNoteWithMintModule() public {
+    function testMintNoteWithApprovalMintModule() public {
         // alice post a note with approvalMintModule
         expectEmit(CheckAll);
         emit Events.SetMintModule4Note(
@@ -32,6 +32,8 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
             abi.encode(addressList1),
             block.timestamp
         );
+        expectEmit(CheckAll);
+        emit Events.PostNote(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, 0, 0, new bytes(0));
         vm.prank(alice);
         web3Entry.postNote(
             DataTypes.PostNoteData(
@@ -78,10 +80,50 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
                 new bytes(0)
             )
         );
+
+        // check state
+        // addresses in addressList1  are approved
+        for (uint256 i = 0; i < addressList1.length; i++) {
+            assert(
+                ApprovalMintModule(address(approvalMintModule)).isApproved(
+                    Const.FIRST_CHARACTER_ID,
+                    Const.FIRST_NOTE_ID,
+                    addressList1[i]
+                )
+            );
+        }
+
+        // check note's mint NFT address
+        DataTypes.Note memory note = web3Entry.getNote(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+        address noteNft = note.mintNFT;
+
+        // check symbol and symbol
+        string memory symbol = string.concat(
+            "Note-",
+            "1", // character Id
+            "-",
+            "1" // note Id
+        );
+        assertEq(IERC721Metadata(address(noteNft)).name(), symbol);
+        assertEq(IERC721Metadata(address(noteNft)).symbol(), symbol);
+        // check minted NFT
+        assertEq(IERC721(address(noteNft)).balanceOf(alice), 1);
+        assertEq(IERC721(address(noteNft)).balanceOf(bob), 1);
+        assertEq(IERC721(address(noteNft)).balanceOf(carol), 1);
+        // check total supply
+        assertEq(IERC721Enumerable(address(noteNft)).totalSupply(), 3);
+        //check token URI
+        assertEq(IERC721Metadata(address(noteNft)).tokenURI(1), Const.MOCK_NOTE_URI);
+        assertEq(IERC721Metadata(address(noteNft)).tokenURI(2), Const.MOCK_NOTE_URI);
+        assertEq(IERC721Metadata(address(noteNft)).tokenURI(3), Const.MOCK_NOTE_URI);
+        assertEq(IERC721Metadata(address(noteNft)).tokenURI(4), "");
     }
 
     // solhint-disable-next-line function-max-lines
-    function testMintNoteWithMintModuleFail() public {
+    function testMintNoteWithApprovalMintModuleFail() public {
         // alice post a note with approvalMintModule
         vm.prank(alice);
         web3Entry.postNote(
@@ -91,7 +133,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
                 address(0x0),
                 new bytes(0),
                 address(approvalMintModule),
-                abi.encode(addressList1),
+                abi.encode(addressList2),
                 false
             )
         );
@@ -102,18 +144,53 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
             DataTypes.MintNoteData(
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
+                alice,
+                new bytes(0)
+            )
+        );
+        vm.expectRevert(abi.encodeWithSelector(ApprovalMintModule.ErrNotApproved.selector));
+        web3Entry.mintNote(
+            DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
+        );
+
+        // addresses with cancelled approval can't mint
+        bool[] memory boolList = new bool[](1);
+        boolList[0] = false;
+        // carol can mint first
+        web3Entry.mintNote(
+            DataTypes.MintNoteData(
+                Const.FIRST_CHARACTER_ID,
+                Const.FIRST_NOTE_ID,
                 carol,
                 new bytes(0)
             )
+        );
+        // carol can't mint after alice cancelling approval
+        vm.prank(alice);
+        ApprovalMintModule(address(approvalMintModule)).approve(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            addressList2,
+            boolList
         );
         vm.expectRevert(abi.encodeWithSelector(ApprovalMintModule.ErrNotApproved.selector));
         web3Entry.mintNote(
             DataTypes.MintNoteData(
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
-                dick,
+                carol,
                 new bytes(0)
             )
         );
+
+        // can only mint through web3entry
+        DataTypes.Note memory note = web3Entry.getNote(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+        address noteNft = note.mintNFT;
+        vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
+        vm.prank(address(alice));
+        IMintNFT(address(noteNft)).mint(alice);
     }
 }

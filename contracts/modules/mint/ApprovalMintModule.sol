@@ -14,8 +14,10 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     // characterId => noteId => address => isApproved
     mapping(uint256 => mapping(uint256 => mapping(address => bool)))
         internal _approvedByCharacterByNoteByOwner;
+
+    // events
     error ErrNotCharacterOwner();
-    error ErrInvalidParams();
+    error ErrInvalidArrayLength();
     error ErrNotApproved();
 
     // solhint-disable-next-line no-empty-blocks
@@ -61,7 +63,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         if (msg.sender != owner) revert ErrNotCharacterOwner();
 
         // check Params
-        if (addresses.length != toApprove.length) revert ErrInvalidParams();
+        if (addresses.length != toApprove.length) revert ErrInvalidArrayLength();
 
         uint256 addressesLength = addresses.length;
         for (uint256 i = 0; i < addressesLength; ) {
