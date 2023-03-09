@@ -33,13 +33,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     ) external override onlyWeb3Entry returns (bytes memory) {
         if (data.length > 0) {
             address[] memory addresses = abi.decode(data, (address[]));
-            uint256 addressesLength = addresses.length;
-            for (uint256 i = 0; i < addressesLength; ) {
-                _approvedByCharacterByNoteByOwner[characterId][noteId][addresses[i]] = true;
-                unchecked {
-                    ++i;
-                }
-            }
+            _setApproval(characterId, noteId, addresses, true);
         }
         return data;
     }
@@ -47,32 +41,23 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     /**
      * @notice The owner of specified note can call this function,
      * to approve accounts to mint specified note.
-     * @param characterId ID of character.
-     * @param noteId ID of note.
-     * @param addresses Address to set.
-     * @param toApprove To approve or revoke.
+     * @param characterId The character ID of the note owner.
+     * @param noteId The ID of the note.
+     * @param addresses The Addresses to set.
+     * @param approved True means approval and False means disapproval.
      */
     // solhint-disable-next-line comprehensive-interface
-    function approve(
+    function setApproval(
         uint256 characterId,
         uint256 noteId,
         address[] calldata addresses,
-        bool[] calldata toApprove
+        bool approved
     ) external {
         // msg.sender should be the character owner
         address owner = IERC721(web3Entry).ownerOf(characterId);
         if (msg.sender != owner) revert ErrNotCharacterOwner();
 
-        // check Params
-        if (addresses.length != toApprove.length) revert ErrArrayLengthMismatch();
-
-        uint256 addressesLength = addresses.length;
-        for (uint256 i = 0; i < addressesLength; ) {
-            _approvedByCharacterByNoteByOwner[characterId][noteId][addresses[i]] = toApprove[i];
-            unchecked {
-                ++i;
-            }
-        }
+        _setApproval(characterId, noteId, addresses, approved);
     }
 
     /**
@@ -103,5 +88,20 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         address account
     ) external view returns (bool) {
         return _approvedByCharacterByNoteByOwner[characterId][noteId][account];
+    }
+
+    function _setApproval(
+        uint256 characterId,
+        uint256 noteId,
+        address[] memory addresses,
+        bool approved
+    ) internal {
+        uint256 addressesLength = addresses.length;
+        for (uint256 i = 0; i < addressesLength; ) {
+            _approvedByCharacterByNoteByOwner[characterId][noteId][addresses[i]] = approved;
+            unchecked {
+                ++i;
+            }
+        }
     }
 }
