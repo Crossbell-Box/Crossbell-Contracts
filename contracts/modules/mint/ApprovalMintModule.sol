@@ -5,6 +5,7 @@ pragma solidity 0.8.16;
 import "../../interfaces/IMintModule4Note.sol";
 import "../ModuleBase.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {ErrNotCharacterOwner, ErrArrayLengthMismatch, ErrNotApproved} from "../../libraries/Error.sol";
 
 /**
  * @title ApprovalMintModule
@@ -15,21 +16,21 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     mapping(uint256 => mapping(uint256 => mapping(address => bool)))
         internal _approvedByCharacterByNoteByOwner;
 
-    // events
-    error ErrNotCharacterOwner();
-    error ErrInvalidArrayLength();
-    error ErrNotApproved();
-
     // solhint-disable-next-line no-empty-blocks
     constructor(address web3Entry_) ModuleBase(web3Entry_) {}
 
+    /**
+     * @notice  Initialize the MintModule for a specific note.
+     * @param   characterId  The character ID of the note to initialize.
+     * @param   noteId  The note ID to initialize.
+     * @param   data  The address list that are approved to mint the note.
+     * @return  bytes  The returned data of calling initializeMintModule.
+     */
     function initializeMintModule(
         uint256 characterId,
         uint256 noteId,
         bytes calldata data
     ) external override onlyWeb3Entry returns (bytes memory) {
-        // address owner = IERC721(web3Entry).ownerOf(characterId);
-
         if (data.length > 0) {
             address[] memory addresses = abi.decode(data, (address[]));
             uint256 addressesLength = addresses.length;
@@ -63,7 +64,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         if (msg.sender != owner) revert ErrNotCharacterOwner();
 
         // check Params
-        if (addresses.length != toApprove.length) revert ErrInvalidArrayLength();
+        if (addresses.length != toApprove.length) revert ErrArrayLengthMismatch();
 
         uint256 addressesLength = addresses.length;
         for (uint256 i = 0; i < addressesLength; ) {
@@ -85,8 +86,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         uint256 noteId,
         bytes calldata
     ) external view override onlyWeb3Entry {
-        if (_approvedByCharacterByNoteByOwner[characterId][noteId][to] != true)
-            revert ErrNotApproved();
+        if (!_approvedByCharacterByNoteByOwner[characterId][noteId][to]) revert ErrNotApproved();
     }
 
     /**
