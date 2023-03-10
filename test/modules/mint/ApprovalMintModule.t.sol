@@ -63,7 +63,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         }
     }
 
-    function testProcessMintFail() public {
+    function testProcessMintFail(uint256 amount) public {
         // case 1: not approved can't process mint
         vm.startPrank(address(web3Entry));
         vm.expectRevert(abi.encodeWithSelector(ErrNotApproved.selector));
@@ -72,7 +72,26 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         approvalMintModule.processMint(bob, Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, "");
         vm.stopPrank();
 
-        // cese 2: only web3Entry can call processMint
+        // case 2: can't exceed the approved amount
+        // alice set approved amount
+        vm.assume(amount < 100);
+        vm.assume(0 < amount);
+        vm.prank(alice);
+        approvalMintModule.setApprovedAmount(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            array(bob),
+            amount
+        );
+        vm.startPrank(address(web3Entry));
+        for (uint256 i = 0; i < amount; i++) {
+            approvalMintModule.processMint(bob, Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, "");
+        }
+        vm.expectRevert(abi.encodeWithSelector(ErrNotApproved.selector));
+        approvalMintModule.processMint(bob, Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, "");
+        vm.stopPrank();
+
+        // cese 3: only web3Entry can call processMint
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
         approvalMintModule.processMint(bob, Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, "");
     }

@@ -45,7 +45,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     }
 
     /**
-     * @notice Set the approved addresses for minting and the approvedAmount allowed to be minted.
+     * @notice Set the approved addresses for minting and the approvedAmount allowed to be minted. <br>
      * The approvedAmount is 0 by default, and you can also revoke the approval for addresses by
      * setting the approvedAmount to 0.
      * @param characterId The character ID of the note owner.
