@@ -31,6 +31,65 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
     }
 
+    function testSetupState() public {
+        assertEq(approvalMintModule.web3Entry(), address(web3Entry));
+    }
+
+    function testInitializeMintModule(uint256 amount) public {
+        vm.assume(amount < 100);
+
+        // initialize the mint module
+        vm.prank(address(web3Entry));
+        IMintModule4Note(address(approvalMintModule)).initializeMintModule(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            abi.encode(array(alice, bob), amount)
+        );
+
+        // check approved amount
+        _checkApprovedAmount(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, alice, amount);
+        _checkApprovedAmount(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, amount);
+    }
+
+    function testInitializeMintModuleFail() public {
+        // only web3Entry can initialize the mint module
+        vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
+        IMintModule4Note(address(approvalMintModule)).initializeMintModule(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            ""
+        );
+    }
+
+    function testSetApprovedAmount(uint256 amount) public {
+        vm.assume(amount < 100);
+
+        // alice set approved amount for bob and carol
+        vm.prank(alice);
+        approvalMintModule.setApprovedAmount(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            array(bob, carol),
+            amount
+        );
+        // check state
+        _checkApprovedAmount(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, amount);
+        _checkApprovedAmount(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, carol, amount);
+    }
+
+    function testSetApprovedAmountFail(uint256 amount) public {
+        vm.assume(amount < 100);
+
+        // not web3Entry can't approve
+        vm.expectRevert(abi.encodeWithSelector(ErrNotCharacterOwner.selector));
+        approvalMintModule.setApprovedAmount(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            array(carol),
+            amount
+        );
+    }
+
     function testProcessMint(uint256 approvedAmount) public {
         vm.assume(approvedAmount < 100);
         vm.assume(0 < approvedAmount);
@@ -49,14 +108,13 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
             vm.prank(address(web3Entry));
             approvalMintModule.processMint(bob, Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, "");
 
-            uint256 currentApprovedAmount = approvalMintModule.getApprovedAmount(
+            // check state: approvedAmount decreases by 1 after every processMint
+            _checkApprovedAmount(
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
-                bob
+                bob,
+                approvedAmount - i
             );
-
-            // check state: approvedAmount decreases by 1 after every processMint
-            assertEq(currentApprovedAmount, approvedAmount - i);
         }
     }
 
@@ -92,107 +150,6 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         // cese 3: only web3Entry can call processMint
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
         approvalMintModule.processMint(bob, Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, "");
-    }
-
-    function testInitializeMintNFTFail(uint256 amount) public {
-        vm.assume(amount < 100);
-        vm.assume(0 < amount);
-
-        // post note
-        vm.prank(alice);
-        web3Entry.postNote(
-            DataTypes.PostNoteData(
-                Const.FIRST_CHARACTER_ID,
-                Const.MOCK_NOTE_URI,
-                address(0x0),
-                new bytes(0),
-                address(approvalMintModule),
-                abi.encode(array(alice, bob), amount),
-                false
-            )
-        );
-        // approved addresses in init can mint (mintNFT is initialized)
-        web3Entry.mintNote(
-            DataTypes.MintNoteData(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_NOTE_ID,
-                alice,
-                new bytes(0)
-            )
-        );
-
-        DataTypes.Note memory note = web3Entry.getNote(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID
-        );
-        address noteNft = note.mintNFT;
-        vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
-        IMintNFT(noteNft).initialize(1, 1, address(web3Entry), "name", "symbol");
-    }
-
-    function testInitializeMintModule(uint256 amount) public {
-        vm.assume(amount < 100);
-
-        vm.prank(address(web3Entry));
-        IMintModule4Note(address(approvalMintModule)).initializeMintModule(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            abi.encode(array(alice), amount)
-        );
-
-        // check state
-        assertEq(
-            approvalMintModule.getApprovedAmount(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_NOTE_ID,
-                alice
-            ),
-            amount
-        );
-    }
-
-    function testInitializeMintModuleFail() public {
-        // only web3Entry can initialize
-        vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
-        IMintModule4Note(address(approvalMintModule)).initializeMintModule(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            ""
-        );
-    }
-
-    function testSetApprovedAmount(uint256 amount) public {
-        vm.assume(amount < 100);
-
-        vm.prank(alice);
-        approvalMintModule.setApprovedAmount(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            array(bob),
-            amount
-        );
-        // check state
-        assertEq(
-            approvalMintModule.getApprovedAmount(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_NOTE_ID,
-                bob
-            ),
-            amount
-        );
-    }
-
-    function testSetApprovedAmountFail(uint256 amount) public {
-        vm.assume(amount < 100);
-
-        // not web3Entry can't approve
-        vm.expectRevert(abi.encodeWithSelector(ErrNotCharacterOwner.selector));
-        approvalMintModule.setApprovedAmount(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            array(carol),
-            amount
-        );
     }
 
     // solhint-disable-next-line function-max-lines
@@ -247,14 +204,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         // the approved amount of alice and bob should be 0 after minting
         address[] memory addrs = array(alice, bob, carol);
         for (uint256 i = 0; i < addrs.length; i++) {
-            assertEq(
-                approvalMintModule.getApprovedAmount(
-                    Const.FIRST_CHARACTER_ID,
-                    Const.FIRST_NOTE_ID,
-                    addrs[i]
-                ),
-                0
-            );
+            _checkApprovedAmount(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, addrs[i], 0);
         }
 
         // check note's mint NFT address
@@ -347,5 +297,54 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         vm.prank(address(alice));
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
         IMintNFT(address(noteNft)).mint(alice);
+    }
+
+    function testInitializeMintNFTFail(uint256 amount) public {
+        vm.assume(amount < 100);
+        vm.assume(0 < amount);
+
+        // post note
+        vm.prank(alice);
+        web3Entry.postNote(
+            DataTypes.PostNoteData(
+                Const.FIRST_CHARACTER_ID,
+                Const.MOCK_NOTE_URI,
+                address(0x0),
+                new bytes(0),
+                address(approvalMintModule),
+                abi.encode(array(alice, bob), amount),
+                false
+            )
+        );
+        // approved addresses in init can mint (mintNFT is initialized)
+        web3Entry.mintNote(
+            DataTypes.MintNoteData(
+                Const.FIRST_CHARACTER_ID,
+                Const.FIRST_NOTE_ID,
+                alice,
+                new bytes(0)
+            )
+        );
+
+        DataTypes.Note memory note = web3Entry.getNote(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID
+        );
+        address noteNft = note.mintNFT;
+        vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
+        IMintNFT(noteNft).initialize(1, 1, address(web3Entry), "name", "symbol");
+    }
+
+    function _checkApprovedAmount(
+        uint256 characterId,
+        uint256 noteId,
+        address account,
+        uint256 expectedAmount
+    ) internal {
+        // check approved amount of `account`
+        assertEq(
+            approvalMintModule.getApprovedAmount(characterId, noteId, account),
+            expectedAmount
+        );
     }
 }
