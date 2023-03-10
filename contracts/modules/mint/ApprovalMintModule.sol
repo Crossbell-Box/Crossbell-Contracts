@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
-import {IMintModule4Note} from "../../interfaces/IMintModule4Note.sol";
-import {ModuleBase} from "../ModuleBase.sol";
+import "../../interfaces/IMintModule4Note.sol";
+import "../ModuleBase.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {
     ErrNotCharacterOwner,
     ErrArrayLengthMismatch,
     ErrNotApproved
 } from "../../libraries/Error.sol";
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /**
  * @title ApprovalMintModule
  * @notice This is a simple MintModule implementation, inheriting from the IMintModule4Note interface.
  */
 contract ApprovalMintModule is IMintModule4Note, ModuleBase {
-    // characterId => noteId => address => isApproved
-    mapping(uint256 => mapping(uint256 => mapping(address => bool)))
+    // characterId => noteId => address => approvedAmount
+    mapping(uint256 => mapping(uint256 => mapping(address => uint256)))
         internal _approvedByCharacterByNoteByOwner;
 
     // solhint-disable-next-line no-empty-blocks
@@ -26,7 +26,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
      * @notice  Initialize the MintModule for a specific note.
      * @param   characterId  The character ID of the note to initialize.
      * @param   noteId  The note ID to initialize.
-     * @param   data  The address list that are approved to mint the note.
+     * @param   data  The address list that are approved to mint the note, and the approved amount.
      * @return  bytes  The returned data of calling initializeMintModule.
      */
     function initializeMintModule(
@@ -35,8 +35,11 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         bytes calldata data
     ) external override onlyWeb3Entry returns (bytes memory) {
         if (data.length > 0) {
-            address[] memory addresses = abi.decode(data, (address[]));
-            _setApproval(characterId, noteId, addresses, true);
+            (address[] memory addresses, uint256 approvedAmount) = abi.decode(
+                data,
+                (address[], uint256)
+            );
+            _setApprovedAmount(characterId, noteId, addresses, approvedAmount);
         }
         return data;
     }
@@ -47,20 +50,20 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
      * @param characterId The character ID of the note owner.
      * @param noteId The ID of the note.
      * @param addresses The Addresses to set.
-     * @param approved True means approval and False means disapproval.
+     * @param approvedAmount True means approval and False means disapproval.
      */
     // solhint-disable-next-line comprehensive-interface
-    function setApproval(
+    function setApprovedAmount(
         uint256 characterId,
         uint256 noteId,
         address[] calldata addresses,
-        bool approved
+        uint256 approvedAmount
     ) external {
         // msg.sender should be the character owner
         address owner = IERC721(web3Entry).ownerOf(characterId);
         if (msg.sender != owner) revert ErrNotCharacterOwner();
 
-        _setApproval(characterId, noteId, addresses, approved);
+        _setApprovedAmount(characterId, noteId, addresses, approvedAmount);
     }
 
     /**
@@ -73,8 +76,13 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         uint256 characterId,
         uint256 noteId,
         bytes calldata
-    ) external view override onlyWeb3Entry {
-        if (!_approvedByCharacterByNoteByOwner[characterId][noteId][to]) revert ErrNotApproved();
+    ) external override onlyWeb3Entry {
+        uint256 approvedAmount = _approvedByCharacterByNoteByOwner[characterId][noteId][to];
+        if (approvedAmount == 0) {
+            revert ErrNotApproved();
+        } else {
+            _approvedByCharacterByNoteByOwner[characterId][noteId][to] = approvedAmount - 1;
+        }
     }
 
     /**
@@ -85,23 +93,23 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
      * @return Returns true if the `account` is approved to mint, otherwise returns false.
      */
     // solhint-disable-next-line comprehensive-interface
-    function isApproved(
+    function getApprovedAmount(
         uint256 characterId,
         uint256 noteId,
         address account
-    ) external view returns (bool) {
+    ) external view returns (uint256) {
         return _approvedByCharacterByNoteByOwner[characterId][noteId][account];
     }
 
-    function _setApproval(
+    function _setApprovedAmount(
         uint256 characterId,
         uint256 noteId,
         address[] memory addresses,
-        bool approved
+        uint256 approvedAmount
     ) internal {
         uint256 addressesLength = addresses.length;
         for (uint256 i = 0; i < addressesLength; ) {
-            _approvedByCharacterByNoteByOwner[characterId][noteId][addresses[i]] = approved;
+            _approvedByCharacterByNoteByOwner[characterId][noteId][addresses[i]] = approvedAmount;
             unchecked {
                 ++i;
             }
