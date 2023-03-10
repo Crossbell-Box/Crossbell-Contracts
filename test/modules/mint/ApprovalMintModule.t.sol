@@ -3,12 +3,16 @@
 pragma solidity 0.8.16;
 
 import "forge-std/Test.sol";
-import "../../../contracts/MintNFT.sol";
-import "../../../contracts/libraries/Error.sol";
-import "../../helpers/Const.sol";
-import "../../helpers/utils.sol";
-import "../../helpers/SetUp.sol";
-import "../../../contracts/libraries/Events.sol";
+import {
+    ErrNotApproved,
+    ErrCallerNotWeb3Entry,
+    ErrNotCharacterOwner
+} from "../../../contracts/libraries/Error.sol";
+import {Const} from "../../helpers/Const.sol";
+import {Utils} from "../../helpers/Utils.sol";
+import {SetUp} from "../../helpers/SetUp.sol";
+import {DataTypes} from "../../../contracts/libraries/DataTypes.sol";
+import {Events} from "../../../contracts/libraries/Events.sol";
 import {IMintModule4Note} from "../../../contracts/interfaces/IMintModule4Note.sol";
 import {IMintNFT} from "../../../contracts/interfaces/IMintNFT.sol";
 import {ApprovalMintModule} from "../../../contracts/modules/mint/ApprovalMintModule.sol";
@@ -29,59 +33,30 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
 
     // solhint-disable-next-line function-max-lines
     function testProcessMint(uint256 approvedAmount) public {
-        // case 1: approved addresses in initialization with approvedAmount = 1
-        vm.prank(alice);
-        web3Entry.postNote(
-            DataTypes.PostNoteData(
-                Const.FIRST_CHARACTER_ID,
-                Const.MOCK_NOTE_URI,
-                address(0x0),
-                new bytes(0),
-                address(approvalMintModule),
-                abi.encode(array(alice, bob), 1),
-                false
-            )
-        );
-        // approved addresses can process mint
-        vm.startPrank(address(web3Entry));
-        ApprovalMintModule(address(approvalMintModule)).processMint(
-            alice,
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            ""
-        );
-        ApprovalMintModule(address(approvalMintModule)).processMint(
-            bob,
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            ""
-        );
-        vm.stopPrank();
-
-        // case 2: set approved amount
         vm.prank(alice);
         vm.assume(approvedAmount < 100);
         vm.assume(0 < approvedAmount);
-        ApprovalMintModule(address(approvalMintModule)).setApprovedAmount(
+        approvalMintModule.setApprovedAmount(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             array(bob),
             approvedAmount
         );
-        uint256 currentApprovedAmount = ApprovalMintModule(address(approvalMintModule))
-            .getApprovedAmount(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob);
+        uint256 currentApprovedAmount = approvalMintModule.getApprovedAmount(
+            Const.FIRST_CHARACTER_ID,
+            Const.FIRST_NOTE_ID,
+            bob
+        );
         assertEq(currentApprovedAmount, approvedAmount);
         for (uint256 i = 1; i < approvedAmount; i++) {
             vm.prank(address(web3Entry));
-            ApprovalMintModule(address(approvalMintModule)).processMint(
-                bob,
+            approvalMintModule.processMint(bob, Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, "");
+
+            currentApprovedAmount = approvalMintModule.getApprovedAmount(
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
-                ""
+                bob
             );
-
-            currentApprovedAmount = ApprovalMintModule(address(approvalMintModule))
-                .getApprovedAmount(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob);
 
             // check state: approvedAmount decreases by 1 after every processMint
             assertEq(currentApprovedAmount, approvedAmount - i);
@@ -92,32 +67,19 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         // case 1: not approved can't process mint
         vm.startPrank(address(web3Entry));
         vm.expectRevert(abi.encodeWithSelector(ErrNotApproved.selector));
-        ApprovalMintModule(address(approvalMintModule)).processMint(
-            alice,
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            ""
-        );
+        approvalMintModule.processMint(alice, Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, "");
         vm.expectRevert(abi.encodeWithSelector(ErrNotApproved.selector));
-        ApprovalMintModule(address(approvalMintModule)).processMint(
-            bob,
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            ""
-        );
+        approvalMintModule.processMint(bob, Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, "");
         vm.stopPrank();
 
         // cese 2: only web3Entry can call processMint
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
-        ApprovalMintModule(address(approvalMintModule)).processMint(
-            bob,
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
-            ""
-        );
+        approvalMintModule.processMint(bob, Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, "");
     }
 
-    function testInitializeMintNFTFail() public {
+    function testInitializeMintNFTFail(uint256 amount) public {
+        vm.assume(amount < 100);
+        vm.assume(0 < amount);
         vm.prank(alice);
         web3Entry.postNote(
             DataTypes.PostNoteData(
@@ -126,7 +88,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
                 address(0x0),
                 new bytes(0),
                 address(approvalMintModule),
-                abi.encode(array(alice, bob), 1),
+                abi.encode(array(alice, bob), amount),
                 false
             )
         );
@@ -149,30 +111,31 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         IMintNFT(noteNft).initialize(1, 1, address(web3Entry), "name", "symbol");
     }
 
-    function testInitializeMintModule() public {
+    function testInitializeMintModule(uint256 amount) public {
+        vm.assume(amount < 100);
         vm.prank(address(web3Entry));
         IMintModule4Note(address(approvalMintModule)).initializeMintModule(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
-            abi.encode(array(alice, bob), 1)
+            abi.encode(array(alice, bob), amount)
         );
 
         // check state
         assertEq(
-            ApprovalMintModule(address(approvalMintModule)).getApprovedAmount(
+            approvalMintModule.getApprovedAmount(
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
                 alice
             ),
-            1
+            amount
         );
         assertEq(
-            ApprovalMintModule(address(approvalMintModule)).getApprovedAmount(
+            approvalMintModule.getApprovedAmount(
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
                 bob
             ),
-            1
+            amount
         );
     }
 
@@ -189,7 +152,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
     function testSetApprovedAmount(uint256 amount) public {
         vm.assume(amount < 100);
         vm.startPrank(alice);
-        ApprovalMintModule(address(approvalMintModule)).setApprovedAmount(
+        approvalMintModule.setApprovedAmount(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             array(alice),
@@ -197,7 +160,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         );
         // check state
         assertEq(
-            ApprovalMintModule(address(approvalMintModule)).getApprovedAmount(
+            approvalMintModule.getApprovedAmount(
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
                 alice
@@ -211,7 +174,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         // not owner can't approve
         vm.expectRevert(abi.encodeWithSelector(ErrNotCharacterOwner.selector));
         vm.prank(bob);
-        ApprovalMintModule(address(approvalMintModule)).setApprovedAmount(
+        approvalMintModule.setApprovedAmount(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             array(carol),
@@ -265,7 +228,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         // case 2: addresses approved by calling 'setApprovedAmount' can
         // alice approve carol
         vm.prank(alice);
-        ApprovalMintModule(address(approvalMintModule)).setApprovedAmount(
+        approvalMintModule.setApprovedAmount(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             array(carol),
@@ -285,7 +248,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
         // the approved amount of alice and bob should be 0 after minting
         for (uint256 i = 0; i < array(alice, bob).length; i++) {
             assertEq(
-                ApprovalMintModule(address(approvalMintModule)).getApprovedAmount(
+                approvalMintModule.getApprovedAmount(
                     Const.FIRST_CHARACTER_ID,
                     Const.FIRST_NOTE_ID,
                     array(alice, bob)[i]
@@ -366,7 +329,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
             )
         );
         vm.prank(alice);
-        ApprovalMintModule(address(approvalMintModule)).setApprovedAmount(
+        approvalMintModule.setApprovedAmount(
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             array(carol),

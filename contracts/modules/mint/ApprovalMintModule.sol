@@ -45,12 +45,13 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     }
 
     /**
-     * @notice The owner of specified note can call this function,
-     * to approve accounts to mint specified note.
+     * @notice Set the approved addresses for minting and the approvedAmount allowed to be minted.
+     * The approvedAmount is 0 by default, and you can also revoke the approval for addresses by
+     * setting the approvedAmount to 0.
      * @param characterId The character ID of the note owner.
      * @param noteId The ID of the note.
      * @param addresses The Addresses to set.
-     * @param approvedAmount True means approval and False means disapproval.
+     * @param approvedAmount The amount of NFTs allowed to be minted.
      */
     // solhint-disable-next-line comprehensive-interface
     function setApprovedAmount(
@@ -71,6 +72,12 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
      * Triggered when the `mintNote` of web3Entry is called, if mint module of note if set.
      */
     // solhint-disable-next-line comprehensive-interface
+    /**
+     * @notice  Process mint and check if the caller is eligible.
+     * @param   to  The destination address to mint NFT to.
+     * @param   characterId  The character ID of the note owner.
+     * @param   noteId  The note ID.
+     */
     function processMint(
         address to,
         uint256 characterId,
@@ -86,11 +93,11 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     }
 
     /**
-     * @notice Checks whether the `account` is approved to mint specified note .
+     * @notice Get the allowed amount that an address can mint.
      * @param characterId ID of character to query.
      * @param noteId  ID of note to query.
-     * @param account Address of account to query.
-     * @return Returns true if the `account` is approved to mint, otherwise returns false.
+     * @param account Address of the address to query.
+     * @return The allowed amount that an address can mint.
      */
     // solhint-disable-next-line comprehensive-interface
     function getApprovedAmount(
