@@ -2,10 +2,12 @@
 // solhint-disable comprehensive-interface,check-send-result,multiple-sends
 pragma solidity 0.8.16;
 
-import "../helpers/utils.sol";
-import "../helpers/SetUp.sol";
-import "../../contracts/misc/Tips.sol";
-import "../../contracts/mocks/MiraToken.sol";
+import {Test} from "forge-std/Test.sol";
+import {Const} from "../helpers/Const.sol";
+import {Utils} from "../helpers/Utils.sol";
+import {SetUp} from "../helpers/SetUp.sol";
+import {Tips} from "../../contracts/misc/Tips.sol";
+import {MiraToken} from "../../contracts/mocks/MiraToken.sol";
 
 contract TipsTest is Test, SetUp, Utils {
     uint256 public constant initialBalance = 10 ether;

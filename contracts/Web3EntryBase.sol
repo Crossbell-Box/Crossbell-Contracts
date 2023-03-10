@@ -2,26 +2,38 @@
 
 pragma solidity 0.8.16;
 
-import "./base/NFTBase.sol";
-import "./interfaces/IWeb3Entry.sol";
-import "./interfaces/ILinklist.sol";
-import "./interfaces/ILinkModule4Note.sol";
-import "./storage/Web3EntryStorage.sol";
-import "./storage/Web3EntryExtendStorage.sol";
-import "./libraries/DataTypes.sol";
-import "./libraries/Constants.sol";
-import "./libraries/Events.sol";
-import "./libraries/CharacterLogic.sol";
-import "./libraries/PostLogic.sol";
-import "./libraries/OperatorLogic.sol";
-import "./libraries/LinkModuleLogic.sol";
-import "./libraries/LinkLogic.sol";
-import "./libraries/OP.sol";
-import "./libraries/Error.sol";
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@openzeppelin/contracts/utils/Multicall.sol";
+import {IWeb3Entry} from "./interfaces/IWeb3Entry.sol";
+import {ILinklist} from "./interfaces/ILinklist.sol";
+import {ILinkModule4Note} from "./interfaces/ILinkModule4Note.sol";
+import {NFTBase} from "./base/NFTBase.sol";
+import {Web3EntryStorage} from "./storage/Web3EntryStorage.sol";
+import {Web3EntryExtendStorage} from "./storage/Web3EntryExtendStorage.sol";
+import {DataTypes} from "./libraries/DataTypes.sol";
+import {Constants} from "./libraries/Constants.sol";
+import {Events} from "./libraries/Events.sol";
+import {CharacterLogic} from "./libraries/CharacterLogic.sol";
+import {PostLogic} from "./libraries/PostLogic.sol";
+import {OperatorLogic} from "./libraries/OperatorLogic.sol";
+import {LinkModuleLogic} from "./libraries/LinkModuleLogic.sol";
+import {LinkLogic} from "./libraries/LinkLogic.sol";
+import {OP} from "./libraries/OP.sol";
+import {
+    ErrSocialTokenExists,
+    ErrNotAddressOwner,
+    ErrHandleExists,
+    ErrNotCharacterOwner,
+    ErrNotEnoughPermission,
+    ErrNotEnoughPermissionForThisNote,
+    ErrCharacterNotExists,
+    ErrNoteIsDeleted,
+    ErrNoteNotExists,
+    ErrNoteLocked,
+    ErrHandleLengthInvalid,
+    ErrHandleContainsInvalidCharacters
+} from "./libraries/Error.sol";
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
 
 contract Web3EntryBase is
     IWeb3Entry,

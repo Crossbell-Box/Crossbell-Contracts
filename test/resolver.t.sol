@@ -2,12 +2,10 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.16;
 
-import "forge-std/Test.sol";
-import "../contracts/Resolver.sol";
-import "../contracts/libraries/DataTypes.sol";
-import "./helpers/Const.sol";
-import "./helpers/utils.sol";
-import "./helpers/SetUp.sol";
+import {Test} from "forge-std/Test.sol";
+import {Resolver} from "../contracts/Resolver.sol";
+import {Utils} from "./helpers/Utils.sol";
+import {SetUp} from "./helpers/SetUp.sol";
 
 contract ResolverTest is Test, SetUp, Utils {
     Resolver public resolver;

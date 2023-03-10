@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
-import "forge-std/Test.sol";
-import "../../contracts/libraries/DataTypes.sol";
-import "../helpers/Const.sol";
-import "../helpers/utils.sol";
-import "../helpers/SetUp.sol";
-import "../../contracts/misc/CharacterBoundToken.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
+import {Test} from "forge-std/Test.sol";
+import {Const} from "../helpers/Const.sol";
+import {Utils} from "../helpers/Utils.sol";
+import {SetUp} from "../helpers/SetUp.sol";
+import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
+import {CharacterBoundToken} from "../../contracts/misc/CharacterBoundToken.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract CbtTest is Test, SetUp, Utils {
     uint256 public amount = 1;

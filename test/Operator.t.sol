@@ -2,18 +2,26 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.16;
 
-import "forge-std/Test.sol";
-import "./helpers/Const.sol";
-import "./helpers/utils.sol";
-import "./helpers/SetUp.sol";
-import "../contracts/libraries/OP.sol";
-import "../contracts/misc/NewbieVilla.sol";
-import "../contracts/Web3Entry.sol";
-import "../contracts/libraries/DataTypes.sol";
-import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
-import "../contracts/modules/link/ApprovalLinkModule4Character.sol";
-import "../contracts/modules/link/ApprovalLinkModule4Note.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {Test} from "forge-std/Test.sol";
+import {Const} from "./helpers/Const.sol";
+import {Utils} from "./helpers/Utils.sol";
+import {SetUp} from "./helpers/SetUp.sol";
+import {OP} from "../contracts/libraries/OP.sol";
+import {Events} from "../contracts/libraries/Events.sol";
+import {Constants} from "../contracts/libraries/Constants.sol";
+import {NewbieVilla} from "../contracts/misc/NewbieVilla.sol";
+import {DataTypes} from "../contracts/libraries/DataTypes.sol";
+import {
+    ErrNotCharacterOwner,
+    ErrNotEnoughPermission,
+    ErrNotEnoughPermissionForThisNote,
+    ErrNoteIsDeleted,
+    ErrNoteNotExists,
+    ErrNoteLocked
+} from "../contracts/libraries/Error.sol";
+import {
+    ApprovalLinkModule4Character
+} from "../contracts/modules/link/ApprovalLinkModule4Character.sol";
 
 contract OperatorTest is Test, SetUp, Utils {
     address[] public blocklist = [bob];

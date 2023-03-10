@@ -2,13 +2,10 @@
 // solhint-disable  private-vars-leading-underscore
 pragma solidity 0.8.16;
 
-import "./DataTypes.sol";
-import "./Events.sol";
-import "./Constants.sol";
-import "../interfaces/ILinkModule4Character.sol";
-import "../interfaces/ILinklist.sol";
-import "./Error.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {DataTypes} from "./DataTypes.sol";
+import {Events} from "./Events.sol";
+import {ILinkModule4Character} from "../interfaces/ILinkModule4Character.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 library CharacterLogic {
     using EnumerableSet for EnumerableSet.Bytes32Set;

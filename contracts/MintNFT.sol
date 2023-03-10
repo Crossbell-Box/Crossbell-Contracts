@@ -2,12 +2,13 @@
 // slither-disable-start naming-convention
 pragma solidity 0.8.16;
 
-import "./base/NFTBase.sol";
-import "./interfaces/IMintNFT.sol";
-import "./interfaces/IWeb3Entry.sol";
+import {NFTBase} from "./base/NFTBase.sol";
+import {IMintNFT} from "./interfaces/IMintNFT.sol";
+import {IWeb3Entry} from "./interfaces/IWeb3Entry.sol";
 import {ErrCallerNotWeb3Entry} from "./libraries/Error.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {Events} from "./libraries/Events.sol";
+import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 contract MintNFT is NFTBase, IMintNFT, Initializable {
     using Counters for Counters.Counter;

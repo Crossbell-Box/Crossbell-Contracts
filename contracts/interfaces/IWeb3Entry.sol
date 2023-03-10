@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.16;
 
-import "../libraries/DataTypes.sol";
+import {DataTypes} from "../libraries/DataTypes.sol";
 
 interface IWeb3Entry {
     function initialize(
@@ -18,11 +18,11 @@ interface IWeb3Entry {
      * This method creates a character with the given parameters to the given address.
      *
      * @param vars The CreateCharacterData struct containing the following parameters:
-     *      * to: The address receiving the character.
-     *      * handle: The handle to set for the character.
-     *      * uri: The URI to set for the character metadata.
-     *      * linkModule: The link module to use, can be the zero address.
-     *      * linkModuleInitData: The link module initialization data, if any.
+     * `to`: The address receiving the character.<br>
+     * `handle`: The handle to set for the character.<br>
+     * `uri`: The URI to set for the character metadata.<br>
+     * `linkModule`: The link module to use, can be the zero address.<br>
+     * `linkModuleInitData`: The link module initialization data, if any.<br>
      */
     function createCharacter(
         DataTypes.CreateCharacterData calldata vars

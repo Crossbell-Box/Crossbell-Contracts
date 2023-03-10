@@ -2,13 +2,13 @@
 // solhint-disable private-vars-leading-underscore
 pragma solidity 0.8.16;
 
-import "./Events.sol";
-import "./DataTypes.sol";
-import "../interfaces/IMintModule4Note.sol";
-import "../interfaces/ILinkModule4Note.sol";
-import "../interfaces/ILinkModule4ERC721.sol";
-import "../interfaces/ILinkModule4Linklist.sol";
-import "../interfaces/ILinkModule4Address.sol";
+import {Events} from "./Events.sol";
+import {DataTypes} from "./DataTypes.sol";
+import {IMintModule4Note} from "../interfaces/IMintModule4Note.sol";
+import {ILinkModule4Note} from "../interfaces/ILinkModule4Note.sol";
+import {ILinkModule4ERC721} from "../interfaces/ILinkModule4ERC721.sol";
+import {ILinkModule4Linklist} from "../interfaces/ILinkModule4Linklist.sol";
+import {ILinkModule4Address} from "../interfaces/ILinkModule4Address.sol";
 
 library LinkModuleLogic {
     /**
