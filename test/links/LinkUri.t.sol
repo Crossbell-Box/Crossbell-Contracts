@@ -8,7 +8,6 @@ import {
     ErrNotEnoughPermission,
     ErrNotEnoughPermissionForThisNote
 } from "../../contracts/libraries/Error.sol";
-import {Const} from "../helpers/Const.sol";
 import {Utils} from "../helpers/Utils.sol";
 import {SetUp} from "../helpers/SetUp.sol";
 
@@ -18,20 +17,20 @@ contract LinkUriTest is Test, SetUp, Utils {
         _setUp();
 
         // create character
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, bob));
     }
 
     function testLinkAddress() public {
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.LinkAnyUri(Const.FIRST_CHARACTER_ID, "ipfs://anyURI", Const.FollowLinkType, 1);
+        emit Events.LinkAnyUri(FIRST_CHARACTER_ID, "ipfs://anyURI", FollowLinkType, 1);
         // alice link an uri
         vm.prank(alice);
         web3Entry.linkAnyUri(
             DataTypes.linkAnyUriData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 "ipfs://anyURI",
-                Const.FollowLinkType,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -43,9 +42,9 @@ contract LinkUriTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.linkAnyUri(
             DataTypes.linkAnyUriData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 "ipfs://anyURI",
-                Const.FollowLinkType,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -55,9 +54,9 @@ contract LinkUriTest is Test, SetUp, Utils {
         vm.prank(address(periphery), alice);
         web3Entry.linkAnyUri(
             DataTypes.linkAnyUriData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 "ipfs://anyURI",
-                Const.FollowLinkType,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -80,9 +79,9 @@ contract LinkUriTest is Test, SetUp, Utils {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.linkAnyUri(
             DataTypes.linkAnyUriData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 "ipfs://anyURI",
-                Const.FollowLinkType,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -93,31 +92,23 @@ contract LinkUriTest is Test, SetUp, Utils {
         vm.startPrank(alice);
         web3Entry.linkAnyUri(
             DataTypes.linkAnyUriData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 "ipfs://anyURI",
-                Const.FollowLinkType,
+                FollowLinkType,
                 new bytes(0)
             )
         );
 
         // unlink
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.UnlinkAnyUri(Const.FIRST_CHARACTER_ID, "ipfs://anyURI", Const.FollowLinkType);
+        emit Events.UnlinkAnyUri(FIRST_CHARACTER_ID, "ipfs://anyURI", FollowLinkType);
         web3Entry.unlinkAnyUri(
-            DataTypes.unlinkAnyUriData(
-                Const.FIRST_CHARACTER_ID,
-                "ipfs://anyURI",
-                Const.FollowLinkType
-            )
+            DataTypes.unlinkAnyUriData(FIRST_CHARACTER_ID, "ipfs://anyURI", FollowLinkType)
         );
 
         // unlink twice
         web3Entry.unlinkAnyUri(
-            DataTypes.unlinkAnyUriData(
-                Const.FIRST_CHARACTER_ID,
-                "ipfs://anyURI",
-                Const.FollowLinkType
-            )
+            DataTypes.unlinkAnyUriData(FIRST_CHARACTER_ID, "ipfs://anyURI", FollowLinkType)
         );
         vm.stopPrank();
 
@@ -138,9 +129,9 @@ contract LinkUriTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.linkAnyUri(
             DataTypes.linkAnyUriData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 "ipfs://anyURI",
-                Const.FollowLinkType,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -149,11 +140,7 @@ contract LinkUriTest is Test, SetUp, Utils {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.unlinkAnyUri(
-            DataTypes.unlinkAnyUriData(
-                Const.FIRST_CHARACTER_ID,
-                "ipfs://anyURI",
-                Const.FollowLinkType
-            )
+            DataTypes.unlinkAnyUriData(FIRST_CHARACTER_ID, "ipfs://anyURI", FollowLinkType)
         );
     }
 }

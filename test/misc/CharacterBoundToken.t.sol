@@ -2,7 +2,6 @@
 pragma solidity 0.8.16;
 
 import {Test} from "forge-std/Test.sol";
-import {Const} from "../helpers/Const.sol";
 import {Utils} from "../helpers/Utils.sol";
 import {SetUp} from "../helpers/SetUp.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
@@ -25,34 +24,34 @@ contract CbtTest is Test, SetUp, Utils {
 
         // alice mint first character
         vm.prank(alice);
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
 
         // bob mint second character
         vm.prank(bob);
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, bob));
     }
 
     function testMint() public {
         // MINTER_ROLE should mint
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
-        assertEq(cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID), amount);
+        cbt.mint(FIRST_CHARACTER_ID, FIRST_CBT_ID);
+        assertEq(cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID), amount);
         // mint
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
-        assertEq(cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID), amount);
+        cbt.mint(FIRST_CHARACTER_ID, SECOND_CBT_ID);
+        assertEq(cbt.balanceOf(FIRST_CHARACTER_ID, SECOND_CBT_ID), amount);
 
         // expect correct emit
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, 2);
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
-        assertEq(cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID), amount * 2);
+        emit Mint(FIRST_CHARACTER_ID, FIRST_CBT_ID, 2);
+        cbt.mint(FIRST_CHARACTER_ID, FIRST_CBT_ID);
+        assertEq(cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID), amount * 2);
 
         // grant mint role and mint
         cbt.grantRole(MINTER_ROLE, bob);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
-        emit Mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, 2);
+        emit Mint(FIRST_CHARACTER_ID, SECOND_CBT_ID, 2);
         vm.prank(bob);
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
-        assertEq(cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID), amount * 2);
+        cbt.mint(FIRST_CHARACTER_ID, SECOND_CBT_ID);
+        assertEq(cbt.balanceOf(FIRST_CHARACTER_ID, SECOND_CBT_ID), amount * 2);
     }
 
     function testMintFail() public {
@@ -66,62 +65,62 @@ contract CbtTest is Test, SetUp, Utils {
                 Strings.toHexString(uint256(MINTER_ROLE), 32)
             )
         );
-        cbt.mint(Const.FIRST_CBT_ID, amount);
+        cbt.mint(FIRST_CBT_ID, amount);
 
         // can't mint to the zero characterID
         vm.expectRevert(abi.encodePacked("mint to the zero characterId"));
-        cbt.mint(Const.ZERO_CBT_ID, Const.FIRST_CBT_ID);
+        cbt.mint(ZERO_CBT_ID, FIRST_CBT_ID);
     }
 
     function testBurn() public {
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        cbt.mint(FIRST_CHARACTER_ID, FIRST_CBT_ID);
         //owner should burn
-        uint256 preBalance = cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        uint256 preBalance = cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID);
         vm.prank(alice);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
-        cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
-        uint256 postBalance = cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        emit Burn(FIRST_CHARACTER_ID, FIRST_CBT_ID, amount);
+        cbt.burn(FIRST_CHARACTER_ID, FIRST_CBT_ID, amount);
+        uint256 postBalance = cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID);
         assertEq(preBalance - amount, postBalance);
 
         // approved cbt should burn
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
+        cbt.mint(FIRST_CHARACTER_ID, SECOND_CBT_ID);
         vm.prank(alice);
         cbt.setApprovalForAll(bob, true);
         vm.prank(bob);
-        cbt.burn(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
+        cbt.burn(FIRST_CHARACTER_ID, SECOND_CBT_ID, amount);
 
         // check balance
         assertEq(
-            cbt.balanceOf(alice, Const.FIRST_CBT_ID),
-            cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID)
+            cbt.balanceOf(alice, FIRST_CBT_ID),
+            cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID)
         );
         assertEq(
-            cbt.balanceOf(alice, Const.SECOND_CBT_ID),
-            cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID)
+            cbt.balanceOf(alice, SECOND_CBT_ID),
+            cbt.balanceOf(FIRST_CHARACTER_ID, SECOND_CBT_ID)
         );
-        assertEq(cbt.balanceOf(alice, Const.FIRST_CBT_ID), 0);
-        assertEq(cbt.balanceOf(alice, Const.SECOND_CBT_ID), 0);
+        assertEq(cbt.balanceOf(alice, FIRST_CBT_ID), 0);
+        assertEq(cbt.balanceOf(alice, SECOND_CBT_ID), 0);
     }
 
     function testBurnFail() public {
         // only owner and approved operator can burn
         vm.expectRevert(abi.encodePacked("caller is not token owner nor approved"));
         vm.prank(bob);
-        cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, amount);
+        cbt.burn(FIRST_CHARACTER_ID, FIRST_CBT_ID, amount);
 
         //burn amount exceeds balance
-        uint256 currentBalance = cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        uint256 currentBalance = cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID);
         vm.prank(alice);
         vm.expectRevert(abi.encodePacked("burn amount exceeds balance"));
-        cbt.burn(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, currentBalance + 1);
+        cbt.burn(FIRST_CHARACTER_ID, FIRST_CBT_ID, currentBalance + 1);
 
         // cancel approval should not run
         vm.prank(alice);
         cbt.setApprovalForAll(bob, false);
         vm.prank(bob);
         vm.expectRevert(abi.encodePacked("caller is not token owner nor approved"));
-        cbt.burn(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, amount);
+        cbt.burn(FIRST_CHARACTER_ID, SECOND_CBT_ID, amount);
     }
 
     function testSetTokenURI() public {
@@ -156,11 +155,11 @@ contract CbtTest is Test, SetUp, Utils {
     }
 
     function testTransfer() public {
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        cbt.mint(FIRST_CHARACTER_ID, FIRST_CBT_ID);
 
         // safeTransferFrom
         vm.expectRevert(abi.encodePacked("non-transferable"));
-        cbt.safeTransferFrom(alice, bob, Const.FIRST_CBT_ID, 1, new bytes(0));
+        cbt.safeTransferFrom(alice, bob, FIRST_CBT_ID, 1, new bytes(0));
 
         // safeBatchTransferFrom
         uint256[] memory ids = new uint256[](1);
@@ -195,57 +194,54 @@ contract CbtTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.createCharacter(makeCharacterData("handle3", alice));
         // the third character get 2 CBTs
-        cbt.mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID);
-        cbt.mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID);
+        cbt.mint(THIRD_CHARACTER_ID, FIRST_CBT_ID);
+        cbt.mint(THIRD_CHARACTER_ID, FIRST_CBT_ID);
         // the first character get 1 CBT
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        cbt.mint(FIRST_CHARACTER_ID, FIRST_CBT_ID);
         // balance of alice should be the sum of balance of character1 and character3
         assertEq(
-            cbt.balanceOf(alice, Const.FIRST_CBT_ID),
-            cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID) +
-                cbt.balanceOf(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID)
+            cbt.balanceOf(alice, FIRST_CBT_ID),
+            cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID) +
+                cbt.balanceOf(THIRD_CHARACTER_ID, FIRST_CBT_ID)
         );
 
         // transfer character 3 to bob
         vm.prank(alice);
-        web3Entry.safeTransferFrom(alice, bob, Const.THIRD_CHARACTER_ID);
+        web3Entry.safeTransferFrom(alice, bob, THIRD_CHARACTER_ID);
         // check balance
         assertEq(
-            cbt.balanceOf(alice, Const.FIRST_CBT_ID),
-            cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID)
+            cbt.balanceOf(alice, FIRST_CBT_ID),
+            cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID)
         );
-        assertEq(
-            cbt.balanceOf(bob, Const.FIRST_CBT_ID),
-            cbt.balanceOf(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID)
-        );
+        assertEq(cbt.balanceOf(bob, FIRST_CBT_ID), cbt.balanceOf(THIRD_CHARACTER_ID, FIRST_CBT_ID));
     }
 
     function testBalanceOfBatch() public {
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
-        cbt.mint(Const.SECOND_CHARACTER_ID, Const.FIRST_CBT_ID);
+        cbt.mint(FIRST_CHARACTER_ID, FIRST_CBT_ID);
+        cbt.mint(FIRST_CHARACTER_ID, FIRST_CBT_ID);
+        cbt.mint(SECOND_CHARACTER_ID, FIRST_CBT_ID);
         // the first character has 2 CBTs
         // the second character has 1 CBT
         address[] memory accounts = new address[](2);
         accounts[0] = alice;
         accounts[1] = bob;
         uint256[] memory tokenIds = new uint256[](2);
-        tokenIds[0] = Const.FIRST_CBT_ID;
-        tokenIds[1] = Const.FIRST_CBT_ID;
+        tokenIds[0] = FIRST_CBT_ID;
+        tokenIds[1] = FIRST_CBT_ID;
         uint256[] memory batchBalance = cbt.balanceOfBatch(accounts, tokenIds);
         assertEq(batchBalance[0], 2);
         assertEq(batchBalance[1], 1);
     }
 
     function testBalanceOfByCharacterId() public {
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
-        uint256 balance10f1 = cbt.balanceOf(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        cbt.mint(FIRST_CHARACTER_ID, FIRST_CBT_ID);
+        uint256 balance10f1 = cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID);
         assertEq(balance10f1, 1);
     }
 
     function testBalanceOfByCharacterIdFail() public {
         vm.expectRevert(abi.encodePacked("zero is not a valid owner"));
-        cbt.balanceOf(0, Const.FIRST_CBT_ID);
+        cbt.balanceOf(0, FIRST_CBT_ID);
     }
 
     function testbalanceOfBatchFail() public {
@@ -253,7 +249,7 @@ contract CbtTest is Test, SetUp, Utils {
         accounts[0] = alice;
         accounts[1] = bob;
         uint256[] memory tokenIds = new uint256[](1);
-        tokenIds[0] = Const.FIRST_CBT_ID;
+        tokenIds[0] = FIRST_CBT_ID;
         vm.expectRevert(abi.encodePacked("accounts and ids length mismatch"));
         cbt.balanceOfBatch(accounts, tokenIds);
     }
@@ -344,7 +340,7 @@ contract CbtTest is Test, SetUp, Utils {
         assertEq(cbt.getRoleMember(MINTER_ROLE, 1), bob);
 
         // mint cbt
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE3, alice));
         vm.prank(bob);
         cbt.mint(1, 1);
     }
@@ -366,7 +362,7 @@ contract CbtTest is Test, SetUp, Utils {
         cbt.grantRole(MINTER_ROLE, bob);
 
         // mint cbt fail
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE3, alice));
         vm.prank(bob);
         vm.expectRevert(
             abi.encodePacked(
@@ -390,7 +386,7 @@ contract CbtTest is Test, SetUp, Utils {
         assertEq(cbt.hasRole(MINTER_ROLE, bob), false);
 
         // mint cbt fail
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE4, alice));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE4, alice));
         vm.prank(bob);
         vm.expectRevert(
             abi.encodePacked(
@@ -424,7 +420,7 @@ contract CbtTest is Test, SetUp, Utils {
         assertEq(cbt.hasRole(MINTER_ROLE, bob), true);
 
         // mint cbt
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE3, alice));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE3, alice));
         vm.prank(bob);
         cbt.mint(1, 1);
     }
@@ -443,7 +439,7 @@ contract CbtTest is Test, SetUp, Utils {
         assertEq(cbt.getRoleMemberCount(MINTER_ROLE), 1);
 
         // mint cbt fail
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE4, alice));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE4, alice));
         vm.expectRevert(
             abi.encodePacked(
                 "AccessControl: account ",
@@ -459,20 +455,20 @@ contract CbtTest is Test, SetUp, Utils {
     function testTokenNumber() public {
         // tokenNumber is emitted by Mint event
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
-        emit Mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID, 1);
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.FIRST_CBT_ID);
+        emit Mint(FIRST_CHARACTER_ID, FIRST_CBT_ID, 1);
+        cbt.mint(FIRST_CHARACTER_ID, FIRST_CBT_ID);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
-        emit Mint(Const.SECOND_CHARACTER_ID, Const.FIRST_CBT_ID, 2);
-        cbt.mint(Const.SECOND_CHARACTER_ID, Const.FIRST_CBT_ID);
+        emit Mint(SECOND_CHARACTER_ID, FIRST_CBT_ID, 2);
+        cbt.mint(SECOND_CHARACTER_ID, FIRST_CBT_ID);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
-        emit Mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID, 3);
-        cbt.mint(Const.THIRD_CHARACTER_ID, Const.FIRST_CBT_ID);
+        emit Mint(THIRD_CHARACTER_ID, FIRST_CBT_ID, 3);
+        cbt.mint(THIRD_CHARACTER_ID, FIRST_CBT_ID);
 
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
-        emit Mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID, 1);
-        cbt.mint(Const.FIRST_CHARACTER_ID, Const.SECOND_CBT_ID);
+        emit Mint(FIRST_CHARACTER_ID, SECOND_CBT_ID, 1);
+        cbt.mint(FIRST_CHARACTER_ID, SECOND_CBT_ID);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3);
-        emit Mint(Const.SECOND_CHARACTER_ID, Const.SECOND_CBT_ID, 2);
-        cbt.mint(Const.SECOND_CHARACTER_ID, Const.SECOND_CBT_ID);
+        emit Mint(SECOND_CHARACTER_ID, SECOND_CBT_ID, 2);
+        cbt.mint(SECOND_CHARACTER_ID, SECOND_CBT_ID);
     }
 }

@@ -6,7 +6,7 @@ import {Test} from "forge-std/Test.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {Const} from "./Const.sol";
 
-contract Utils is Test {
+contract Utils is Test, Const {
     uint8 public constant CheckTopic1 = 0x1;
     uint8 public constant CheckTopic2 = 0x2;
     uint8 public constant CheckTopic3 = 0x4;
@@ -58,7 +58,7 @@ contract Utils is Test {
         DataTypes.CreateCharacterData memory characterData = DataTypes.CreateCharacterData(
             to,
             handle,
-            Const.MOCK_CHARACTER_URI,
+            MOCK_CHARACTER_URI,
             address(0),
             ""
         );
@@ -70,10 +70,10 @@ contract Utils is Test {
     ) public pure returns (DataTypes.PostNoteData memory) {
         DataTypes.PostNoteData memory postNoteData = DataTypes.PostNoteData(
             characterId,
-            Const.MOCK_NOTE_URI,
-            Const.AddressZero,
+            MOCK_NOTE_URI,
+            AddressZero,
             new bytes(0),
-            Const.AddressZero,
+            AddressZero,
             new bytes(0),
             false
         );

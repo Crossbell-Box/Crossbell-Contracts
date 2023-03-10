@@ -9,7 +9,6 @@ import {
     ErrNotEnoughPermission,
     ErrNotEnoughPermissionForThisNote
 } from "../../contracts/libraries/Error.sol";
-import {Const} from "../helpers/Const.sol";
 import {Utils} from "../helpers/Utils.sol";
 import {SetUp} from "../helpers/SetUp.sol";
 
@@ -19,25 +18,20 @@ contract LinkAddressTest is Test, SetUp, Utils {
         _setUp();
 
         // create character
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, bob));
     }
 
     function testLinkAddress() public {
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.LinkAddress(
-            Const.FIRST_CHARACTER_ID,
-            address(0x1232414),
-            Const.FollowLinkType,
-            1
-        );
+        emit Events.LinkAddress(FIRST_CHARACTER_ID, address(0x1232414), FollowLinkType, 1);
         // alice link an address
         vm.prank(alice);
         web3Entry.linkAddress(
             DataTypes.linkAddressData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(0x1232414),
-                Const.FollowLinkType,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -49,9 +43,9 @@ contract LinkAddressTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.linkAddress(
             DataTypes.linkAddressData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(0x1232414),
-                Const.FollowLinkType,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -61,9 +55,9 @@ contract LinkAddressTest is Test, SetUp, Utils {
         vm.prank(address(periphery), alice);
         web3Entry.linkAddress(
             DataTypes.linkAddressData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(0x1232414),
-                Const.FollowLinkType,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -81,9 +75,9 @@ contract LinkAddressTest is Test, SetUp, Utils {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.linkAddress(
             DataTypes.linkAddressData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(0x1232414),
-                Const.FollowLinkType,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -94,35 +88,23 @@ contract LinkAddressTest is Test, SetUp, Utils {
         vm.startPrank(alice);
         web3Entry.linkAddress(
             DataTypes.linkAddressData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(0x1232414),
-                Const.FollowLinkType,
+                FollowLinkType,
                 new bytes(0)
             )
         );
 
         // unlink
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.UnlinkAddress(
-            Const.FIRST_CHARACTER_ID,
-            address(0x1232414),
-            Const.FollowLinkType
-        );
+        emit Events.UnlinkAddress(FIRST_CHARACTER_ID, address(0x1232414), FollowLinkType);
         web3Entry.unlinkAddress(
-            DataTypes.unlinkAddressData(
-                Const.FIRST_CHARACTER_ID,
-                address(0x1232414),
-                Const.FollowLinkType
-            )
+            DataTypes.unlinkAddressData(FIRST_CHARACTER_ID, address(0x1232414), FollowLinkType)
         );
 
         // unlink twice
         web3Entry.unlinkAddress(
-            DataTypes.unlinkAddressData(
-                Const.FIRST_CHARACTER_ID,
-                address(0x1232414),
-                Const.FollowLinkType
-            )
+            DataTypes.unlinkAddressData(FIRST_CHARACTER_ID, address(0x1232414), FollowLinkType)
         );
         vm.stopPrank();
 
@@ -130,7 +112,7 @@ contract LinkAddressTest is Test, SetUp, Utils {
         assertEq(linklist.ownerOf(1), alice);
 
         // check state
-        assertEq(linklist.getOwnerCharacterId(1), Const.FIRST_CHARACTER_ID);
+        assertEq(linklist.getOwnerCharacterId(1), FIRST_CHARACTER_ID);
         assertEq(linklist.getLinkingAddresses(1).length, 0);
         assertEq(linklist.getLinkingAddressListLength(1), 0);
     }
@@ -139,9 +121,9 @@ contract LinkAddressTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.linkAddress(
             DataTypes.linkAddressData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(0x1232414),
-                Const.FollowLinkType,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -150,11 +132,7 @@ contract LinkAddressTest is Test, SetUp, Utils {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.unlinkAddress(
-            DataTypes.unlinkAddressData(
-                Const.FIRST_CHARACTER_ID,
-                address(0x1232414),
-                Const.FollowLinkType
-            )
+            DataTypes.unlinkAddressData(FIRST_CHARACTER_ID, address(0x1232414), FollowLinkType)
         );
     }
 }

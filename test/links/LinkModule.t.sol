@@ -4,7 +4,6 @@ pragma solidity 0.8.16;
 import {Test} from "forge-std/Test.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {ErrNotAddressOwner} from "../../contracts/libraries/Error.sol";
-import {Const} from "../helpers/Const.sol";
 import {Utils} from "../helpers/Utils.sol";
 import {SetUp} from "../helpers/SetUp.sol";
 
@@ -21,12 +20,12 @@ contract LinkModuleTest is Test, SetUp, Utils {
         allowlist[1] = bob;
 
         // create character
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
         web3Entry.createCharacter(
             DataTypes.CreateCharacterData(
                 bob,
-                Const.MOCK_CHARACTER_HANDLE2,
-                Const.MOCK_CHARACTER_URI,
+                MOCK_CHARACTER_HANDLE2,
+                MOCK_CHARACTER_URI,
                 address(linkModule4Character),
                 abi.encode(allowlist)
             )
@@ -35,18 +34,16 @@ contract LinkModuleTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.LikeLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                LikeLinkType,
                 new bytes(1)
             )
         );
 
         web3Entry.createCharacter(makeCharacterData("imdick", dick));
         vm.prank(dick);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(3, 2, Const.LikeLinkType, new bytes(1))
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(3, 2, LikeLinkType, new bytes(1)));
     }
 
     function testSetLinkModule4Address() public {

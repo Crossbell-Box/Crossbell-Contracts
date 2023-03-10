@@ -11,7 +11,6 @@ import {
     TransparentUpgradeableProxy
 } from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import {OP} from "../contracts/libraries/OP.sol";
-import {Const} from "./helpers/Const.sol";
 import {Utils} from "./helpers/Utils.sol";
 import {SetUp} from "./helpers/SetUp.sol";
 import {ReinitializeWeb3Entry} from "./helpers/ReinitializeWeb3Entry.sol";
@@ -40,8 +39,8 @@ contract UpgradeWeb3Entry is Test, Utils {
         web3EntryBaseImpl = new Web3EntryBase();
         proxyWeb3Entry = new TransparentUpgradeableProxy(address(web3EntryBaseImpl), admin, "");
         Web3EntryBase(address(proxyWeb3Entry)).initialize(
-            Const.WEB3_ENTRY_NFT_NAME,
-            Const.WEB3_ENTRY_NFT_SYMBOL,
+            WEB3_ENTRY_NFT_NAME,
+            WEB3_ENTRY_NFT_SYMBOL,
             linkList,
             mintNFT,
             periphery,
@@ -54,8 +53,8 @@ contract UpgradeWeb3Entry is Test, Utils {
         web3EntryBaseImpl = new Web3EntryBase();
         proxyWeb3Entry = new TransparentUpgradeableProxy(address(web3EntryBaseImpl), admin, "");
         Web3EntryBase(address(proxyWeb3Entry)).initialize(
-            Const.WEB3_ENTRY_NFT_NAME,
-            Const.WEB3_ENTRY_NFT_SYMBOL,
+            WEB3_ENTRY_NFT_NAME,
+            WEB3_ENTRY_NFT_SYMBOL,
             linkList,
             mintNFT,
             periphery,
@@ -63,8 +62,8 @@ contract UpgradeWeb3Entry is Test, Utils {
         );
 
         // check status
-        assertEq(Web3EntryBase(address(proxyWeb3Entry)).name(), Const.WEB3_ENTRY_NFT_NAME);
-        assertEq(Web3EntryBase(address(proxyWeb3Entry)).symbol(), Const.WEB3_ENTRY_NFT_SYMBOL);
+        assertEq(Web3EntryBase(address(proxyWeb3Entry)).name(), WEB3_ENTRY_NFT_NAME);
+        assertEq(Web3EntryBase(address(proxyWeb3Entry)).symbol(), WEB3_ENTRY_NFT_SYMBOL);
 
         // reinitialize with higher version
         reinitializeWeb3Entry = new ReinitializeWeb3Entry();
@@ -83,8 +82,8 @@ contract UpgradeWeb3Entry is Test, Utils {
         // can't initialize twice
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
         Web3EntryBase(address(proxyWeb3Entry)).initialize(
-            Const.WEB3_ENTRY_NFT_NAME,
-            Const.WEB3_ENTRY_NFT_SYMBOL,
+            WEB3_ENTRY_NFT_NAME,
+            WEB3_ENTRY_NFT_SYMBOL,
             linkList,
             mintNFT,
             periphery,
@@ -97,14 +96,14 @@ contract UpgradeWeb3Entry is Test, Utils {
         // initialize version = 2
         proxyWeb3Entry.upgradeTo(address(reinitializeWeb3Entry));
         ReinitializeWeb3Entry(address(proxyWeb3Entry)).initialize(
-            Const.WEB3_ENTRY_NFT_NAME,
-            Const.WEB3_ENTRY_NFT_SYMBOL
+            WEB3_ENTRY_NFT_NAME,
+            WEB3_ENTRY_NFT_SYMBOL
         );
         // initialize version = 3, reinitialize
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
         ReinitializeWeb3Entry(address(proxyWeb3Entry)).initialize(
-            Const.WEB3_ENTRY_NFT_NAME,
-            Const.WEB3_ENTRY_NFT_SYMBOL
+            WEB3_ENTRY_NFT_NAME,
+            WEB3_ENTRY_NFT_SYMBOL
         );
     }
 
@@ -125,10 +124,10 @@ contract UpgradeWeb3Entry is Test, Utils {
     function testCheckStorage() public {
         // use web3entryBase to generate some data
         Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice)
+            makeCharacterData(MOCK_CHARACTER_HANDLE, alice)
         );
         Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob)
+            makeCharacterData(MOCK_CHARACTER_HANDLE2, bob)
         );
 
         // upgrade web3Entry
@@ -137,32 +136,26 @@ contract UpgradeWeb3Entry is Test, Utils {
         proxyWeb3Entry.upgradeTo(address(web3EntryImpl));
 
         vm.startPrank(alice);
-        Web3Entry(address(proxyWeb3Entry)).postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        Web3Entry(address(proxyWeb3Entry)).postNote(makePostNoteData(FIRST_CHARACTER_ID));
         // grant operator sign permission to bob
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
-            Const.FIRST_CHARACTER_ID,
+            FIRST_CHARACTER_ID,
             bob,
             OP.DEFAULT_PERMISSION_BITMAP
         );
         assertEq(
-            Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions(
-                Const.FIRST_CHARACTER_ID,
-                bob
-            ),
+            Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions(FIRST_CHARACTER_ID, bob),
             OP.DEFAULT_PERMISSION_BITMAP
         );
 
         // grant operator sync permission to carol
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
-            Const.FIRST_CHARACTER_ID,
+            FIRST_CHARACTER_ID,
             carol,
             OP.POST_NOTE_PERMISSION_BITMAP
         );
         assertEq(
-            Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions(
-                Const.FIRST_CHARACTER_ID,
-                carol
-            ),
+            Web3Entry(address(proxyWeb3Entry)).getOperatorPermissions(FIRST_CHARACTER_ID, carol),
             OP.POST_NOTE_PERMISSION_BITMAP
         );
 
@@ -171,15 +164,15 @@ contract UpgradeWeb3Entry is Test, Utils {
 
         // grant NOTE_SET_NOTE_URI permission to bob
         Web3Entry(address(proxyWeb3Entry)).grantOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
+            FIRST_CHARACTER_ID,
+            FIRST_NOTE_ID,
             blocklist,
             allowlist
         );
 
         (address[] memory blocklist_, address[] memory allowlist_) = Web3Entry(
             address(proxyWeb3Entry)
-        ).getOperators4Note(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID);
+        ).getOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
 
         assertEq(blocklist_, blocklist);
         assertEq(allowlist_, allowlist);
@@ -191,7 +184,7 @@ contract UpgradeWeb3Entry is Test, Utils {
     function testSlot() public {
         // create character
         Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice)
+            makeCharacterData(MOCK_CHARACTER_HANDLE, alice)
         );
 
         bytes32 bytes32Periphery = bytes32((uint256(uint160(periphery))));
@@ -225,20 +218,20 @@ contract UpgradeWeb3Entry is Test, Utils {
         }
 
         vm.startPrank(alice);
-        Web3Entry(address(proxyWeb3Entry)).postNote(makePostNoteData(Const.FIRST_CHARACTER_ID));
+        Web3Entry(address(proxyWeb3Entry)).postNote(makePostNoteData(FIRST_CHARACTER_ID));
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
-            Const.FIRST_CHARACTER_ID,
+            FIRST_CHARACTER_ID,
             bob,
             OP.DEFAULT_PERMISSION_BITMAP
         );
         Web3Entry(address(proxyWeb3Entry)).grantOperatorPermissions(
-            Const.FIRST_CHARACTER_ID,
+            FIRST_CHARACTER_ID,
             carol,
             OP.DEFAULT_PERMISSION_BITMAP
         );
         Web3Entry(address(proxyWeb3Entry)).grantOperators4Note(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
+            FIRST_CHARACTER_ID,
+            FIRST_NOTE_ID,
             array(bob, admin),
             array(carol, bob, alice)
         );
@@ -249,7 +242,7 @@ contract UpgradeWeb3Entry is Test, Utils {
         bytes32 operatorBitmapSlot = keccak256(
             abi.encodePacked(
                 bytes32bob,
-                (keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(25)))))
+                (keccak256(abi.encodePacked(FIRST_CHARACTER_ID, bytes32(uint256(25)))))
             )
         );
         bytes32 valueAtOperatorBitmapSlot = vm.load(address(proxyWeb3Entry), operatorBitmapSlot);
@@ -259,7 +252,7 @@ contract UpgradeWeb3Entry is Test, Utils {
         operatorBitmapSlot = keccak256(
             abi.encodePacked(
                 bytes32carol,
-                (keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(25)))))
+                (keccak256(abi.encodePacked(FIRST_CHARACTER_ID, bytes32(uint256(25)))))
             )
         );
         valueAtOperatorBitmapSlot = vm.load(address(proxyWeb3Entry), operatorBitmapSlot);
@@ -268,8 +261,8 @@ contract UpgradeWeb3Entry is Test, Utils {
         // check alice's blocklist for note 1
         bytes32 blocklistSlot = keccak256(
             abi.encodePacked(
-                Const.FIRST_NOTE_ID,
-                (keccak256(abi.encodePacked(Const.FIRST_CHARACTER_ID, bytes32(uint256(26)))))
+                FIRST_NOTE_ID,
+                (keccak256(abi.encodePacked(FIRST_CHARACTER_ID, bytes32(uint256(26)))))
             )
         );
         bytes32 valueAtBlocklistSlot = vm.load(address(proxyWeb3Entry), blocklistSlot);

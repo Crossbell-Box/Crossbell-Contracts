@@ -9,7 +9,6 @@ import {
     ErrHandleLengthInvalid,
     ErrHandleContainsInvalidCharacters
 } from "../../contracts/libraries/Error.sol";
-import {Const} from "../helpers/Const.sol";
 import {Utils} from "../helpers/Utils.sol";
 import {SetUp} from "../helpers/SetUp.sol";
 
@@ -21,29 +20,29 @@ contract CreateCharacterTest is Test, SetUp, Utils {
 
     function testCreateCharacter() public {
         DataTypes.CreateCharacterData memory characterData = makeCharacterData(
-            Const.MOCK_CHARACTER_HANDLE,
+            MOCK_CHARACTER_HANDLE,
             bob
         );
 
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         // The event we expect
-        emit Events.CharacterCreated(1, bob, bob, Const.MOCK_CHARACTER_HANDLE, block.timestamp);
+        emit Events.CharacterCreated(1, bob, bob, MOCK_CHARACTER_HANDLE, block.timestamp);
         // The event we get
         vm.prank(bob);
         web3Entry.createCharacter(characterData);
 
         // check state
-        assertEq(web3Entry.ownerOf(Const.FIRST_CHARACTER_ID), bob);
+        assertEq(web3Entry.ownerOf(FIRST_CHARACTER_ID), bob);
         assertEq(web3Entry.totalSupply(), 1);
         DataTypes.Character memory character = web3Entry.getCharacterByHandle(
-            Const.MOCK_CHARACTER_HANDLE
+            MOCK_CHARACTER_HANDLE
         );
-        assertEq(character.characterId, Const.FIRST_CHARACTER_ID);
-        assertEq(character.handle, Const.MOCK_CHARACTER_HANDLE);
-        assertEq(character.uri, Const.MOCK_CHARACTER_URI);
-        assertEq(web3Entry.getHandle(Const.FIRST_CHARACTER_ID), Const.MOCK_CHARACTER_HANDLE);
+        assertEq(character.characterId, FIRST_CHARACTER_ID);
+        assertEq(character.handle, MOCK_CHARACTER_HANDLE);
+        assertEq(character.uri, MOCK_CHARACTER_URI);
+        assertEq(web3Entry.getHandle(FIRST_CHARACTER_ID), MOCK_CHARACTER_HANDLE);
         // get character by calling `getCharacter`
-        DataTypes.Character memory character2 = web3Entry.getCharacter(Const.FIRST_CHARACTER_ID);
+        DataTypes.Character memory character2 = web3Entry.getCharacter(FIRST_CHARACTER_ID);
         assertEq(character2.characterId, character.characterId);
         assertEq(character2.handle, character.handle);
         assertEq(character2.uri, character.uri);

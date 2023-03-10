@@ -9,7 +9,6 @@ import {
     ErrNotEnoughPermission,
     ErrCallerNotWeb3EntryOrNotOwner
 } from "../../contracts/libraries/Error.sol";
-import {Const} from "../helpers/Const.sol";
 import {Utils} from "../helpers/Utils.sol";
 import {SetUp} from "../helpers/SetUp.sol";
 
@@ -22,20 +21,20 @@ contract LinklistTest is Test, SetUp, Utils {
         _setUp();
 
         // create character
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, bob));
     }
 
     function testMint() public {
         // link character
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Transfer(address(0), Const.FIRST_CHARACTER_ID, Const.FIRST_LINKLIST_ID);
+        emit Transfer(address(0), FIRST_CHARACTER_ID, FIRST_LINKLIST_ID);
         vm.prank(alice);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.LikeLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                LikeLinkType,
                 new bytes(0)
             )
         );
@@ -43,14 +42,14 @@ contract LinklistTest is Test, SetUp, Utils {
         // check state
         assertEq(linklist.totalSupply(), 1);
         assertEq(linklist.balanceOf(alice), 1);
-        assertEq(linklist.balanceOf(Const.FIRST_CHARACTER_ID), 1);
+        assertEq(linklist.balanceOf(FIRST_CHARACTER_ID), 1);
         assertEq(linklist.ownerOf(1), alice);
-        assertEq(linklist.characterOwnerOf(1), Const.FIRST_CHARACTER_ID);
+        assertEq(linklist.characterOwnerOf(1), FIRST_CHARACTER_ID);
         assertEq(linklist.getOwnerCharacterId(1), 1);
         assertEq(linklist.Uri(1), "");
         assertEq(linklist.getLinkingCharacterIds(1).length, 1);
         assertEq(linklist.getLinkingCharacterIds(1)[0], 2);
-        assertEq(linklist.getLinkType(1), Const.LikeLinkType);
+        assertEq(linklist.getLinkType(1), LikeLinkType);
     }
 
     function testMintFail() public {
@@ -59,9 +58,9 @@ contract LinklistTest is Test, SetUp, Utils {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -75,27 +74,27 @@ contract LinklistTest is Test, SetUp, Utils {
         vm.startPrank(alice);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
         // case 1: set linklist uri by alice
-        linklist.setUri(1, Const.MOCK_TOKEN_URI);
+        linklist.setUri(1, MOCK_TOKEN_URI);
         // check linklist uri
-        assertEq(linklist.Uri(1), Const.MOCK_TOKEN_URI);
+        assertEq(linklist.Uri(1), MOCK_TOKEN_URI);
         vm.stopPrank();
 
         // case 2: set linklist uri by web3Entry
         vm.prank(address(web3Entry));
-        linklist.setUri(1, Const.MOCK_NEW_TOKEN_URI);
+        linklist.setUri(1, MOCK_NEW_TOKEN_URI);
         // check linklist uri
-        assertEq(linklist.Uri(1), Const.MOCK_NEW_TOKEN_URI);
+        assertEq(linklist.Uri(1), MOCK_NEW_TOKEN_URI);
 
         // check state
         string memory uri = linklist.Uri(1);
-        assertEq(uri, Const.MOCK_NEW_TOKEN_URI);
+        assertEq(uri, MOCK_NEW_TOKEN_URI);
     }
 
     function testSetUriFail() public {
@@ -103,9 +102,9 @@ contract LinklistTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -113,7 +112,7 @@ contract LinklistTest is Test, SetUp, Utils {
         // bob sets linklist uri
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3EntryOrNotOwner.selector));
         vm.prank(bob);
-        linklist.setUri(1, Const.MOCK_TOKEN_URI);
+        linklist.setUri(1, MOCK_TOKEN_URI);
     }
 
     function testTotalSupply(uint256 amount) public {
@@ -122,7 +121,7 @@ contract LinklistTest is Test, SetUp, Utils {
         vm.startPrank(address(web3Entry));
 
         for (uint256 i = 1; i <= amount; i++) {
-            linklist.mint(Const.FIRST_CHARACTER_ID, Const.FollowLinkType);
+            linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
         }
 
         uint256 totalSupply = linklist.totalSupply();
@@ -136,7 +135,7 @@ contract LinklistTest is Test, SetUp, Utils {
         vm.startPrank(address(web3Entry));
 
         for (uint256 i = 1; i <= amount; i++) {
-            linklist.mint(Const.FIRST_CHARACTER_ID, Const.FollowLinkType);
+            linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
         }
 
         uint256 balanceOfCharacter = linklist.balanceOf(1);

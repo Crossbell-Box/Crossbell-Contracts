@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.16;
 
-library Const {
+contract Const {
     /* solhint-disable comprehensive-interface */
     uint256 public constant FIRST_CHARACTER_ID = 1;
     uint256 public constant SECOND_CHARACTER_ID = 2;

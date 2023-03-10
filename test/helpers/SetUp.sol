@@ -21,7 +21,7 @@ import {ApprovalMintModule} from "../../contracts/modules/mint/ApprovalMintModul
 import {NFT, ERC1155} from "../../contracts/mocks/NFT.sol";
 import {Const} from "./Const.sol";
 
-contract SetUp is Test {
+contract SetUp is Test, Const {
     Web3Entry public web3Entry;
     Linklist public linklist;
     Periphery public periphery;
@@ -97,19 +97,15 @@ contract SetUp is Test {
 
         // initialize web3Entry
         web3Entry.initialize(
-            Const.WEB3_ENTRY_NFT_NAME,
-            Const.WEB3_ENTRY_NFT_SYMBOL,
+            WEB3_ENTRY_NFT_NAME,
+            WEB3_ENTRY_NFT_SYMBOL,
             address(linklist),
             address(mintNFT),
             address(periphery),
             address(newbieVilla)
         );
         // initialize linklist
-        linklist.initialize(
-            Const.LINK_LIST_NFT_NAME,
-            Const.LINK_LIST_NFT_SYMBOL,
-            address(web3Entry)
-        );
+        linklist.initialize(LINK_LIST_NFT_NAME, LINK_LIST_NFT_SYMBOL, address(web3Entry));
         // initialize periphery
         periphery.initialize(address(web3Entry), address(linklist));
 

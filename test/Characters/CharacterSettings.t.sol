@@ -6,7 +6,6 @@ import {Web3Entry} from "../../contracts/Web3Entry.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {Events} from "../../contracts/libraries/Events.sol";
 import {ErrHandleExists, ErrNotEnoughPermission} from "../../contracts/libraries/Error.sol";
-import {Const} from "../helpers/Const.sol";
 import {Utils} from "../helpers/Utils.sol";
 import {SetUp} from "../helpers/SetUp.sol";
 
@@ -18,7 +17,7 @@ contract CharacterSettingsTest is Test, SetUp, Utils {
 
     function testSetCharacterUri() public {
         DataTypes.CreateCharacterData memory characterData = makeCharacterData(
-            Const.MOCK_CHARACTER_HANDLE,
+            MOCK_CHARACTER_HANDLE,
             alice
         );
         vm.prank(alice);
@@ -30,7 +29,7 @@ contract CharacterSettingsTest is Test, SetUp, Utils {
 
         // UserTwo should fail to set character uri as a character owned by user 1
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setCharacterUri(1, Const.MOCK_URI);
+        web3Entry.setCharacterUri(1, MOCK_URI);
 
         // User should set new character uri
         vm.prank(alice);

@@ -9,7 +9,6 @@ import {
     ErrNotEnoughPermission,
     ErrNotEnoughPermissionForThisNote
 } from "../../contracts/libraries/Error.sol";
-import {Const} from "../helpers/Const.sol";
 import {Utils} from "../helpers/Utils.sol";
 import {SetUp} from "../helpers/SetUp.sol";
 
@@ -19,27 +18,27 @@ contract LinkLinklistTest is Test, SetUp, Utils {
         _setUp();
 
         // create character
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
+        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, bob));
 
         vm.prank(address(web3Entry));
-        linklist.mint(Const.FIRST_CHARACTER_ID, Const.FollowLinkType);
+        linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
     }
 
     function testLinkLinklist() public {
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Events.LinkLinklist(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_LINKLIST_ID,
-            Const.FollowLinkType,
-            Const.SECOND_LINKLIST_ID
+            FIRST_CHARACTER_ID,
+            FIRST_LINKLIST_ID,
+            FollowLinkType,
+            SECOND_LINKLIST_ID
         );
         vm.startPrank(alice);
         web3Entry.linkLinklist(
             DataTypes.linkLinklistData(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_LINKLIST_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                FIRST_LINKLIST_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -47,9 +46,9 @@ contract LinkLinklistTest is Test, SetUp, Utils {
         // link twice
         web3Entry.linkLinklist(
             DataTypes.linkLinklistData(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_LINKLIST_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                FIRST_LINKLIST_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -60,20 +59,18 @@ contract LinkLinklistTest is Test, SetUp, Utils {
         vm.prank(address(periphery), alice);
         web3Entry.linkLinklist(
             DataTypes.linkLinklistData(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_LINKLIST_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                FIRST_LINKLIST_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
 
         // check state
-        uint256[] memory linkingLinkListIds = linklist.getLinkingLinklistIds(
-            Const.SECOND_LINKLIST_ID
-        );
+        uint256[] memory linkingLinkListIds = linklist.getLinkingLinklistIds(SECOND_LINKLIST_ID);
         assertEq(linkingLinkListIds.length, 1);
         assertEq(linkingLinkListIds[0], 1);
-        assertEq(linklist.getLinkingLinklistLength(Const.SECOND_LINKLIST_ID), 1);
+        assertEq(linklist.getLinkingLinklistLength(SECOND_LINKLIST_ID), 1);
     }
 
     function testLinkLinklistFail() public {
@@ -82,9 +79,9 @@ contract LinkLinklistTest is Test, SetUp, Utils {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.linkLinklist(
             DataTypes.linkLinklistData(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_LINKLIST_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                FIRST_LINKLIST_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -95,9 +92,9 @@ contract LinkLinklistTest is Test, SetUp, Utils {
         vm.startPrank(alice);
         web3Entry.linkLinklist(
             DataTypes.linkLinklistData(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_LINKLIST_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                FIRST_LINKLIST_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -105,35 +102,23 @@ contract LinkLinklistTest is Test, SetUp, Utils {
         // unlink
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Events.UnlinkLinklist(
-            Const.FIRST_CHARACTER_ID,
-            Const.FIRST_LINKLIST_ID,
-            Const.FollowLinkType,
-            Const.SECOND_LINKLIST_ID
+            FIRST_CHARACTER_ID,
+            FIRST_LINKLIST_ID,
+            FollowLinkType,
+            SECOND_LINKLIST_ID
         );
         web3Entry.unlinkLinklist(
-            DataTypes.unlinkLinklistData(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_LINKLIST_ID,
-                Const.FollowLinkType
-            )
+            DataTypes.unlinkLinklistData(FIRST_CHARACTER_ID, FIRST_LINKLIST_ID, FollowLinkType)
         );
 
         // unlink twice
         web3Entry.unlinkLinklist(
-            DataTypes.unlinkLinklistData(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_LINKLIST_ID,
-                Const.FollowLinkType
-            )
+            DataTypes.unlinkLinklistData(FIRST_CHARACTER_ID, FIRST_LINKLIST_ID, FollowLinkType)
         );
 
         // unlink a non-existing character
         web3Entry.unlinkLinklist(
-            DataTypes.unlinkLinklistData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_LINKLIST_ID,
-                Const.FollowLinkType
-            )
+            DataTypes.unlinkLinklistData(FIRST_CHARACTER_ID, SECOND_LINKLIST_ID, FollowLinkType)
         );
         vm.stopPrank();
 
@@ -141,20 +126,18 @@ contract LinkLinklistTest is Test, SetUp, Utils {
         assertEq(linklist.ownerOf(1), alice);
 
         // check state
-        uint256[] memory linkingLinkListIds = linklist.getLinkingLinklistIds(
-            Const.SECOND_LINKLIST_ID
-        );
+        uint256[] memory linkingLinkListIds = linklist.getLinkingLinklistIds(SECOND_LINKLIST_ID);
         assertEq(linkingLinkListIds.length, 0);
-        assertEq(linklist.getLinkingLinklistLength(Const.SECOND_LINKLIST_ID), 0);
+        assertEq(linklist.getLinkingLinklistLength(SECOND_LINKLIST_ID), 0);
     }
 
     function testUnlinkLinklistFail() public {
         vm.prank(alice);
         web3Entry.linkLinklist(
             DataTypes.linkLinklistData(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_LINKLIST_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                FIRST_LINKLIST_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -163,11 +146,7 @@ contract LinkLinklistTest is Test, SetUp, Utils {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.unlinkLinklist(
-            DataTypes.unlinkLinklistData(
-                Const.FIRST_CHARACTER_ID,
-                Const.FIRST_LINKLIST_ID,
-                Const.FollowLinkType
-            )
+            DataTypes.unlinkLinklistData(FIRST_CHARACTER_ID, FIRST_LINKLIST_ID, FollowLinkType)
         );
     }
 }
