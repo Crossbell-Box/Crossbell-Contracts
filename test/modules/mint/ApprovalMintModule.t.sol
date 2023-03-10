@@ -2,13 +2,26 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.16;
 
-import "forge-std/Test.sol";
-import "../../../contracts/MintNFT.sol";
-import "../../../contracts/libraries/Error.sol";
-import "../../helpers/Const.sol";
-import "../../helpers/utils.sol";
-import "../../helpers/SetUp.sol";
-import "../../../contracts/libraries/Events.sol";
+import {Test} from "forge-std/Test.sol";
+import {Const} from "../../helpers/Const.sol";
+import {Utils} from "../../helpers/Utils.sol";
+import {SetUp} from "../../helpers/SetUp.sol";
+import {Events} from "../../../contracts/libraries/Events.sol";
+import {DataTypes} from "../../../contracts/libraries/DataTypes.sol";
+import {MintNFT} from "../../../contracts/MintNFT.sol";
+import {
+    ErrNotApproved,
+    ErrCallerNotWeb3Entry,
+    ErrNotCharacterOwner
+} from "../../../contracts/libraries/Error.sol";
+import {IMintModule4Note} from "../../../contracts/interfaces/IMintModule4Note.sol";
+import {IMintNFT} from "../../../contracts/interfaces/IMintNFT.sol";
+import {ApprovalMintModule} from "../../../contracts/modules/mint/ApprovalMintModule.sol";
+import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
+import {
+    IERC721Enumerable
+} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract ApprovalMintModuleTest is Test, Utils, SetUp {
     function setUp() public {

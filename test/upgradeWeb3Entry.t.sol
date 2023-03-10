@@ -2,18 +2,20 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.16;
 
-import "forge-std/Test.sol";
-import "../contracts/Linklist.sol";
-import "../contracts/MintNFT.sol";
-import "../contracts/Web3Entry.sol";
-import "../contracts/Web3EntryBase.sol";
-import "../contracts/libraries/DataTypes.sol";
-import "../contracts/misc/Periphery.sol";
-import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
-import "./helpers/Const.sol";
-import "./helpers/SetUp.sol";
-import "./helpers/utils.sol";
-import "./helpers/ReinitializeWeb3Entry.sol";
+import {Test} from "forge-std/Test.sol";
+import {Linklist} from "../contracts/Linklist.sol";
+import {MintNFT} from "../contracts/MintNFT.sol";
+import {Web3Entry} from "../contracts/Web3Entry.sol";
+import {Web3EntryBase} from "../contracts/Web3EntryBase.sol";
+import {
+    TransparentUpgradeableProxy
+} from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
+import {OP} from "../contracts/libraries/OP.sol";
+import {Const} from "./helpers/Const.sol";
+import {Utils} from "./helpers/Utils.sol";
+import {SetUp} from "./helpers/SetUp.sol";
+import {ReinitializeWeb3Entry} from "./helpers/ReinitializeWeb3Entry.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract UpgradeWeb3Entry is Test, Utils {
     using EnumerableSet for EnumerableSet.AddressSet;

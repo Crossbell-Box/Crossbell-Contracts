@@ -2,14 +2,28 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.16;
 
-import "forge-std/Test.sol";
-import "../contracts/Web3Entry.sol";
-import "../contracts/libraries/DataTypes.sol";
-import "../contracts/libraries/Constants.sol";
+import {Test} from "forge-std/Test.sol";
+import {IWeb3Entry} from "../contracts/interfaces/IWeb3Entry.sol";
+import {DataTypes} from "../contracts/libraries/DataTypes.sol";
+import {Events} from "../contracts/libraries/Events.sol";
+import {OP} from "../contracts/libraries/OP.sol";
+import {Constants} from "../contracts/libraries/Constants.sol";
+import {
+    ErrNotEnoughPermission,
+    ErrNotEnoughPermissionForThisNote,
+    ErrNoteNotExists,
+    ErrNoteLocked,
+    ErrNoteIsDeleted
+} from "../contracts/libraries/Error.sol";
 import "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
-import "./helpers/Const.sol";
-import "./helpers/utils.sol";
-import "./helpers/SetUp.sol";
+import {Const} from "./helpers/Const.sol";
+import {Utils} from "./helpers/Utils.sol";
+import {SetUp} from "./helpers/SetUp.sol";
+import {
+    IERC721Enumerable
+} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract NoteTest is Test, SetUp, Utils {
     function setUp() public {

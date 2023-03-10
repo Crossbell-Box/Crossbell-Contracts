@@ -2,7 +2,7 @@
 // solhint-disable contract-name-camelcase
 pragma solidity 0.8.16;
 
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /**
  * @title DataTypes

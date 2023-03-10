@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
-import "forge-std/Test.sol";
-import "contracts/libraries/DataTypes.sol";
-import "../helpers/Const.sol";
-import "../helpers/utils.sol";
-import "../helpers/SetUp.sol";
-import "../../contracts/libraries/OP.sol";
+import {Test} from "forge-std/Test.sol";
+import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
+import {OP} from "../../contracts/libraries/OP.sol";
+import {ErrNotCharacterOwner} from "../../contracts/libraries/Error.sol";
+import {Const} from "../helpers/Const.sol";
+import {Utils} from "../helpers/Utils.sol";
+import {SetUp} from "../helpers/SetUp.sol";
 
 contract PrimaryCharacterTest is Test, Utils, SetUp {
     /* solhint-disable comprehensive-interface */

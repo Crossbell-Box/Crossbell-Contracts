@@ -2,13 +2,14 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.16;
 
-import "forge-std/Test.sol";
-import "./helpers/Const.sol";
-import "./helpers/utils.sol";
-import "./helpers/SetUp.sol";
-import "../contracts/libraries/OP.sol";
-import "../contracts/Web3Entry.sol";
-import "../contracts/libraries/DataTypes.sol";
+import {Test} from "forge-std/Test.sol";
+import {Const} from "./helpers/Const.sol";
+import {Utils} from "./helpers/Utils.sol";
+import {SetUp} from "./helpers/SetUp.sol";
+import {OP} from "../contracts/libraries/OP.sol";
+import {Web3Entry} from "../contracts/Web3Entry.sol";
+import {DataTypes} from "../contracts/libraries/DataTypes.sol";
+import {ErrNotEnoughPermission, ErrArrayLengthMismatch} from "../contracts/libraries/Error.sol";
 
 contract PeripheryTest is Test, SetUp, Utils {
     function setUp() public {

@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity 0.8.16;
 
-import "../../interfaces/IMintModule4Note.sol";
-import "../ModuleBase.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {ErrNotCharacterOwner, ErrArrayLengthMismatch, ErrNotApproved} from "../../libraries/Error.sol";
+import {IMintModule4Note} from "../../interfaces/IMintModule4Note.sol";
+import {ModuleBase} from "../ModuleBase.sol";
+import {
+    ErrNotCharacterOwner,
+    ErrArrayLengthMismatch,
+    ErrNotApproved
+} from "../../libraries/Error.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /**
  * @title ApprovalMintModule

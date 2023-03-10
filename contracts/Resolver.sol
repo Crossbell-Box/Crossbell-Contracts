@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.16;
 
-import "./interfaces/IResolver.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import {IResolver} from "./interfaces/IResolver.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Resolver is IResolver, Ownable {
     mapping(bytes32 => address) internal _ensRecords;

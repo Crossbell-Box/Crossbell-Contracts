@@ -2,22 +2,27 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.16;
 
-import "../../contracts/Web3Entry.sol";
-import "../../contracts/Linklist.sol";
-import "../../contracts/misc/Periphery.sol";
-import "../../contracts/misc/CharacterBoundToken.sol";
-import "../../contracts/misc/NewbieVilla.sol";
-import "../../contracts/mocks/MiraToken.sol";
-import "../../contracts/misc/Tips.sol";
-import "../../contracts/libraries/DataTypes.sol";
-import "../../contracts/MintNFT.sol";
-import "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
-import "../../contracts/modules/link/ApprovalLinkModule4Character.sol";
-import "../../contracts/modules/mint/ApprovalMintModule.sol";
-import "../../contracts/modules/mint/ApprovalWithAmountMintModule.sol";
-import "../../contracts/mocks/NFT.sol";
-import "./Const.sol";
-import "./utils.sol";
+import {Test} from "forge-std/Test.sol";
+import {Web3Entry} from "../../contracts/Web3Entry.sol";
+import {Linklist} from "../../contracts/Linklist.sol";
+import {Periphery} from "../../contracts/misc/Periphery.sol";
+import {CharacterBoundToken} from "../../contracts/misc/CharacterBoundToken.sol";
+import {NewbieVilla} from "../../contracts/misc/NewbieVilla.sol";
+import {MiraToken} from "../../contracts/mocks/MiraToken.sol";
+import {Tips} from "../../contracts/misc/Tips.sol";
+import {MintNFT} from "../../contracts/MintNFT.sol";
+import {
+    TransparentUpgradeableProxy
+} from "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
+import {
+    ApprovalLinkModule4Character
+} from "../../contracts/modules/link/ApprovalLinkModule4Character.sol";
+import {ApprovalMintModule} from "../../contracts/modules/mint/ApprovalMintModule.sol";
+import {
+    ApprovalWithAmountMintModule
+} from "../../contracts/modules/mint/ApprovalWithAmountMintModule.sol";
+import {NFT, ERC1155} from "../../contracts/mocks/NFT.sol";
+import {Const} from "./Const.sol";
 
 contract SetUp is Test {
     Web3Entry public web3Entry;

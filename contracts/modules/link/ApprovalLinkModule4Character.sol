@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.16;
 
-import "../../interfaces/ILinkModule4Character.sol";
-import "../ModuleBase.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {ILinkModule4Character} from "../../interfaces/ILinkModule4Character.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {ModuleBase} from "../ModuleBase.sol";
 
 /**
  * @title ApprovalLinkModule4Character

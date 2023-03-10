@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity 0.8.16;
+
 import {ErrCallerNotWeb3Entry, ErrInvalidWeb3Entry} from "../libraries/Error.sol";
 
 abstract contract ModuleBase {

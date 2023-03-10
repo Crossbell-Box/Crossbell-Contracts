@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
-import "forge-std/Vm.sol";
-import "forge-std/Test.sol";
-import "../../contracts/libraries/DataTypes.sol";
-import "./Const.sol";
+import {Vm} from "forge-std/Vm.sol";
+import {Test} from "forge-std/Test.sol";
+import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
+import {Const} from "./Const.sol";
 
 contract Utils is Test {
     uint8 public constant CheckTopic1 = 0x1;

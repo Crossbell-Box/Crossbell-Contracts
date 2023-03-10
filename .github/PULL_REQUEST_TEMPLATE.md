@@ -10,3 +10,4 @@
 - [ ] Linklist
 - [ ] NewbieVilla
 - [ ] Tips
+- [ ] ApprovalMintModule
