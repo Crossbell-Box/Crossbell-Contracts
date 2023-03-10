@@ -58,3 +58,9 @@ error ErrNotExistingCharacter();
 
 /// @dev Token id of linklist does not exist
 error ErrNotExistingLinklistToken();
+
+/// @dev Invalid web3Entry address
+error ErrInvalidWeb3Entry();
+
+/// @dev Not approved by module
+error ErrNotApproved();

@@ -1,70 +1,70 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity 0.8.16;
 
 import {IMintModule4Note} from "../../interfaces/IMintModule4Note.sol";
 import {ModuleBase} from "../ModuleBase.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {
+    ErrNotCharacterOwner,
+    ErrArrayLengthMismatch,
+    ErrNotApproved
+} from "../../libraries/Error.sol";
 
 /**
  * @title ApprovalMintModule
  * @notice This is a simple MintModule implementation, inheriting from the IMintModule4Note interface.
  */
 contract ApprovalMintModule is IMintModule4Note, ModuleBase {
-    mapping(address => mapping(uint256 => mapping(uint256 => mapping(address => bool))))
+    // characterId => noteId => address => approvedAmount
+    mapping(uint256 => mapping(uint256 => mapping(address => uint256)))
         internal _approvedByCharacterByNoteByOwner;
 
     // solhint-disable-next-line no-empty-blocks
     constructor(address web3Entry_) ModuleBase(web3Entry_) {}
 
+    /**
+     * @notice  Initialize the MintModule for a specific note.
+     * @param   characterId  The character ID of the note to initialize.
+     * @param   noteId  The note ID to initialize.
+     * @param   data  The address list that are approved to mint the note, and the approved amount.
+     * @return  bytes  The returned data of calling initializeMintModule.
+     */
     function initializeMintModule(
         uint256 characterId,
         uint256 noteId,
         bytes calldata data
-    ) external override returns (bytes memory) {
-        address owner = IERC721(web3Entry).ownerOf(characterId);
-
+    ) external override onlyWeb3Entry returns (bytes memory) {
         if (data.length > 0) {
-            address[] memory addresses = abi.decode(data, (address[]));
-            uint256 addressesLength = addresses.length;
-            for (uint256 i = 0; i < addressesLength; ) {
-                _approvedByCharacterByNoteByOwner[owner][characterId][noteId][addresses[i]] = true;
-                unchecked {
-                    ++i;
-                }
-            }
+            (address[] memory addresses, uint256 approvedAmount) = abi.decode(
+                data,
+                (address[], uint256)
+            );
+            _setApprovedAmount(characterId, noteId, addresses, approvedAmount);
         }
         return data;
     }
 
     /**
-     * @notice The owner of specified note can call this function,
-     * to approve accounts to mint specified note.
-     * @param characterId ID of character.
-     * @param noteId ID of note.
-     * @param addresses Address to set.
-     * @param toApprove To approve or revoke.
+     * @notice Set the approved addresses for minting and the approvedAmount allowed to be minted. <br>
+     * The approvedAmount is 0 by default, and you can also revoke the approval for addresses by
+     * setting the approvedAmount to 0.
+     * @param characterId The character ID of the note owner.
+     * @param noteId The ID of the note.
+     * @param addresses The Addresses to set.
+     * @param approvedAmount The amount of NFTs allowed to be minted.
      */
     // solhint-disable-next-line comprehensive-interface
-    function approve(
+    function setApprovedAmount(
         uint256 characterId,
         uint256 noteId,
         address[] calldata addresses,
-        bool[] calldata toApprove
+        uint256 approvedAmount
     ) external {
-        require(addresses.length == toApprove.length, "InitParamsInvalid");
+        // msg.sender should be the character owner
         address owner = IERC721(web3Entry).ownerOf(characterId);
-        require(msg.sender == owner, "NotCharacterOwner");
+        if (msg.sender != owner) revert ErrNotCharacterOwner();
 
-        uint256 addressesLength = addresses.length;
-        for (uint256 i = 0; i < addressesLength; ) {
-            _approvedByCharacterByNoteByOwner[owner][characterId][noteId][addresses[i]] = toApprove[
-                i
-            ];
-            unchecked {
-                ++i;
-            }
-        }
+        _setApprovedAmount(characterId, noteId, addresses, approvedAmount);
     }
 
     /**
@@ -72,35 +72,54 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
      * Triggered when the `mintNote` of web3Entry is called, if mint module of note if set.
      */
     // solhint-disable-next-line comprehensive-interface
+    /**
+     * @notice  Process mint and check if the caller is eligible.
+     * @param   to  The destination address to mint NFT to.
+     * @param   characterId  The character ID of the note owner.
+     * @param   noteId  The note ID.
+     */
     function processMint(
         address to,
         uint256 characterId,
         uint256 noteId,
         bytes calldata
-    ) external view override onlyWeb3Entry {
-        address owner = IERC721(web3Entry).ownerOf(characterId);
-
-        require(
-            _approvedByCharacterByNoteByOwner[owner][characterId][noteId][to],
-            "ApprovalMintModule: NotApproved"
-        );
+    ) external override onlyWeb3Entry {
+        uint256 approvedAmount = _approvedByCharacterByNoteByOwner[characterId][noteId][to];
+        if (approvedAmount == 0) {
+            revert ErrNotApproved();
+        } else {
+            _approvedByCharacterByNoteByOwner[characterId][noteId][to] = approvedAmount - 1;
+        }
     }
 
     /**
-     * @notice Checks whether the `account` is approved to mint specified note .
-     * @param characterOwner Address of character owner.
+     * @notice Get the allowed amount that an address can mint.
      * @param characterId ID of character to query.
      * @param noteId  ID of note to query.
-     * @param account Address of account to query.
-     * @return Returns true if the `account` is approved to mint, otherwise returns false.
+     * @param account Address of the address to query.
+     * @return The allowed amount that an address can mint.
      */
     // solhint-disable-next-line comprehensive-interface
-    function isApproved(
-        address characterOwner,
+    function getApprovedAmount(
         uint256 characterId,
         uint256 noteId,
         address account
-    ) external view returns (bool) {
-        return _approvedByCharacterByNoteByOwner[characterOwner][characterId][noteId][account];
+    ) external view returns (uint256) {
+        return _approvedByCharacterByNoteByOwner[characterId][noteId][account];
+    }
+
+    function _setApprovedAmount(
+        uint256 characterId,
+        uint256 noteId,
+        address[] memory addresses,
+        uint256 approvedAmount
+    ) internal {
+        uint256 addressesLength = addresses.length;
+        for (uint256 i = 0; i < addressesLength; ) {
+            _approvedByCharacterByNoteByOwner[characterId][noteId][addresses[i]] = approvedAmount;
+            unchecked {
+                ++i;
+            }
+        }
     }
 }
