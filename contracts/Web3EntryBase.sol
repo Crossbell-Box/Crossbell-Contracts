@@ -54,13 +54,13 @@ contract Web3EntryBase is
         string calldata name_,
         string calldata symbol_,
         address linklist_,
-        address mintNFTImpl_,
+        address[] calldata nftImplAddresses,
         address periphery_,
         address newbieVilla_
     ) external override reinitializer(2) {
         super._initialize(name_, symbol_);
         _linklist = linklist_;
-        MINT_NFT_IMPL = mintNFTImpl_;
+        _nftImplAddresses = nftImplAddresses;
         _periphery = periphery_;
         _newbieVilla = newbieVilla_;
 
@@ -428,6 +428,23 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
+
+    /// @inheritdoc IWeb3Entry
+    function mintNote(
+        DataTypes.MintNoteDataNew calldata vars
+    ) external override returns (uint256 tokenId) {
+        _validateNoteExists(vars.characterId, vars.noteId);
+
+        tokenId = PostLogic.mintNote(
+            vars.characterId,
+            vars.noteId,
+            vars.to,
+            vars.toCharacterId,
+            vars.mintModuleData,
+            _nftImplAddresses,
+            _noteByIdByCharacter // _noteByIdByCharacter[vars.characterId][vars.noteId]
+        );
+    }
     function setLinkModule4Address(
         DataTypes.setLinkModule4AddressData calldata vars
     ) external override {
@@ -452,8 +469,8 @@ contract Web3EntryBase is
             vars.noteId,
             vars.to,
             vars.mintModuleData,
-            MINT_NFT_IMPL,
-            _noteByIdByCharacter
+            _noteByIdByCharacter,
+            _nftImplAddresses
         );
     }
 
@@ -475,6 +492,15 @@ contract Web3EntryBase is
     /// @inheritdoc IWeb3Entry
     function postNote(
         DataTypes.PostNoteData calldata vars
+    ) external override returns (uint256 noteId) {
+        _validateCallerPermission(vars.characterId, OP.POST_NOTE);
+
+        noteId = _nextNoteId(vars.characterId);
+        PostLogic.postNoteWithLink(vars, noteId, 0, 0, "", _noteByIdByCharacter);
+    }
+
+    function postNote(
+        DataTypes.PostNoteDataNew calldata vars
     ) external override returns (uint256 noteId) {
         _validateCallerPermission(vars.characterId, OP.POST_NOTE);
 

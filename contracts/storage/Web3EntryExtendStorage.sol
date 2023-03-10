@@ -19,5 +19,8 @@ contract Web3EntryExtendStorage {
     mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) internal _operators4Note; // slot 26
 
     address internal _newbieVilla; // address of newbieVilla contract
+
+    // address internal MINT_NFT_IMPL;
+    address[] internal _nftImplAddresses;
 }
 // slither-disable-end naming-convention

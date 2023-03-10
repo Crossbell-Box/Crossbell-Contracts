@@ -11,6 +11,7 @@ interface IMintModule4Note {
 
     function processMint(
         address to,
+        uint256 toCharacterId,
         uint256 characterId,
         uint256 noteId,
         bytes calldata data

@@ -37,6 +37,5 @@ contract Web3EntryStorage {
     // LinkList NFT token contract
     address internal _linklist;
     // solhint-disable-next-line private-vars-leading-underscore, var-name-mixedcase
-    address internal MINT_NFT_IMPL;
 }
 // slither-disable-end naming-convention

@@ -210,6 +210,7 @@ library Events {
         uint256 indexed characterId,
         uint256 indexed noteId,
         address indexed mintModule,
+        uint8 nftType,
         bytes returnData,
         uint256 timestamp
     );

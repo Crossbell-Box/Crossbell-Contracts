@@ -75,7 +75,8 @@ contract Utils is Test {
             new bytes(0),
             Const.AddressZero,
             new bytes(0),
-            false
+            false,
+            0
         );
         return postNoteData;
     }

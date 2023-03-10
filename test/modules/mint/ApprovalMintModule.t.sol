@@ -39,7 +39,8 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
                 new bytes(0),
                 address(approvalMintModule),
                 abi.encode(array(alice, bob), 1),
-                false
+                false,
+                0
             )
         );
         // approved addresses can process mint
@@ -127,7 +128,8 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
                 new bytes(0),
                 address(approvalMintModule),
                 abi.encode(array(alice, bob), 1),
-                false
+                false,
+                0
             )
         );
         // approved addresses in init can mint (mintNFT is initialized)
@@ -136,6 +138,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
                 alice,
+                0, // todo
                 new bytes(0)
             )
         );
@@ -227,6 +230,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
             Const.FIRST_CHARACTER_ID,
             Const.FIRST_NOTE_ID,
             address(approvalMintModule),
+            0,
             abi.encode(array(alice, bob), 1),
             block.timestamp
         );
@@ -239,7 +243,8 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
                 new bytes(0),
                 address(approvalMintModule),
                 abi.encode(array(alice, bob), 1),
-                false
+                false,
+                0
             )
         );
 
@@ -255,11 +260,12 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
                 alice,
+                0, // todo: set toCharacterId = 0 when mint to address? 
                 new bytes(0)
             )
         );
         web3Entry.mintNote(
-            DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
+            DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, 0, new bytes(0)) // todo: set toCharacterId = 0 when mint to address? 
         );
 
         // case 2: addresses approved by calling 'setApprovedAmount' can
@@ -277,6 +283,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
                 carol,
+                0, // todo: set toCharacterId = 0 when mint to address? 
                 new bytes(0)
             )
         );
@@ -335,7 +342,8 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
                 new bytes(0),
                 address(approvalMintModule),
                 abi.encode(array(carol)),
-                false
+                false,
+                0 // normal nft
             )
         );
 
@@ -346,12 +354,13 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
                 alice,
+                0, // todo: set toCharacterId = 0 when mint to address? 
                 new bytes(0)
             )
         );
         vm.expectRevert(abi.encodeWithSelector(ErrNotApproved.selector));
         web3Entry.mintNote(
-            DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, new bytes(0))
+            DataTypes.MintNoteData(Const.FIRST_CHARACTER_ID, Const.FIRST_NOTE_ID, bob, 0, new bytes(0))  // todo: set toCharacterId = 0 when mint to address? 
         );
 
         // case 2: addresses with cancelled approval can't mint
@@ -362,6 +371,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
                 carol,
+                0, // todo: set toCharacterId = 0 when mint to address?
                 new bytes(0)
             )
         );
@@ -378,6 +388,7 @@ contract ApprovalMintModuleTest is Test, Utils, SetUp {
                 Const.FIRST_CHARACTER_ID,
                 Const.FIRST_NOTE_ID,
                 carol,
+                0, // todo: set toCharacterId = 0 when mint to address?
                 new bytes(0)
             )
         );

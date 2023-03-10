@@ -177,6 +177,15 @@ library DataTypes {
         address mintModule;
         bytes mintModuleInitData;
         bool locked;
+        uint8 nftType; // todo: gas-saving way?
+    }
+
+    struct MintNoteDataNew {
+        uint256 characterId;
+        uint256 noteId;
+        address to;
+        uint256 toCharacterId;
+        bytes mintModuleData;
     }
 
     struct MintNoteData {
@@ -206,6 +215,7 @@ library DataTypes {
      * @param mintNFT The address of the mintNFT associated with this note, if any.
      * @param deleted Whether the note is deleted.
      * @param locked Whether the note is locked. If the note is locked, its owner can't set not uri anymore.
+     * @param nftType 0: normal nft; 1: SBT; 2: CBT
      */
     struct Note {
         bytes32 linkItemType;
@@ -216,6 +226,7 @@ library DataTypes {
         address mintNFT;
         bool deleted;
         bool locked;
+        uint8 nftType;
     }
 
     struct CharacterLinkStruct {
