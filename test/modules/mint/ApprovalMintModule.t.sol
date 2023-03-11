@@ -200,17 +200,7 @@ contract ApprovalMintModuleTest is CommonTest {
 
         // alice post a note with approvalMintModule
         vm.prank(alice);
-        web3Entry.postNote(
-            DataTypes.PostNoteData(
-                FIRST_CHARACTER_ID,
-                NOTE_URI,
-                address(0x0),
-                new bytes(0),
-                address(approvalMintModule),
-                "",
-                false
-            )
-        );
+        _postNoteWithMintModule(FIRST_CHARACTER_ID, NOTE_URI, address(approvalMintModule), "");
 
         // alice setApprovedAmount
         vm.prank(alice);
