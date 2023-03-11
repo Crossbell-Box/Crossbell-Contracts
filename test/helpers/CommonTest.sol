@@ -3,8 +3,10 @@
 pragma solidity 0.8.16;
 
 import {Test} from "forge-std/Test.sol";
+import {Vm} from "forge-std/Vm.sol";
 import {Web3Entry} from "../../contracts/Web3Entry.sol";
 import {Linklist} from "../../contracts/Linklist.sol";
+import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {Periphery} from "../../contracts/misc/Periphery.sol";
 import {CharacterBoundToken} from "../../contracts/misc/CharacterBoundToken.sol";
 import {NewbieVilla} from "../../contracts/misc/NewbieVilla.sol";
@@ -19,16 +21,16 @@ import {
 } from "../../contracts/modules/link/ApprovalLinkModule4Character.sol";
 import {ApprovalMintModule} from "../../contracts/modules/mint/ApprovalMintModule.sol";
 import {NFT, ERC1155} from "../../contracts/mocks/NFT.sol";
-import {Const} from "./Const.sol";
+import {Utils} from "./Utils.sol";
 
-contract SetUp is Test, Const {
+contract CommonTest is Utils {
     Web3Entry public web3Entry;
     Linklist public linklist;
     Periphery public periphery;
     NewbieVilla public newbieVilla;
     MiraToken public token;
     Tips public tips;
-    MintNFT public mintNFT;
+    MintNFT public mintNFTImpl;
     ApprovalLinkModule4Character public linkModule4Character;
     ApprovalMintModule public approvalMintModule;
     NFT public nft;
@@ -59,7 +61,7 @@ contract SetUp is Test, Const {
         );
 
         // deploy mintNFT
-        mintNFT = new MintNFT();
+        mintNFTImpl = new MintNFT();
 
         // deploy web3Entry
         Web3Entry web3EntryImpl = new Web3Entry();
@@ -100,7 +102,7 @@ contract SetUp is Test, Const {
             WEB3_ENTRY_NFT_NAME,
             WEB3_ENTRY_NFT_SYMBOL,
             address(linklist),
-            address(mintNFT),
+            address(mintNFTImpl),
             address(periphery),
             address(newbieVilla)
         );
@@ -120,5 +122,9 @@ contract SetUp is Test, Const {
         // deploy NFT for test
         nft = new NFT();
         nft.initialize("NFT", "NFT");
+    }
+
+    function _createCharacter(string memory handle, address to) internal {
+        web3Entry.createCharacter(makeCharacterData(handle, to));
     }
 }

@@ -4,14 +4,14 @@ pragma solidity 0.8.16;
 
 import {Test} from "forge-std/Test.sol";
 import {Utils} from "../helpers/Utils.sol";
-import {SetUp} from "../helpers/SetUp.sol";
+import {CommonTest} from "../helpers/CommonTest.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {NewbieVilla} from "../../contracts/misc/NewbieVilla.sol";
 import {Web3Entry} from "../../contracts/Web3Entry.sol";
 import {NFT} from "../../contracts/mocks/NFT.sol";
 import {OP} from "../../contracts/libraries/OP.sol";
 
-contract NewbieVillaTest is Test, SetUp, Utils {
+contract NewbieVillaTest is CommonTest {
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
     function setUp() public {

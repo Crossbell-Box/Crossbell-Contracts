@@ -2,8 +2,6 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.16;
 
-import {Test} from "forge-std/Test.sol";
-import {IWeb3Entry} from "../contracts/interfaces/IWeb3Entry.sol";
 import {DataTypes} from "../contracts/libraries/DataTypes.sol";
 import {Events} from "../contracts/libraries/Events.sol";
 import {OP} from "../contracts/libraries/OP.sol";
@@ -15,24 +13,24 @@ import {
     ErrNoteLocked,
     ErrNoteIsDeleted
 } from "../contracts/libraries/Error.sol";
+import {IWeb3Entry} from "../contracts/interfaces/IWeb3Entry.sol";
 import {
     TransparentUpgradeableProxy
 } from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
-import {Utils} from "./helpers/Utils.sol";
-import {SetUp} from "./helpers/SetUp.sol";
+import {CommonTest} from "./helpers/CommonTest.sol";
 import {
     IERC721Enumerable
 } from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
-contract NoteTest is Test, SetUp, Utils {
+contract NoteTest is CommonTest {
     function setUp() public {
         _setUp();
 
         // create character
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, bob));
+        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
+        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
     }
 
     function testPostNoteFail() public {

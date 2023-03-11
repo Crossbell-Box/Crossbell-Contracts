@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
-import {Test} from "forge-std/Test.sol";
-import {Web3Entry} from "../../contracts/Web3Entry.sol";
 import {Events} from "../../contracts/libraries/Events.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {
@@ -11,18 +9,17 @@ import {
     ErrCharacterNotExists,
     ErrHandleExists
 } from "../../contracts/libraries/Error.sol";
-import {Utils} from "../helpers/Utils.sol";
-import {SetUp} from "../helpers/SetUp.sol";
+import {CommonTest} from "../helpers/CommonTest.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-contract LinkCharacterTest is Test, SetUp, Utils {
+contract LinkCharacterTest is CommonTest {
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
 
         // create character
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, bob));
+        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
+        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
     }
 
     function testLinkCharacter() public {

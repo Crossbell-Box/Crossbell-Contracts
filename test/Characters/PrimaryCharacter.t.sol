@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
-import {Test} from "forge-std/Test.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {OP} from "../../contracts/libraries/OP.sol";
 import {ErrNotCharacterOwner} from "../../contracts/libraries/Error.sol";
-import {Utils} from "../helpers/Utils.sol";
-import {SetUp} from "../helpers/SetUp.sol";
+import {CommonTest} from "../helpers/CommonTest.sol";
 
-contract PrimaryCharacterTest is Test, Utils, SetUp {
+contract PrimaryCharacterTest is CommonTest {
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
@@ -59,7 +57,7 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
 
     function testTransferPrimaryCharacter() public {
         // case: transfer primary character to `bob` account, who has no primary character
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
+        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
         // check states
         assertEq(web3Entry.getPrimaryCharacterId(alice), FIRST_CHARACTER_ID);
         assertEq(web3Entry.isPrimaryCharacter(FIRST_CHARACTER_ID), true);
@@ -78,7 +76,7 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
 
     function testTransferNonPrimaryCharacter() public {
         // create characters
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
+        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
         web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, alice));
 
         // check states
@@ -100,8 +98,8 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
     function testTransferPrimaryCharacter2() public {
         // case: transfer primary character to `bob` account, who already has primary character
         // create characters
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, bob));
+        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
+        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
 
         // check states
         assertEq(web3Entry.isPrimaryCharacter(FIRST_CHARACTER_ID), true);
@@ -124,7 +122,7 @@ contract PrimaryCharacterTest is Test, Utils, SetUp {
         // User should transfer the primary character, and the linklist
         vm.startPrank(bob);
         web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, bob));
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, bob));
+        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
         // link character
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(

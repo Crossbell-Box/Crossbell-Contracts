@@ -2,14 +2,12 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.16;
 
-import {Test} from "forge-std/Test.sol";
 import {
     ErrNotApproved,
     ErrCallerNotWeb3Entry,
     ErrNotCharacterOwner
 } from "../../../contracts/libraries/Error.sol";
-import {Utils} from "../../helpers/Utils.sol";
-import {SetUp} from "../../helpers/SetUp.sol";
+import {CommonTest} from "../../helpers/CommonTest.sol";
 import {DataTypes} from "../../../contracts/libraries/DataTypes.sol";
 import {Events} from "../../../contracts/libraries/Events.sol";
 import {IMintModule4Note} from "../../../contracts/interfaces/IMintModule4Note.sol";
@@ -21,13 +19,13 @@ import {
 } from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
-contract ApprovalMintModuleTest is Test, Utils, SetUp {
+contract ApprovalMintModuleTest is CommonTest {
     function setUp() public {
         _setUp();
 
         // create character
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, bob));
+        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
+        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
     }
 
     function testSetupState() public {

@@ -12,7 +12,7 @@ import {
 } from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import {OP} from "../contracts/libraries/OP.sol";
 import {Utils} from "./helpers/Utils.sol";
-import {SetUp} from "./helpers/SetUp.sol";
+import {CommonTest} from "./helpers/CommonTest.sol";
 import {ReinitializeWeb3Entry} from "./helpers/ReinitializeWeb3Entry.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 

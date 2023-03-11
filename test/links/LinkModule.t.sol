@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
-import {Test} from "forge-std/Test.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {ErrNotAddressOwner} from "../../contracts/libraries/Error.sol";
-import {Utils} from "../helpers/Utils.sol";
-import {SetUp} from "../helpers/SetUp.sol";
+import {CommonTest} from "../helpers/CommonTest.sol";
 
-contract LinkModuleTest is Test, SetUp, Utils {
+contract LinkModuleTest is CommonTest {
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
@@ -20,7 +18,7 @@ contract LinkModuleTest is Test, SetUp, Utils {
         allowlist[1] = bob;
 
         // create character
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
+        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
         web3Entry.createCharacter(
             DataTypes.CreateCharacterData(
                 bob,

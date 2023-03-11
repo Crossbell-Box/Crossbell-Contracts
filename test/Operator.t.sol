@@ -2,9 +2,7 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.16;
 
-import {Test} from "forge-std/Test.sol";
-import {Utils} from "./helpers/Utils.sol";
-import {SetUp} from "./helpers/SetUp.sol";
+import {CommonTest} from "./helpers/CommonTest.sol";
 import {OP} from "../contracts/libraries/OP.sol";
 import {Events} from "../contracts/libraries/Events.sol";
 import {Constants} from "../contracts/libraries/Constants.sol";
@@ -22,7 +20,7 @@ import {
     ApprovalLinkModule4Character
 } from "../contracts/modules/link/ApprovalLinkModule4Character.sol";
 
-contract OperatorTest is Test, SetUp, Utils {
+contract OperatorTest is CommonTest {
     address[] public blocklist = [bob];
     address[] public allowlist = [carol, dick];
 
@@ -32,8 +30,8 @@ contract OperatorTest is Test, SetUp, Utils {
         _setUp();
 
         // create character
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, bob));
+        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
+        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
     }
 
     function testGrantOperatorPermissions() public {

@@ -3,8 +3,8 @@ pragma solidity 0.8.16;
 
 import {Vm} from "forge-std/Vm.sol";
 import {Test} from "forge-std/Test.sol";
-import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {Const} from "./Const.sol";
+import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 
 contract Utils is Test, Const {
     uint8 public constant CheckTopic1 = 0x1;
@@ -28,27 +28,6 @@ contract Utils is Test, Const {
         bool checkData = (checks & (mask << 3)) > 0;
 
         vm.expectEmit(checkTopic1, checkTopic2, checkTopic3, checkData);
-    }
-
-    function matchNote(
-        DataTypes.Note memory note,
-        bytes32 linkItemType,
-        bytes32 linkKey,
-        string memory contentUri,
-        address linkModule,
-        address mintNFT,
-        address mintModule,
-        bool deleted,
-        bool locked
-    ) public {
-        assertEq(note.linkItemType, linkItemType);
-        assertEq(note.linkKey, linkKey);
-        assertEq(note.contentUri, contentUri);
-        assertEq(note.linkModule, linkModule);
-        assertEq(note.mintNFT, mintNFT);
-        assertEq(note.mintModule, mintModule);
-        assertEq(note.locked, locked);
-        assertEq(note.deleted, deleted);
     }
 
     function makeCharacterData(
@@ -78,6 +57,27 @@ contract Utils is Test, Const {
             false
         );
         return postNoteData;
+    }
+
+    function matchNote(
+        DataTypes.Note memory note,
+        bytes32 linkItemType,
+        bytes32 linkKey,
+        string memory contentUri,
+        address linkModule,
+        address mintNFT,
+        address mintModule,
+        bool deleted,
+        bool locked
+    ) public {
+        assertEq(note.linkItemType, linkItemType);
+        assertEq(note.linkKey, linkKey);
+        assertEq(note.contentUri, contentUri);
+        assertEq(note.linkModule, linkModule);
+        assertEq(note.mintNFT, mintNFT);
+        assertEq(note.mintModule, mintModule);
+        assertEq(note.locked, locked);
+        assertEq(note.deleted, deleted);
     }
 
     function array(uint256 a) public pure returns (uint256[] memory) {

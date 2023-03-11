@@ -2,13 +2,11 @@
 // solhint-disable comprehensive-interface,check-send-result,multiple-sends
 pragma solidity 0.8.16;
 
-import {Test} from "forge-std/Test.sol";
-import {Utils} from "../helpers/Utils.sol";
-import {SetUp} from "../helpers/SetUp.sol";
+import {CommonTest} from "../helpers/CommonTest.sol";
 import {Tips} from "../../contracts/misc/Tips.sol";
 import {MiraToken} from "../../contracts/mocks/MiraToken.sol";
 
-contract TipsTest is Test, SetUp, Utils {
+contract TipsTest is CommonTest {
     uint256 public constant initialBalance = 10 ether;
 
     // custom errors
@@ -51,8 +49,8 @@ contract TipsTest is Test, SetUp, Utils {
         tips.initialize(address(web3Entry), address(token));
 
         // create characters
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, bob));
+        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
+        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
     }
 
     function testSetupState() public {

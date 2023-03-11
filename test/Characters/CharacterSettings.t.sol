@@ -6,10 +6,9 @@ import {Web3Entry} from "../../contracts/Web3Entry.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {Events} from "../../contracts/libraries/Events.sol";
 import {ErrHandleExists, ErrNotEnoughPermission} from "../../contracts/libraries/Error.sol";
-import {Utils} from "../helpers/Utils.sol";
-import {SetUp} from "../helpers/SetUp.sol";
+import {CommonTest} from "../helpers/CommonTest.sol";
 
-contract CharacterSettingsTest is Test, SetUp, Utils {
+contract CharacterSettingsTest is CommonTest {
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();

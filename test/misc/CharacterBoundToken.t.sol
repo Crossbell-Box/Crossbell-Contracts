@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
-import {Test} from "forge-std/Test.sol";
-import {Utils} from "../helpers/Utils.sol";
-import {SetUp} from "../helpers/SetUp.sol";
+import {CommonTest} from "../helpers/CommonTest.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {CharacterBoundToken} from "../../contracts/misc/CharacterBoundToken.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-contract CbtTest is Test, SetUp, Utils {
+contract CbtTest is CommonTest {
     uint256 public amount = 1;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
@@ -24,11 +22,11 @@ contract CbtTest is Test, SetUp, Utils {
 
         // alice mint first character
         vm.prank(alice);
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, alice));
+        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
 
         // bob mint second character
         vm.prank(bob);
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, bob));
+        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
     }
 
     function testMint() public {
