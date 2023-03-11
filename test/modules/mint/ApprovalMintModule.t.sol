@@ -91,7 +91,26 @@ contract ApprovalMintModuleTest is CommonTest {
         );
     }
 
-    function testProcessMint(uint256 approvedAmount) public {
+    function testProcessMintWithInitializeMintModule(uint256 approvedAmount) public {
+        vm.assume(approvedAmount > 0);
+
+        // initialize the mint module
+        vm.prank(address(web3Entry));
+        IMintModule4Note(address(approvalMintModule)).initializeMintModule(
+            FIRST_CHARACTER_ID,
+            FIRST_NOTE_ID,
+            abi.encode(array(bob), approvedAmount)
+        );
+
+        // processMint
+        vm.prank(address(web3Entry));
+        approvalMintModule.processMint(bob, FIRST_CHARACTER_ID, FIRST_NOTE_ID, "");
+
+        // check approvedAmount
+        _checkApprovedAmount(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, approvedAmount - 1);
+    }
+
+    function testProcessMintWithSetApprovedAmount(uint256 approvedAmount) public {
         vm.assume(approvedAmount > 0);
 
         // set approved amount
@@ -206,7 +225,7 @@ contract ApprovalMintModuleTest is CommonTest {
         vm.prank(alice);
         approvalMintModule.setApprovedAmount(FIRST_CHARACTER_ID, FIRST_NOTE_ID, approvedList, 1);
 
-        // alice and bob in approvedAddrs can mint note
+        // alice and bob in approvedList can mint note
         for (uint256 i = 0; i < approvedList.length; i++) {
             _mintNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID, approvedList[i], "");
 
