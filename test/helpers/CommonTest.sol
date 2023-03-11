@@ -50,7 +50,6 @@ contract CommonTest is Utils {
     address public constant dick = address(0x4444);
     address public constant erik = address(0x5555);
 
-    // solhint-disable-next-line function-max-lines
     function _setUp() internal {
         // deploy erc1820
         vm.etch(
@@ -60,6 +59,14 @@ contract CommonTest is Utils {
             )
         );
 
+        // deploy web3Entry related contracts
+        _deployContracts();
+
+        // initialize
+        _initialize();
+    }
+
+    function _deployContracts() internal {
         // deploy mintNFT
         mintNFTImpl = new MintNFT();
 
@@ -96,7 +103,9 @@ contract CommonTest is Utils {
 
         // deploy cbt
         cbt = new CharacterBoundToken(address(web3Entry));
+    }
 
+    function _initialize() internal {
         // initialize web3Entry
         web3Entry.initialize(
             WEB3_ENTRY_NFT_NAME,
