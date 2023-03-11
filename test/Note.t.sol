@@ -42,29 +42,13 @@ contract NoteTest is CommonTest {
 
     function testPostNote() public {
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.PostNote(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            bytes32Zero,
-            bytes32Zero,
-            new bytes(0)
-        );
+        emit Events.PostNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID, 0, 0, "");
         vm.prank(alice);
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        _matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            false,
-            false
-        );
+        _matchNote(note, 0, 0, NOTE_URI, address(0), address(0), address(0), false, false);
     }
 
     function testPostNoteWithMulticall() public {
@@ -84,29 +68,9 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        _matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            false,
-            false
-        );
+        _matchNote(note, 0, 0, NOTE_URI, address(0), address(0), address(0), false, false);
         note = web3Entry.getNote(FIRST_CHARACTER_ID, SECOND_NOTE_ID);
-        _matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            false,
-            false
-        );
+        _matchNote(note, 0, 0, NOTE_URI, address(0), address(0), address(0), false, false);
     }
 
     function testUpdateNote() public {
@@ -122,17 +86,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        _matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            NEW_NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            false,
-            false
-        );
+        _matchNote(note, 0, 0, NEW_NOTE_URI, address(0), address(0), address(0), false, false);
     }
 
     function testUpdateNoteFail() public {
@@ -171,17 +125,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        _matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            false,
-            true
-        );
+        _matchNote(note, 0, 0, NOTE_URI, address(0), address(0), address(0), false, true);
     }
 
     function testLockNoteFail() public {
@@ -215,17 +159,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        _matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            true,
-            false
-        );
+        _matchNote(note, 0, 0, NOTE_URI, address(0), address(0), address(0), true, false);
     }
 
     function testDeleteLockedNote() public {
@@ -237,17 +171,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        _matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            true,
-            true
-        );
+        _matchNote(note, 0, 0, NOTE_URI, address(0), address(0), address(0), true, true);
     }
 
     function testDeleteNoteFail() public {
