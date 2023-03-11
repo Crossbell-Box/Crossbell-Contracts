@@ -18,8 +18,8 @@ contract LinklistTest is CommonTest {
         _setUp();
 
         // create character
-        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
-        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
+        _createCharacter(CHARACTER_HANDLE, alice);
+        _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
     function testMint() public {
@@ -78,20 +78,20 @@ contract LinklistTest is CommonTest {
             )
         );
         // case 1: set linklist uri by alice
-        linklist.setUri(1, MOCK_TOKEN_URI);
+        linklist.setUri(1, TOKEN_URI);
         // check linklist uri
-        assertEq(linklist.Uri(1), MOCK_TOKEN_URI);
+        assertEq(linklist.Uri(1), TOKEN_URI);
         vm.stopPrank();
 
         // case 2: set linklist uri by web3Entry
         vm.prank(address(web3Entry));
-        linklist.setUri(1, MOCK_NEW_TOKEN_URI);
+        linklist.setUri(1, NEW_TOKEN_URI);
         // check linklist uri
-        assertEq(linklist.Uri(1), MOCK_NEW_TOKEN_URI);
+        assertEq(linklist.Uri(1), NEW_TOKEN_URI);
 
         // check state
         string memory uri = linklist.Uri(1);
-        assertEq(uri, MOCK_NEW_TOKEN_URI);
+        assertEq(uri, NEW_TOKEN_URI);
     }
 
     function testSetUriFail() public {
@@ -109,7 +109,7 @@ contract LinklistTest is CommonTest {
         // bob sets linklist uri
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3EntryOrNotOwner.selector));
         vm.prank(bob);
-        linklist.setUri(1, MOCK_TOKEN_URI);
+        linklist.setUri(1, TOKEN_URI);
     }
 
     function testTotalSupply(uint256 amount) public {

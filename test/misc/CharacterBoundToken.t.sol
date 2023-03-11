@@ -22,11 +22,11 @@ contract CbtTest is CommonTest {
 
         // alice mint first character
         vm.prank(alice);
-        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
+        _createCharacter(CHARACTER_HANDLE, alice);
 
         // bob mint second character
         vm.prank(bob);
-        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
+        _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
     function testMint() public {
@@ -338,7 +338,7 @@ contract CbtTest is CommonTest {
         assertEq(cbt.getRoleMember(MINTER_ROLE, 1), bob);
 
         // mint cbt
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE3, alice));
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE3, alice));
         vm.prank(bob);
         cbt.mint(1, 1);
     }
@@ -360,7 +360,7 @@ contract CbtTest is CommonTest {
         cbt.grantRole(MINTER_ROLE, bob);
 
         // mint cbt fail
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE3, alice));
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE3, alice));
         vm.prank(bob);
         vm.expectRevert(
             abi.encodePacked(
@@ -384,7 +384,7 @@ contract CbtTest is CommonTest {
         assertEq(cbt.hasRole(MINTER_ROLE, bob), false);
 
         // mint cbt fail
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE4, alice));
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE4, alice));
         vm.prank(bob);
         vm.expectRevert(
             abi.encodePacked(
@@ -418,7 +418,7 @@ contract CbtTest is CommonTest {
         assertEq(cbt.hasRole(MINTER_ROLE, bob), true);
 
         // mint cbt
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE3, alice));
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE3, alice));
         vm.prank(bob);
         cbt.mint(1, 1);
     }
@@ -437,7 +437,7 @@ contract CbtTest is CommonTest {
         assertEq(cbt.getRoleMemberCount(MINTER_ROLE), 1);
 
         // mint cbt fail
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE4, alice));
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE4, alice));
         vm.expectRevert(
             abi.encodePacked(
                 "AccessControl: account ",

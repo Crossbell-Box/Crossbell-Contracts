@@ -136,4 +136,32 @@ contract CommonTest is Utils {
     function _createCharacter(string memory handle, address to) internal {
         web3Entry.createCharacter(makeCharacterData(handle, to));
     }
+
+    function _mintNote(
+        uint256 characterId,
+        uint256 noteId,
+        address to,
+        bytes memory data
+    ) internal {
+        web3Entry.mintNote(DataTypes.MintNoteData(characterId, noteId, to, data));
+    }
+
+    function _postNoteWithMintModule(
+        uint256 characterId,
+        string memory noteUri,
+        address mintModule,
+        bytes memory initData
+    ) internal {
+        web3Entry.postNote(
+            DataTypes.PostNoteData(
+                characterId,
+                noteUri,
+                address(0x0),
+                new bytes(0),
+                mintModule,
+                initData,
+                false
+            )
+        );
+    }
 }

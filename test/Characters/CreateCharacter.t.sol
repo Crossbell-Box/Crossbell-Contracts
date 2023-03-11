@@ -17,13 +17,13 @@ contract CreateCharacterTest is CommonTest {
 
     function testCreateCharacter() public {
         DataTypes.CreateCharacterData memory characterData = makeCharacterData(
-            MOCK_CHARACTER_HANDLE,
+            CHARACTER_HANDLE,
             bob
         );
 
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         // The event we expect
-        emit Events.CharacterCreated(1, bob, bob, MOCK_CHARACTER_HANDLE, block.timestamp);
+        emit Events.CharacterCreated(1, bob, bob, CHARACTER_HANDLE, block.timestamp);
         // The event we get
         vm.prank(bob);
         web3Entry.createCharacter(characterData);
@@ -31,13 +31,11 @@ contract CreateCharacterTest is CommonTest {
         // check state
         assertEq(web3Entry.ownerOf(FIRST_CHARACTER_ID), bob);
         assertEq(web3Entry.totalSupply(), 1);
-        DataTypes.Character memory character = web3Entry.getCharacterByHandle(
-            MOCK_CHARACTER_HANDLE
-        );
+        DataTypes.Character memory character = web3Entry.getCharacterByHandle(CHARACTER_HANDLE);
         assertEq(character.characterId, FIRST_CHARACTER_ID);
-        assertEq(character.handle, MOCK_CHARACTER_HANDLE);
-        assertEq(character.uri, MOCK_CHARACTER_URI);
-        assertEq(web3Entry.getHandle(FIRST_CHARACTER_ID), MOCK_CHARACTER_HANDLE);
+        assertEq(character.handle, CHARACTER_HANDLE);
+        assertEq(character.uri, CHARACTER_URI);
+        assertEq(web3Entry.getHandle(FIRST_CHARACTER_ID), CHARACTER_HANDLE);
         // get character by calling `getCharacter`
         DataTypes.Character memory character2 = web3Entry.getCharacter(FIRST_CHARACTER_ID);
         assertEq(character2.characterId, character.characterId);

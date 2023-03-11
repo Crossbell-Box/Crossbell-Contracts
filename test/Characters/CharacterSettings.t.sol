@@ -16,7 +16,7 @@ contract CharacterSettingsTest is CommonTest {
 
     function testSetCharacterUri() public {
         DataTypes.CreateCharacterData memory characterData = makeCharacterData(
-            MOCK_CHARACTER_HANDLE,
+            CHARACTER_HANDLE,
             alice
         );
         vm.prank(alice);

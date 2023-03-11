@@ -30,8 +30,8 @@ contract OperatorTest is CommonTest {
         _setUp();
 
         // create character
-        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
-        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
+        _createCharacter(CHARACTER_HANDLE, alice);
+        _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
     function testGrantOperatorPermissions() public {
@@ -157,9 +157,7 @@ contract OperatorTest is CommonTest {
         uint256 expires = block.timestamp + 10 minutes;
 
         // create and transfer web3Entry nft to newbieVilla
-        characterId = web3Entry.createCharacter(
-            makeCharacterData(MOCK_CHARACTER_HANDLE3, newbieAdmin)
-        );
+        characterId = web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE3, newbieAdmin));
         vm.prank(newbieAdmin);
         web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), characterId);
         // generate proof for withdrawal
@@ -201,20 +199,20 @@ contract OperatorTest is CommonTest {
 
         // now bob has permissions for all notes
         vm.prank(bob);
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
         vm.prank(bob);
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, NEW_NOTE_URI);
 
         // then put bob into blocklist of note 1
         vm.prank(alice);
         web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, allowlist);
         vm.startPrank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
         // but bob still can do other things for this note
         web3Entry.lockNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
         // and bob still have permissions for note 2
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, NEW_NOTE_URI);
         vm.stopPrank();
 
         // case 2. put carol into allowlist, then disable carol's operator permission
@@ -223,14 +221,14 @@ contract OperatorTest is CommonTest {
 
         // now carol is in allowlist for note 2
         vm.prank(carol);
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, NEW_NOTE_URI);
 
         // then disable carol's operator permissions
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, carol, 0);
         // but carol can still edit note 2(cuz note validation goes first)
         vm.prank(carol);
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, NEW_NOTE_URI);
     }
 
     // solhint-disable-next-line function-max-lines
@@ -446,7 +444,7 @@ contract OperatorTest is CommonTest {
         web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.POST_NOTE_PERMISSION_BITMAP);
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
     }
 
     function testOperator4NoteCan() public {
@@ -460,7 +458,7 @@ contract OperatorTest is CommonTest {
 
         vm.startPrank(bob);
         // setNoteUri
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
         // lockNote
         web3Entry.lockNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
         // delete note
@@ -472,7 +470,7 @@ contract OperatorTest is CommonTest {
         web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, SECOND_NOTE_ID, blocklist, allowlist);
 
         vm.prank(carol);
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, NEW_NOTE_URI);
     }
 
     function testOperator4NoteFail() public {
@@ -486,7 +484,7 @@ contract OperatorTest is CommonTest {
 
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
         vm.stopPrank();
 
         // case 2. bob's in blocklist and also allowlist
@@ -494,7 +492,7 @@ contract OperatorTest is CommonTest {
         web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, blocklist);
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
     }
 
     function testGetOperators() public {
@@ -566,7 +564,7 @@ contract OperatorTest is CommonTest {
         // bob can not
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
     }
 
     function _checkOperators(

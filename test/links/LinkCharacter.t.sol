@@ -18,8 +18,8 @@ contract LinkCharacterTest is CommonTest {
         _setUp();
 
         // create character
-        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
-        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
+        _createCharacter(CHARACTER_HANDLE, alice);
+        _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
     function testLinkCharacter() public {

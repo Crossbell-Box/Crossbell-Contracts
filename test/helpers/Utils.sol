@@ -58,7 +58,7 @@ contract Utils is Test, Const {
         DataTypes.CreateCharacterData memory characterData = DataTypes.CreateCharacterData(
             to,
             handle,
-            MOCK_CHARACTER_URI,
+            CHARACTER_URI,
             address(0),
             ""
         );
@@ -70,7 +70,7 @@ contract Utils is Test, Const {
     ) public pure returns (DataTypes.PostNoteData memory) {
         DataTypes.PostNoteData memory postNoteData = DataTypes.PostNoteData(
             characterId,
-            MOCK_NOTE_URI,
+            NOTE_URI,
             AddressZero,
             new bytes(0),
             AddressZero,
