@@ -31,39 +31,46 @@ contract CreateCharacterTest is CommonTest {
         // check state
         assertEq(web3Entry.ownerOf(FIRST_CHARACTER_ID), bob);
         assertEq(web3Entry.totalSupply(), 1);
-        DataTypes.Character memory character = web3Entry.getCharacterByHandle(CHARACTER_HANDLE);
-        assertEq(character.characterId, FIRST_CHARACTER_ID);
-        assertEq(character.handle, CHARACTER_HANDLE);
-        assertEq(character.uri, CHARACTER_URI);
+        // check character
+        _matchCharacter(
+            web3Entry.getCharacterByHandle(CHARACTER_HANDLE),
+            FIRST_CHARACTER_ID,
+            CHARACTER_HANDLE,
+            CHARACTER_URI,
+            0,
+            address(0),
+            address(0)
+        );
         assertEq(web3Entry.getHandle(FIRST_CHARACTER_ID), CHARACTER_HANDLE);
         // get character by calling `getCharacter`
-        DataTypes.Character memory character2 = web3Entry.getCharacter(FIRST_CHARACTER_ID);
-        assertEq(character2.characterId, character.characterId);
-        assertEq(character2.handle, character.handle);
-        assertEq(character2.uri, character.uri);
-        assertEq(character2.noteCount, character.noteCount);
-        assertEq(character2.socialToken, character.socialToken);
-        assertEq(character2.linkModule, character.linkModule);
+        _matchCharacter(
+            web3Entry.getCharacter(FIRST_CHARACTER_ID),
+            FIRST_CHARACTER_ID,
+            CHARACTER_HANDLE,
+            CHARACTER_URI,
+            0,
+            address(0),
+            address(0)
+        );
+    }
+
+    function testCreateCharacterWithInvalidHandleFail() public {
+        vm.startPrank(bob);
+        // case 1: handle length > 31
+        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
+        web3Entry.createCharacter(makeCharacterData("da2423cea4f1047556e7a142f81a7eda", bob));
+
+        // case 2: empty handle
+        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
+        web3Entry.createCharacter(makeCharacterData("", bob));
+
+        // case 3: handle length < 3
+        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
+        web3Entry.createCharacter(makeCharacterData("ab", bob));
     }
 
     // solhint-disable-next-line function-max-lines
     function testCreateCharacterAndSetHandleFail() public {
-        vm.startPrank(bob);
-
-        // handle length > 31
-        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
-        web3Entry.createCharacter(makeCharacterData("da2423cea4f1047556e7a142f81a7eda", bob));
-
-        // empty handle
-        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
-        web3Entry.createCharacter(makeCharacterData("", bob));
-
-        // handle length < 3
-        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
-        web3Entry.createCharacter(makeCharacterData("a", bob));
-        vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
-        web3Entry.createCharacter(makeCharacterData("ab", bob));
-
         // invalid character handle
         // string memory s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()+|[]:,";
         string[42] memory handles = [
@@ -110,6 +117,7 @@ contract CreateCharacterTest is CommonTest {
             "ab:",
             "ab,"
         ];
+
         web3Entry.createCharacter(makeCharacterData("abcd", bob));
 
         for (uint256 i = 0; i < handles.length; i++) {
@@ -117,6 +125,7 @@ contract CreateCharacterTest is CommonTest {
             web3Entry.createCharacter(makeCharacterData(handles[i], bob));
 
             // set handle fail
+            vm.prank(bob);
             vm.expectRevert(abi.encodeWithSelector(ErrHandleContainsInvalidCharacters.selector));
             web3Entry.setHandle(1, handles[i]);
         }

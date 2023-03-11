@@ -30,7 +30,7 @@ contract Utils is Test, Const {
         vm.expectEmit(checkTopic1, checkTopic2, checkTopic3, checkData);
     }
 
-    function matchNote(
+    function _matchNote(
         DataTypes.Note memory note,
         bytes32 linkItemType,
         bytes32 linkKey,
@@ -40,7 +40,7 @@ contract Utils is Test, Const {
         address mintModule,
         bool deleted,
         bool locked
-    ) public {
+    ) internal {
         assertEq(note.linkItemType, linkItemType);
         assertEq(note.linkKey, linkKey);
         assertEq(note.contentUri, contentUri);
@@ -49,6 +49,23 @@ contract Utils is Test, Const {
         assertEq(note.mintModule, mintModule);
         assertEq(note.locked, locked);
         assertEq(note.deleted, deleted);
+    }
+
+    function _matchCharacter(
+        DataTypes.Character memory character,
+        uint256 characterId,
+        string memory handle,
+        string memory uri,
+        uint256 noteCount,
+        address socialToken,
+        address linkModule
+    ) internal {
+        assertEq(character.characterId, characterId);
+        assertEq(character.handle, handle);
+        assertEq(character.uri, uri);
+        assertEq(character.noteCount, noteCount);
+        assertEq(character.socialToken, socialToken);
+        assertEq(character.linkModule, linkModule);
     }
 
     function makeCharacterData(

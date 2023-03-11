@@ -54,7 +54,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             bytes32Zero,
             bytes32Zero,
@@ -84,7 +84,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             bytes32Zero,
             bytes32Zero,
@@ -96,7 +96,7 @@ contract NoteTest is CommonTest {
             false
         );
         note = web3Entry.getNote(FIRST_CHARACTER_ID, SECOND_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             bytes32Zero,
             bytes32Zero,
@@ -122,7 +122,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             bytes32Zero,
             bytes32Zero,
@@ -171,7 +171,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             bytes32Zero,
             bytes32Zero,
@@ -215,7 +215,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             bytes32Zero,
             bytes32Zero,
@@ -237,7 +237,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             bytes32Zero,
             bytes32Zero,
@@ -276,7 +276,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             Constants.LINK_ITEM_TYPE_CHARACTER,
             bytes32(SECOND_CHARACTER_ID),
@@ -303,7 +303,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             Constants.LINK_ITEM_TYPE_ADDRESS,
             bytes32(uint256(uint160(toAddress))),
@@ -340,7 +340,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             Constants.LINK_ITEM_TYPE_LINKLIST,
             bytes32(FIRST_LINKLIST_ID),
@@ -371,7 +371,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(SECOND_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             Constants.LINK_ITEM_TYPE_NOTE,
             keccak256(abi.encodePacked("Note", FIRST_CHARACTER_ID, FIRST_NOTE_ID)),
@@ -404,7 +404,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             Constants.LINK_ITEM_TYPE_ERC721,
             keccak256(abi.encodePacked("ERC721", address(nft), uint256(1))),
@@ -435,7 +435,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             Constants.LINK_ITEM_TYPE_ANYURI,
             keccak256(abi.encodePacked("AnyUri", uri)),
