@@ -46,7 +46,7 @@ contract NewbieVillaTest is CommonTest {
     function testNewbieCreateCharacter() public {
         vm.prank(alice);
         Web3Entry(address(web3Entry)).createCharacter(
-            makeCharacterData(MOCK_CHARACTER_HANDLE, address(newbieVilla))
+            makeCharacterData(CHARACTER_HANDLE, address(newbieVilla))
         );
 
         // check operators
@@ -71,14 +71,14 @@ contract NewbieVillaTest is CommonTest {
         vm.prank(bob);
         vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
         Web3Entry(address(web3Entry)).createCharacter(
-            makeCharacterData(MOCK_CHARACTER_HANDLE, address(newbieVilla))
+            makeCharacterData(CHARACTER_HANDLE, address(newbieVilla))
         );
     }
 
     function testTransferNewbieIn() public {
         vm.prank(alice);
         Web3Entry(address(web3Entry)).createCharacter(
-            makeCharacterData(MOCK_CHARACTER_HANDLE, address(alice))
+            makeCharacterData(CHARACTER_HANDLE, address(alice))
         );
         vm.prank(alice);
         Web3Entry(address(web3Entry)).safeTransferFrom(
@@ -107,7 +107,7 @@ contract NewbieVillaTest is CommonTest {
     function testTransferNewbieInFail() public {
         vm.startPrank(bob);
         Web3Entry(address(web3Entry)).createCharacter(
-            makeCharacterData(MOCK_CHARACTER_HANDLE, address(bob))
+            makeCharacterData(CHARACTER_HANDLE, address(bob))
         );
         vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
         Web3Entry(address(web3Entry)).safeTransferFrom(
@@ -130,7 +130,7 @@ contract NewbieVillaTest is CommonTest {
         uint256 expires = block.timestamp + 10 minutes;
 
         // 1. create and transfer web3Entry nft to newbieVilla
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, newbieAdmin));
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, newbieAdmin));
         vm.prank(newbieAdmin);
         web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), characterId);
 

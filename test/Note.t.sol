@@ -29,8 +29,8 @@ contract NoteTest is CommonTest {
         _setUp();
 
         // create character
-        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
-        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
+        _createCharacter(CHARACTER_HANDLE, alice);
+        _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
     function testPostNoteFail() public {
@@ -42,29 +42,13 @@ contract NoteTest is CommonTest {
 
     function testPostNote() public {
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.PostNote(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            bytes32Zero,
-            bytes32Zero,
-            new bytes(0)
-        );
+        emit Events.PostNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID, 0, 0, "");
         vm.prank(alice);
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            MOCK_NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            false,
-            false
-        );
+        _matchNote(note, 0, 0, NOTE_URI, address(0), address(0), address(0), false, false);
     }
 
     function testPostNoteWithMulticall() public {
@@ -84,29 +68,9 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            MOCK_NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            false,
-            false
-        );
+        _matchNote(note, 0, 0, NOTE_URI, address(0), address(0), address(0), false, false);
         note = web3Entry.getNote(FIRST_CHARACTER_ID, SECOND_NOTE_ID);
-        matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            MOCK_NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            false,
-            false
-        );
+        _matchNote(note, 0, 0, NOTE_URI, address(0), address(0), address(0), false, false);
     }
 
     function testUpdateNote() public {
@@ -116,47 +80,37 @@ contract NoteTest is CommonTest {
 
         // update note
         expectEmit(CheckTopic1 | CheckData);
-        emit Events.SetNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
+        emit Events.SetNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
         vm.stopPrank();
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            MOCK_NEW_NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            false,
-            false
-        );
+        _matchNote(note, 0, 0, NEW_NOTE_URI, address(0), address(0), address(0), false, false);
     }
 
     function testUpdateNoteFail() public {
         // NotEnoughPermission
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
         vm.prank(bob);
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
 
         vm.startPrank(alice);
         // NoteNotExists
         vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
 
         // NoteLocked
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
         web3Entry.lockNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
         vm.expectRevert(abi.encodeWithSelector(ErrNoteLocked.selector));
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
 
         // NoteIsDeleted
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
         web3Entry.deleteNote(FIRST_CHARACTER_ID, SECOND_NOTE_ID);
         vm.expectRevert(abi.encodeWithSelector(ErrNoteIsDeleted.selector));
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, MOCK_NEW_NOTE_URI);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, NEW_NOTE_URI);
         vm.stopPrank();
     }
 
@@ -171,17 +125,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            MOCK_NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            false,
-            true
-        );
+        _matchNote(note, 0, 0, NOTE_URI, address(0), address(0), address(0), false, true);
     }
 
     function testLockNoteFail() public {
@@ -215,17 +159,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            MOCK_NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            true,
-            false
-        );
+        _matchNote(note, 0, 0, NOTE_URI, address(0), address(0), address(0), true, false);
     }
 
     function testDeleteLockedNote() public {
@@ -237,17 +171,7 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
-            note,
-            bytes32Zero,
-            bytes32Zero,
-            MOCK_NOTE_URI,
-            address(0),
-            address(0),
-            address(0),
-            true,
-            true
-        );
+        _matchNote(note, 0, 0, NOTE_URI, address(0), address(0), address(0), true, true);
     }
 
     function testDeleteNoteFail() public {
@@ -276,11 +200,11 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             Constants.LINK_ITEM_TYPE_CHARACTER,
             bytes32(SECOND_CHARACTER_ID),
-            MOCK_NOTE_URI,
+            NOTE_URI,
             address(0),
             address(0),
             address(0),
@@ -303,11 +227,11 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             Constants.LINK_ITEM_TYPE_ADDRESS,
             bytes32(uint256(uint160(toAddress))),
-            MOCK_NOTE_URI,
+            NOTE_URI,
             address(0),
             address(0),
             address(0),
@@ -340,11 +264,11 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             Constants.LINK_ITEM_TYPE_LINKLIST,
             bytes32(FIRST_LINKLIST_ID),
-            MOCK_NOTE_URI,
+            NOTE_URI,
             address(0),
             address(0),
             address(0),
@@ -371,11 +295,11 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(SECOND_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             Constants.LINK_ITEM_TYPE_NOTE,
             keccak256(abi.encodePacked("Note", FIRST_CHARACTER_ID, FIRST_NOTE_ID)),
-            MOCK_NOTE_URI,
+            NOTE_URI,
             address(0),
             address(0),
             address(0),
@@ -404,11 +328,11 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             Constants.LINK_ITEM_TYPE_ERC721,
             keccak256(abi.encodePacked("ERC721", address(nft), uint256(1))),
-            MOCK_NOTE_URI,
+            NOTE_URI,
             address(0),
             address(0),
             address(0),
@@ -435,11 +359,11 @@ contract NoteTest is CommonTest {
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        matchNote(
+        _matchNote(
             note,
             Constants.LINK_ITEM_TYPE_ANYURI,
             keccak256(abi.encodePacked("AnyUri", uri)),
-            MOCK_NOTE_URI,
+            NOTE_URI,
             address(0),
             address(0),
             address(0),

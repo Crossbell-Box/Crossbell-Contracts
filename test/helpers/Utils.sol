@@ -30,56 +30,6 @@ contract Utils is Test, Const {
         vm.expectEmit(checkTopic1, checkTopic2, checkTopic3, checkData);
     }
 
-    function matchNote(
-        DataTypes.Note memory note,
-        bytes32 linkItemType,
-        bytes32 linkKey,
-        string memory contentUri,
-        address linkModule,
-        address mintNFT,
-        address mintModule,
-        bool deleted,
-        bool locked
-    ) public {
-        assertEq(note.linkItemType, linkItemType);
-        assertEq(note.linkKey, linkKey);
-        assertEq(note.contentUri, contentUri);
-        assertEq(note.linkModule, linkModule);
-        assertEq(note.mintNFT, mintNFT);
-        assertEq(note.mintModule, mintModule);
-        assertEq(note.locked, locked);
-        assertEq(note.deleted, deleted);
-    }
-
-    function makeCharacterData(
-        string memory handle,
-        address to
-    ) public pure returns (DataTypes.CreateCharacterData memory) {
-        DataTypes.CreateCharacterData memory characterData = DataTypes.CreateCharacterData(
-            to,
-            handle,
-            MOCK_CHARACTER_URI,
-            address(0),
-            ""
-        );
-        return characterData;
-    }
-
-    function makePostNoteData(
-        uint256 characterId
-    ) public pure returns (DataTypes.PostNoteData memory) {
-        DataTypes.PostNoteData memory postNoteData = DataTypes.PostNoteData(
-            characterId,
-            MOCK_NOTE_URI,
-            AddressZero,
-            new bytes(0),
-            AddressZero,
-            new bytes(0),
-            false
-        );
-        return postNoteData;
-    }
-
     function array(uint256 a) public pure returns (uint256[] memory) {
         uint256[] memory arr = new uint256[](1);
         arr[0] = a;
@@ -196,5 +146,56 @@ contract Utils is Test, Const {
         arr[2] = c;
         arr[3] = d;
         return arr;
+    }
+
+    function makeCharacterData(
+        string memory handle,
+        address to
+    ) public pure returns (DataTypes.CreateCharacterData memory) {
+        return DataTypes.CreateCharacterData(to, handle, CHARACTER_URI, address(0), "");
+    }
+
+    function makePostNoteData(
+        uint256 characterId
+    ) public pure returns (DataTypes.PostNoteData memory) {
+        return DataTypes.PostNoteData(characterId, NOTE_URI, address(0), "", address(0), "", false);
+    }
+
+    function _matchNote(
+        DataTypes.Note memory note,
+        bytes32 linkItemType,
+        bytes32 linkKey,
+        string memory contentUri,
+        address linkModule,
+        address mintNFT,
+        address mintModule,
+        bool deleted,
+        bool locked
+    ) internal {
+        assertEq(note.linkItemType, linkItemType);
+        assertEq(note.linkKey, linkKey);
+        assertEq(note.contentUri, contentUri);
+        assertEq(note.linkModule, linkModule);
+        assertEq(note.mintNFT, mintNFT);
+        assertEq(note.mintModule, mintModule);
+        assertEq(note.locked, locked);
+        assertEq(note.deleted, deleted);
+    }
+
+    function _matchCharacter(
+        DataTypes.Character memory character,
+        uint256 characterId,
+        string memory handle,
+        string memory uri,
+        uint256 noteCount,
+        address socialToken,
+        address linkModule
+    ) internal {
+        assertEq(character.characterId, characterId);
+        assertEq(character.handle, handle);
+        assertEq(character.uri, uri);
+        assertEq(character.noteCount, noteCount);
+        assertEq(character.socialToken, socialToken);
+        assertEq(character.linkModule, linkModule);
     }
 }

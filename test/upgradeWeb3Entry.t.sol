@@ -124,10 +124,10 @@ contract UpgradeWeb3Entry is Test, Utils {
     function testCheckStorage() public {
         // use web3entryBase to generate some data
         Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
-            makeCharacterData(MOCK_CHARACTER_HANDLE, alice)
+            makeCharacterData(CHARACTER_HANDLE, alice)
         );
         Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
-            makeCharacterData(MOCK_CHARACTER_HANDLE2, bob)
+            makeCharacterData(CHARACTER_HANDLE2, bob)
         );
 
         // upgrade web3Entry
@@ -184,7 +184,7 @@ contract UpgradeWeb3Entry is Test, Utils {
     function testSlot() public {
         // create character
         Web3EntryBase(address(proxyWeb3Entry)).createCharacter(
-            makeCharacterData(MOCK_CHARACTER_HANDLE, alice)
+            makeCharacterData(CHARACTER_HANDLE, alice)
         );
 
         bytes32 bytes32Periphery = bytes32((uint256(uint160(periphery))));

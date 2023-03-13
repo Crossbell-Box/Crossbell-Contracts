@@ -18,12 +18,12 @@ contract LinkModuleTest is CommonTest {
         allowlist[1] = bob;
 
         // create character
-        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
+        _createCharacter(CHARACTER_HANDLE, alice);
         web3Entry.createCharacter(
             DataTypes.CreateCharacterData(
                 bob,
-                MOCK_CHARACTER_HANDLE2,
-                MOCK_CHARACTER_URI,
+                CHARACTER_HANDLE2,
+                CHARACTER_URI,
                 address(linkModule4Character),
                 abi.encode(allowlist)
             )

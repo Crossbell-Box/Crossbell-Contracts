@@ -17,8 +17,8 @@ contract LinkERC721Test is CommonTest {
         _setUp();
 
         // create character
-        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
-        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
+        _createCharacter(CHARACTER_HANDLE, alice);
+        _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
     // solhint-disable-next-line function-max-lines

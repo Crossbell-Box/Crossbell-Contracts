@@ -14,7 +14,7 @@ contract PrimaryCharacterTest is CommonTest {
 
     function testPrimaryCharacter() public {
         vm.startPrank(bob);
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, bob));
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, bob));
 
         // User's first character should be the primary character
         uint256 primaryCharacter = web3Entry.getPrimaryCharacterId(bob);
@@ -45,9 +45,7 @@ contract PrimaryCharacterTest is CommonTest {
 
     function testSetPrimaryCharacterIdFail() public {
         vm.prank(bob);
-        uint256 characterId = web3Entry.createCharacter(
-            makeCharacterData(MOCK_CHARACTER_HANDLE, bob)
-        );
+        uint256 characterId = web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, bob));
 
         // UserTwo should fail to set the primary character as a character owned by user 1
         vm.expectRevert(abi.encodeWithSelector(ErrNotCharacterOwner.selector));
@@ -57,7 +55,7 @@ contract PrimaryCharacterTest is CommonTest {
 
     function testTransferPrimaryCharacter() public {
         // case: transfer primary character to `bob` account, who has no primary character
-        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
+        _createCharacter(CHARACTER_HANDLE, alice);
         // check states
         assertEq(web3Entry.getPrimaryCharacterId(alice), FIRST_CHARACTER_ID);
         assertEq(web3Entry.isPrimaryCharacter(FIRST_CHARACTER_ID), true);
@@ -76,8 +74,8 @@ contract PrimaryCharacterTest is CommonTest {
 
     function testTransferNonPrimaryCharacter() public {
         // create characters
-        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE2, alice));
+        _createCharacter(CHARACTER_HANDLE, alice);
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE2, alice));
 
         // check states
         assertEq(web3Entry.isPrimaryCharacter(SECOND_CHARACTER_ID), false);
@@ -98,8 +96,8 @@ contract PrimaryCharacterTest is CommonTest {
     function testTransferPrimaryCharacter2() public {
         // case: transfer primary character to `bob` account, who already has primary character
         // create characters
-        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
-        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
+        _createCharacter(CHARACTER_HANDLE, alice);
+        _createCharacter(CHARACTER_HANDLE2, bob);
 
         // check states
         assertEq(web3Entry.isPrimaryCharacter(FIRST_CHARACTER_ID), true);
@@ -121,8 +119,8 @@ contract PrimaryCharacterTest is CommonTest {
     function testTransferLinkedCharacter() public {
         // User should transfer the primary character, and the linklist
         vm.startPrank(bob);
-        web3Entry.createCharacter(makeCharacterData(MOCK_CHARACTER_HANDLE, bob));
-        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, bob));
+        _createCharacter(CHARACTER_HANDLE2, bob);
         // link character
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(

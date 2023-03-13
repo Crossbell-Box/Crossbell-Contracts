@@ -49,8 +49,8 @@ contract TipsTest is CommonTest {
         tips.initialize(address(web3Entry), address(token));
 
         // create characters
-        _createCharacter(MOCK_CHARACTER_HANDLE, alice);
-        _createCharacter(MOCK_CHARACTER_HANDLE2, bob);
+        _createCharacter(CHARACTER_HANDLE, alice);
+        _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
     function testSetupState() public {
