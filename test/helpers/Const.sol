@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.16;
 
-library Const {
+contract Const {
     /* solhint-disable comprehensive-interface */
     uint256 public constant FIRST_CHARACTER_ID = 1;
     uint256 public constant SECOND_CHARACTER_ID = 2;
@@ -30,22 +30,20 @@ library Const {
     string public constant LINK_LIST_NFT_NAME = "Link List Token";
     string public constant LINK_LIST_NFT_SYMBOL = "LLT";
 
-    string public constant MOCK_CHARACTER_HANDLE = "0xcrossbell-eth";
-    string public constant MOCK_CHARACTER_HANDLE2 = "0xcrossbell-2-eth";
-    string public constant MOCK_CHARACTER_HANDLE3 = "0xcrossbell-3-eth";
-    string public constant MOCK_CHARACTER_HANDLE4 = "0xcrossbell-4-eth";
-    string public constant MOCK_CHARACTER_HANDLE5 = "0xcrossbell-5-eth";
-    string public constant MOCK_CHARACTER_URI =
+    string public constant CHARACTER_HANDLE = "0xcrossbell-eth";
+    string public constant CHARACTER_HANDLE2 = "0xcrossbell-2-eth";
+    string public constant CHARACTER_HANDLE3 = "0xcrossbell-3-eth";
+    string public constant CHARACTER_HANDLE4 = "0xcrossbell-4-eth";
+    string public constant CHARACTER_URI =
         "https://raw.githubusercontent.com/Crossbell-Box/Crossbell-Contracts/main/examples/sampleCharacter.json";
     string public constant MOCK_URI = "ipfs://QmadFPhP7n5rJkACMY6QqhtLtKgX1ixoySmxQNrU4Wo5JW";
-    string public constant MOCK_CONTENT_URI =
-        "ipfs://QmfHKajYAGcaWaBXGsEWory9ensGsesN2GwWedVEuzk5Gg";
-    string public constant MOCK_NOTE_URI =
+    string public constant CONTENT_URI = "ipfs://QmfHKajYAGcaWaBXGsEWory9ensGsesN2GwWedVEuzk5Gg";
+    string public constant NOTE_URI =
         "https://github.com/Crossbell-Box/Crossbell-Contracts/blob/main/examples/sampleContent.json";
-    string public constant MOCK_NEW_NOTE_URI =
+    string public constant NEW_NOTE_URI =
         "https://github.com/Crossbell-Box/Crossbell-Contracts/blob/main/examples/sampleContent-new.json";
-    string public constant MOCK_TOKEN_URI = "http://ipfs/xxx1.json";
-    string public constant MOCK_NEW_TOKEN_URI = "http://ipfs/xxx2.json";
+    string public constant TOKEN_URI = "http://ipfs/xxx1.json";
+    string public constant NEW_TOKEN_URI = "http://ipfs/xxx2.json";
 
     bytes32 public constant bytes32Zero = bytes32(0);
 

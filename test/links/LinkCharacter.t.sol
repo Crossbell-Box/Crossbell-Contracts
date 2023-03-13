@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
-import {Test} from "forge-std/Test.sol";
-import {Web3Entry} from "../../contracts/Web3Entry.sol";
 import {Events} from "../../contracts/libraries/Events.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {
@@ -11,19 +9,17 @@ import {
     ErrCharacterNotExists,
     ErrHandleExists
 } from "../../contracts/libraries/Error.sol";
-import {Const} from "../helpers/Const.sol";
-import {Utils} from "../helpers/Utils.sol";
-import {SetUp} from "../helpers/SetUp.sol";
+import {CommonTest} from "../helpers/CommonTest.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-contract LinkCharacterTest is Test, SetUp, Utils {
+contract LinkCharacterTest is CommonTest {
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
 
         // create character
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+        _createCharacter(CHARACTER_HANDLE, alice);
+        _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
     function testLinkCharacter() public {
@@ -31,16 +27,16 @@ contract LinkCharacterTest is Test, SetUp, Utils {
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
         emit Events.LinkCharacter(
             alice,
-            Const.FIRST_CHARACTER_ID,
-            Const.SECOND_CHARACTER_ID,
-            Const.FollowLinkType,
+            FIRST_CHARACTER_ID,
+            SECOND_CHARACTER_ID,
+            FollowLinkType,
             1
         );
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -51,9 +47,9 @@ contract LinkCharacterTest is Test, SetUp, Utils {
         // link twice
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -64,15 +60,15 @@ contract LinkCharacterTest is Test, SetUp, Utils {
         vm.prank(address(periphery), alice);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
 
         // check state
-        assertEq(linklist.getOwnerCharacterId(1), Const.FIRST_CHARACTER_ID);
+        assertEq(linklist.getOwnerCharacterId(1), FIRST_CHARACTER_ID);
         assertEq(linklist.getLinkingCharacterIds(1).length, 1);
         assertEq(linklist.getLinkingCharacterIds(1)[0], 2);
         assertEq(linklist.getLinkingCharacterListLength(1), 1);
@@ -84,39 +80,37 @@ contract LinkCharacterTest is Test, SetUp, Utils {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
 
         // case 2: CharacterNotExists
         vm.prank(alice);
-        vm.expectRevert(
-            abi.encodeWithSelector(ErrCharacterNotExists.selector, Const.THIRD_CHARACTER_ID)
-        );
+        vm.expectRevert(abi.encodeWithSelector(ErrCharacterNotExists.selector, THIRD_CHARACTER_ID));
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.THIRD_CHARACTER_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                THIRD_CHARACTER_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
 
         // case 3: link a burned character
         vm.prank(bob);
-        web3Entry.burn(Const.SECOND_CHARACTER_ID);
+        web3Entry.burn(SECOND_CHARACTER_ID);
         vm.expectRevert(
-            abi.encodeWithSelector(ErrCharacterNotExists.selector, Const.SECOND_CHARACTER_ID)
+            abi.encodeWithSelector(ErrCharacterNotExists.selector, SECOND_CHARACTER_ID)
         );
         vm.prank(alice);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -126,41 +120,28 @@ contract LinkCharacterTest is Test, SetUp, Utils {
         vm.startPrank(alice);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
 
         // unlink
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.UnlinkCharacter(
-            alice,
-            Const.FIRST_CHARACTER_ID,
-            Const.SECOND_CHARACTER_ID,
-            Const.FollowLinkType
-        );
+        emit Events.UnlinkCharacter(alice, FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FollowLinkType);
         web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType
-            )
+            DataTypes.unlinkCharacterData(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FollowLinkType)
         );
 
         // unlink twice
         web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType
-            )
+            DataTypes.unlinkCharacterData(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FollowLinkType)
         );
 
         // unlink a non-existing character
         web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(Const.FIRST_CHARACTER_ID, 99999, Const.FollowLinkType)
+            DataTypes.unlinkCharacterData(FIRST_CHARACTER_ID, 99999, FollowLinkType)
         );
         vm.stopPrank();
 
@@ -168,7 +149,7 @@ contract LinkCharacterTest is Test, SetUp, Utils {
         assertEq(linklist.ownerOf(1), alice);
 
         // check state
-        assertEq(linklist.getOwnerCharacterId(1), Const.FIRST_CHARACTER_ID);
+        assertEq(linklist.getOwnerCharacterId(1), FIRST_CHARACTER_ID);
         assertEq(linklist.getLinkingCharacterIds(1).length, 0);
         assertEq(linklist.getLinkingCharacterListLength(1), 0);
     }
@@ -177,9 +158,9 @@ contract LinkCharacterTest is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -188,11 +169,7 @@ contract LinkCharacterTest is Test, SetUp, Utils {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType
-            )
+            DataTypes.unlinkCharacterData(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FollowLinkType)
         );
     }
 
@@ -200,9 +177,9 @@ contract LinkCharacterTest is Test, SetUp, Utils {
         vm.startPrank(alice);
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.FollowLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                FollowLinkType,
                 new bytes(0)
             )
         );
@@ -214,9 +191,9 @@ contract LinkCharacterTest is Test, SetUp, Utils {
 
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
-                Const.LikeLinkType,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                LikeLinkType,
                 new bytes(0)
             )
         );
@@ -228,8 +205,8 @@ contract LinkCharacterTest is Test, SetUp, Utils {
 
         web3Entry.linkCharacter(
             DataTypes.linkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                Const.SECOND_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
                 bytes32("LinkTypeAB"),
                 new bytes(0)
             )
@@ -247,35 +224,31 @@ contract LinkCharacterTest is Test, SetUp, Utils {
 
         vm.prank(alice);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.LinkCharacter(alice, Const.FIRST_CHARACTER_ID, 3, Const.FollowLinkType, 1);
+        emit Events.LinkCharacter(alice, FIRST_CHARACTER_ID, 3, FollowLinkType, 1);
         web3Entry.createThenLinkCharacter(
-            DataTypes.createThenLinkCharacterData(
-                Const.FIRST_CHARACTER_ID,
-                to,
-                Const.FollowLinkType
-            )
+            DataTypes.createThenLinkCharacterData(FIRST_CHARACTER_ID, to, FollowLinkType)
         );
 
         // check state
-        assertEq(linklist.getOwnerCharacterId(1), Const.FIRST_CHARACTER_ID);
+        assertEq(linklist.getOwnerCharacterId(1), FIRST_CHARACTER_ID);
         assertEq(linklist.getLinkingCharacterIds(1).length, 1);
-        assertEq(linklist.getLinkingCharacterIds(1)[0], Const.THIRD_CHARACTER_ID);
+        assertEq(linklist.getLinkingCharacterIds(1)[0], THIRD_CHARACTER_ID);
         assertEq(linklist.getLinkingCharacterListLength(1), 1);
         // check new character
-        DataTypes.Character memory character = web3Entry.getCharacter(Const.THIRD_CHARACTER_ID);
+        DataTypes.Character memory character = web3Entry.getCharacter(THIRD_CHARACTER_ID);
         assertEq(character.handle, Strings.toHexString(to));
-        assertEq(character.characterId, Const.THIRD_CHARACTER_ID);
+        assertEq(character.characterId, THIRD_CHARACTER_ID);
         assertEq(web3Entry.getHandle(3), Strings.toHexString(to));
-        assertEq(web3Entry.getPrimaryCharacterId(to), Const.THIRD_CHARACTER_ID);
+        assertEq(web3Entry.getPrimaryCharacterId(to), THIRD_CHARACTER_ID);
     }
 
     function testCreateThenLinkCharacterFail() public {
         vm.startPrank(alice);
         web3Entry.createThenLinkCharacter(
             DataTypes.createThenLinkCharacterData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(0x56789),
-                Const.FollowLinkType
+                FollowLinkType
             )
         );
 
@@ -283,9 +256,9 @@ contract LinkCharacterTest is Test, SetUp, Utils {
         vm.expectRevert(abi.encodeWithSelector(ErrHandleExists.selector));
         web3Entry.createThenLinkCharacter(
             DataTypes.createThenLinkCharacterData(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(0x56789),
-                Const.FollowLinkType
+                FollowLinkType
             )
         );
 

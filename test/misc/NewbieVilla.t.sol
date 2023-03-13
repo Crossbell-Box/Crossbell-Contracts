@@ -3,16 +3,15 @@
 pragma solidity 0.8.16;
 
 import {Test} from "forge-std/Test.sol";
-import {Const} from "../helpers/Const.sol";
 import {Utils} from "../helpers/Utils.sol";
-import {SetUp} from "../helpers/SetUp.sol";
+import {CommonTest} from "../helpers/CommonTest.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {NewbieVilla} from "../../contracts/misc/NewbieVilla.sol";
 import {Web3Entry} from "../../contracts/Web3Entry.sol";
 import {NFT} from "../../contracts/mocks/NFT.sol";
 import {OP} from "../../contracts/libraries/OP.sol";
 
-contract NewbieVillaTest is Test, SetUp, Utils {
+contract NewbieVillaTest is CommonTest {
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
     function setUp() public {
@@ -47,22 +46,22 @@ contract NewbieVillaTest is Test, SetUp, Utils {
     function testNewbieCreateCharacter() public {
         vm.prank(alice);
         Web3Entry(address(web3Entry)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbieVilla))
+            makeCharacterData(CHARACTER_HANDLE, address(newbieVilla))
         );
 
         // check operators
-        address[] memory operators = web3Entry.getOperators(Const.FIRST_CHARACTER_ID);
+        address[] memory operators = web3Entry.getOperators(FIRST_CHARACTER_ID);
         assertEq(operators[0], alice); // msg.sender will be granted as operator
         assertEq(operators[1], xsyncOperator);
         assertEq(operators.length, 2);
 
         // check operator permission bitmap
         assertEq(
-            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, alice),
+            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, alice),
             OP.DEFAULT_PERMISSION_BITMAP
         );
         assertEq(
-            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, xsyncOperator),
+            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, xsyncOperator),
             OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
         );
     }
@@ -72,35 +71,35 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         vm.prank(bob);
         vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
         Web3Entry(address(web3Entry)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(newbieVilla))
+            makeCharacterData(CHARACTER_HANDLE, address(newbieVilla))
         );
     }
 
     function testTransferNewbieIn() public {
         vm.prank(alice);
         Web3Entry(address(web3Entry)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(alice))
+            makeCharacterData(CHARACTER_HANDLE, address(alice))
         );
         vm.prank(alice);
         Web3Entry(address(web3Entry)).safeTransferFrom(
             address(alice),
             address(newbieVilla),
-            Const.FIRST_CHARACTER_ID
+            FIRST_CHARACTER_ID
         );
         // check operators
-        address[] memory operators = web3Entry.getOperators(Const.FIRST_CHARACTER_ID);
+        address[] memory operators = web3Entry.getOperators(FIRST_CHARACTER_ID);
         assertEq(operators[0], alice);
         assertEq(operators[1], xsyncOperator);
 
         // check operator permission bitmap
         // alice(NewbieVilla admin) has DEFAULT_PERMISSION_BITMAP.
         assertEq(
-            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, alice),
+            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, alice),
             OP.DEFAULT_PERMISSION_BITMAP
         );
         // xsyncOperator has POST_NOTE_DEFAULT_PERMISSION_BITMAP
         assertEq(
-            web3Entry.getOperatorPermissions(Const.FIRST_CHARACTER_ID, xsyncOperator),
+            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, xsyncOperator),
             OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
         );
     }
@@ -108,30 +107,30 @@ contract NewbieVillaTest is Test, SetUp, Utils {
     function testTransferNewbieInFail() public {
         vm.startPrank(bob);
         Web3Entry(address(web3Entry)).createCharacter(
-            makeCharacterData(Const.MOCK_CHARACTER_HANDLE, address(bob))
+            makeCharacterData(CHARACTER_HANDLE, address(bob))
         );
         vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
         Web3Entry(address(web3Entry)).safeTransferFrom(
             address(bob),
             address(newbieVilla),
-            Const.FIRST_CHARACTER_ID
+            FIRST_CHARACTER_ID
         );
 
         NFT nft = new NFT();
         nft.mint(bob);
         vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown token"));
-        nft.safeTransferFrom(address(bob), address(newbieVilla), Const.FIRST_CHARACTER_ID);
+        nft.safeTransferFrom(address(bob), address(newbieVilla), FIRST_CHARACTER_ID);
     }
 
     function testWithdrawNewbieOut(uint256 amount) public {
         vm.assume(amount > 0 && amount < 10 ether);
         address to = carol;
-        uint256 characterId = Const.FIRST_CHARACTER_ID;
+        uint256 characterId = FIRST_CHARACTER_ID;
         uint256 nonce = 1;
         uint256 expires = block.timestamp + 10 minutes;
 
         // 1. create and transfer web3Entry nft to newbieVilla
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, newbieAdmin));
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, newbieAdmin));
         vm.prank(newbieAdmin);
         web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), characterId);
 
@@ -164,11 +163,11 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         token.send(
             address(newbieVilla),
             amount,
-            abi.encode(Const.FIRST_CHARACTER_ID, Const.SECOND_CHARACTER_ID)
+            abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID)
         );
 
         // check balance
-        assertEq(newbieVilla.balanceOf(Const.SECOND_CHARACTER_ID), amount);
+        assertEq(newbieVilla.balanceOf(SECOND_CHARACTER_ID), amount);
     }
 
     function testTokensReceivedFail() public {
@@ -194,7 +193,7 @@ contract NewbieVillaTest is Test, SetUp, Utils {
         );
 
         // check balance
-        assertEq(newbieVilla.balanceOf(Const.SECOND_CHARACTER_ID), 0);
+        assertEq(newbieVilla.balanceOf(SECOND_CHARACTER_ID), 0);
     }
 
     function testExpired() public {

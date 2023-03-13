@@ -3,8 +3,10 @@
 pragma solidity 0.8.16;
 
 import {Test} from "forge-std/Test.sol";
+import {Vm} from "forge-std/Vm.sol";
 import {Web3Entry} from "../../contracts/Web3Entry.sol";
 import {Linklist} from "../../contracts/Linklist.sol";
+import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {Periphery} from "../../contracts/misc/Periphery.sol";
 import {CharacterBoundToken} from "../../contracts/misc/CharacterBoundToken.sol";
 import {NewbieVilla} from "../../contracts/misc/NewbieVilla.sol";
@@ -19,16 +21,16 @@ import {
 } from "../../contracts/modules/link/ApprovalLinkModule4Character.sol";
 import {ApprovalMintModule} from "../../contracts/modules/mint/ApprovalMintModule.sol";
 import {NFT, ERC1155} from "../../contracts/mocks/NFT.sol";
-import {Const} from "./Const.sol";
+import {Utils} from "./Utils.sol";
 
-contract SetUp is Test {
+contract CommonTest is Utils {
     Web3Entry public web3Entry;
     Linklist public linklist;
     Periphery public periphery;
     NewbieVilla public newbieVilla;
     MiraToken public token;
     Tips public tips;
-    MintNFT public mintNFT;
+    MintNFT public mintNFTImpl;
     ApprovalLinkModule4Character public linkModule4Character;
     ApprovalMintModule public approvalMintModule;
     NFT public nft;
@@ -48,7 +50,6 @@ contract SetUp is Test {
     address public constant dick = address(0x4444);
     address public constant erik = address(0x5555);
 
-    // solhint-disable-next-line function-max-lines
     function _setUp() internal {
         // deploy erc1820
         vm.etch(
@@ -58,8 +59,16 @@ contract SetUp is Test {
             )
         );
 
+        // deploy web3Entry related contracts
+        _deployContracts();
+
+        // initialize
+        _initialize();
+    }
+
+    function _deployContracts() internal {
         // deploy mintNFT
-        mintNFT = new MintNFT();
+        mintNFTImpl = new MintNFT();
 
         // deploy web3Entry
         Web3Entry web3EntryImpl = new Web3Entry();
@@ -94,22 +103,20 @@ contract SetUp is Test {
 
         // deploy cbt
         cbt = new CharacterBoundToken(address(web3Entry));
+    }
 
+    function _initialize() internal {
         // initialize web3Entry
         web3Entry.initialize(
-            Const.WEB3_ENTRY_NFT_NAME,
-            Const.WEB3_ENTRY_NFT_SYMBOL,
+            WEB3_ENTRY_NFT_NAME,
+            WEB3_ENTRY_NFT_SYMBOL,
             address(linklist),
-            address(mintNFT),
+            address(mintNFTImpl),
             address(periphery),
             address(newbieVilla)
         );
         // initialize linklist
-        linklist.initialize(
-            Const.LINK_LIST_NFT_NAME,
-            Const.LINK_LIST_NFT_SYMBOL,
-            address(web3Entry)
-        );
+        linklist.initialize(LINK_LIST_NFT_NAME, LINK_LIST_NFT_SYMBOL, address(web3Entry));
         // initialize periphery
         periphery.initialize(address(web3Entry), address(linklist));
 
@@ -124,5 +131,37 @@ contract SetUp is Test {
         // deploy NFT for test
         nft = new NFT();
         nft.initialize("NFT", "NFT");
+    }
+
+    function _createCharacter(string memory handle, address to) internal {
+        web3Entry.createCharacter(makeCharacterData(handle, to));
+    }
+
+    function _mintNote(
+        uint256 characterId,
+        uint256 noteId,
+        address to,
+        bytes memory data
+    ) internal {
+        web3Entry.mintNote(DataTypes.MintNoteData(characterId, noteId, to, data));
+    }
+
+    function _postNoteWithMintModule(
+        uint256 characterId,
+        string memory noteUri,
+        address mintModule,
+        bytes memory initData
+    ) internal {
+        web3Entry.postNote(
+            DataTypes.PostNoteData(
+                characterId,
+                noteUri,
+                address(0x0),
+                new bytes(0),
+                mintModule,
+                initData,
+                false
+            )
+        );
     }
 }

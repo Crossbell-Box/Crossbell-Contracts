@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
-import {Test} from "forge-std/Test.sol";
-import {Web3Entry} from "../../contracts/Web3Entry.sol";
 import {Events} from "../../contracts/libraries/Events.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {
@@ -11,18 +9,16 @@ import {
     ErrCharacterNotExists,
     ErrHandleExists
 } from "../../contracts/libraries/Error.sol";
-import {Const} from "../helpers/Const.sol";
-import {Utils} from "../helpers/Utils.sol";
-import {SetUp} from "../helpers/SetUp.sol";
+import {CommonTest} from "../helpers/CommonTest.sol";
 
-contract LinkERC721Test is Test, SetUp, Utils {
+contract LinkERC721Test is CommonTest {
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
 
         // create character
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+        _createCharacter(CHARACTER_HANDLE, alice);
+        _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
     // solhint-disable-next-line function-max-lines
@@ -30,13 +26,13 @@ contract LinkERC721Test is Test, SetUp, Utils {
         nft.mint(bob);
         vm.prank(alice);
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.LinkERC721(Const.FIRST_CHARACTER_ID, address(nft), 1, Const.LikeLinkType, 1);
+        emit Events.LinkERC721(FIRST_CHARACTER_ID, address(nft), 1, LikeLinkType, 1);
         web3Entry.linkERC721(
             DataTypes.linkERC721Data(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(nft),
                 1,
-                Const.LikeLinkType,
+                LikeLinkType,
                 new bytes(0)
             )
         );
@@ -48,10 +44,10 @@ contract LinkERC721Test is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.linkERC721(
             DataTypes.linkERC721Data(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(nft),
                 1,
-                Const.LikeLinkType,
+                LikeLinkType,
                 new bytes(0)
             )
         );
@@ -61,10 +57,10 @@ contract LinkERC721Test is Test, SetUp, Utils {
         vm.prank(address(periphery), alice);
         web3Entry.linkERC721(
             DataTypes.linkERC721Data(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(nft),
                 1,
-                Const.LikeLinkType,
+                LikeLinkType,
                 new bytes(0)
             )
         );
@@ -87,10 +83,10 @@ contract LinkERC721Test is Test, SetUp, Utils {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.linkERC721(
             DataTypes.linkERC721Data(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(nft),
                 1,
-                Const.LikeLinkType,
+                LikeLinkType,
                 new bytes(0)
             )
         );
@@ -102,34 +98,24 @@ contract LinkERC721Test is Test, SetUp, Utils {
         vm.startPrank(alice);
         web3Entry.linkERC721(
             DataTypes.linkERC721Data(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(nft),
                 1,
-                Const.LikeLinkType,
+                LikeLinkType,
                 new bytes(0)
             )
         );
 
         // unlink
         expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.UnlinkERC721(Const.FIRST_CHARACTER_ID, address(nft), 1, Const.LikeLinkType, 1);
+        emit Events.UnlinkERC721(FIRST_CHARACTER_ID, address(nft), 1, LikeLinkType, 1);
         web3Entry.unlinkERC721(
-            DataTypes.unlinkERC721Data(
-                Const.FIRST_CHARACTER_ID,
-                address(nft),
-                1,
-                Const.LikeLinkType
-            )
+            DataTypes.unlinkERC721Data(FIRST_CHARACTER_ID, address(nft), 1, LikeLinkType)
         );
 
         // unlink twice
         web3Entry.unlinkERC721(
-            DataTypes.unlinkERC721Data(
-                Const.FIRST_CHARACTER_ID,
-                address(nft),
-                1,
-                Const.LikeLinkType
-            )
+            DataTypes.unlinkERC721Data(FIRST_CHARACTER_ID, address(nft), 1, LikeLinkType)
         );
         vm.stopPrank();
 
@@ -137,7 +123,7 @@ contract LinkERC721Test is Test, SetUp, Utils {
         assertEq(linklist.ownerOf(1), alice);
 
         // check state
-        assertEq(linklist.getOwnerCharacterId(1), Const.FIRST_CHARACTER_ID);
+        assertEq(linklist.getOwnerCharacterId(1), FIRST_CHARACTER_ID);
         assertEq(linklist.getLinkingERC721s(1).length, 0);
         assertEq(linklist.getLinkingERC721ListLength(1), 0);
     }
@@ -147,10 +133,10 @@ contract LinkERC721Test is Test, SetUp, Utils {
         vm.prank(alice);
         web3Entry.linkERC721(
             DataTypes.linkERC721Data(
-                Const.FIRST_CHARACTER_ID,
+                FIRST_CHARACTER_ID,
                 address(nft),
                 1,
-                Const.LikeLinkType,
+                LikeLinkType,
                 new bytes(0)
             )
         );
@@ -159,12 +145,7 @@ contract LinkERC721Test is Test, SetUp, Utils {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.unlinkERC721(
-            DataTypes.unlinkERC721Data(
-                Const.FIRST_CHARACTER_ID,
-                address(nft),
-                1,
-                Const.LikeLinkType
-            )
+            DataTypes.unlinkERC721Data(FIRST_CHARACTER_ID, address(nft), 1, LikeLinkType)
         );
     }
 }

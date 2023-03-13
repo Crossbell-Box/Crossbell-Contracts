@@ -24,7 +24,7 @@ import {Const} from "../helpers/Const.sol";
 import {Utils} from "../helpers/Utils.sol";
 import {SetUp} from "../helpers/SetUp.sol";
 
-contract CharacterSettingsTest is Test, SetUp, Utils {
+contract CharacterSettingsTest is CommonTest {
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
@@ -227,58 +227,7 @@ contract CharacterSettingsTest is Test, SetUp, Utils {
         //  operator behind periphery without enough permission can't set social token
         vm.prank(address(periphery), bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setSocialToken(Const.FIRST_CHARACTER_ID, address(token));
-
-        // can't set twice
-        vm.startPrank(alice);
-        web3Entry.setSocialToken(Const.FIRST_CHARACTER_ID, address(token));
-        vm.expectRevert(abi.encodeWithSelector(ErrSocialTokenExists.selector));
-        web3Entry.setSocialToken(Const.FIRST_CHARACTER_ID, address(token));
-    }
-
-    function testSetPrimaryCharacterId() public {
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, alice));
-        // alice's primary character should be its first character
-        uint256 characterId = web3Entry.getPrimaryCharacterId(alice);
-        assertEq(characterId, Const.FIRST_CHARACTER_ID);
-
-        // owner can set primary character
-        vm.prank(alice);
-        expectEmit(CheckAll);
-        emit Events.SetPrimaryCharacterId(
-            alice,
-            Const.SECOND_CHARACTER_ID,
-            Const.FIRST_CHARACTER_ID
-        );
-        web3Entry.setPrimaryCharacterId(Const.SECOND_CHARACTER_ID);
-
-        // owner behind periphery can
-        vm.prank(address(periphery), alice);
-        web3Entry.setPrimaryCharacterId(Const.SECOND_CHARACTER_ID);
-
-        // check state
-        characterId = web3Entry.getPrimaryCharacterId(alice);
-        assertEq(characterId, Const.SECOND_CHARACTER_ID);
-    }
-
-    function testSetPrimaryCharacterIdFail() public {
-        // not owner can't set primary character
-        vm.prank(bob);
-        vm.expectRevert(abi.encodeWithSelector(ErrNotCharacterOwner.selector));
-        web3Entry.setPrimaryCharacterId(Const.FIRST_CHARACTER_ID);
-    }
-
-    /// setCharacterUri
-    function testSetCharacterUri() public {
-        // owner can set character uri
-        vm.prank(alice);
-        expectEmit(CheckAll);
-        emit Events.SetCharacterUri(Const.FIRST_CHARACTER_ID, Const.MOCK_CHARACTER_URI);
-        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, Const.MOCK_CHARACTER_URI);
-
-        // users behind periphery can set character uri
-        vm.prank(address(periphery), alice);
-        web3Entry.setCharacterUri(Const.FIRST_CHARACTER_ID, Const.MOCK_CHARACTER_URI);
+        web3Entry.setCharacterUri(1, Const.MOCK_URI);
 
         // operator can set character uri
         // alice grant bob DEFAULT_PERMISSION_BITMAP

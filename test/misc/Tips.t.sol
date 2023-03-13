@@ -2,14 +2,11 @@
 // solhint-disable comprehensive-interface,check-send-result,multiple-sends
 pragma solidity 0.8.16;
 
-import {Test} from "forge-std/Test.sol";
-import {Const} from "../helpers/Const.sol";
-import {Utils} from "../helpers/Utils.sol";
-import {SetUp} from "../helpers/SetUp.sol";
+import {CommonTest} from "../helpers/CommonTest.sol";
 import {Tips} from "../../contracts/misc/Tips.sol";
 import {MiraToken} from "../../contracts/mocks/MiraToken.sol";
 
-contract TipsTest is Test, SetUp, Utils {
+contract TipsTest is CommonTest {
     uint256 public constant initialBalance = 10 ether;
 
     // custom errors
@@ -52,8 +49,8 @@ contract TipsTest is Test, SetUp, Utils {
         tips.initialize(address(web3Entry), address(token));
 
         // create characters
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE, alice));
-        web3Entry.createCharacter(makeCharacterData(Const.MOCK_CHARACTER_HANDLE2, bob));
+        _createCharacter(CHARACTER_HANDLE, alice);
+        _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
     function testSetupState() public {
@@ -74,7 +71,7 @@ contract TipsTest is Test, SetUp, Utils {
     function testTipCharacter(uint256 amount) public {
         vm.assume(amount < 10 ether);
 
-        bytes memory data = abi.encode(Const.FIRST_CHARACTER_ID, Const.SECOND_CHARACTER_ID);
+        bytes memory data = abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID);
 
         // expect events
         expectEmit(CheckAll);
@@ -86,12 +83,7 @@ contract TipsTest is Test, SetUp, Utils {
         expectEmit(CheckAll);
         emit Transfer(address(tips), bob, amount);
         expectEmit(CheckAll);
-        emit TipCharacter(
-            Const.FIRST_CHARACTER_ID,
-            Const.SECOND_CHARACTER_ID,
-            address(token),
-            amount
-        );
+        emit TipCharacter(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, address(token), amount);
         vm.prank(alice);
         token.send(address(tips), amount, data);
 
@@ -106,20 +98,16 @@ contract TipsTest is Test, SetUp, Utils {
         // case 1: caller is not character owner
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotCharacterOwner.selector));
         vm.prank(carol);
-        token.send(
-            address(tips),
-            amount,
-            abi.encode(Const.FIRST_CHARACTER_ID, Const.SECOND_CHARACTER_ID)
-        );
+        token.send(address(tips), amount, abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID));
 
         // case 2: character does not exist
         vm.expectRevert("ERC721: owner query for nonexistent token");
         vm.prank(carol);
-        token.send(address(tips), amount, abi.encode(3, Const.SECOND_CHARACTER_ID));
+        token.send(address(tips), amount, abi.encode(3, SECOND_CHARACTER_ID));
 
         vm.expectRevert("ERC721: owner query for nonexistent token");
         vm.prank(alice);
-        token.send(address(tips), amount, abi.encode(Const.FIRST_CHARACTER_ID, 4));
+        token.send(address(tips), amount, abi.encode(FIRST_CHARACTER_ID, 4));
 
         // check balance
         assertEq(token.balanceOf(alice), initialBalance);
@@ -130,11 +118,7 @@ contract TipsTest is Test, SetUp, Utils {
     function testTipCharacterForNote(uint256 amount) public {
         vm.assume(amount < 10 ether);
 
-        bytes memory data = abi.encode(
-            Const.FIRST_CHARACTER_ID,
-            Const.SECOND_CHARACTER_ID,
-            Const.FIRST_NOTE_ID
-        );
+        bytes memory data = abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FIRST_NOTE_ID);
 
         // expect events
         expectEmit(CheckAll);
@@ -147,16 +131,16 @@ contract TipsTest is Test, SetUp, Utils {
             address(tips),
             bob,
             amount,
-            abi.encode(Const.FIRST_CHARACTER_ID, Const.SECOND_CHARACTER_ID),
+            abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID),
             ""
         );
         expectEmit(CheckAll);
         emit Transfer(address(tips), bob, amount);
         expectEmit(CheckAll);
         emit TipCharacterForNote(
-            Const.FIRST_CHARACTER_ID,
-            Const.SECOND_CHARACTER_ID,
-            Const.FIRST_NOTE_ID,
+            FIRST_CHARACTER_ID,
+            SECOND_CHARACTER_ID,
+            FIRST_NOTE_ID,
             address(token),
             amount
         );
@@ -177,25 +161,17 @@ contract TipsTest is Test, SetUp, Utils {
         token.send(
             address(tips),
             amount,
-            abi.encode(Const.FIRST_CHARACTER_ID, Const.SECOND_CHARACTER_ID, Const.FIRST_NOTE_ID)
+            abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FIRST_NOTE_ID)
         );
 
         // case 2: character does not exist
         vm.expectRevert("ERC721: owner query for nonexistent token");
         vm.prank(carol);
-        token.send(
-            address(tips),
-            amount,
-            abi.encode(3, Const.SECOND_CHARACTER_ID, Const.FIRST_NOTE_ID)
-        );
+        token.send(address(tips), amount, abi.encode(3, SECOND_CHARACTER_ID, FIRST_NOTE_ID));
 
         vm.expectRevert("ERC721: owner query for nonexistent token");
         vm.prank(alice);
-        token.send(
-            address(tips),
-            amount,
-            abi.encode(Const.FIRST_CHARACTER_ID, 4, Const.FIRST_NOTE_ID)
-        );
+        token.send(address(tips), amount, abi.encode(FIRST_CHARACTER_ID, 4, FIRST_NOTE_ID));
 
         // check balance
         assertEq(token.balanceOf(alice), initialBalance);
@@ -215,7 +191,7 @@ contract TipsTest is Test, SetUp, Utils {
             address(tips),
             amount,
             "",
-            abi.encode(Const.FIRST_CHARACTER_ID, Const.SECOND_CHARACTER_ID)
+            abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID)
         );
 
         // check balance
