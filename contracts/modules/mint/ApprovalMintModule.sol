@@ -13,19 +13,15 @@ import {Events} from "../../libraries/Events.sol";
  */
 contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     // characterId => noteId => address => approvedAmount
-    mapping(uint256 => mapping(uint256 => mapping(address => uint256)))
-        internal _approvedByCharacterByNoteByOwner;
+    mapping(uint256 => mapping(uint256 => mapping(address => uint256))) internal _approvedAmounts;
 
     // solhint-disable-next-line no-empty-blocks
     constructor(address web3Entry_) ModuleBase(web3Entry_) {}
 
     /**
-     * @notice  Initialize the MintModule for a specific note.
-     * @param   characterId  The character ID of the note to initialize.
-     * @param   noteId  The note ID to initialize.
-     * @param   data  The address list that are approved to mint the note, and the approved amount.
-     * @return  bytes  The returned data of calling initializeMintModule.
+     * @dev The data should an abi encoded bytes, containing (in order): an address array and an uint256
      */
+    /// @inheritdoc IMintModule4Note
     function initializeMintModule(
         uint256 characterId,
         uint256 noteId,
@@ -65,27 +61,20 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     }
 
     /**
-     * @notice Processes the mint logic. <br>
-     * Triggered when the `mintNote` of web3Entry is called, if mint module of note is set.
-     */
-    // solhint-disable-next-line comprehensive-interface
-    /**
      * @notice  Process minting and check if the caller is eligible.
-     * @param   to  The destination address to mint the NFT to.
-     * @param   characterId  The character ID of the note owner.
-     * @param   noteId  The note ID.
      */
+    /// @inheritdoc IMintModule4Note
     function processMint(
         address to,
         uint256 characterId,
         uint256 noteId,
         bytes calldata
     ) external override onlyWeb3Entry {
-        uint256 approvedAmount = _approvedByCharacterByNoteByOwner[characterId][noteId][to];
+        uint256 approvedAmount = _approvedAmounts[characterId][noteId][to];
         if (approvedAmount == 0) {
             revert ErrNotApproved();
         } else {
-            _approvedByCharacterByNoteByOwner[characterId][noteId][to] = approvedAmount - 1;
+            _approvedAmounts[characterId][noteId][to] = approvedAmount - 1;
         }
     }
 
@@ -102,7 +91,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         uint256 noteId,
         address account
     ) external view returns (uint256) {
-        return _approvedByCharacterByNoteByOwner[characterId][noteId][account];
+        return _approvedAmounts[characterId][noteId][account];
     }
 
     function _setApprovedAmount(
@@ -113,7 +102,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     ) internal {
         uint256 addressesLength = addresses.length;
         for (uint256 i = 0; i < addressesLength; ) {
-            _approvedByCharacterByNoteByOwner[characterId][noteId][addresses[i]] = approvedAmount;
+            _approvedAmounts[characterId][noteId][addresses[i]] = approvedAmount;
             unchecked {
                 ++i;
             }
