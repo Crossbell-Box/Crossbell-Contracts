@@ -13,8 +13,7 @@ import {Events} from "../../libraries/Events.sol";
  */
 contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     // characterId => noteId => address => approvedAmount
-    mapping(uint256 => mapping(uint256 => mapping(address => uint256)))
-        internal _approvedByCharacterByNoteByOwner;
+    mapping(uint256 => mapping(uint256 => mapping(address => uint256))) internal _approvedAmounts;
 
     // solhint-disable-next-line no-empty-blocks
     constructor(address web3Entry_) ModuleBase(web3Entry_) {}
@@ -81,11 +80,11 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         uint256 noteId,
         bytes calldata
     ) external override onlyWeb3Entry {
-        uint256 approvedAmount = _approvedByCharacterByNoteByOwner[characterId][noteId][to];
+        uint256 approvedAmount = _approvedAmounts[characterId][noteId][to];
         if (approvedAmount == 0) {
             revert ErrNotApproved();
         } else {
-            _approvedByCharacterByNoteByOwner[characterId][noteId][to] = approvedAmount - 1;
+            _approvedAmounts[characterId][noteId][to] = approvedAmount - 1;
         }
     }
 
@@ -102,7 +101,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         uint256 noteId,
         address account
     ) external view returns (uint256) {
-        return _approvedByCharacterByNoteByOwner[characterId][noteId][account];
+        return _approvedAmounts[characterId][noteId][account];
     }
 
     function _setApprovedAmount(
@@ -113,7 +112,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     ) internal {
         uint256 addressesLength = addresses.length;
         for (uint256 i = 0; i < addressesLength; ) {
-            _approvedByCharacterByNoteByOwner[characterId][noteId][addresses[i]] = approvedAmount;
+            _approvedAmounts[characterId][noteId][addresses[i]] = approvedAmount;
             unchecked {
                 ++i;
             }
