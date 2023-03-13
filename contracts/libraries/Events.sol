@@ -225,4 +225,11 @@ library Events {
         uint256 indexed characterId,
         bytes32 indexed linkType
     );
+
+    event SetApprovedMintAmount4Addresses(
+        uint256 indexed characterId,
+        uint256 indexed noteId,
+        uint256 indexed amount,
+        address[] approvedAddresses
+    );
 }

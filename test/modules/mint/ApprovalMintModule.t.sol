@@ -36,6 +36,13 @@ contract ApprovalMintModuleTest is CommonTest {
         address[] memory approvedList = array(bob, carol);
 
         // initialize the mint module
+        expectEmit(CheckAll);
+        emit Events.SetApprovedMintAmount4Addresses(
+            FIRST_CHARACTER_ID,
+            FIRST_NOTE_ID,
+            amount,
+            approvedList
+        );
         vm.prank(address(web3Entry));
         bytes memory result = IMintModule4Note(address(approvalMintModule)).initializeMintModule(
             FIRST_CHARACTER_ID,
@@ -66,6 +73,13 @@ contract ApprovalMintModuleTest is CommonTest {
         address[] memory approvedList = array(bob, carol);
 
         // alice set approved amount for bob and carol
+        expectEmit(CheckAll);
+        emit Events.SetApprovedMintAmount4Addresses(
+            FIRST_CHARACTER_ID,
+            FIRST_NOTE_ID,
+            amount,
+            approvedList
+        );
         vm.prank(alice);
         approvalMintModule.setApprovedAmount(
             FIRST_CHARACTER_ID,

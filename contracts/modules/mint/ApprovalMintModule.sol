@@ -4,11 +4,8 @@ pragma solidity 0.8.16;
 import {IMintModule4Note} from "../../interfaces/IMintModule4Note.sol";
 import {ModuleBase} from "../ModuleBase.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {
-    ErrNotCharacterOwner,
-    ErrArrayLengthMismatch,
-    ErrNotApproved
-} from "../../libraries/Error.sol";
+import {ErrNotCharacterOwner, ErrNotApproved} from "../../libraries/Error.sol";
+import {Events} from "../../libraries/Events.sol";
 
 /**
  * @title ApprovalMintModule
@@ -68,13 +65,13 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     }
 
     /**
-     * @notice Processes the mint logic.
-     * Triggered when the `mintNote` of web3Entry is called, if mint module of note if set.
+     * @notice Processes the mint logic. <br>
+     * Triggered when the `mintNote` of web3Entry is called, if mint module of note is set.
      */
     // solhint-disable-next-line comprehensive-interface
     /**
-     * @notice  Process mint and check if the caller is eligible.
-     * @param   to  The destination address to mint NFT to.
+     * @notice  Process minting and check if the caller is eligible.
+     * @param   to  The destination address to mint the NFT to.
      * @param   characterId  The character ID of the note owner.
      * @param   noteId  The note ID.
      */
@@ -94,10 +91,10 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
 
     /**
      * @notice Get the allowed amount that an address can mint.
-     * @param characterId ID of character to query.
-     * @param noteId  ID of note to query.
-     * @param account Address of the address to query.
-     * @return The allowed amount that an address can mint.
+     * @param characterId ID of the character to query.
+     * @param noteId  ID of the note to query.
+     * @param account The address to query.
+     * @return The allowed amount that the address can mint.
      */
     // solhint-disable-next-line comprehensive-interface
     function getApprovedAmount(
@@ -121,5 +118,6 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
                 ++i;
             }
         }
+        emit Events.SetApprovedMintAmount4Addresses(characterId, noteId, approvedAmount, addresses);
     }
 }
