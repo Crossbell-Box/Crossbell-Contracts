@@ -778,7 +778,11 @@ contract Web3EntryBase is
     function getRevision() external pure override returns (uint256) {
         return REVISION;
     }
-
+    
+    /**
+     * @notice Burns a web3Entry character nft.
+     * @param tokenId The token ID to burn.
+     */
     function burn(uint256 tokenId) public virtual override {
         // clear handle
         bytes32 handleHash = keccak256(bytes(_characterById[tokenId].handle));
@@ -791,6 +795,12 @@ contract Web3EntryBase is
         super.burn(tokenId);
     }
 
+    /**
+     * @notice Returns the associated URI with a given character.
+     * @param characterId The character ID to query.
+     * @return The token URI.
+     */
+    /// @inheritdoc IERC721Metadata
     function tokenURI(uint256 characterId) public view override returns (string memory) {
         return _characterById[characterId].uri;
     }
