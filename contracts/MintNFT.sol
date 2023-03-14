@@ -20,6 +20,11 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
     uint256 internal _tokenCounter;
     mapping(uint256 => address) internal _originalReceiver;
 
+    modifier onlyWeb3Entry() {
+        if (msg.sender != _web3Entry) revert ErrCallerNotWeb3Entry();
+        _;
+    }
+
     /// @inheritdoc IMintNFT
     function initialize(
         uint256 characterId_,
@@ -37,10 +42,9 @@ contract MintNFT is NFTBase, IMintNFT, Initializable {
     }
 
     /// @inheritdoc IMintNFT
-    function mint(address to) external override returns (uint256 tokenId) {
-        if (msg.sender != _web3Entry) revert ErrCallerNotWeb3Entry();
-
+    function mint(address to) external override onlyWeb3Entry returns (uint256 tokenId) {
         tokenId = ++_tokenCounter;
+        _originalReceiver[tokenId] = to;
         _mint(to, tokenId);
     }
 
