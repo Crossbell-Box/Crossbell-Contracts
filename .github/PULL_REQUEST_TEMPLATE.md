@@ -11,3 +11,4 @@
 - [ ] NewbieVilla
 - [ ] Tips
 - [ ] ApprovalMintModule
+- [ ] MINT_NFT_IMPL
