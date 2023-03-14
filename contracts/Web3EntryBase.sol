@@ -800,7 +800,6 @@ contract Web3EntryBase is
      * @param characterId The character ID to query.
      * @return The token URI.
      */
-    /// @inheritdoc IERC721Metadata
     function tokenURI(uint256 characterId) public view override returns (string memory) {
         return _characterById[characterId].uri;
     }
