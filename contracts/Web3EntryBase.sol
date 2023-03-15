@@ -57,7 +57,7 @@ contract Web3EntryBase is
         address mintNFTImpl_,
         address periphery_,
         address newbieVilla_
-    ) external override reinitializer(2) {
+    ) external override reinitializer(3) {
         super._initialize(name_, symbol_);
         _linklist = linklist_;
         MINT_NFT_IMPL = mintNFTImpl_;

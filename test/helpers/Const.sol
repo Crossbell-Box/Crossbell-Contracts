@@ -19,8 +19,8 @@ contract Const {
     uint256 public constant SECOND_CBT_ID = 2;
     uint256 public constant ZERO_CBT_ID = 0;
 
-    uint256 public constant MOCK_FIRST_TOKEN_ID = 0;
-    uint256 public constant MOCK_SECOND_TOKEN_ID = 1;
+    uint256 public constant FIRST_TOKEN_ID = 0;
+    uint256 public constant SECOND_TOKEN_ID = 1;
 
     address public constant AddressZero = address(0);
     address public constant MOCK_TO_ADDRESS = address(0x05004003);
