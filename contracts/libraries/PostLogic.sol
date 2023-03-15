@@ -42,8 +42,8 @@ library PostLogic {
                 characterId,
                 noteId,
                 vars.linkModule,
-                linkModuleReturnData,
-                block.timestamp
+                vars.linkModuleInitData,
+                linkModuleReturnData
             );
         }
 
@@ -58,8 +58,8 @@ library PostLogic {
                 characterId,
                 noteId,
                 vars.mintModule,
-                mintModuleReturnData,
-                block.timestamp
+                vars.mintModuleInitData,
+                mintModuleReturnData
             );
         }
 

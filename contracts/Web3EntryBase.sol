@@ -778,7 +778,7 @@ contract Web3EntryBase is
     function getRevision() external pure override returns (uint256) {
         return REVISION;
     }
-    
+
     /**
      * @notice Burns a web3Entry character nft.
      * @param tokenId The token ID to burn.

@@ -38,8 +38,8 @@ library LinkModuleLogic {
                 characterId,
                 noteId,
                 linkModule,
-                returnData,
-                block.timestamp
+                linkModuleInitData,
+                returnData
             );
         }
     }
@@ -58,15 +58,12 @@ library LinkModuleLogic {
     ) external {
         if (linkModule != address(0)) {
             _linkModules4Address[account] = linkModule;
-            bytes memory linkModuleReturnData = ILinkModule4Address(linkModule)
-                .initializeLinkModule(account, linkModuleInitData);
-
-            emit Events.SetLinkModule4Address(
+            bytes memory returnData = ILinkModule4Address(linkModule).initializeLinkModule(
                 account,
-                linkModule,
-                linkModuleReturnData,
-                block.timestamp
+                linkModuleInitData
             );
+
+            emit Events.SetLinkModule4Address(account, linkModule, linkModuleInitData, returnData);
         }
     }
 
@@ -97,8 +94,8 @@ library LinkModuleLogic {
                 characterId,
                 noteId,
                 mintModule,
-                returnData,
-                block.timestamp
+                mintModuleInitData,
+                returnData
             );
         }
     }
@@ -123,8 +120,8 @@ library LinkModuleLogic {
             emit Events.SetLinkModule4Linklist(
                 linklistId,
                 linkModule,
-                linkModuleReturnData,
-                block.timestamp
+                linkModuleInitData,
+                linkModuleReturnData
             );
         }
     }
@@ -155,8 +152,8 @@ library LinkModuleLogic {
                 tokenAddress,
                 tokenId,
                 linkModule,
-                linkModuleReturnData,
-                block.timestamp
+                linkModuleInitData,
+                linkModuleReturnData
             );
         }
     }

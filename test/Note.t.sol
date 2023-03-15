@@ -251,12 +251,7 @@ contract NoteTest is CommonTest {
     function testPostNote4Linklist() public {
         vm.startPrank(alice);
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                LikeLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkCharacterData(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, LikeLinkType, "")
         );
 
         web3Entry.postNote4Linklist(makePostNoteData(FIRST_CHARACTER_ID), FIRST_LINKLIST_ID);
@@ -384,17 +379,13 @@ contract NoteTest is CommonTest {
 
         // bob mints a note
         vm.prank(bob);
-        web3Entry.mintNote(
-            DataTypes.MintNoteData(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, new bytes(0))
-        );
+        web3Entry.mintNote(DataTypes.MintNoteData(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, ""));
 
         vm.prank(alice);
         web3Entry.lockNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
         // bob mints a locked note
         vm.prank(bob);
-        web3Entry.mintNote(
-            DataTypes.MintNoteData(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, new bytes(0))
-        );
+        web3Entry.mintNote(DataTypes.MintNoteData(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, ""));
 
         // check state
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
@@ -410,9 +401,7 @@ contract NoteTest is CommonTest {
     function testMintNoteFail() public {
         // case 1: note not exists
         vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
-        web3Entry.mintNote(
-            DataTypes.MintNoteData(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, new bytes(0))
-        );
+        web3Entry.mintNote(DataTypes.MintNoteData(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, ""));
 
         // case 2: note is deleted
         vm.startPrank(alice);
@@ -421,9 +410,7 @@ contract NoteTest is CommonTest {
         vm.stopPrank();
         // mint a deleted note
         vm.expectRevert(abi.encodeWithSelector(ErrNoteIsDeleted.selector));
-        web3Entry.mintNote(
-            DataTypes.MintNoteData(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, new bytes(0))
-        );
+        web3Entry.mintNote(DataTypes.MintNoteData(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, ""));
 
         // check state
         DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
@@ -436,9 +423,7 @@ contract NoteTest is CommonTest {
 
         vm.startPrank(bob);
         for (uint256 i = 0; i < 10; i++) {
-            web3Entry.mintNote(
-                DataTypes.MintNoteData(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, new bytes(0))
-            );
+            web3Entry.mintNote(DataTypes.MintNoteData(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, ""));
         }
         vm.stopPrank();
 
@@ -460,15 +445,15 @@ contract NoteTest is CommonTest {
             FIRST_CHARACTER_ID,
             FIRST_NOTE_ID,
             address(approvalMintModule),
-            new bytes(0),
-            block.timestamp
+            "",
+            ""
         );
         web3Entry.setMintModule4Note(
             DataTypes.setMintModule4NoteData(
                 FIRST_CHARACTER_ID,
                 FIRST_NOTE_ID,
                 address(approvalMintModule),
-                new bytes(0)
+                ""
             )
         );
 
@@ -481,7 +466,7 @@ contract NoteTest is CommonTest {
                 FIRST_CHARACTER_ID,
                 FIRST_NOTE_ID,
                 address(approvalMintModule),
-                new bytes(0)
+                ""
             )
         );
 
@@ -492,7 +477,7 @@ contract NoteTest is CommonTest {
                 FIRST_CHARACTER_ID,
                 FIRST_NOTE_ID,
                 address(approvalMintModule),
-                new bytes(0)
+                ""
             )
         );
 
@@ -503,7 +488,7 @@ contract NoteTest is CommonTest {
                 FIRST_CHARACTER_ID,
                 FIRST_NOTE_ID,
                 address(approvalMintModule),
-                new bytes(0)
+                ""
             )
         );
     }
@@ -521,7 +506,7 @@ contract NoteTest is CommonTest {
                 FIRST_CHARACTER_ID,
                 FIRST_NOTE_ID,
                 address(approvalMintModule),
-                new bytes(0)
+                ""
             )
         );
 
@@ -533,7 +518,7 @@ contract NoteTest is CommonTest {
                 FIRST_CHARACTER_ID,
                 SECOND_NOTE_ID,
                 address(approvalMintModule),
-                new bytes(0)
+                ""
             )
         );
 
@@ -546,7 +531,7 @@ contract NoteTest is CommonTest {
                 FIRST_CHARACTER_ID,
                 FIRST_NOTE_ID,
                 address(approvalMintModule),
-                new bytes(0)
+                ""
             )
         );
 
@@ -558,7 +543,7 @@ contract NoteTest is CommonTest {
                 FIRST_CHARACTER_ID,
                 FIRST_NOTE_ID,
                 address(approvalMintModule),
-                new bytes(0)
+                ""
             )
         );
     }

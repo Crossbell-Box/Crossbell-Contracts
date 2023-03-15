@@ -172,46 +172,46 @@ library Events {
     event SetLinkModule4Character(
         uint256 indexed characterId,
         address indexed linkModule,
-        bytes returnData,
-        uint256 timestamp
+        bytes linkModuleInitData,
+        bytes returnData
     );
 
     event SetLinkModule4Note(
         uint256 indexed characterId,
         uint256 indexed noteId,
         address indexed linkModule,
-        bytes returnData,
-        uint256 timestamp
+        bytes linkModuleInitData,
+        bytes returnData
     );
 
     event SetLinkModule4Address(
         address indexed account,
         address indexed linkModule,
-        bytes returnData,
-        uint256 timestamp
+        bytes linkModuleInitData,
+        bytes returnData
     );
 
     event SetLinkModule4ERC721(
         address indexed tokenAddress,
         uint256 indexed tokenId,
         address indexed linkModule,
-        bytes returnData,
-        uint256 timestamp
+        bytes linkModuleInitData,
+        bytes returnData
     );
 
     event SetLinkModule4Linklist(
         uint256 indexed linklistId,
         address indexed linkModule,
-        bytes returnData,
-        uint256 timestamp
+        bytes linkModuleInitData,
+        bytes returnData
     );
 
     event SetMintModule4Note(
         uint256 indexed characterId,
         uint256 indexed noteId,
         address indexed mintModule,
-        bytes returnData,
-        uint256 timestamp
+        bytes mintModuleInitData,
+        bytes returnData
     );
 
     event AttachLinklist(
