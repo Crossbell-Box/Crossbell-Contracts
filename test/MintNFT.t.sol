@@ -13,6 +13,7 @@ import {
     IERC721Enumerable
 } from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
+import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 
 contract MintNFTTest is CommonTest {
     address public mintNFT;
@@ -165,5 +166,11 @@ contract MintNFTTest is CommonTest {
         assertEq(IMintNFT(mintNFT).originalReceiver(2), carol);
         assertEq(IERC721(mintNFT).balanceOf(dick), 1);
         assertEq(IERC721(mintNFT).ownerOf(2), dick);
+    }
+
+    function testSupportsInterface() public {
+        assertTrue(IERC165(mintNFT).supportsInterface(type(IERC721).interfaceId));
+        assertTrue(IERC165(mintNFT).supportsInterface(type(IERC721Enumerable).interfaceId));
+        assertTrue(IERC165(mintNFT).supportsInterface(type(IERC2981).interfaceId));
     }
 }
