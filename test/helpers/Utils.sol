@@ -30,6 +30,31 @@ contract Utils is Test, Const {
         vm.expectEmit(checkTopic1, checkTopic2, checkTopic3, checkData);
     }
 
+    function assertBytesEq(bytes memory a, bytes memory b) public {
+        if (keccak256(a) != keccak256(b)) {
+            emit log("Error: a == b not satisfied [bytes]");
+            emit log_named_bytes("  Expected", b);
+            emit log_named_bytes("    Actual", a);
+            fail();
+        }
+    }
+
+    function assertUintArrayEq(uint256[] memory a, uint256[] memory b) public {
+        require(a.length == b.length, "LENGTH_MISMATCH");
+
+        for (uint256 i = 0; i < a.length; i++) {
+            assertEq(a[i], b[i]);
+        }
+    }
+
+    function min3(uint256 a, uint256 b, uint256 c) public pure returns (uint256) {
+        return a > b ? (b > c ? c : b) : (a > c ? c : a);
+    }
+
+    function min2(uint256 a, uint256 b) public pure returns (uint256) {
+        return a > b ? b : a;
+    }
+
     function array(uint256 a) public pure returns (uint256[] memory) {
         uint256[] memory arr = new uint256[](1);
         arr[0] = a;
