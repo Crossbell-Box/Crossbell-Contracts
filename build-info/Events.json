@@ -572,6 +572,37 @@
           "type": "uint256"
         },
         {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "noteId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "approvedAddresses",
+          "type": "address[]"
+        }
+      ],
+      "name": "SetApprovedMintAmount4Addresses",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "characterId",
+          "type": "uint256"
+        },
+        {
           "indexed": false,
           "internalType": "string",
           "name": "newUri",
@@ -624,14 +655,14 @@
         {
           "indexed": false,
           "internalType": "bytes",
-          "name": "returnData",
+          "name": "linkModuleInitData",
           "type": "bytes"
         },
         {
           "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
+          "internalType": "bytes",
+          "name": "returnData",
+          "type": "bytes"
         }
       ],
       "name": "SetLinkModule4Address",
@@ -655,14 +686,14 @@
         {
           "indexed": false,
           "internalType": "bytes",
-          "name": "returnData",
+          "name": "linkModuleInitData",
           "type": "bytes"
         },
         {
           "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
+          "internalType": "bytes",
+          "name": "returnData",
+          "type": "bytes"
         }
       ],
       "name": "SetLinkModule4Character",
@@ -692,14 +723,14 @@
         {
           "indexed": false,
           "internalType": "bytes",
-          "name": "returnData",
+          "name": "linkModuleInitData",
           "type": "bytes"
         },
         {
           "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
+          "internalType": "bytes",
+          "name": "returnData",
+          "type": "bytes"
         }
       ],
       "name": "SetLinkModule4ERC721",
@@ -723,14 +754,14 @@
         {
           "indexed": false,
           "internalType": "bytes",
-          "name": "returnData",
+          "name": "linkModuleInitData",
           "type": "bytes"
         },
         {
           "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
+          "internalType": "bytes",
+          "name": "returnData",
+          "type": "bytes"
         }
       ],
       "name": "SetLinkModule4Linklist",
@@ -760,14 +791,14 @@
         {
           "indexed": false,
           "internalType": "bytes",
-          "name": "returnData",
+          "name": "linkModuleInitData",
           "type": "bytes"
         },
         {
           "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
+          "internalType": "bytes",
+          "name": "returnData",
+          "type": "bytes"
         }
       ],
       "name": "SetLinkModule4Note",
@@ -797,14 +828,14 @@
         {
           "indexed": false,
           "internalType": "bytes",
-          "name": "returnData",
+          "name": "mintModuleInitData",
           "type": "bytes"
         },
         {
           "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
+          "internalType": "bytes",
+          "name": "returnData",
+          "type": "bytes"
         }
       ],
       "name": "SetMintModule4Note",
@@ -1122,8 +1153,8 @@
       "type": "event"
     }
   ],
-  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220958989960141755ee6ef7b6efcc57a9485549ec6f1b6ef5a46f4c41dd175900f64736f6c634300080a0033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220958989960141755ee6ef7b6efcc57a9485549ec6f1b6ef5a46f4c41dd175900f64736f6c634300080a0033",
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212208a298db3a966decc6f042607dc3810a957e800b220c0010999b949662489fe8264736f6c63430008100033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212208a298db3a966decc6f042607dc3810a957e800b220c0010999b949662489fe8264736f6c63430008100033",
   "linkReferences": {},
   "deployedLinkReferences": {}
 }
