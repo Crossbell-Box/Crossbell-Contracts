@@ -82,7 +82,12 @@ library CharacterLogic {
                 linkModuleInitData
             );
         }
-        emit Events.SetLinkModule4Character(characterId, linkModule, returnData, block.timestamp);
+        emit Events.SetLinkModule4Character(
+            characterId,
+            linkModule,
+            linkModuleInitData,
+            returnData
+        );
     }
 
     /**
