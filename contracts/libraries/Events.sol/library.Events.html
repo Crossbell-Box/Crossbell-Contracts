@@ -146,7 +146,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="events"><a class="header" href="#events">Events</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/fe5f95e8defb36e64d30104fdf4253b993949b7d/contracts/libraries/Events.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/113c3065b971690603076ceccd055dd5599550dd/contracts/libraries/Events.sol">Git Source</a></p>
 <h2 id="events-1"><a class="header" href="#events-1">Events</a></h2>
 <h3 id="baseinitialized"><a class="header" href="#baseinitialized">BaseInitialized</a></h3>
 <pre><code class="language-solidity">event BaseInitialized(string name, string symbol, uint256 timestamp);
@@ -296,34 +296,44 @@
 </code></pre>
 <h3 id="setlinkmodule4character"><a class="header" href="#setlinkmodule4character">SetLinkModule4Character</a></h3>
 <pre><code class="language-solidity">event SetLinkModule4Character(
-    uint256 indexed characterId, address indexed linkModule, bytes returnData, uint256 timestamp
+    uint256 indexed characterId, address indexed linkModule, bytes linkModuleInitData, bytes returnData
 );
 </code></pre>
 <h3 id="setlinkmodule4note"><a class="header" href="#setlinkmodule4note">SetLinkModule4Note</a></h3>
 <pre><code class="language-solidity">event SetLinkModule4Note(
-    uint256 indexed characterId, uint256 indexed noteId, address indexed linkModule, bytes returnData, uint256 timestamp
+    uint256 indexed characterId,
+    uint256 indexed noteId,
+    address indexed linkModule,
+    bytes linkModuleInitData,
+    bytes returnData
 );
 </code></pre>
 <h3 id="setlinkmodule4address"><a class="header" href="#setlinkmodule4address">SetLinkModule4Address</a></h3>
-<pre><code class="language-solidity">event SetLinkModule4Address(address indexed account, address indexed linkModule, bytes returnData, uint256 timestamp);
+<pre><code class="language-solidity">event SetLinkModule4Address(
+    address indexed account, address indexed linkModule, bytes linkModuleInitData, bytes returnData
+);
 </code></pre>
 <h3 id="setlinkmodule4erc721"><a class="header" href="#setlinkmodule4erc721">SetLinkModule4ERC721</a></h3>
 <pre><code class="language-solidity">event SetLinkModule4ERC721(
     address indexed tokenAddress,
     uint256 indexed tokenId,
     address indexed linkModule,
-    bytes returnData,
-    uint256 timestamp
+    bytes linkModuleInitData,
+    bytes returnData
 );
 </code></pre>
 <h3 id="setlinkmodule4linklist"><a class="header" href="#setlinkmodule4linklist">SetLinkModule4Linklist</a></h3>
 <pre><code class="language-solidity">event SetLinkModule4Linklist(
-    uint256 indexed linklistId, address indexed linkModule, bytes returnData, uint256 timestamp
+    uint256 indexed linklistId, address indexed linkModule, bytes linkModuleInitData, bytes returnData
 );
 </code></pre>
 <h3 id="setmintmodule4note"><a class="header" href="#setmintmodule4note">SetMintModule4Note</a></h3>
 <pre><code class="language-solidity">event SetMintModule4Note(
-    uint256 indexed characterId, uint256 indexed noteId, address indexed mintModule, bytes returnData, uint256 timestamp
+    uint256 indexed characterId,
+    uint256 indexed noteId,
+    address indexed mintModule,
+    bytes mintModuleInitData,
+    bytes returnData
 );
 </code></pre>
 <h3 id="attachlinklist"><a class="header" href="#attachlinklist">AttachLinklist</a></h3>
