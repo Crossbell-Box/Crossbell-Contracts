@@ -28,6 +28,29 @@ interface IMintNFT {
     function mint(address to) external returns (uint256);
 
     /**
+     * @notice Changes the royalty percentage of specific token ID for secondary sales.
+     * Can only be called by character owner of note.
+     * @param tokenId The token ID to set.
+     * @param recipient The receive address.
+     * @param fraction The royalty percentage measured in basis points. Each basis point represents 0.01%.
+     */
+    function setTokenRoyalty(uint256 tokenId, address recipient, uint96 fraction) external;
+
+    /**
+     * @notice Changes the default royalty percentage for secondary sales.
+     * Can only be called by character owner of note.
+     * @param recipient The receive address.
+     * @param fraction The royalty percentage measured in basis points. Each basis point represents 0.01%.
+     */
+    function setDefaultRoyalty(address recipient, uint96 fraction) external;
+
+    /**
+     * @notice Deletes the default royalty percentage.
+     * Can only be called by character owner of note.
+     */
+    function deleteDefaultRoyalty() external;
+
+    /**
      * @notice Returns the original receiver of specified NFT.
      * @return The address of original receiver.
      */
