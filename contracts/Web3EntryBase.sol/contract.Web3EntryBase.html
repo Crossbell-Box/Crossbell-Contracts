@@ -146,7 +146,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="web3entrybase"><a class="header" href="#web3entrybase">Web3EntryBase</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/80d0b9fb8600f0f2fc43f700d40a6ec1c709c279/contracts/Web3EntryBase.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/a858487c50a305792e15325b2419fbb7a7b74cde/contracts/Web3EntryBase.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/contracts/interfaces/IWeb3Entry.sol/interface.IWeb3Entry.html">IWeb3Entry</a>, Multicall, <a href="/contracts/base/NFTBase.sol/abstract.NFTBase.html">NFTBase</a>, <a href="/contracts/storage/Web3EntryStorage.sol/contract.Web3EntryStorage.html">Web3EntryStorage</a>, Initializable, <a href="/contracts/storage/Web3EntryExtendStorage.sol/contract.Web3EntryExtendStorage.html">Web3EntryExtendStorage</a></p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
@@ -155,6 +155,7 @@
 </code></pre>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
+<p>Initializes the Web3Entry.</p>
 <pre><code class="language-solidity">function initialize(
     string calldata name_,
     string calldata symbol_,
@@ -164,6 +165,16 @@
     address newbieVilla_
 ) external override reinitializer(3);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>name_</code></td><td><code>string</code></td><td>The name to set for the web3Entry character NFT.</td></tr>
+<tr><td><code>symbol_</code></td><td><code>string</code></td><td>The symbol to set for the web3Entry character NFT.</td></tr>
+<tr><td><code>linklist_</code></td><td><code>address</code></td><td>The address of linklist contract to set.</td></tr>
+<tr><td><code>mintNFTImpl_</code></td><td><code>address</code></td><td>The address of mintNFTImpl contract to set.</td></tr>
+<tr><td><code>periphery_</code></td><td><code>address</code></td><td>The address of periphery contract to set.</td></tr>
+<tr><td><code>newbieVilla_</code></td><td><code>address</code></td><td>The address of newbieVilla contract to set.</td></tr>
+</tbody></table>
+</div>
 <h3 id="grantoperatorpermissions"><a class="header" href="#grantoperatorpermissions">grantOperatorPermissions</a></h3>
 <p>Grant an address as an operator and authorize it with custom permissions.</p>
 <p><em>Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol.</em></p>
@@ -245,7 +256,7 @@
 </tbody></table>
 </div>
 <h3 id="setlinklisturi"><a class="header" href="#setlinklisturi">setLinklistUri</a></h3>
-<p>Sets a new metadataURI for a given link list..</p>
+<p>Sets a new metadataURI for a given link list.</p>
 <pre><code class="language-solidity">function setLinklistUri(uint256 linklistId, string calldata uri) external override;
 </code></pre>
 <p><strong>Parameters</strong></p>
@@ -255,69 +266,165 @@
 </tbody></table>
 </div>
 <h3 id="linkcharacter"><a class="header" href="#linkcharacter">linkCharacter</a></h3>
+<p>Links a character with the given parameters.</p>
 <pre><code class="language-solidity">function linkCharacter(DataTypes.linkCharacterData calldata vars) external override;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>linkCharacterData.DataTypes</code></td><td>The linkCharacterData struct containing the linking parameters:<br> <code>fromCharacterId</code>: The character ID to sponsor a link action.<br> <code>toCharacterId</code>: The character ID to be linked.<br> <code>linkType</code>: The link type, like &quot;follow&quot;, which is a bytes32 format.<br> <code>data</code>: The data passed to the link module to use, if any.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="unlinkcharacter"><a class="header" href="#unlinkcharacter">unlinkCharacter</a></h3>
+<p>Unlinks a character with the given parameters.</p>
 <pre><code class="language-solidity">function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external override;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>unlinkCharacterData.DataTypes</code></td><td>The unlinkCharacterData struct containing the unlinking parameters: <code>fromCharacterId</code>: The character ID to sponsor a unlink action.<br> <code>toCharacterId</code>: The character ID to be unlinked.<br> <code>linkType</code>: The link type, like &quot;follow&quot;, which is a bytes32 format.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="createthenlinkcharacter"><a class="header" href="#createthenlinkcharacter">createThenLinkCharacter</a></h3>
+<p>Create a character and then link it.</p>
 <pre><code class="language-solidity">function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars)
     external
     override
     returns (uint256 characterId);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>createThenLinkCharacterData.DataTypes</code></td><td>The createThenLinkCharacterData struct containing the parameters:<br> <code>fromCharacterId</code>: The character ID to sponsor a link action.<br> <code>to</code>: The address to receive the new character nft.<br> <code>linkType</code>: The link type, like &quot;follow&quot;, which is a bytes32 format.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="linknote"><a class="header" href="#linknote">linkNote</a></h3>
+<p>Links a note with the given parameters.</p>
 <pre><code class="language-solidity">function linkNote(DataTypes.linkNoteData calldata vars) external override;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>linkNoteData.DataTypes</code></td><td>The linkNoteData struct containing the linking parameters:<br> <code>fromCharacterId</code>: The character ID to sponsor a link action.<br> <code>toCharacterId</code>: The character ID of note to be linked.<br> <code>toNoteId</code>: The note ID of note to be linked.<br> <code>linkType</code>: The link type, like &quot;like&quot;, which is a bytes32 format.<br> <code>data</code>: The data passed to the link module to use, if any.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="unlinknote"><a class="header" href="#unlinknote">unlinkNote</a></h3>
+<p>UnLinks a note with the given parameters.</p>
 <pre><code class="language-solidity">function unlinkNote(DataTypes.unlinkNoteData calldata vars) external override;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>unlinkNoteData.DataTypes</code></td><td>The unlinkNoteData struct containing the unlinking parameters:<br> <code>fromCharacterId</code>: The character ID to sponsor a unlink action.<br> <code>toCharacterId</code>: The character ID of note to be unlinked.<br> <code>toNoteId</code>: The note ID of note to be unlinked.<br> <code>linkType</code>: The link type, like &quot;like&quot;, which is a bytes32 format.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="linkerc721"><a class="header" href="#linkerc721">linkERC721</a></h3>
+<p>Links an ERC721 with the given parameters.</p>
 <pre><code class="language-solidity">function linkERC721(DataTypes.linkERC721Data calldata vars) external override;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>linkERC721Data.DataTypes</code></td><td>The linkERC721Data struct containing the linking parameters:<br> <code>fromCharacterId</code>: The character ID to sponsor a link action.<br> <code>tokenAddress</code>: The token address of ERC721 to be linked.<br> <code>tokenId</code>: The token ID of ERC721 to be linked.<br> <code>linkType</code>: The link type, like &quot;like&quot;, which is a bytes32 format.<br> <code>data</code>: The data passed to the link module to use, if any.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="unlinkerc721"><a class="header" href="#unlinkerc721">unlinkERC721</a></h3>
+<p>Unlinks an ERC721 with the given parameters.</p>
 <pre><code class="language-solidity">function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external override;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>unlinkERC721Data.DataTypes</code></td><td>The unlinkERC721Data struct containing the unlinking parameters:<br> <code>fromCharacterId</code>: The character ID to sponsor a unlink action.<br> <code>tokenAddress</code>: The token address of ERC721 to be unlinked.<br> <code>tokenId</code>: The token ID of ERC721 to be unlinked.<br> <code>linkType</code>: The link type, like &quot;like&quot;, which is a bytes32 format.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="linkaddress"><a class="header" href="#linkaddress">linkAddress</a></h3>
+<p>Links an address with the given parameters.</p>
 <pre><code class="language-solidity">function linkAddress(DataTypes.linkAddressData calldata vars) external override;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>linkAddressData.DataTypes</code></td><td>The linkAddressData struct containing the linking parameters:<br> <code>fromCharacterId</code>: The character ID to sponsor a link action.<br> <code>ethAddress</code>: The address to be linked.<br> <code>linkType</code>: The link type, like &quot;like&quot;, which is a bytes32 format.<br> <code>data</code>: The data passed to the link module to use, if any.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="unlinkaddress"><a class="header" href="#unlinkaddress">unlinkAddress</a></h3>
+<p>Unlinks an address with the given parameters.</p>
 <pre><code class="language-solidity">function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external override;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>unlinkAddressData.DataTypes</code></td><td>The unlinkAddressData struct containing the unlinking parameters:<br> <code>fromCharacterId</code>: The character ID to sponsor a unlink action.<br> <code>ethAddress</code>: The address to be unlinked.<br> <code>linkType</code>: The link type, like &quot;like&quot;, which is a bytes32 format.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="linkanyuri"><a class="header" href="#linkanyuri">linkAnyUri</a></h3>
+<p>Links any uri with the given parameters.</p>
 <pre><code class="language-solidity">function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external override;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>linkAnyUriData.DataTypes</code></td><td>The linkAnyUriData struct containing the linking parameters:<br> <code>fromCharacterId</code>: The character ID to sponsor a link action.<br> <code>toUri</code>: The uri to be linked.<br> <code>linkType</code>: The link type, like &quot;like&quot;, which is a bytes32 format.<br> <code>data</code>: The data passed to the link module to use, if any.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="unlinkanyuri"><a class="header" href="#unlinkanyuri">unlinkAnyUri</a></h3>
+<p>Unlinks any uri with the given parameters.</p>
 <pre><code class="language-solidity">function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external override;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>unlinkAnyUriData.DataTypes</code></td><td>The unlinkAnyUriData struct containing the unlinking parameters:<br> <code>fromCharacterId</code>: The character ID to sponsor a unlink action.<br> <code>toUri</code>: The uri to be unlinked.<br> <code>linkType</code>: The link type, like &quot;like&quot;, which is a bytes32 format.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="linklinklist"><a class="header" href="#linklinklist">linkLinklist</a></h3>
+<p>Links a linklist with the given parameters.</p>
 <pre><code class="language-solidity">function linkLinklist(DataTypes.linkLinklistData calldata vars) external override;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>linkLinklistData.DataTypes</code></td><td>The linkLinklistData struct containing the linking parameters:<br> <code>fromCharacterId</code>: The character ID to sponsor a link action.<br> <code>toLinkListId</code>: The linklist ID to be linked.<br> <code>linkType</code>: The link type, like &quot;like&quot;, which is a bytes32 format.<br> <code>data</code>: The data passed to the link module to use, if any.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="unlinklinklist"><a class="header" href="#unlinklinklist">unlinkLinklist</a></h3>
+<p>Unlinks a linklist with the given parameters.</p>
 <pre><code class="language-solidity">function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external override;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>unlinkLinklistData.DataTypes</code></td><td>The unlinkLinklistData struct containing the unlinking parameters:<br> <code>fromCharacterId</code>: The character ID to sponsor a unlink action.<br> <code>toLinkListId</code>: The linklist ID to be unlinked.<br> <code>linkType</code>: The link type, like &quot;like&quot;, which is a bytes32 format.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="setlinkmodule4linklist"><a class="header" href="#setlinkmodule4linklist">setLinkModule4Linklist</a></h3>
 <p>set link module for his character</p>
-<p>Set linkModule for a ERC721 token that you own.</p>
-<p><em>Operators can't setLinkModule4ERC721, because operators are set for
-characters but erc721 tokens belong to address and not characters.</em></p>
+<p>Set linkModule for a ERC721 token that you own.
+Operators can't setLinkModule4ERC721, because operators are set for
+characters but erc721 tokens belong to address and not characters.</p>
 <pre><code class="language-solidity">function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external override;
 </code></pre>
 <h3 id="setlinkmodule4address"><a class="header" href="#setlinkmodule4address">setLinkModule4Address</a></h3>
-<p>Set linkModule for an address.</p>
+<p>Sets linkModule for an address.</p>
 <p><em>Operators can't setLinkModule4Address, because this linkModule is for
 addresses and is irrelevant to characters.</em></p>
 <pre><code class="language-solidity">function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external override;
 </code></pre>
 <h3 id="mintnote"><a class="header" href="#mintnote">mintNote</a></h3>
+<p>Mints an nft with the given note.</p>
 <pre><code class="language-solidity">function mintNote(DataTypes.MintNoteData calldata vars) external override returns (uint256 tokenId);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>MintNoteData.DataTypes</code></td><td>The MintNoteData struct containing the minting parameters:<br> <code>characterId</code>: The character ID of the note.<br> <code>noteId</code>: The note ID of the note.<br> <code>to</code>: The address to receive the minted nft.<br> <code>data</code>: The data passed to the mint module to use, if any.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="setmintmodule4note"><a class="header" href="#setmintmodule4note">setMintModule4Note</a></h3>
+<p>Sets a mint module for the given note.</p>
 <pre><code class="language-solidity">function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external override;
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>setMintModule4NoteData.DataTypes</code></td><td>The setMintModule4NoteData struct containing the setting parameters:<br> <code>characterId</code>: The character ID of the note.<br> <code>noteId</code>: The note ID of the note.<br> <code>mintModule</code>: The address of mint module to set.<br> <code>mintModuleInitData</code>: The data passed to the mint module to init, if any.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="postnote"><a class="header" href="#postnote">postNote</a></h3>
+<p>Posts a note with the given parameters.</p>
 <pre><code class="language-solidity">function postNote(DataTypes.PostNoteData calldata vars) external override returns (uint256 noteId);
 </code></pre>
+<p><strong>Parameters</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vars</code></td><td><code>PostNoteData.DataTypes</code></td><td>The postNoteData struct containing the posting parameters:<br> <code>characterId</code>: The character ID to post to.<br> <code>contentUri</code>: The uri to set for the new post.<br> <code>linkModule</code>: The address of link module to set for the new post.<br> <code>linkModuleInitData</code>: The data passed to the link module to init, if any.<br> <code>mintModule</code>: The address of mint module to set for the new post.<br> <code>mintModuleInitData</code>: The data passed to the mint module to init, if any.<br></td></tr>
+</tbody></table>
+</div>
 <h3 id="setnoteuri"><a class="header" href="#setnoteuri">setNoteUri</a></h3>
 <p>Set URI for a note.</p>
 <pre><code class="language-solidity">function setNoteUri(uint256 characterId, uint256 noteId, string calldata newUri) external override;
