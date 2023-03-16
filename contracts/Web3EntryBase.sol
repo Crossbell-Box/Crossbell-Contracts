@@ -392,7 +392,7 @@ contract Web3EntryBase is
 
     /**
      * @notice Set linkModule for a ERC721 token that you own.
-     * @dev Operators can't setLinkModule4ERC721, because operators are set for 
+     * Operators can't setLinkModule4ERC721, because operators are set for
      characters but erc721 tokens belong to address and not characters.
      */
     /*

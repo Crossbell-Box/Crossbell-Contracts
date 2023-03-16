@@ -5,6 +5,15 @@ pragma solidity 0.8.16;
 import {DataTypes} from "../libraries/DataTypes.sol";
 
 interface IWeb3Entry {
+    /**
+     * @notice Initializes the Web3Entry.
+     * @param name_ The name to set for the web3Entry character NFT.
+     * @param symbol_ The symbol to set for the web3Entry character NFT.
+     * @param linklist_ The address of linklist contract to set.
+     * @param mintNFTImpl_ The address of mintNFTImpl contract to set.
+     * @param periphery_ The address of periphery contract to set.
+     * @param newbieVilla_ The address of newbieVilla contract to set.
+     */
     function initialize(
         string calldata name_,
         string calldata symbol_,
@@ -86,34 +95,120 @@ interface IWeb3Entry {
     ) external;
 
     /**
-     * @notice  Sets a new metadataURI for a given link list..
+     * @notice  Sets a new metadataURI for a given link list.
      * @param   linkListId  The linklist id to set for.
      * @param   uri  The metadata uri to set.
      */
     function setLinklistUri(uint256 linkListId, string calldata uri) external;
 
+    /**
+     * @notice Links an address with the given parameters.
+     * @param vars The linkAddressData struct containing the linking parameters:<br>
+     * `fromCharacterId`: The character ID to sponsor a link action.<br>
+     * `ethAddress`: The address to be linked.<br>
+     * `linkType`: The link type, like "like", which is a bytes32 format.<br>
+     * `data`: The data passed to the link module to use, if any.<br>
+     */
     function linkAddress(DataTypes.linkAddressData calldata vars) external;
 
+    /**
+     * @notice Unlinks an address with the given parameters.
+     * @param vars The unlinkAddressData struct containing the unlinking parameters:<br>
+     * `fromCharacterId`: The character ID to sponsor a unlink action.<br>
+     * `ethAddress`: The address to be unlinked.<br>
+     * `linkType`: The link type, like "like", which is a bytes32 format.<br>
+     */
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external;
 
+    /**
+     * @notice Links a character with the given parameters.
+     * @param vars The linkCharacterData struct containing the linking parameters:<br>
+     * `fromCharacterId`: The character ID to sponsor a link action.<br>
+     * `toCharacterId`: The character ID to be linked.<br>
+     * `linkType`: The link type, like "follow", which is a bytes32 format.<br>
+     * `data`: The data passed to the link module to use, if any.<br>
+     */
     function linkCharacter(DataTypes.linkCharacterData calldata vars) external;
 
+    /**
+     * @notice Unlinks a character with the given parameters.
+     * @param vars The unlinkCharacterData struct containing the unlinking parameters:
+     * `fromCharacterId`: The character ID to sponsor a unlink action.<br>
+     * `toCharacterId`: The character ID to be unlinked.<br>
+     * `linkType`: The link type, like "follow", which is a bytes32 format.<br>
+     */
     function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external;
 
+    /**
+     * @notice Create a character and then link it.
+     * @param vars The createThenLinkCharacterData struct containing the parameters:<br>
+     * `fromCharacterId`: The character ID to sponsor a link action.<br>
+     * `to`: The address to receive the new character nft.<br>
+     * `linkType`: The link type, like "follow", which is a bytes32 format.<br>
+     */
     function createThenLinkCharacter(
         DataTypes.createThenLinkCharacterData calldata vars
     ) external returns (uint256 characterId);
 
+    /**
+     * @notice Links a note with the given parameters.
+     * @param vars The linkNoteData struct containing the linking parameters:<br>
+     * `fromCharacterId`: The character ID to sponsor a link action.<br>
+     * `toCharacterId`: The character ID of note to be linked.<br>
+     * `toNoteId`: The note ID of note to be linked.<br>
+     * `linkType`: The link type, like "like", which is a bytes32 format.<br>
+     * `data`: The data passed to the link module to use, if any.<br>
+     */
     function linkNote(DataTypes.linkNoteData calldata vars) external;
 
+    /**
+     * @notice UnLinks a note with the given parameters.
+     * @param vars The unlinkNoteData struct containing the unlinking parameters:<br>
+     * `fromCharacterId`: The character ID to sponsor a unlink action.<br>
+     * `toCharacterId`: The character ID of note to be unlinked.<br>
+     * `toNoteId`: The note ID of note to be unlinked.<br>
+     * `linkType`: The link type, like "like", which is a bytes32 format.<br>
+     */
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external;
 
+    /**
+     * @notice Links an ERC721 with the given parameters.
+     * @param vars The linkERC721Data struct containing the linking parameters:<br>
+     * `fromCharacterId`: The character ID to sponsor a link action.<br>
+     * `tokenAddress`: The token address of ERC721 to be linked.<br>
+     * `tokenId`: The token ID of ERC721 to be linked.<br>
+     * `linkType`: The link type, like "like", which is a bytes32 format.<br>
+     * `data`: The data passed to the link module to use, if any.<br>
+     */
     function linkERC721(DataTypes.linkERC721Data calldata vars) external;
 
+    /**
+     * @notice Unlinks an ERC721 with the given parameters.
+     * @param vars The unlinkERC721Data struct containing the unlinking parameters:<br>
+     * `fromCharacterId`: The character ID to sponsor a unlink action.<br>
+     * `tokenAddress`: The token address of ERC721 to be unlinked.<br>
+     * `tokenId`: The token ID of ERC721 to be unlinked.<br>
+     * `linkType`: The link type, like "like", which is a bytes32 format.<br>
+     */
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external;
 
+    /**
+     * @notice Links any uri with the given parameters.
+     * @param vars The linkAnyUriData struct containing the linking parameters:<br>
+     * `fromCharacterId`: The character ID to sponsor a link action.<br>
+     * `toUri`: The uri to be linked.<br>
+     * `linkType`: The link type, like "like", which is a bytes32 format.<br>
+     * `data`: The data passed to the link module to use, if any.<br>
+     */
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external;
 
+    /**
+     * @notice Unlinks any uri with the given parameters.
+     * @param vars The unlinkAnyUriData struct containing the unlinking parameters:<br>
+     * `fromCharacterId`: The character ID to sponsor a unlink action.<br>
+     * `toUri`: The uri to be unlinked.<br>
+     * `linkType`: The link type, like "like", which is a bytes32 format.<br>
+     */
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external;
 
     /*
@@ -130,8 +225,23 @@ interface IWeb3Entry {
     ) external;
     */
 
+    /**
+     * @notice Links a linklist with the given parameters.
+     * @param vars The linkLinklistData struct containing the linking parameters:<br>
+     * `fromCharacterId`: The character ID to sponsor a link action.<br>
+     * `toLinkListId`: The linklist ID to be linked.<br>
+     * `linkType`: The link type, like "like", which is a bytes32 format.<br>
+     * `data`: The data passed to the link module to use, if any.<br>
+     */
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external;
 
+    /**
+     * @notice Unlinks a linklist with the given parameters.
+     * @param vars The unlinkLinklistData struct containing the unlinking parameters:<br>
+     * `fromCharacterId`: The character ID to sponsor a unlink action.<br>
+     * `toLinkListId`: The linklist ID to be unlinked.<br>
+     * `linkType`: The link type, like "like", which is a bytes32 format.<br>
+     */
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external;
 
     /*
@@ -145,19 +255,43 @@ interface IWeb3Entry {
     function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external;
 
     /**
-     * @notice Set linkModule for an address.
-     * @dev Operators can't setLinkModule4Address, because this linkModule is for 
-     addresses and is irrelevant to characters.
+     * @notice Sets linkModule for an address.
+     * @dev Operators can't setLinkModule4Address, because this linkModule is for
+     * addresses and is irrelevant to characters.
      */
     function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external;
 
+    /**
+     * @notice Mints an nft with the given note.
+     * @param vars The MintNoteData struct containing the minting parameters:<br>
+     * `characterId`: The character ID of the note.<br>
+     * `noteId`: The note ID of the note.<br>
+     * `to`: The address to receive the minted nft.<br>
+     * `data`: The data passed to the mint module to use, if any.<br>
+     */
     function mintNote(DataTypes.MintNoteData calldata vars) external returns (uint256 tokenId);
 
+    /**
+     * @notice Sets a mint module for the given note.
+     * @param vars The setMintModule4NoteData struct containing the setting parameters:<br>
+     * `characterId`: The character ID of the note.<br>
+     * `noteId`: The note ID of the note.<br>
+     * `mintModule`: The address of mint module to set.<br>
+     * `mintModuleInitData`: The data passed to the mint module to init, if any.<br>
+     */
     function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external;
 
-    function postNote(
-        DataTypes.PostNoteData calldata postNoteData
-    ) external returns (uint256 noteId);
+    /**
+     * @notice Posts a note with the given parameters.
+     * @param vars The postNoteData struct containing the posting parameters:<br>
+     * `characterId`: The character ID to post to.<br>
+     * `contentUri`: The uri to set for the new post.<br>
+     * `linkModule`: The address of link module to set for the new post.<br>
+     * `linkModuleInitData`: The data passed to the link module to init, if any.<br>
+     * `mintModule`: The address of mint module to set for the new post.<br>
+     * `mintModuleInitData`: The data passed to the mint module to init, if any.<br>
+     */
+    function postNote(DataTypes.PostNoteData calldata vars) external returns (uint256 noteId);
 
     /**
      * @notice  Set URI for a note.
@@ -178,7 +312,7 @@ interface IWeb3Entry {
     /**
      * @notice  Delete a note.
      * @dev     Deleting a note doesn't essentially mean that the txs or contents are being removed due to the
-      immutability of blockchain itself, but the deleted notes will be tagged as `deleted` after calling `deleteNote`.
+     * immutability of blockchain itself, but the deleted notes will be tagged as `deleted` after calling `deleteNote`.
      * @param   characterId  The character ID of the note owner.
      * @param   noteId  The ID of the note to delete.
      */
