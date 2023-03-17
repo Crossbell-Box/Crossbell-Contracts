@@ -1,19 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
-import {IMintModule4Note} from "../../interfaces/IMintModule4Note.sol";
 import {ModuleBase} from "../ModuleBase.sol";
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {ErrNotCharacterOwner, ErrNotApproved} from "../../libraries/Error.sol";
+import {ErrNotCharacterOwner, ErrNotApprovedOrExceedApproval} from "../../libraries/Error.sol";
 import {Events} from "../../libraries/Events.sol";
+import {IMintModule4Note} from "../../interfaces/IMintModule4Note.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /**
  * @title ApprovalMintModule
  * @notice This is a simple MintModule implementation, inheriting from the IMintModule4Note interface.
  */
 contract ApprovalMintModule is IMintModule4Note, ModuleBase {
-    // characterId => noteId => address => approvedAmount
-    mapping(uint256 => mapping(uint256 => mapping(address => uint256))) internal _approvedAmounts;
+    struct ApprovedInfo {
+        uint256 approvedAmount;
+        uint256 mintedAmount;
+    }
+    // characterId => noteId => address => ApprovedInfo
+    mapping(uint256 => mapping(uint256 => mapping(address => ApprovedInfo))) internal _approvedInfo;
 
     // solhint-disable-next-line no-empty-blocks
     constructor(address web3Entry_) ModuleBase(web3Entry_) {}
@@ -38,7 +42,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     }
 
     /**
-     * @notice Set the approved addresses for minting and the approvedAmount allowed to be minted. <br>
+     * @notice Set the approval addresses for minting and the approvedAmount allowed to be minted. <br>
      * The approvedAmount is 0 by default, and you can also revoke the approval for addresses by
      * setting the approvedAmount to 0.
      * @param characterId The character ID of the note owner.
@@ -70,28 +74,30 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         uint256 noteId,
         bytes calldata
     ) external override onlyWeb3Entry {
-        uint256 approvedAmount = _approvedAmounts[characterId][noteId][to];
-        if (approvedAmount == 0) {
-            revert ErrNotApproved();
+        ApprovedInfo storage approval = _approvedInfo[characterId][noteId][to];
+        if (approval.approvedAmount <= approval.mintedAmount) {
+            revert ErrNotApprovedOrExceedApproval();
         } else {
-            _approvedAmounts[characterId][noteId][to] = approvedAmount - 1;
+            ++approval.mintedAmount;
         }
     }
 
     /**
-     * @notice Get the allowed amount that an address can mint.
+     * @notice Returns the approved info indicates the approved amount and minted amount of an address.
      * @param characterId ID of the character to query.
      * @param noteId  ID of the note to query.
      * @param account The address to query.
-     * @return The allowed amount that the address can mint.
+     * @return approvedAmount The approved amount that the address can mint.
+     * @return mintedAmount The amount that the address has already minted.
      */
     // solhint-disable-next-line comprehensive-interface
-    function getApprovedAmount(
+    function getApprovedInfo(
         uint256 characterId,
         uint256 noteId,
         address account
-    ) external view returns (uint256) {
-        return _approvedAmounts[characterId][noteId][account];
+    ) external view returns (uint256 approvedAmount, uint256 mintedAmount) {
+        approvedAmount = _approvedInfo[characterId][noteId][account].approvedAmount;
+        mintedAmount = _approvedInfo[characterId][noteId][account].mintedAmount;
     }
 
     function _setApprovedAmount(
@@ -100,9 +106,10 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         address[] memory addresses,
         uint256 approvedAmount
     ) internal {
-        uint256 addressesLength = addresses.length;
-        for (uint256 i = 0; i < addressesLength; ) {
-            _approvedAmounts[characterId][noteId][addresses[i]] = approvedAmount;
+        uint256 len = addresses.length;
+        for (uint256 i = 0; i < len; ) {
+            _approvedInfo[characterId][noteId][addresses[i]].approvedAmount = approvedAmount;
+
             unchecked {
                 ++i;
             }
