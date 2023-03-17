@@ -62,5 +62,5 @@ error ErrNotExistingLinklistToken();
 /// @dev Invalid web3Entry address
 error ErrInvalidWeb3Entry();
 
-/// @dev Not approved by module
-error ErrNotApproved();
+/// @dev Not approved by module or exceed the approval amount
+error ErrNotApprovedOrExceedApproval();
