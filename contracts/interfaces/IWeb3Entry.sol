@@ -318,31 +318,101 @@ interface IWeb3Entry {
      */
     function deleteNote(uint256 characterId, uint256 noteId) external;
 
+    /**
+     * @notice Posts a note for a given character.
+     * @param vars The postNoteData struct containing the posting parameters:<br>
+     * `characterId`: The character ID to post to.<br>
+     * `contentUri`: The uri to set for the new post.<br>
+     * `linkModule`: The address of link module to set for the new post.<br>
+     * `linkModuleInitData`: The data passed to the link module to init, if any.<br>
+     * `mintModule`: The address of mint module to set for the new post.<br>
+     * `mintModuleInitData`: The data passed to the mint module to init, if any.<br>
+     * @param toCharacterId The target character ID.
+     */
     function postNote4Character(
         DataTypes.PostNoteData calldata vars,
         uint256 toCharacterId
     ) external returns (uint256);
 
+    /**
+     * @notice Posts a note for a given address.
+     * @param vars The postNoteData struct containing the posting parameters:<br>
+     * `characterId`: The character ID to post to.<br>
+     * `contentUri`: The uri to set for the new post.<br>
+     * `linkModule`: The address of link module to set for the new post.<br>
+     * `linkModuleInitData`: The data passed to the link module to init, if any.<br>
+     * `mintModule`: The address of mint module to set for the new post.<br>
+     * `mintModuleInitData`: The data passed to the mint module to init, if any.<br>
+     * @param ethAddress The target address.
+     */
     function postNote4Address(
         DataTypes.PostNoteData calldata vars,
         address ethAddress
     ) external returns (uint256);
 
+    /**
+     * @notice Posts a note for a given linklist.
+     * @param vars The postNoteData struct containing the posting parameters:<br>
+     * `characterId`: The character ID to post to.<br>
+     * `contentUri`: The uri to set for the new post.<br>
+     * `linkModule`: The address of link module to set for the new post.<br>
+     * `linkModuleInitData`: The data passed to the link module to init, if any.<br>
+     * `mintModule`: The address of mint module to set for the new post.<br>
+     * `mintModuleInitData`: The data passed to the mint module to init, if any.<br>
+     * @param toLinklistId The target linklist.
+     */
     function postNote4Linklist(
         DataTypes.PostNoteData calldata vars,
         uint256 toLinklistId
     ) external returns (uint256);
 
+    /**
+     * @notice Posts a note for a given note.
+     * @param vars The postNoteData struct containing the posting parameters:<br>
+     * `characterId`: The character ID to post to.<br>
+     * `contentUri`: The uri to set for the new post.<br>
+     * `linkModule`: The address of link module to set for the new post.<br>
+     * `linkModuleInitData`: The data passed to the link module to init, if any.<br>
+     * `mintModule`: The address of mint module to set for the new post.<br>
+     * `mintModuleInitData`: The data passed to the mint module to init, if any.<br>
+     * @param note The target note struct containing the parameters:<br>
+     * `characterId`: The character ID of target note.<br>
+     * `noteId`: The note ID of target note.
+     */
     function postNote4Note(
         DataTypes.PostNoteData calldata vars,
         DataTypes.NoteStruct calldata note
     ) external returns (uint256);
 
+    /**
+     * @notice Posts a note for a given ERC721.
+     * @param vars The postNoteData struct containing the posting parameters:<br>
+     * `characterId`: The character ID to post to.<br>
+     * `contentUri`: The uri to set for the new post.<br>
+     * `linkModule`: The address of link module to set for the new post.<br>
+     * `linkModuleInitData`: The data passed to the link module to init, if any.<br>
+     * `mintModule`: The address of mint module to set for the new post.<br>
+     * `mintModuleInitData`: The data passed to the mint module to init, if any.<br>
+     * @param erc721 The target ERC721 struct containing the parameters:<br>
+     * `tokenAddress`: The token address of target ERC721.<br>
+     * `erc721TokenId`: The token ID of target ERC721.
+     */
     function postNote4ERC721(
         DataTypes.PostNoteData calldata vars,
         DataTypes.ERC721Struct calldata erc721
     ) external returns (uint256);
 
+    /**
+     * @notice Posts a note for a given uri.
+     * @param vars The postNoteData struct containing the posting parameters:<br>
+     * `characterId`: The character ID to post to.<br>
+     * `contentUri`: The uri to set for the new post.<br>
+     * `linkModule`: The address of link module to set for the new post.<br>
+     * `linkModuleInitData`: The data passed to the link module to init, if any.<br>
+     * `mintModule`: The address of mint module to set for the new post.<br>
+     * `mintModuleInitData`: The data passed to the mint module to init, if any.<br>
+     * @param uri The target uri(could be an url link).
+     */
     function postNote4AnyUri(
         DataTypes.PostNoteData calldata vars,
         string calldata uri
