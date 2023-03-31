@@ -462,41 +462,117 @@ interface IWeb3Entry {
         address operator
     ) external view returns (bool);
 
+    /**
+     * @notice Returns primary character for a given account.
+     * @param account The address to query.
+     * @return uint256 The primary character ID, which will be 0 if not mapped.
+     */
     function getPrimaryCharacterId(address account) external view returns (uint256);
 
+    /**
+     * @notice Returns whether or not a character is primary character.
+     * @param characterId The character ID to query.
+     * @return bool True if the character is primary, false otherwise.
+     */
     function isPrimaryCharacter(uint256 characterId) external view returns (bool);
 
+    /**
+     * @notice Returns the full character struct associated with a given character token ID.
+     * @param characterId The token ID of the character to query.
+     * @return The full character struct of given character.
+     */
     function getCharacter(uint256 characterId) external view returns (DataTypes.Character memory);
 
+    /**
+     * @notice Returns the full character struct associated with a given character handle.
+     * @param handle The handle of the character to query.
+     * @return The full character struct of given character.
+     */
     function getCharacterByHandle(
         string calldata handle
     ) external view returns (DataTypes.Character memory);
 
+    /**
+     * @notice Returns the handle of character with a given character.
+     * @param characterId The token ID of the character to query.
+     * @return The handle of given character.
+     */
     function getHandle(uint256 characterId) external view returns (string memory);
 
+    /**
+     * @notice Returns the uri of character with a given character.
+     * @param characterId The token ID of the character to query.
+     * @return The uri of given character.
+     */
     function getCharacterUri(uint256 characterId) external view returns (string memory);
 
+    /**
+     * @notice Returns the full note struct associated with a given note.
+     * @param characterId The token ID of the character to query.
+     * @param noteId The token ID of the note to query.
+     * @return The full note struct of given note.
+     */
     function getNote(
         uint256 characterId,
         uint256 noteId
     ) external view returns (DataTypes.Note memory);
 
+    /**
+     * @notice Returns the linkModule address of a given address.
+     * @param account The address to query.
+     * @return The address of linkModule.
+     */
     function getLinkModule4Address(address account) external view returns (address);
 
+    /**
+     * @notice Returns the linkModule address of a given linklist.
+     * @param tokenId The token ID of linklist to query.
+     * @return The address of linkModule.
+     */
     function getLinkModule4Linklist(uint256 tokenId) external view returns (address);
 
+    /**
+     * @notice Returns the linkModule address of a given ERC721.
+     * @param tokenAddress The token address of ERC721 to query.
+     * @param tokenId The token ID of ERC721 to query.
+     * @return The address of linkModule.
+     */
     function getLinkModule4ERC721(
         address tokenAddress,
         uint256 tokenId
     ) external view returns (address);
 
+    /**
+     * @notice Returns the uri of linklist with a given linklist.
+     * @param tokenId The token ID of the linklist to query.
+     * @return string The uri of given linklist.
+     */
     function getLinklistUri(uint256 tokenId) external view returns (string memory);
 
+    /**
+     * @notice Returns the token ID of linklist with a given character and linkType.
+     * @param characterId The token ID of the character to query.
+     * @param linkType The linkType.
+     * @return The token ID of linklist.
+     */
     function getLinklistId(uint256 characterId, bytes32 linkType) external view returns (uint256);
 
+    /**
+     * @notice Returns the linkType of linklist with a given linklist.
+     * @param linkListId The token ID of the linklist to query.
+     * @return bytes32 The linkType of given linklist.
+     */
     function getLinklistType(uint256 linkListId) external view returns (bytes32);
 
+    /**
+     * @notice Returns the address of linklist contract.
+     * @return The address of linklist contract.
+     */
     function getLinklistContract() external view returns (address);
 
+    /**
+     * @notice Returns the revision number of web3Entry contract.
+     * @return The the revision number of web3Entry contract.
+     */
     function getRevision() external pure returns (uint256);
 }
