@@ -33,6 +33,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../../../";
@@ -70,10 +71,12 @@
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var sidebar = null;
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
@@ -146,7 +149,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="errhandlelengthinvalid"><a class="header" href="#errhandlelengthinvalid">ErrHandleLengthInvalid</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/a95ad3f4f2944662a6e6db5a0839ec7cddbdcb67/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/446cca85fbc29256f58b35420d16eb2f4222686f/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Handle length too long or too short</em></p>
 <pre><code class="language-solidity">error ErrHandleLengthInvalid();
 </code></pre>
@@ -200,5 +203,6 @@
         <script src="../../../solidity.min.js"></script>
 
 
+    </div>
     </body>
 </html>
