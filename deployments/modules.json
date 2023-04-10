@@ -7,13 +7,32 @@
   "icon": "",
   "authorCharacterId": 10,
   "initDataStructure": [{
-      "label": "Allowed Addresses",
-      "description": "The whitelisted group of addresses to mint this note",
-      "type": "address[]"
-    },
+    "label": "Allowed Addresses",
+    "description": "The whitelisted group of addresses to mint this note",
+    "type": "address[]"
+  },
     {
       "label": "Approved Amount",
       "description": "The number of nfts available to mint",
+      "type": "uint256"
+    }
+  ]
+}, {
+  "id": "LimitedMintModule",
+  "type": "mint",
+  "address": "0x0",
+  "name": "LimitedMintModule",
+  "description": "Every address can mint the note, with limited number of mints and a maximum token supply",
+  "icon": "",
+  "authorCharacterId": 10,
+  "initDataStructure": [{
+    "label": "Max Supply",
+    "description": "The maximum token supply to mint",
+    "type": "uint256"
+  },
+    {
+      "label": "Approved Amount",
+      "description": "The number of nfts available to mint for every address",
       "type": "uint256"
     }
   ]

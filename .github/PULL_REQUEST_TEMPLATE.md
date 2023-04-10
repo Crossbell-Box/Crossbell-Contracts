@@ -11,4 +11,5 @@
 - [ ] NewbieVilla
 - [ ] Tips
 - [ ] ApprovalMintModule
+- [ ] LimitedMintModule
 - [ ] MintNFT template
