@@ -45,7 +45,7 @@ contract LimitedMintModuleTest is CommonTest {
         // check return value
         assertEq(result, abi.encode(maxSupply, approvedAmount));
 
-        // check approved info
+        // check mint info
         _checkLimitedMintInfo(
             FIRST_CHARACTER_ID,
             FIRST_NOTE_ID,
@@ -86,7 +86,7 @@ contract LimitedMintModuleTest is CommonTest {
         vm.prank(address(web3Entry));
         limitedMintModule.processMint(bob, FIRST_CHARACTER_ID, FIRST_NOTE_ID, "");
 
-        // check approvedAmount
+        // check mint info
         _checkLimitedMintInfo(
             FIRST_CHARACTER_ID,
             FIRST_NOTE_ID,
@@ -165,6 +165,30 @@ contract LimitedMintModuleTest is CommonTest {
 
         vm.expectRevert(abi.encodeWithSelector(ErrExceedMaxSupply.selector));
         limitedMintModule.processMint(bob, FIRST_CHARACTER_ID, FIRST_NOTE_ID, "");
+    }
+
+    function testMintNoteWithMintModule() public {
+        // alice post a note with approvalMintModule
+        vm.prank(alice);
+        _postNoteWithMintModule(
+            FIRST_CHARACTER_ID,
+            NOTE_URI,
+            address(limitedMintModule),
+            abi.encode(100, 1)
+        );
+
+        _mintNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, "");
+        // check mint info
+        _checkLimitedMintInfo(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, 100, 1, 1, 1);
+
+        DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
+        address nftAddress = note.mintNFT;
+        assertEq(IERC721Metadata(nftAddress).name(), "Note-1-1");
+        assertEq(IERC721Metadata(nftAddress).symbol(), "Note-1-1");
+        // check total supply
+        assertEq(IERC721Enumerable(nftAddress).totalSupply(), 1);
+        //check token URI
+        assertEq(IERC721Metadata(nftAddress).tokenURI(1), NOTE_URI);
     }
 
     function _checkLimitedMintInfo(
