@@ -10,6 +10,7 @@ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 /**
  * @title ApprovalMintModule
  * @notice This is a simple MintModule implementation, inheriting from the IMintModule4Note interface.
+ * This module works by allowing limited minting for a post, and only for those who are approved.
  */
 contract ApprovalMintModule is IMintModule4Note, ModuleBase {
     struct ApprovedInfo {

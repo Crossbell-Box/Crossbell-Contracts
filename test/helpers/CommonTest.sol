@@ -20,6 +20,7 @@ import {
     ApprovalLinkModule4Character
 } from "../../contracts/modules/link/ApprovalLinkModule4Character.sol";
 import {ApprovalMintModule} from "../../contracts/modules/mint/ApprovalMintModule.sol";
+import {LimitedMintModule} from "../../contracts/modules/mint/LimitedMintModule.sol";
 import {NFT, ERC1155} from "../../contracts/mocks/NFT.sol";
 import {Utils} from "./Utils.sol";
 
@@ -33,6 +34,7 @@ contract CommonTest is Utils {
     MintNFT public mintNFTImpl;
     ApprovalLinkModule4Character public linkModule4Character;
     ApprovalMintModule public approvalMintModule;
+    LimitedMintModule public limitedMintModule;
     NFT public nft;
     CharacterBoundToken public cbt;
     TransparentUpgradeableProxy public proxyWeb3Entry;
@@ -100,6 +102,7 @@ contract CommonTest is Utils {
         linkModule4Character = new ApprovalLinkModule4Character(address(web3Entry));
         // deploy mintModule4Note
         approvalMintModule = new ApprovalMintModule(address(web3Entry));
+        limitedMintModule = new LimitedMintModule(address(web3Entry));
 
         // deploy cbt
         cbt = new CharacterBoundToken(address(web3Entry));

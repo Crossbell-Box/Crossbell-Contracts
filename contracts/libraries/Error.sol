@@ -64,3 +64,9 @@ error ErrInvalidWeb3Entry();
 
 /// @dev Not approved by module or exceed the approval amount
 error ErrNotApprovedOrExceedApproval();
+
+/// @dev Exceed max supply
+error ErrExceedMaxSupply();
+
+/// @dev Exceed the approval amount
+error ErrExceedApproval();
