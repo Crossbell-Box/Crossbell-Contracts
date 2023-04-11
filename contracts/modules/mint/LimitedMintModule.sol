@@ -14,7 +14,7 @@ contract LimitedMintModule is IMintModule4Note, ModuleBase {
     struct LimitedMintInfo {
         uint256 maxSupply; // max minted count
         uint256 currentSupply; // current minted amount
-        uint256 approvedAmount4EachAddress; // approved amount for each address
+        uint256 maxMintPerAddress; // max mint amount per address
     }
 
     // characterId => noteId => LimitedMintInfo
@@ -35,9 +35,9 @@ contract LimitedMintModule is IMintModule4Note, ModuleBase {
         bytes calldata data
     ) external override onlyWeb3Entry returns (bytes memory) {
         if (data.length > 0) {
-            (uint256 maxSupply, uint256 approvedAmount) = abi.decode(data, (uint256, uint256));
+            (uint256 maxSupply, uint256 maxMintPerAddress) = abi.decode(data, (uint256, uint256));
             _limitedMintInfo[characterId][noteId].maxSupply = maxSupply;
-            _limitedMintInfo[characterId][noteId].approvedAmount4EachAddress = approvedAmount;
+            _limitedMintInfo[characterId][noteId].maxMintPerAddress = maxMintPerAddress;
         }
         return data;
     }
@@ -56,7 +56,7 @@ contract LimitedMintModule is IMintModule4Note, ModuleBase {
         // check max supply
         if (info.currentSupply >= info.maxSupply) revert ErrExceedMaxSupply();
         // check approved amount
-        if (_mintedAmount[characterId][noteId][to] >= info.approvedAmount4EachAddress)
+        if (_mintedAmount[characterId][noteId][to] >= info.maxMintPerAddress)
             revert ErrExceedApproval();
 
         // increase currentSupply and mintedAmount
@@ -71,7 +71,7 @@ contract LimitedMintModule is IMintModule4Note, ModuleBase {
      * @param account The address to query.
      * @return maxSupply The max supply of nft that can be minted.
      * @return currentSupply The current supply of nft that has been minted.
-     * @return approvedAmount4EachAddress The amount that each address can mint.
+     * @return maxMintPerAddress The amount that each address can mint.
      * @return mintedAmount The amount that the address has already minted.
      */
     // solhint-disable-next-line comprehensive-interface
@@ -85,14 +85,13 @@ contract LimitedMintModule is IMintModule4Note, ModuleBase {
         returns (
             uint256 maxSupply,
             uint256 currentSupply,
-            uint256 approvedAmount4EachAddress,
+            uint256 maxMintPerAddress,
             uint256 mintedAmount
         )
     {
         maxSupply = _limitedMintInfo[characterId][noteId].maxSupply;
         currentSupply = _limitedMintInfo[characterId][noteId].currentSupply;
-        approvedAmount4EachAddress = _limitedMintInfo[characterId][noteId]
-            .approvedAmount4EachAddress;
+        maxMintPerAddress = _limitedMintInfo[characterId][noteId].maxMintPerAddress;
         mintedAmount = _mintedAmount[characterId][noteId][account];
     }
 }
