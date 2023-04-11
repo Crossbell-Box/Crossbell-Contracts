@@ -20,7 +20,7 @@
 }, {
   "id": "LimitedMintModule",
   "type": "mint",
-  "address": "0x0",
+  "address": "0x105FA0aC7DC2B758D1fFeDd458Bd912988468997",
   "name": "LimitedMintModule",
   "description": "Every address can mint the note, with limited number of mints and a maximum token supply",
   "icon": "",
@@ -31,8 +31,8 @@
     "type": "uint256"
   },
     {
-      "label": "Approved Amount",
-      "description": "The number of nfts available to mint for every address",
+      "label": "Max Mint Amount Per Address",
+      "description": "The number of NFTs available to mint for every address",
       "type": "uint256"
     }
   ]
