@@ -14,17 +14,26 @@ import {
     ErrNotEnoughPermissionForThisNote,
     ErrNoteIsDeleted,
     ErrNoteNotExists,
-    ErrNoteLocked
+    ErrNoteLocked,
+    ErrSignatureExpired,
+    ErrSignatureInvalid
 } from "../contracts/libraries/Error.sol";
 import {
     ApprovalLinkModule4Character
 } from "../contracts/modules/link/ApprovalLinkModule4Character.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract OperatorTest is CommonTest {
     address[] public blocklist = [bob];
     address[] public allowlist = [carol, dick];
 
     address public constant migrateOwner = 0xda2423ceA4f1047556e7a142F81a7ED50e93e160;
+
+    // solhint-disable-next-line private-vars-leading-underscore, var-name-mixedcase
+    bytes32 internal constant GRANT_OPERATOR_PERMISSIONS_WITH_SIG_TYPEHASH =
+        keccak256( // solhint-disable-next-line max-line-length
+            "grantOperatorPermissions(uint256 characterId,address operator,uint256 permissionBitMap,uint256 nonce,uint256 deadline)"
+        );
 
     function setUp() public {
         _setUp();
@@ -67,6 +76,85 @@ contract OperatorTest is CommonTest {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+    }
+
+    function testGrantOperatorPermissionsWithSig() public {
+        uint256 characterId = FIRST_CHARACTER_ID;
+        address operator = bob;
+        uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
+        uint256 deadline = block.timestamp + 10;
+        uint256 nonce = web3Entry.nonces(alice);
+
+        bytes32 hashedMessage = keccak256(
+            abi.encode(
+                GRANT_OPERATOR_PERMISSIONS_WITH_SIG_TYPEHASH,
+                characterId,
+                operator,
+                permissionBitMap,
+                nonce,
+                deadline
+            )
+        );
+        DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
+        sig.deadline = deadline;
+
+        web3Entry.grantOperatorPermissionsWithSig(
+            FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP,
+            sig
+        );
+
+        // check operator permission
+        assertEq(
+            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob),
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+    }
+
+    function testGrantOperatorPermissionsWithSigFail() public {
+        uint256 characterId = FIRST_CHARACTER_ID;
+        address operator = bob;
+        uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
+        uint256 deadline = block.timestamp + 10;
+        uint256 nonce = web3Entry.nonces(alice);
+
+        bytes32 hashedMessage = keccak256(
+            abi.encode(
+                GRANT_OPERATOR_PERMISSIONS_WITH_SIG_TYPEHASH,
+                characterId,
+                operator,
+                permissionBitMap,
+                nonce,
+                deadline
+            )
+        );
+        DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
+        sig.deadline = block.timestamp - 1;
+
+        // case 1: signature expired
+        vm.expectRevert(abi.encodeWithSelector(ErrSignatureExpired.selector));
+        web3Entry.grantOperatorPermissionsWithSig(
+            FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP,
+            sig
+        );
+
+        // case 2: signature invalid
+        sig.deadline = deadline;
+        sig.v = sig.v + 1;
+
+        vm.expectRevert(abi.encodeWithSelector(ErrSignatureInvalid.selector));
+        web3Entry.grantOperatorPermissionsWithSig(
+            FIRST_CHARACTER_ID,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP,
+            sig
+        );
+
+        // check operator permission
+        assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob), 0);
     }
 
     // solhint-disable-next-line function-max-lines
@@ -581,5 +669,16 @@ contract OperatorTest is CommonTest {
                 expectedPermission
             );
         }
+    }
+
+    function _getEIP712Signature(
+        uint256 privateKey,
+        bytes32 hashedMessage
+    ) internal returns (DataTypes.EIP712Signature memory sig) {
+        bytes32 domainSeparator = web3Entry.getDomainSeparator();
+        bytes32 typedDataHash = ECDSA.toTypedDataHash(domainSeparator, hashedMessage);
+
+        sig.deadline = block.timestamp + 10;
+        (sig.v, sig.r, sig.s) = vm.sign(privateKey, typedDataHash);
     }
 }
