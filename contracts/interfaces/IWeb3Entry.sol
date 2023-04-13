@@ -82,6 +82,7 @@ interface IWeb3Entry {
 
     /**
      * @notice Grant an address as an operator and authorize it with custom permissions via signature.
+     * @dev Only character owner can call.
      * @param characterId ID of your character that you want to authorize.
      * @param operator Address to grant operator permissions to.
      * @param permissionBitMap Bitmap used for finer grained operator permissions controls.

@@ -110,6 +110,7 @@ contract OperatorTest is CommonTest {
             web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob),
             OP.DEFAULT_PERMISSION_BITMAP
         );
+        assertEq(web3Entry.nonces(alice), 1);
     }
 
     function testGrantOperatorPermissionsWithSigFail() public {
