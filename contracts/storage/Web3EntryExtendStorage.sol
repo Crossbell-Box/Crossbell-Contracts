@@ -19,5 +19,7 @@ contract Web3EntryExtendStorage {
     mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) internal _operators4Note; // slot 26
 
     address internal _newbieVilla; // address of newbieVilla contract
+
+    mapping(address => uint256) internal _sigNonces; // for replay protection // slot 28
 }
 // slither-disable-end naming-convention

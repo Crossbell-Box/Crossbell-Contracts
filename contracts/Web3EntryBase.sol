@@ -29,11 +29,14 @@ import {
     ErrNoteNotExists,
     ErrNoteLocked,
     ErrHandleLengthInvalid,
-    ErrHandleContainsInvalidCharacters
+    ErrHandleContainsInvalidCharacters,
+    ErrSignatureExpired,
+    ErrSignatureInvalid
 } from "./libraries/Error.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract Web3EntryBase is
     IWeb3Entry,
@@ -74,13 +77,37 @@ contract Web3EntryBase is
         uint256 permissionBitMap
     ) external override {
         _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS);
-        OperatorLogic.grantOperatorPermissions(
-            characterId,
-            operator,
-            permissionBitMap,
-            _operatorsByCharacter,
-            _operatorsPermissionBitMap
-        );
+        _grantOperatorPermissions(characterId, operator, permissionBitMap);
+    }
+
+    /// @inheritdoc IWeb3Entry
+    function grantOperatorPermissionsWithSig(
+        uint256 characterId,
+        address operator,
+        uint256 permissionBitMap,
+        DataTypes.EIP712Signature calldata sig
+    ) external override {
+        address owner = ownerOf(characterId);
+
+        unchecked {
+            bytes32 hashedMessage = keccak256(
+                abi.encode(
+                    GRANT_OPERATOR_PERMISSIONS_WITH_SIG_TYPEHASH,
+                    characterId,
+                    operator,
+                    permissionBitMap,
+                    _sigNonces[owner]++,
+                    sig.deadline
+                )
+            );
+            _validateRecoveredAddress(
+                ECDSA.toTypedDataHash(_calculateDomainSeparator(), hashedMessage),
+                owner,
+                sig
+            );
+        }
+
+        _grantOperatorPermissions(characterId, operator, permissionBitMap);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -775,6 +802,16 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
+    function getDomainSeparator() external view override returns (bytes32) {
+        return _calculateDomainSeparator();
+    }
+
+    /// @inheritdoc IWeb3Entry
+    function nonces(address owner) external view override returns (uint256) {
+        return _sigNonces[owner];
+    }
+
+    /// @inheritdoc IWeb3Entry
     function getRevision() external pure override returns (uint256) {
         return REVISION;
     }
@@ -883,6 +920,20 @@ contract Web3EntryBase is
         delete _operatorsPermissionBitMap[tokenId][operator];
         // slither-disable-next-line unused-return
         _operatorsByCharacter[tokenId].remove(operator);
+    }
+
+    function _grantOperatorPermissions(
+        uint256 characterId,
+        address operator,
+        uint256 permissionBitMap
+    ) internal {
+        OperatorLogic.grantOperatorPermissions(
+            characterId,
+            operator,
+            permissionBitMap,
+            _operatorsByCharacter,
+            _operatorsPermissionBitMap
+        );
     }
 
     function _isOperatorAllowedForNote(
@@ -998,6 +1049,37 @@ contract Web3EntryBase is
 
     function _validateNoteNotLocked(uint256 characterId, uint256 noteId) internal view {
         if (_noteByIdByCharacter[characterId][noteId].locked) revert ErrNoteLocked();
+    }
+
+    /**
+     * @dev Calculates EIP712 DOMAIN_SEPARATOR based on the current contract and chain ID.
+     */
+    function _calculateDomainSeparator() internal view returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(
+                    EIP712_DOMAIN_TYPEHASH,
+                    keccak256(bytes(name())),
+                    1,
+                    block.chainid,
+                    address(this)
+                )
+            );
+    }
+
+    /**
+     * @dev Wrapper for ecrecover to reduce code size, used in meta-tx specific functions.
+     */
+    function _validateRecoveredAddress(
+        bytes32 digest,
+        address expectedAddress,
+        DataTypes.EIP712Signature calldata sig
+    ) internal view {
+        // slither-disable-next-line timestamp
+        if (sig.deadline < block.timestamp) revert ErrSignatureExpired();
+        address recoveredAddress = ecrecover(digest, sig.v, sig.r, sig.s);
+        if (recoveredAddress == address(0) || recoveredAddress != expectedAddress)
+            revert ErrSignatureInvalid();
     }
 
     function _validateHandle(string memory handle) internal pure {
