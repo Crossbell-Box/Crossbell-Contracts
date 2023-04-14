@@ -113,7 +113,7 @@ contract OperatorTest is CommonTest {
         assertEq(web3Entry.nonces(alice), 1);
     }
 
-    function testGrantOperatorPermissionsWithSigFail() public {
+    function testGrantOperatorPermissionsWithSigFailSignatureExpired() public {
         uint256 characterId = FIRST_CHARACTER_ID;
         address operator = bob;
         uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
@@ -135,30 +135,67 @@ contract OperatorTest is CommonTest {
 
         // case 1: signature expired
         vm.expectRevert(abi.encodeWithSelector(ErrSignatureExpired.selector));
-        web3Entry.grantOperatorPermissionsWithSig(
-            FIRST_CHARACTER_ID,
-            bob,
-            OP.DEFAULT_PERMISSION_BITMAP,
-            sig
-        );
-
-        // case 2: signature invalid
-        sig.deadline = deadline;
-        sig.v = sig.v + 1;
-
-        vm.expectRevert(abi.encodeWithSelector(ErrSignatureInvalid.selector));
-        web3Entry.grantOperatorPermissionsWithSig(
-            FIRST_CHARACTER_ID,
-            bob,
-            OP.DEFAULT_PERMISSION_BITMAP,
-            sig
-        );
+        web3Entry.grantOperatorPermissionsWithSig(characterId, operator, permissionBitMap, sig);
 
         // check operator permission
         assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob), 0);
     }
 
-    // solhint-disable-next-line function-max-lines
+    function testGrantOperatorPermissionsWithSigFailSignatureInvalid() public {
+        uint256 characterId = FIRST_CHARACTER_ID;
+        address operator = bob;
+        uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
+        uint256 deadline = block.timestamp + 10;
+        uint256 nonce = web3Entry.nonces(alice);
+
+        bytes32 hashedMessage = keccak256(
+            abi.encode(
+                GRANT_OPERATOR_PERMISSIONS_WITH_SIG_TYPEHASH,
+                characterId,
+                operator,
+                permissionBitMap,
+                nonce,
+                deadline
+            )
+        );
+        DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
+        sig.deadline = deadline;
+        sig.v = sig.v + 1;
+
+        // case 2: signature invalid
+        vm.expectRevert(abi.encodeWithSelector(ErrSignatureInvalid.selector));
+        web3Entry.grantOperatorPermissionsWithSig(characterId, operator, permissionBitMap, sig);
+
+        // check operator permission
+        assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob), 0);
+    }
+
+    function testGrantOperatorPermissionsWithSigFailSignatureInvalid2() public {
+        uint256 characterId = FIRST_CHARACTER_ID;
+        address operator = bob;
+        uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
+        uint256 deadline = block.timestamp + 10;
+        uint256 nonce = web3Entry.nonces(alice);
+
+        bytes32 hashedMessage = keccak256(
+            abi.encode(
+                GRANT_OPERATOR_PERMISSIONS_WITH_SIG_TYPEHASH,
+                characterId,
+                operator,
+                permissionBitMap,
+                nonce,
+                deadline
+            )
+        );
+        DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
+        sig.deadline = deadline;
+        web3Entry.grantOperatorPermissionsWithSig(characterId, operator, permissionBitMap, sig);
+
+        // case 3: signature invalid(invalid nonce)
+        vm.expectRevert(abi.encodeWithSelector(ErrSignatureInvalid.selector));
+        web3Entry.grantOperatorPermissionsWithSig(characterId, operator, permissionBitMap, sig);
+    }
+
     function testGrantOperators4Note() public {
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));

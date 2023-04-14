@@ -39,7 +39,7 @@ contract CommonTest is Utils {
     CharacterBoundToken public cbt;
     TransparentUpgradeableProxy public proxyWeb3Entry;
 
-    address public admin = address(0x999999999999999999999999999999);
+    address public constant admin = address(0x999999999999999999999999999999);
 
     address public constant xsyncOperator = address(0xffff4444);
     uint256 public constant newbieAdminPrivateKey = 1;
