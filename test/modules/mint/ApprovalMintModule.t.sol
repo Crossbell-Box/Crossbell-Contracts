@@ -106,6 +106,53 @@ contract ApprovalMintModuleTest is CommonTest {
         }
     }
 
+    function testSetApprovedAmountWithNoteOperator(uint256 approvedAmount) public {
+        address[] memory approvedList = array(bob, carol);
+
+        // set dick as note operator
+        vm.startPrank(alice);
+        _postNoteWithMintModule(
+            FIRST_CHARACTER_ID,
+            NOTE_URI,
+            address(approvalMintModule),
+            abi.encode(new address[](0), 1)
+        );
+        web3Entry.grantOperators4Note(
+            FIRST_CHARACTER_ID,
+            FIRST_NOTE_ID,
+            new address[](0),
+            array(dick)
+        );
+        vm.stopPrank();
+
+        // note operator set approved amount for bob and carol
+        expectEmit(CheckAll);
+        emit Events.SetApprovedMintAmount4Addresses(
+            FIRST_CHARACTER_ID,
+            FIRST_NOTE_ID,
+            approvedAmount,
+            approvedList
+        );
+        vm.prank(dick);
+        approvalMintModule.setApprovedAmount(
+            FIRST_CHARACTER_ID,
+            FIRST_NOTE_ID,
+            approvedList,
+            approvedAmount
+        );
+
+        // check approved amount
+        for (uint256 i = 0; i < approvedList.length; i++) {
+            _checkApprovedInfo(
+                FIRST_CHARACTER_ID,
+                FIRST_NOTE_ID,
+                approvedList[i],
+                approvedAmount,
+                0
+            );
+        }
+    }
+
     function testSetApprovedAmountFail(uint256 amount) public {
         // caller is not web3Entry
         vm.expectRevert(abi.encodeWithSelector(ErrNotCharacterOwner.selector));

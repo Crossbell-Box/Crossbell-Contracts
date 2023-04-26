@@ -5,6 +5,7 @@ import {ModuleBase} from "../ModuleBase.sol";
 import {ErrNotCharacterOwner, ErrNotApprovedOrExceedApproval} from "../../libraries/Error.sol";
 import {Events} from "../../libraries/Events.sol";
 import {IMintModule4Note} from "../../interfaces/IMintModule4Note.sol";
+import {IWeb3Entry} from "../../interfaces/IWeb3Entry.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /**
@@ -58,9 +59,12 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         address[] calldata addresses,
         uint256 approvedAmount
     ) external {
-        // msg.sender should be the character owner
+        // msg.sender should be the character owner, or should be an operator of the note.
         address owner = IERC721(web3Entry).ownerOf(characterId);
-        if (msg.sender != owner) revert ErrNotCharacterOwner();
+        if (
+            msg.sender != owner &&
+            !IWeb3Entry(web3Entry).isOperatorAllowedForNote(characterId, noteId, msg.sender)
+        ) revert ErrNotCharacterOwner();
 
         _setApprovedAmount(characterId, noteId, addresses, approvedAmount);
     }
