@@ -1,7 +1,7 @@
 [{
   "id": "ApprovalMintModule",
   "type": "mint",
-  "address": "0x328610484ba1fAAE0fCDEe44990D199cD84c8608",
+  "address": "0x35572B091802626e724b19b492F54e71CF01B7FC",
   "name": "ApprovalMintModule",
   "description": "Only allow a restricted group of addresses to mint the note, with limited number of mints",
   "icon": "",
