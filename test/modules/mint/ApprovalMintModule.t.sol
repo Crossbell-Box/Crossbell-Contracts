@@ -5,7 +5,7 @@ pragma solidity 0.8.16;
 import {
     ErrNotApprovedOrExceedApproval,
     ErrCallerNotWeb3Entry,
-    ErrNotCharacterOwner
+    ErrNotEnoughPermission
 } from "../../../contracts/libraries/Error.sol";
 import {CommonTest} from "../../helpers/CommonTest.sol";
 import {DataTypes} from "../../../contracts/libraries/DataTypes.sol";
@@ -155,7 +155,7 @@ contract ApprovalMintModuleTest is CommonTest {
 
     function testSetApprovedAmountFail(uint256 amount) public {
         // caller is not web3Entry
-        vm.expectRevert(abi.encodeWithSelector(ErrNotCharacterOwner.selector));
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         approvalMintModule.setApprovedAmount(
             FIRST_CHARACTER_ID,
             FIRST_NOTE_ID,

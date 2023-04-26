@@ -2,7 +2,7 @@
 pragma solidity 0.8.16;
 
 import {ModuleBase} from "../ModuleBase.sol";
-import {ErrNotCharacterOwner, ErrNotApprovedOrExceedApproval} from "../../libraries/Error.sol";
+import {ErrNotEnoughPermission, ErrNotApprovedOrExceedApproval} from "../../libraries/Error.sol";
 import {Events} from "../../libraries/Events.sol";
 import {IMintModule4Note} from "../../interfaces/IMintModule4Note.sol";
 import {IWeb3Entry} from "../../interfaces/IWeb3Entry.sol";
@@ -64,7 +64,7 @@ contract ApprovalMintModule is IMintModule4Note, ModuleBase {
         if (
             msg.sender != owner &&
             !IWeb3Entry(web3Entry).isOperatorAllowedForNote(characterId, noteId, msg.sender)
-        ) revert ErrNotCharacterOwner();
+        ) revert ErrNotEnoughPermission();
 
         _setApprovedAmount(characterId, noteId, addresses, approvedAmount);
     }
