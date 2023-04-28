@@ -474,18 +474,18 @@ contract OperatorTest is CommonTest {
     }
 
     function testOperator4NoteFail() public {
+        vm.prank(alice);
+        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+
         // case 1. bob's operator permission is on, but bob is in blocklist
         vm.startPrank(alice);
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
         web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
         web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, allowlist);
         vm.stopPrank();
 
-        vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
+        vm.prank(bob);
         web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
-        vm.stopPrank();
 
         // case 2. bob's in blocklist and also allowlist
         vm.prank(alice);
