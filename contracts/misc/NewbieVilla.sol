@@ -59,6 +59,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * @param xsyncOperator_ Address of xsyncOperator.
      * @param token_ Address of ERC777 token.
      * @param admin_ Address of admin.
+     * @param tips_ Address of Tips contract.
      */
     function initialize(
         address web3Entry_,
@@ -87,10 +88,9 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * @notice Tips a character by transferring `amount` tokens
      * from account with `ADMIN_ROLE` to `Tips` contract. <br>
      *
-     * Emits the `NewbieVillaTipCharacter` event. <br>
-     *
      * Admin will call `send` erc777 token to the Tips contract, with `fromCharacterId`
      * and `toCharacterId` encoded in the `data`. <br>
+     *
      * `send` interface is
      * [IERC777-send](https://docs.openzeppelin.com/contracts/2.x/api/token/erc777#IERC777-send-address-uint256-bytes-),
      * and parameters encode refers
@@ -121,10 +121,9 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * @notice Tips a character's note by transferring `amount` tokens
      * from account with `ADMIN_ROLE` to `Tips` contract. <br>
      *
-     * Emits the `NewbieVillaTipCharacterForNote` event. <br>
-     *
      * Admin will call `send` erc777 token to the Tips contract, with `fromCharacterId`,
      * `toCharacterId` and `toNoteId` encoded in the `data`. <br>
+     *
      * `send` interface is
      * [IERC777-send](https://docs.openzeppelin.com/contracts/2.x/api/token/erc777#IERC777-send-address-uint256-bytes-),
      * and parameters encode refers
