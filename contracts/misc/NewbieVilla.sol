@@ -47,17 +47,13 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      */
     event Withdraw(address to, uint256 characterId, address token, uint256 amount);
 
-    event NewbieVillaTipCharacter(
-        uint256  fromCharacterId,
-        uint256  toCharacterId,
-        uint256  amount
-    );
+    event NewbieVillaTipCharacter(uint256 fromCharacterId, uint256 toCharacterId, uint256 amount);
 
     event NewbieVillaTipCharacterForNote(
-        uint256  fromCharacterId,
-        uint256  toCharacterId,
-        uint256  toNoteId,
-        uint256  amount
+        uint256 fromCharacterId,
+        uint256 toCharacterId,
+        uint256 toNoteId,
+        uint256 amount
     );
 
     modifier notExpired(uint256 expires) {
@@ -115,16 +111,9 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * @param toCharacterId The token ID of character that will receive the token.
      * @param amount Amount of token.
      */
-    function tipCharacter(
-        uint256 fromCharacterId,
-        uint256 toCharacterId,
-        uint256 amount
-    ) external {
+    function tipCharacter(uint256 fromCharacterId, uint256 toCharacterId, uint256 amount) external {
         // check admin role
-        require(
-            hasRole(ADMIN_ROLE, msg.sender),
-            "NewbieVilla: unauthorized role for tipCharacter"
-        );
+        require(hasRole(ADMIN_ROLE, msg.sender), "NewbieVilla: unauthorized role for tipCharacter");
 
         // newbievilla's balance - tip amount
         // will fail if balance is insufficient

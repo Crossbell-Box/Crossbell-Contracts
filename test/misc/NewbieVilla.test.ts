@@ -67,7 +67,13 @@ beforeEach(async () => {
     // init newbie villa
     await newbieVilla
         .connect(owner)
-        .initialize(mockNft.address, mockxSyncOperator, miraToken.address, owner.address, tips.address);
+        .initialize(
+            mockNft.address,
+            mockxSyncOperator,
+            miraToken.address,
+            owner.address,
+            tips.address,
+        );
     // grant `ADMIN_ROLE` to owner
     await newbieVilla
         .connect(owner)
