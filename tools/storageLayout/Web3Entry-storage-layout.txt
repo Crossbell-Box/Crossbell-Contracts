@@ -29,3 +29,4 @@
 | _operatorsByCharacter      | mapping(uint256 => struct EnumerableSet.AddressSet)                     | 24   | 0      | 32    | contracts/Web3Entry.sol:Web3Entry |
 | _operatorsPermissionBitMap | mapping(uint256 => mapping(address => uint256))                         | 25   | 0      | 32    | contracts/Web3Entry.sol:Web3Entry |
 | _operators4Note            | mapping(uint256 => mapping(uint256 => struct DataTypes.Operators4Note)) | 26   | 0      | 32    | contracts/Web3Entry.sol:Web3Entry |
+| _newbieVilla               | address                                                                 | 27   | 0      | 20    | contracts/Web3Entry.sol:Web3Entry |

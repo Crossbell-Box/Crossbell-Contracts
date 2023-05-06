@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { NewbieVilla, NFT, MiraToken, Tips, Web3Entry } from "../../typechain-types";
+import { NewbieVilla, NFT, MiraToken, Tips } from "../../typechain-types";
 
 export const deploy1820Registry = async (signer: SignerWithAddress) => {
     const registry1820 = await ethers.provider.getCode(

@@ -47,15 +47,6 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      */
     event Withdraw(address to, uint256 characterId, address token, uint256 amount);
 
-    event NewbieVillaTipCharacter(uint256 fromCharacterId, uint256 toCharacterId, uint256 amount);
-
-    event NewbieVillaTipCharacterForNote(
-        uint256 fromCharacterId,
-        uint256 toCharacterId,
-        uint256 toNoteId,
-        uint256 amount
-    );
-
     modifier notExpired(uint256 expires) {
         require(expires >= block.timestamp, "NewbieVilla: receipt has expired");
         _;
@@ -124,8 +115,6 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
 
         // send token
         IERC777(_token).send(_tips, amount, data); // solhint-disable-line check-send-result
-
-        emit NewbieVillaTipCharacter(fromCharacterId, toCharacterId, amount);
     }
 
     /**
@@ -169,8 +158,6 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
 
         // send token
         IERC777(_token).send(_tips, amount, data); // solhint-disable-line check-send-result
-
-        emit NewbieVillaTipCharacterForNote(fromCharacterId, toCharacterId, toNoteId, amount);
     }
 
     /**
