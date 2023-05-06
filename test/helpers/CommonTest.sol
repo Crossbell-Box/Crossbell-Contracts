@@ -124,7 +124,7 @@ contract CommonTest is Utils {
         periphery.initialize(address(web3Entry), address(linklist));
 
         // initialize newbieVilla
-        newbieVilla.initialize(address(web3Entry), xsyncOperator, address(token), newbieAdmin);
+        newbieVilla.initialize(address(web3Entry), xsyncOperator, address(token), newbieAdmin, address(tips));
         vm.prank(newbieAdmin);
         newbieVilla.grantRole(ADMIN_ROLE, newbieAdmin);
 

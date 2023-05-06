@@ -34,6 +34,8 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
     // characterId => balance
     // slither-disable-next-line naming-convention
     mapping(uint256 => uint256) internal _balances;
+    // slither-disable-next-line naming-convention
+    address internal _tips; // tips contract
 
     // events
     /**
@@ -44,6 +46,19 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * @param amount Amount of token withdrawn.
      */
     event Withdraw(address to, uint256 characterId, address token, uint256 amount);
+
+    event NewbieVillaTipCharacter(
+        uint256  fromCharacterId,
+        uint256  toCharacterId,
+        uint256  amount
+    );
+
+    event NewbieVillaTipCharacterForNote(
+        uint256  fromCharacterId,
+        uint256  toCharacterId,
+        uint256  toNoteId,
+        uint256  amount
+    );
 
     modifier notExpired(uint256 expires) {
         require(expires >= block.timestamp, "NewbieVilla: receipt has expired");
@@ -62,11 +77,13 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
         address web3Entry_,
         address xsyncOperator_,
         address token_,
-        address admin_
-    ) external reinitializer(2) {
+        address admin_,
+        address tips_
+    ) external reinitializer(3) {
         web3Entry = web3Entry_;
         xsyncOperator = xsyncOperator_;
         _token = token_;
+        _tips = tips_;
 
         // grants `DEFAULT_ADMIN_ROLE`
         _setupRole(DEFAULT_ADMIN_ROLE, admin_);
@@ -80,7 +97,94 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
     }
 
     /**
-    
+     * @notice Tips a character by transferring `amount` tokens
+     * from account with `ADMIN_ROLE` to `Tips` contract. <br>
+     *
+     * Emits the `NewbieVillaTipCharacter` event. <br>
+     *
+     * Admin will call `send` erc777 token to the Tips contract, with `fromCharacterId`
+     * and `toCharacterId` encoded in the `data`. <br>
+     * `send` interface is
+     * [IERC777-send](https://docs.openzeppelin.com/contracts/2.x/api/token/erc777#IERC777-send-address-uint256-bytes-),
+     * and parameters encode refers
+     * [AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode).<br>
+     *
+     * <b> Requirements: </b>
+     * - The `msg.sender` must have `ADMIN_ROLE`.
+     * @param fromCharacterId The token ID of character that calls this contract.
+     * @param toCharacterId The token ID of character that will receive the token.
+     * @param amount Amount of token.
+     */
+    function tipCharacter(
+        uint256 fromCharacterId,
+        uint256 toCharacterId,
+        uint256 amount
+    ) external {
+        // check admin role
+        require(
+            hasRole(ADMIN_ROLE, msg.sender),
+            "NewbieVilla: unauthorized role for tipCharacter"
+        );
+
+        // newbievilla's balance - tip amount
+        // will fail if balance is insufficient
+        _balances[fromCharacterId] -= amount;
+
+        // prepare tipCharacter `data` for `Tips` contract's `tokensReceived` callback method
+        bytes memory data = abi.encode(fromCharacterId, toCharacterId);
+
+        // send token
+        IERC777(_token).send(_tips, amount, data); // solhint-disable-line check-send-result
+
+        emit NewbieVillaTipCharacter(fromCharacterId, toCharacterId, amount);
+    }
+
+    /**
+     * @notice Tips a character's note by transferring `amount` tokens
+     * from account with `ADMIN_ROLE` to `Tips` contract. <br>
+     *
+     * Emits the `NewbieVillaTipCharacterForNote` event. <br>
+     *
+     * Admin will call `send` erc777 token to the Tips contract, with `fromCharacterId`,
+     * `toCharacterId` and `toNoteId` encoded in the `data`. <br>
+     * `send` interface is
+     * [IERC777-send](https://docs.openzeppelin.com/contracts/2.x/api/token/erc777#IERC777-send-address-uint256-bytes-),
+     * and parameters encode refers
+     * [AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode).<br>
+     *
+     * <b> Requirements: </b>
+     * - The `msg.sender` must have `ADMIN_ROLE`.
+     * @param fromCharacterId The token ID of character that calls this contract.
+     * @param toCharacterId The token ID of character that will receive the token.
+     * @param toNoteId The note ID.
+     * @param amount Amount of token.
+     */
+    function tipCharacterForNote(
+        uint256 fromCharacterId,
+        uint256 toCharacterId,
+        uint256 toNoteId,
+        uint256 amount
+    ) external {
+        // check admin role
+        require(
+            hasRole(ADMIN_ROLE, msg.sender),
+            "NewbieVilla: unauthorized role for tipCharacterForNote"
+        );
+
+        // newbievilla's balance - tip amount
+        // will fail if balance is insufficient
+        _balances[fromCharacterId] -= amount;
+
+        // prepare tipCharacterForNote `data` for `Tips` contract's `tokensReceived` callback method
+        bytes memory data = abi.encode(fromCharacterId, toCharacterId, toNoteId);
+
+        // send token
+        IERC777(_token).send(_tips, amount, data); // solhint-disable-line check-send-result
+
+        emit NewbieVillaTipCharacterForNote(fromCharacterId, toCharacterId, toNoteId, amount);
+    }
+
+    /**
      * @notice  Withdraw character#`characterId` to `to` using the nonce, expires and the proof. <br>
      * Emits the `Withdraw` event. <br>
      * @dev Proof is the signature from someone with the ADMIN_ROLE. The message to sign is
@@ -99,8 +203,8 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      *
      * <b> Requirements: </b>:
      * - `expires` is greater than the current timestamp
-     * - `proof` is signed by the one with the ADMIN_ROLE 
-     * 
+     * - `proof` is signed by the one with the ADMIN_ROLE
+     *
      * @param   to  Receiver of the withdrawn character.
      * @param   characterId  The token id of the character to withdraw.
      * @param   nonce  Random nonce used to generate the proof.
@@ -182,7 +286,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
 
     /// @inheritdoc IERC777Recipient
     /**
-     * @notice  Receives tokens. Only specific tokens are accepted, so be careful not to send tokens to this 
+     * @notice  Receives tokens. Only specific tokens are accepted, so be careful not to send tokens to this
      address randomly.
      * @dev     The userData/operatorData should be an abi-encoded bytes of `fromCharacterId` and `toCharacter`,
      * which are both uint256 type, so the length of data is 64.

@@ -39,6 +39,7 @@ contract NewbieVillaTest is CommonTest {
             address(web3Entry),
             xsyncOperator,
             address(0x000001),
+            address(0x000001),
             address(0x000001)
         );
     }
