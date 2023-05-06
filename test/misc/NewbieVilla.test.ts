@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { NewbieVilla, NFT, MiraToken } from "../../typechain-types";
+import { NewbieVilla, NFT, MiraToken, Tips } from "../../typechain-types";
 
 export const deploy1820Registry = async (signer: SignerWithAddress) => {
     const registry1820 = await ethers.provider.getCode(
@@ -40,6 +40,7 @@ let owner: SignerWithAddress;
 let receiver: SignerWithAddress;
 let registryFunder: SignerWithAddress;
 let miraToken: MiraToken;
+let tips: Tips;
 
 let nonce: number;
 let expires: number;
@@ -54,6 +55,9 @@ beforeEach(async () => {
     // deploy mira token
     const MiraToken = await ethers.getContractFactory("MiraToken");
     miraToken = await MiraToken.deploy("Mira Token", "MIRA", owner.address);
+    // deploy tips contract
+    const Tips = await ethers.getContractFactory("Tips");
+    tips = await Tips.deploy();
     // deploy newbie villa
     const NewbieVilla = await ethers.getContractFactory("NewbieVilla");
     newbieVilla = await NewbieVilla.deploy();
@@ -63,7 +67,13 @@ beforeEach(async () => {
     // init newbie villa
     await newbieVilla
         .connect(owner)
-        .initialize(mockNft.address, mockxSyncOperator, miraToken.address, owner.address);
+        .initialize(
+            mockNft.address,
+            mockxSyncOperator,
+            miraToken.address,
+            owner.address,
+            tips.address,
+        );
     // grant `ADMIN_ROLE` to owner
     await newbieVilla
         .connect(owner)
