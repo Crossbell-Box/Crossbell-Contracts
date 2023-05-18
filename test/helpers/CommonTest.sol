@@ -39,18 +39,24 @@ contract CommonTest is Utils {
     CharacterBoundToken public cbt;
     TransparentUpgradeableProxy public proxyWeb3Entry;
 
-    address public admin = address(0x999999999999999999999999999999);
+    address public constant admin = address(0x999999999999999999999999999999);
 
     address public constant xsyncOperator = address(0xffff4444);
     uint256 public constant newbieAdminPrivateKey = 1;
     address public newbieAdmin = vm.addr(newbieAdminPrivateKey);
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
-    address public constant alice = address(0x1111);
-    address public constant bob = address(0x2222);
-    address public constant carol = address(0x3333);
-    address public constant dick = address(0x4444);
-    address public constant erik = address(0x5555);
+    uint256 public constant alicePrivateKey = 0x1111;
+    uint256 public constant bobPrivateKey = 0x2222;
+    uint256 public constant carolPrivateKey = 0x3333;
+    uint256 public constant dickPrivateKey = 0x4444;
+    uint256 public constant erikPrivateKey = 0x5555;
+
+    address public alice = vm.addr(alicePrivateKey);
+    address public bob = vm.addr(bobPrivateKey);
+    address public carol = vm.addr(carolPrivateKey);
+    address public dick = vm.addr(dickPrivateKey);
+    address public erik = vm.addr(erikPrivateKey);
 
     function _setUp() internal {
         // deploy erc1820

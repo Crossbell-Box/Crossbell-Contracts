@@ -70,3 +70,9 @@ error ErrExceedMaxSupply();
 
 /// @dev Exceed the approval amount
 error ErrExceedApproval();
+
+/// @dev Signature is expired
+error ErrSignatureExpired();
+
+/// @dev Signature is invalid
+error ErrSignatureInvalid();
