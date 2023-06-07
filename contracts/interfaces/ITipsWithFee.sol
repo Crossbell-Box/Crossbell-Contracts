@@ -4,6 +4,28 @@ pragma solidity 0.8.16;
 
 import {DataTypes} from "../libraries/DataTypes.sol";
 
+/**
+ * @title ITipsWithFee
+ * @notice This is the interface for the TipsWithFee contract.
+ * @dev The platform can set the commission ratio through the TipsWithFee contract,
+ * and draw a commission from the user's tips. <br>
+ *
+ * For `TipCharacter`
+ * User/Client should call `send` erc777 token to the TipsWithFee contract, with `fromCharacterId`,
+ * `toCharacterId` and `receiver`(a platform account) encoded in the `data`. <br>
+ * `send` interface is
+ * [IERC777-send](https://docs.openzeppelin.com/contracts/2.x/api/token/erc777#IERC777-send-address-uint256-bytes-),
+ * and parameters encode refers
+ * [AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode).<br>
+ *
+ * For `TipCharacter4Note`
+ * User should call `send` erc777 token to the TipsWithFee contract, with `fromCharacterId`,
+ *  `toCharacterId`, `toNoteId` and `receiver` encoded in the `data`. <br>
+ *
+ * The platform account can set the commission ratio through `setDefaultFeeFraction`, `setFeeFraction4Character`
+ * and `setFeeFraction4Note`.
+ */
+
 interface ITipsWithFee {
     /**
      * @notice Initializes the TipsWithFee.

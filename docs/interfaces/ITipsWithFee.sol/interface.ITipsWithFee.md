@@ -1,5 +1,21 @@
 # ITipsWithFee
-[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/9b50c5017bce9e71943d4e781b5eda6bb9a10fe5/contracts/interfaces/ITipsWithFee.sol)
+[Git Source](https://github.com/Crossbell-Box/Crossbell-Contracts/blob/2d08a9f4cef4a2158ae20c73ee9538b7b9038f8e/contracts/interfaces/ITipsWithFee.sol)
+
+This is the interface for the TipsWithFee contract.
+
+*The platform can set the commission ratio through the TipsWithFee contract,
+and draw a commission from the user's tips. <br>
+For `TipCharacter`
+User/Client should call `send` erc777 token to the TipsWithFee contract, with `fromCharacterId`,
+`toCharacterId` and `receiver`(a platform account) encoded in the `data`. <br>
+`send` interface is
+[IERC777-send](https://docs.openzeppelin.com/contracts/2.x/api/token/erc777#IERC777-send-address-uint256-bytes-),
+and parameters encode refers
+[AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode).<br>
+For `TipCharacter4Note`
+User should call `send` erc777 token to the TipsWithFee contract, with `fromCharacterId`,
+`toCharacterId`, `toNoteId` and `receiver` encoded in the `data`. <br>
+The platform account can set the commission ratio through `setDefaultFeeFraction`, `setFeeFraction4Character` and `setFeeFraction4Note`.*
 
 
 ## Functions

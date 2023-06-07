@@ -37,12 +37,16 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
      * @param toCharacterId The token ID of character that.
      * @param token Address of token to reward.
      * @param amount Amount of token to reward.
+     * @param fee Amount of fee.
+     * @param feeReceiver Fee receiver address.
      */
     event TipCharacter(
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,
         address token,
-        uint256 amount
+        uint256 amount,
+        uint256 fee,
+        address feeReceiver
     );
 
     /**
@@ -52,13 +56,17 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
      * @param toNoteId The note ID.
      * @param token Address of token.
      * @param amount Amount of token.
+     * @param fee Amount of fee.
+     * @param feeReceiver Fee receiver address.
      */
     event TipCharacterForNote(
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,
         uint256 indexed toNoteId,
         address token,
-        uint256 amount
+        uint256 amount,
+        uint256 fee,
+        address feeReceiver
     );
 
     // custom errors
@@ -121,7 +129,7 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
      * moved or created into a registered account `to` (this contract). <br>
      *
      * The userData/operatorData should be an abi encoded bytes of `fromCharacterId`, `toCharacter`
-     * and `toNoteId`(optional),  which are all uint256 type, so the length of data is 64 or 96.
+     * and `toNoteId`(optional) and `receiver`(platform account), so the length of data is 84 or 116.
      */
     /// @inheritdoc IERC777Recipient
     function tokensReceived(
@@ -137,21 +145,34 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
 
         bytes memory data = userData.length > 0 ? userData : operatorData;
         // slither-disable-start uninitialized-local
-        // abi encoded bytes of (fromCharacterId, toCharacter)
-        if (data.length == 64) {
+        // abi encoded bytes of (fromCharacterId, toCharacter, receiver)
+        if (data.length == 84) {
             // tip character
             // slither-disable-next-line variable-scope
-            (uint256 fromCharacterId, uint256 toCharacterId) = abi.decode(data, (uint256, uint256));
-            _tipCharacter(from, fromCharacterId, toCharacterId, _token, amount);
-            // abi encoded bytes of (fromCharacterId, toCharacter, noteId)
-        } else if (data.length == 96) {
+            (uint256 fromCharacterId, uint256 toCharacterId, address receiver) = abi.decode(
+                data,
+                (uint256, uint256, address)
+            );
+            _tipCharacter(from, fromCharacterId, toCharacterId, _token, amount, receiver);
+            // abi encoded bytes of (fromCharacterId, toCharacter, noteId, receiver)
+        } else if (data.length == 116) {
             // tip character for note
             // slither-disable-next-line variable-scope
-            (uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId) = abi.decode(
-                data,
-                (uint256, uint256, uint256)
+            (
+                uint256 fromCharacterId,
+                uint256 toCharacterId,
+                uint256 toNoteId,
+                address receiver
+            ) = abi.decode(data, (uint256, uint256, uint256, address));
+            _tipCharacterForNote(
+                from,
+                fromCharacterId,
+                toCharacterId,
+                toNoteId,
+                _token,
+                amount,
+                receiver
             );
-            _tipCharacterForNote(from, fromCharacterId, toCharacterId, toNoteId, _token, amount);
         } else {
             revert("Tips: unknown receiving");
         }
@@ -184,9 +205,7 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         uint256 noteId,
         uint256 tipAmount
     ) external view override returns (uint256) {
-        uint256 fraction = _getFeeFraction(receiver, characterId, noteId);
-        uint256 feeAmount = (tipAmount * fraction) / _feeDenominator();
-        return feeAmount;
+        return _getFeeAmount(receiver, characterId, noteId, tipAmount);
     }
 
     /**
@@ -209,19 +228,22 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
      * @param toCharacterId The token ID of character that will receive the token.
      * @param token Address of token.
      * @param amount Amount of token.
+     * @param feeReceiver Fee receiver address.
      */
     function _tipCharacter(
         address from,
         uint256 fromCharacterId,
         uint256 toCharacterId,
         address token,
-        uint256 amount
+        uint256 amount,
+        address feeReceiver
     ) internal {
         // check and send token
-        _sendToken(from, fromCharacterId, toCharacterId, token, amount);
+        uint256 feeAmount = _getFeeAmount(feeReceiver, toCharacterId, 0, amount);
+        _sendToken(from, fromCharacterId, toCharacterId, token, amount, feeAmount, feeReceiver);
 
         // emit event
-        emit TipCharacter(fromCharacterId, toCharacterId, _token, amount);
+        emit TipCharacter(fromCharacterId, toCharacterId, _token, amount, feeAmount, feeReceiver);
     }
 
     /**
@@ -241,6 +263,7 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
      * @param toNoteId The note ID.
      * @param token Address of token.
      * @param amount Amount of token.
+     * @param feeReceiver Fee receiver address.
      */
     function _tipCharacterForNote(
         address from,
@@ -248,13 +271,23 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         uint256 toCharacterId,
         uint256 toNoteId,
         address token,
-        uint256 amount
+        uint256 amount,
+        address feeReceiver
     ) internal {
         // check and send token
-        _sendToken(from, fromCharacterId, toCharacterId, token, amount);
+        uint256 feeAmount = _getFeeAmount(feeReceiver, toCharacterId, toNoteId, amount);
+        _sendToken(from, fromCharacterId, toCharacterId, token, amount, feeAmount, feeReceiver);
 
         // emit event
-        emit TipCharacterForNote(fromCharacterId, toCharacterId, toNoteId, token, amount);
+        emit TipCharacterForNote(
+            fromCharacterId,
+            toCharacterId,
+            toNoteId,
+            token,
+            amount,
+            feeAmount,
+            feeReceiver
+        );
     }
 
     function _sendToken(
@@ -262,7 +295,9 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         uint256 fromCharacterId,
         uint256 toCharacterId,
         address token,
-        uint256 amount
+        uint256 amount,
+        uint256 feeAmount,
+        address feeReceiver
     ) internal {
         // `from` must be the owner of fromCharacterId
         if (from != IERC721(_web3Entry).ownerOf(fromCharacterId))
@@ -271,7 +306,13 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         // send token to `toCharacterId` account
         bytes memory userData = abi.encode(fromCharacterId, toCharacterId);
         // solhint-disable-next-line check-send-result
-        IERC777(token).send(IERC721(_web3Entry).ownerOf(toCharacterId), amount, userData);
+        IERC777(token).send(
+            IERC721(_web3Entry).ownerOf(toCharacterId),
+            amount - feeAmount,
+            userData
+        );
+        // solhint-disable-next-line check-send-result
+        IERC777(token).send(feeReceiver, feeAmount, userData);
     }
 
     function _getFeeFraction(
@@ -284,6 +325,17 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         fraction = fraction > 0 ? fraction : _feeFractions[receiver];
 
         return fraction;
+    }
+
+    function _getFeeAmount(
+        address receiver,
+        uint256 characterId,
+        uint256 noteId,
+        uint256 tipAmount
+    ) internal view returns (uint256) {
+        uint256 fraction = _getFeeFraction(receiver, characterId, noteId);
+        uint256 feeAmount = (tipAmount * fraction) / _feeDenominator();
+        return feeAmount;
     }
 
     /**
