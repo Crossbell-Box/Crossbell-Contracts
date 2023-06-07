@@ -164,6 +164,7 @@ contract TipsWithFeeTest is CommonTest {
 
         bytes memory data = abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, carol);
         uint256 feeAmount = _tips.getFeeAmount(carol, SECOND_CHARACTER_ID, 0, amount);
+        bytes memory expectedData = abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, 0, carol);
 
         // expect events
         expectEmit(CheckAll);
@@ -171,25 +172,11 @@ contract TipsWithFeeTest is CommonTest {
         expectEmit(CheckAll);
         emit Transfer(alice, address(_tips), amount);
         expectEmit(CheckAll);
-        emit Sent(
-            address(_tips),
-            address(_tips),
-            bob,
-            amount - feeAmount,
-            abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID),
-            ""
-        );
+        emit Sent(address(_tips), address(_tips), bob, amount - feeAmount, expectedData, "");
         expectEmit(CheckAll);
         emit Transfer(address(_tips), bob, amount - feeAmount);
         expectEmit(CheckAll);
-        emit Sent(
-            address(_tips),
-            address(_tips),
-            carol,
-            feeAmount,
-            abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID),
-            ""
-        );
+        emit Sent(address(_tips), address(_tips), carol, feeAmount, expectedData, "");
         expectEmit(CheckAll);
         emit Transfer(address(_tips), carol, feeAmount);
         expectEmit(CheckAll);
@@ -210,7 +197,7 @@ contract TipsWithFeeTest is CommonTest {
         assertEq(token.balanceOf(carol), feeAmount);
     }
 
-    function testTipCharacterFailx() public {
+    function testTipCharacterFail() public {
         uint256 amount = 1 ether;
 
         // case 1: caller is not character owner
@@ -262,25 +249,11 @@ contract TipsWithFeeTest is CommonTest {
         expectEmit(CheckAll);
         emit Transfer(alice, address(_tips), amount);
         expectEmit(CheckAll);
-        emit Sent(
-            address(_tips),
-            address(_tips),
-            bob,
-            amount - feeAmount,
-            abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID),
-            ""
-        );
+        emit Sent(address(_tips), address(_tips), bob, amount - feeAmount, data, "");
         expectEmit(CheckAll);
         emit Transfer(address(_tips), bob, amount - feeAmount);
         expectEmit(CheckAll);
-        emit Sent(
-            address(_tips),
-            address(_tips),
-            carol,
-            feeAmount,
-            abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID),
-            ""
-        );
+        emit Sent(address(_tips), address(_tips), carol, feeAmount, data, "");
         expectEmit(CheckAll);
         emit Transfer(address(_tips), carol, feeAmount);
         expectEmit(CheckAll);

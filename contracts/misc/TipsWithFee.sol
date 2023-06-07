@@ -254,12 +254,7 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         uint256 amount,
         address feeReceiver
     ) internal {
-        // check and send token
-        uint256 feeAmount = _getFeeAmount(feeReceiver, toCharacterId, 0, amount);
-        _sendToken(from, fromCharacterId, toCharacterId, token, amount, feeAmount, feeReceiver);
-
-        // emit event
-        emit TipCharacter(fromCharacterId, toCharacterId, _token, amount, feeAmount, feeReceiver);
+        _tip(from, fromCharacterId, toCharacterId, 0, token, amount, feeReceiver);
     }
 
     /**
@@ -290,29 +285,16 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         uint256 amount,
         address feeReceiver
     ) internal {
-        // check and send token
-        uint256 feeAmount = _getFeeAmount(feeReceiver, toCharacterId, toNoteId, amount);
-        _sendToken(from, fromCharacterId, toCharacterId, token, amount, feeAmount, feeReceiver);
-
-        // emit event
-        emit TipCharacterForNote(
-            fromCharacterId,
-            toCharacterId,
-            toNoteId,
-            token,
-            amount,
-            feeAmount,
-            feeReceiver
-        );
+        _tip(from, fromCharacterId, toCharacterId, toNoteId, token, amount, feeReceiver);
     }
 
-    function _sendToken(
+    function _tip(
         address from,
         uint256 fromCharacterId,
         uint256 toCharacterId,
+        uint256 toNoteId,
         address token,
         uint256 amount,
-        uint256 feeAmount,
         address feeReceiver
     ) internal {
         // `from` must be the owner of fromCharacterId
@@ -321,8 +303,10 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
             "TipsWithFee: caller is not character owner"
         );
 
+        //  send token
+        uint256 feeAmount = _getFeeAmount(feeReceiver, toCharacterId, toNoteId, amount);
         // send token to `toCharacterId` account
-        bytes memory userData = abi.encode(fromCharacterId, toCharacterId);
+        bytes memory userData = abi.encode(fromCharacterId, toCharacterId, toNoteId, feeReceiver);
         // solhint-disable-next-line check-send-result
         IERC777(token).send(
             IERC721(_web3Entry).ownerOf(toCharacterId),
@@ -331,6 +315,28 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         );
         // solhint-disable-next-line check-send-result
         IERC777(token).send(feeReceiver, feeAmount, userData);
+
+        // emit event
+        if (toNoteId == 0) {
+            emit TipCharacter(
+                fromCharacterId,
+                toCharacterId,
+                token,
+                amount,
+                feeAmount,
+                feeReceiver
+            );
+        } else {
+            emit TipCharacterForNote(
+                fromCharacterId,
+                toCharacterId,
+                toNoteId,
+                token,
+                amount,
+                feeAmount,
+                feeReceiver
+            );
+        }
     }
 
     function _getFeeFraction(
