@@ -69,10 +69,15 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         address feeReceiver
     );
 
-    // custom errors
-    error ErrCallerNotCharacterOwner();
-    error ErrCallerNotOwner();
-    error ErrOutOfRange();
+    modifier onlyReceiver(address receiver) {
+        require(receiver == msg.sender, "TipsWithFee: caller is not receiver");
+        _;
+    }
+
+    modifier validateFraction(uint256 fraction) {
+        require(fraction <= _feeDenominator(), "TipsWithFee: fraction out of range");
+        _;
+    }
 
     /**
      * @notice Initialize the contract, setting web3Entry address and token address.
@@ -92,10 +97,10 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
     }
 
     /// @inheritdoc ITipsWithFee
-    function setDefaultFeeFraction(address receiver, uint256 fraction) external override {
-        if (receiver != msg.sender) revert ErrCallerNotOwner();
-        if (fraction > _feeDenominator()) revert ErrOutOfRange();
-
+    function setDefaultFeeFraction(
+        address receiver,
+        uint256 fraction
+    ) external override onlyReceiver(receiver) validateFraction(fraction) {
         _feeFractions[receiver] = fraction;
     }
 
@@ -104,10 +109,7 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         address receiver,
         uint256 characterId,
         uint256 fraction
-    ) external override {
-        if (receiver != msg.sender) revert ErrCallerNotOwner();
-        if (fraction > _feeDenominator()) revert ErrOutOfRange();
-
+    ) external override onlyReceiver(receiver) validateFraction(fraction) {
         _feeFractions4Character[receiver][characterId] = fraction;
     }
 
@@ -117,10 +119,7 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         uint256 characterId,
         uint256 noteId,
         uint256 fraction
-    ) external override {
-        if (receiver != msg.sender) revert ErrCallerNotOwner();
-        if (fraction > _feeDenominator()) revert ErrOutOfRange();
-
+    ) external override onlyReceiver(receiver) validateFraction(fraction) {
         _feeFractions4Note[receiver][characterId][noteId] = fraction;
     }
 
@@ -129,7 +128,7 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
      * moved or created into a registered account `to` (this contract). <br>
      *
      * The userData/operatorData should be an abi encoded bytes of `fromCharacterId`, `toCharacter`
-     * and `toNoteId`(optional) and `receiver`(platform account), so the length of data is 84 or 116.
+     * and `toNoteId`(optional) and `receiver`(platform account), so the length of data is 96 or 128.
      */
     /// @inheritdoc IERC777Recipient
     function tokensReceived(
@@ -146,7 +145,7 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         bytes memory data = userData.length > 0 ? userData : operatorData;
         // slither-disable-start uninitialized-local
         // abi encoded bytes of (fromCharacterId, toCharacter, receiver)
-        if (data.length == 84) {
+        if (data.length == 96) {
             // tip character
             // slither-disable-next-line variable-scope
             (uint256 fromCharacterId, uint256 toCharacterId, address receiver) = abi.decode(
@@ -155,7 +154,7 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
             );
             _tipCharacter(from, fromCharacterId, toCharacterId, _token, amount, receiver);
             // abi encoded bytes of (fromCharacterId, toCharacter, noteId, receiver)
-        } else if (data.length == 116) {
+        } else if (data.length == 128) {
             // tip character for note
             // slither-disable-next-line variable-scope
             (
@@ -300,8 +299,10 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         address feeReceiver
     ) internal {
         // `from` must be the owner of fromCharacterId
-        if (from != IERC721(_web3Entry).ownerOf(fromCharacterId))
-            revert ErrCallerNotCharacterOwner();
+        require(
+            from == IERC721(_web3Entry).ownerOf(fromCharacterId),
+            "TipsWithFee: caller is not character owner"
+        );
 
         // send token to `toCharacterId` account
         bytes memory userData = abi.encode(fromCharacterId, toCharacterId);
@@ -320,10 +321,14 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         uint256 characterId,
         uint256 noteId
     ) internal view returns (uint256) {
+        // get note fraction
         uint256 fraction = _feeFractions4Note[receiver][characterId][noteId];
-        fraction = fraction > 0 ? fraction : _feeFractions4Character[receiver][characterId];
-        fraction = fraction > 0 ? fraction : _feeFractions[receiver];
-
+        if (fraction > 0) return fraction;
+        // get character fraction
+        fraction = _feeFractions4Character[receiver][characterId];
+        if (fraction > 0) return fraction;
+        // get default fraction
+        fraction = _feeFractions[receiver];
         return fraction;
     }
 
