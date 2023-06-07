@@ -82,6 +82,17 @@ contract TipsWithFeeTest is CommonTest {
         assertEq(_tips.getFeeAmount(alice, 1, 0, 10000), fraction);
     }
 
+    function testSetDefaultFeeFractionFail() public {
+        vm.expectRevert("TipsWithFee: caller is not receiver");
+        _tips.setDefaultFeeFraction(alice, 100);
+
+        vm.expectRevert("TipsWithFee: fraction out of range");
+        vm.prank(alice);
+        _tips.setDefaultFeeFraction(alice, 10001);
+
+        assertEq(_tips.getFeeFraction(alice, 1, 1), 0);
+    }
+
     function testSetFeeFraction4Character(uint256 fraction, uint256 characterId) public {
         vm.assume(fraction <= 10000);
         vm.assume(characterId < 10 && characterId > 0);
@@ -91,6 +102,17 @@ contract TipsWithFeeTest is CommonTest {
 
         assertEq(_tips.getFeeFraction(alice, characterId, 0), fraction);
         assertEq(_tips.getFeeAmount(alice, characterId, 0, 10000), fraction);
+    }
+
+    function testSetFeeFraction4CharacterFail() public {
+        vm.expectRevert("TipsWithFee: caller is not receiver");
+        _tips.setFeeFraction4Character(alice, 1, 100);
+
+        vm.expectRevert("TipsWithFee: fraction out of range");
+        vm.prank(alice);
+        _tips.setFeeFraction4Character(alice, 1, 10001);
+
+        assertEq(_tips.getFeeFraction(alice, 1, 1), 0);
     }
 
     function testSetFeeFraction4Note(uint256 fraction, uint256 characterId, uint256 noteId) public {
@@ -103,6 +125,17 @@ contract TipsWithFeeTest is CommonTest {
 
         assertEq(_tips.getFeeFraction(alice, characterId, noteId), fraction);
         assertEq(_tips.getFeeAmount(alice, characterId, noteId, 10000), fraction);
+    }
+
+    function testSetFeeFraction4NoteFail() public {
+        vm.expectRevert("TipsWithFee: caller is not receiver");
+        _tips.setFeeFraction4Note(alice, 1, 1, 100);
+
+        vm.expectRevert("TipsWithFee: fraction out of range");
+        vm.prank(alice);
+        _tips.setFeeFraction4Note(alice, 1, 1, 10001);
+
+        assertEq(_tips.getFeeFraction(alice, 1, 1), 0);
     }
 
     function testGetFeeFraction(uint256 fraction, uint256 characterId, uint256 noteId) public {
