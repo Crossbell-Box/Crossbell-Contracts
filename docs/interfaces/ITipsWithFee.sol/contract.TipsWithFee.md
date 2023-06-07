@@ -260,39 +260,6 @@ function _tipCharacterForNote(
 |`amount`|`uint256`|Amount of token.|
 |`feeReceiver`|`address`|Fee receiver address.|
 
-
-### _sendToken
-
-
-```solidity
-function _sendToken(
-    address from,
-    uint256 fromCharacterId,
-    uint256 toCharacterId,
-    address token,
-    uint256 amount,
-    uint256 feeAmount,
-    address feeReceiver
-) internal;
-```
-
-### _getFeeFraction
-
-
-```solidity
-function _getFeeFraction(address receiver, uint256 characterId, uint256 noteId) internal view returns (uint256);
-```
-
-### _getFeeAmount
-
-
-```solidity
-function _getFeeAmount(address receiver, uint256 characterId, uint256 noteId, uint256 tipAmount)
-    internal
-    view
-    returns (uint256);
-```
-
 ### _feeDenominator
 
 *Defaults to 10000 so fees are expressed in basis points.*
@@ -333,23 +300,3 @@ event TipCharacterForNote(
     address feeReceiver
 );
 ```
-
-## Errors
-### ErrCallerNotCharacterOwner
-
-```solidity
-error ErrCallerNotCharacterOwner();
-```
-
-### ErrCallerNotOwner
-
-```solidity
-error ErrCallerNotOwner();
-```
-
-### ErrOutOfRange
-
-```solidity
-error ErrOutOfRange();
-```
-
