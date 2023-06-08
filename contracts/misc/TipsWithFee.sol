@@ -86,8 +86,8 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         address feeReceiver
     );
 
-    modifier onlyReceiver(address receiver) {
-        require(receiver == msg.sender, "TipsWithFee: caller is not receiver");
+    modifier onlyFeeReceiver(address feeReceiver) {
+        require(feeReceiver == msg.sender, "TipsWithFee: caller is not receiver");
         _;
     }
 
@@ -115,29 +115,29 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
 
     /// @inheritdoc ITipsWithFee
     function setDefaultFeeFraction(
-        address receiver,
+        address feeReceiver,
         uint256 fraction
-    ) external override onlyReceiver(receiver) validateFraction(fraction) {
-        _feeFractions[receiver] = fraction;
+    ) external override onlyFeeReceiver(feeReceiver) validateFraction(fraction) {
+        _feeFractions[feeReceiver] = fraction;
     }
 
     /// @inheritdoc ITipsWithFee
     function setFeeFraction4Character(
-        address receiver,
+        address feeReceiver,
         uint256 characterId,
         uint256 fraction
-    ) external override onlyReceiver(receiver) validateFraction(fraction) {
-        _feeFractions4Character[receiver][characterId] = fraction;
+    ) external override onlyFeeReceiver(feeReceiver) validateFraction(fraction) {
+        _feeFractions4Character[feeReceiver][characterId] = fraction;
     }
 
     /// @inheritdoc ITipsWithFee
     function setFeeFraction4Note(
-        address receiver,
+        address feeReceiver,
         uint256 characterId,
         uint256 noteId,
         uint256 fraction
-    ) external override onlyReceiver(receiver) validateFraction(fraction) {
-        _feeFractions4Note[receiver][characterId][noteId] = fraction;
+    ) external override onlyFeeReceiver(feeReceiver) validateFraction(fraction) {
+        _feeFractions4Note[feeReceiver][characterId][noteId] = fraction;
     }
 
     /**
@@ -207,21 +207,21 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
 
     /// @inheritdoc ITipsWithFee
     function getFeeFraction(
-        address receiver,
+        address feeReceiver,
         uint256 characterId,
         uint256 noteId
     ) external view override returns (uint256) {
-        return _getFeeFraction(receiver, characterId, noteId);
+        return _getFeeFraction(feeReceiver, characterId, noteId);
     }
 
     /// @inheritdoc ITipsWithFee
     function getFeeAmount(
-        address receiver,
+        address feeReceiver,
         uint256 characterId,
         uint256 noteId,
         uint256 tipAmount
     ) external view override returns (uint256) {
-        return _getFeeAmount(receiver, characterId, noteId, tipAmount);
+        return _getFeeAmount(feeReceiver, characterId, noteId, tipAmount);
     }
 
     /**
@@ -340,28 +340,28 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
     }
 
     function _getFeeFraction(
-        address receiver,
+        address feeReceiver,
         uint256 characterId,
         uint256 noteId
     ) internal view returns (uint256) {
         // get note fraction
-        uint256 fraction = _feeFractions4Note[receiver][characterId][noteId];
+        uint256 fraction = _feeFractions4Note[feeReceiver][characterId][noteId];
         if (fraction > 0) return fraction;
         // get character fraction
-        fraction = _feeFractions4Character[receiver][characterId];
+        fraction = _feeFractions4Character[feeReceiver][characterId];
         if (fraction > 0) return fraction;
         // get default fraction
-        fraction = _feeFractions[receiver];
+        fraction = _feeFractions[feeReceiver];
         return fraction;
     }
 
     function _getFeeAmount(
-        address receiver,
+        address feeReceiver,
         uint256 characterId,
         uint256 noteId,
         uint256 tipAmount
     ) internal view returns (uint256) {
-        uint256 fraction = _getFeeFraction(receiver, characterId, noteId);
+        uint256 fraction = _getFeeFraction(feeReceiver, characterId, noteId);
         uint256 feeAmount = (tipAmount * fraction) / _feeDenominator();
         return feeAmount;
     }

@@ -19,21 +19,21 @@ interface ITipsWithFee {
 
     /**
      * @notice Changes the default fee percentage of specific receiver.
-     * @dev The receiver can be a platform account.
-     * @param receiver The fee receiver address.
+     * @dev The feeReceiver can be a platform account.
+     * @param feeReceiver The fee receiver address.
      * @param fraction The percentage measured in basis points. Each basis point represents 0.01%.
      */
-    function setDefaultFeeFraction(address receiver, uint256 fraction) external;
+    function setDefaultFeeFraction(address feeReceiver, uint256 fraction) external;
 
     /**
      * @notice Changes the fee percentage of specific <receiver, character>.
      * @dev If feeFraction4Character is set, it will override the default fee fraction.
-     * @param receiver The fee receiver address.
+     * @param feeReceiver The fee receiver address.
      * @param characterId The character ID.
      * @param fraction The percentage measured in basis points. Each basis point represents 0.01%.
      */
     function setFeeFraction4Character(
-        address receiver,
+        address feeReceiver,
         uint256 characterId,
         uint256 fraction
     ) external;
@@ -41,13 +41,13 @@ interface ITipsWithFee {
     /**
      * @notice Changes the fee percentage of specific <receiver, note>.
      * @dev If feeFraction4Note is set, it will override feeFraction4Character and the default fee fraction.
-     * @param receiver The fee receiver address.
+     * @param feeReceiver The fee receiver address.
      * @param characterId The character ID .
      * @param noteId The note ID .
      * @param fraction The percentage measured in basis points. Each basis point represents 0.01%.
      */
     function setFeeFraction4Note(
-        address receiver,
+        address feeReceiver,
         uint256 characterId,
         uint256 noteId,
         uint256 fraction
@@ -57,26 +57,26 @@ interface ITipsWithFee {
      * @notice Returns the fee percentage of specific <receiver, note>.
      * @dev It will return the first non-zero value by priority feeFraction4Note,
      * feeFraction4Character and defaultFeeFraction.
-     * @param receiver The fee receiver address.
+     * @param feeReceiver The fee receiver address.
      * @param characterId The character ID .
      * @param noteId The note ID .
      * @return fraction The percentage measured in basis points. Each basis point represents 0.01%.
      */
     function getFeeFraction(
-        address receiver,
+        address feeReceiver,
         uint256 characterId,
         uint256 noteId
     ) external view returns (uint256);
 
     /**
      * @notice Returns how much the fee is owed by <feeFraction, tipAmount>.
-     * @param receiver The fee receiver address.
+     * @param feeReceiver The fee receiver address.
      * @param characterId The character ID .
      * @param noteId The note ID .
      * @return The fee amount.
      */
     function getFeeAmount(
-        address receiver,
+        address feeReceiver,
         uint256 characterId,
         uint256 noteId,
         uint256 tipAmount
