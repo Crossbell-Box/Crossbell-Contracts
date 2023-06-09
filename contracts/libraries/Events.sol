@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 library Events {
     event BaseInitialized(string name, string symbol, uint256 timestamp);

@@ -36,10 +36,10 @@ jobs:
         run: |
           pip3 install solc-select
 
-      - name: Install solc 0.8.16
+      - name: Install solc 0.8.18
         run: |
-          solc-select install 0.8.16
-          solc-select use 0.8.16
+          solc-select install 0.8.18
+          solc-select use 0.8.18
 
       - name: Submit code to Mythx
         # use configs from .mythx.yml

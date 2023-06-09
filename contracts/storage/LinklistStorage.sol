@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable max-states-count
 // slither-disable-start naming-convention
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {DataTypes} from "../libraries/DataTypes.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";

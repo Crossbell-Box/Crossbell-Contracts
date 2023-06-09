@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable private-vars-leading-underscore
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 /**
 * In Crossbell's operator system, every uint8 stands for a single method in Web3Entry.sol. <br>

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable comprehensive-interface,check-send-result,multiple-sends
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {CommonTest} from "../helpers/CommonTest.sol";
 import {Tips} from "../../contracts/misc/Tips.sol";

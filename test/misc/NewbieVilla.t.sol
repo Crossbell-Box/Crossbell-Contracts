@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable comprehensive-interface,check-send-result,multiple-sends
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {Test, stdError} from "forge-std/Test.sol";
 import {Utils} from "../helpers/Utils.sol";

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {Events} from "../../contracts/libraries/Events.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";

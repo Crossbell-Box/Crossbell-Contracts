@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {IERC20Mintable} from "../interfaces/IERC20Mintable.sol";
 import {AccessControlEnumerable} from "@openzeppelin/contracts/access/AccessControlEnumerable.sol";

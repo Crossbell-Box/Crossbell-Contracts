@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable comprehensive-interface
 // slither-disable-start calls-loop
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {IWeb3Entry} from "../interfaces/IWeb3Entry.sol";
 import {ILinklist} from "../interfaces/ILinklist.sol";

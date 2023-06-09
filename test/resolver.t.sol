@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable comprehensive-interface
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {Resolver} from "../contracts/Resolver.sol";
 import {CommonTest} from "./helpers/CommonTest.sol";

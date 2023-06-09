@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {ILinkModule4Character} from "../../interfaces/ILinkModule4Character.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";

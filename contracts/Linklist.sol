@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // slither-disable-start unused-return
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {ILinklist} from "./interfaces/ILinklist.sol";
 import {IWeb3Entry} from "./interfaces/IWeb3Entry.sol";

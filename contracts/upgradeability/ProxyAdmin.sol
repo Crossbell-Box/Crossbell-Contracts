@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts v4.4.1 (proxy/transparent/ProxyAdmin.sol)
 
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import "./TransparentUpgradeableProxy.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";

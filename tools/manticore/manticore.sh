@@ -18,7 +18,7 @@ forge flatten contracts/misc/NewbieVilla.sol -o ./flattened/NewbieVilla.sol
 # run check
 # run check
 echo '
-pip3 install solc-select && solc-select install 0.8.16 && solc-select use 0.8.16 && cd /project &&
+pip3 install solc-select && solc-select install 0.8.18 && solc-select use 0.8.18 && cd /project &&
 pip3 install crytic-compile==0.2.2 &&
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Web3Entry: "

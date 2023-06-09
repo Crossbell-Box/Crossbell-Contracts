@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable contract-name-camelcase
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 

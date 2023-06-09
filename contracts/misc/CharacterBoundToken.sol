@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable comprehensive-interface
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable  private-vars-leading-underscore
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {Events} from "./Events.sol";
 import {DataTypes} from "./DataTypes.sol";

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable comprehensive-interface
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {DataTypes} from "../contracts/libraries/DataTypes.sol";
 import {ErrCallerNotWeb3Entry, ErrNotCharacterOwner} from "../contracts/libraries/Error.sol";
