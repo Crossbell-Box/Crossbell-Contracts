@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable comprehensive-interface
-pragma solidity 0.8.16;
+pragma solidity 0.8.18;
 
 import {ITipsWithFee} from "../interfaces/ITipsWithFee.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
