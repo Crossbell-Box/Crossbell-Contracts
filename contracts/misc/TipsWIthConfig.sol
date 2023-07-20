@@ -251,11 +251,13 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         (availableTipTimes, unRedeemedAmount) = _calculateUnredeemedTimesAndAmount(tipConfigId);
 
         // send token
-        IERC20(_token).transferFrom(
-            IERC721(_web3Entry).ownerOf(fromCharacterId),
-            IERC721(_web3Entry).ownerOf(toCharacterId),
-            unRedeemedAmount
-        );
+        address from = IERC721(_web3Entry).ownerOf(fromCharacterId);
+        address to = IERC721(_web3Entry).ownerOf(toCharacterId);
+        bool success = IERC20(_token).transferFrom(from, to, unRedeemedAmount);
+
+        if (!success) {
+            revert("TipsWithConfig: transfer token failed");
+        }
 
         return (availableTipTimes, unRedeemedAmount);
     }
