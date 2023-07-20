@@ -23,6 +23,7 @@ import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.s
  *  to the to character.
  */
 contract TipsWithConfig is ITipsWithConfig, Initializable {
+    // structs
     struct TipsConfig {
         uint256 id;
         uint256 fromCharacterId;
@@ -34,7 +35,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         uint256 interval;
         uint256 tipTimes;
         uint256 redeemedTimes;
-        uint256 totalApprovedAmount;
     }
 
     IERC1820Registry public constant ERC1820_REGISTRY =
@@ -46,10 +46,10 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
     address internal _web3Entry;
     address internal _token; // mira token, erc777 standard
 
-    uint256 public tipsConfigIndex;
-    mapping(uint256 tipsConfigId => TipsConfig tipsConfig) public tipsConfigs;
+    uint256 internal _tipsConfigIndex;
+    mapping(uint256 tipsConfigId => TipsConfig tipsConfig) internal _tipsConfigs;
     mapping(uint256 fromCharacterId => mapping(uint256 toCharacterId => uint256 tipsConfigId))
-        public tipsConfigIds;
+        internal _tipsConfigIds;
 
     // events
     /**
@@ -122,16 +122,15 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         uint256 expiration
     ) external override {
         TipsConfig memory config;
-        uint256 tipConfigId = tipsConfigIds[fromCharacterId][toCharacterId];
-        config = tipsConfigs[tipConfigId];
+        uint256 tipConfigId = _tipsConfigIds[fromCharacterId][toCharacterId];
+        config = _tipsConfigs[tipConfigId];
 
         if (tipConfigId == 0) {
             // if tipConfigId is 0, create a new config
-            tipsConfigIndex++;
-            config.id = tipsConfigIndex;
+            _tipsConfigIndex++;
+            config.id = _tipsConfigIndex;
             config.fromCharacterId = fromCharacterId;
             config.toCharacterId = toCharacterId;
-            config.startTime = block.timestamp;
             config.redeemedTimes = 0;
         } else {
             // if tipConfigId is not 0, update the config
@@ -139,8 +138,30 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             config.amount = amount;
             config.expiration = expiration;
             config.interval = interval;
+
+            if (config.redeemedTimes < config.tipTimes) {
+                (, uint256 unRedeemedAmount) = _redeemTips4Character(
+                    tipConfigId,
+                    config.fromCharacterId,
+                    config.toCharacterId
+                );
+
+                _tipsConfigs[tipConfigId].redeemedTimes = 0;
+
+                emit TriggerTips4Character(
+                    config.id,
+                    config.fromCharacterId,
+                    config.toCharacterId,
+                    config.token,
+                    config.amount,
+                    unRedeemedAmount,
+                    0,
+                    address(0)
+                );
+            }
         }
 
+        config.startTime = block.timestamp;
         // approve the total tip amount of  token to this contract
         config.tipTimes = _calculateTipTimes(config.startTime, config.expiration, config.interval);
 
@@ -160,23 +181,18 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
 
     /// @inheritdoc ITipsWithConfig
     function triggerTips4Character(uint256 tipConfigId) external override {
-        TipsConfig memory config = tipsConfigs[tipConfigId];
+        TipsConfig memory config = _tipsConfigs[tipConfigId];
 
         require(config.redeemedTimes < config.tipTimes, "TipsWithConfig: all tips redeemed");
 
-        (uint256 availableTipTimes, uint256 unRedeemedAmount) = _calculateUnredeemedTimesAndAmount(
-            tipConfigId
-        );
-
-        // send token
-        IERC20(_token).transferFrom(
-            IERC721(_web3Entry).ownerOf(config.fromCharacterId),
-            IERC721(_web3Entry).ownerOf(config.toCharacterId),
-            unRedeemedAmount
+        (uint256 availableTipTimes, uint256 unRedeemedAmount) = _redeemTips4Character(
+            tipConfigId,
+            config.fromCharacterId,
+            config.toCharacterId
         );
 
         // update redeemedTimes
-        tipsConfigs[tipConfigId].redeemedTimes = availableTipTimes;
+        _tipsConfigs[tipConfigId].redeemedTimes = availableTipTimes;
 
         emit TriggerTips4Character(
             config.id,
@@ -188,6 +204,14 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             0,
             address(0)
         );
+    }
+
+    /// @inheritdoc ITipsWithConfig
+    function getTipsConfigId(
+        uint256 fromCharacterId,
+        uint256 toCharacterId
+    ) external view returns (uint256 tipConfigId) {
+        return _tipsConfigIds[fromCharacterId][toCharacterId];
     }
 
     /// @inheritdoc ITipsWithConfig
@@ -219,6 +243,23 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         return _token;
     }
 
+    function _redeemTips4Character(
+        uint256 tipConfigId,
+        uint256 fromCharacterId,
+        uint256 toCharacterId
+    ) internal returns (uint256 availableTipTimes, uint256 unRedeemedAmount) {
+        (availableTipTimes, unRedeemedAmount) = _calculateUnredeemedTimesAndAmount(tipConfigId);
+
+        // send token
+        IERC20(_token).transferFrom(
+            IERC721(_web3Entry).ownerOf(fromCharacterId),
+            IERC721(_web3Entry).ownerOf(toCharacterId),
+            unRedeemedAmount
+        );
+
+        return (availableTipTimes, unRedeemedAmount);
+    }
+
     function _getTipsConfig(
         uint256 tipConfigId
     )
@@ -233,7 +274,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             uint256 expiration
         )
     {
-        TipsConfig memory config = tipsConfigs[tipConfigId];
+        TipsConfig memory config = _tipsConfigs[tipConfigId];
         return (
             config.fromCharacterId,
             config.toCharacterId,
@@ -247,7 +288,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
     function _calculateUnredeemedTimesAndAmount(
         uint256 tipConfigId
     ) internal view returns (uint256, uint256) {
-        TipsConfig memory config = tipsConfigs[tipConfigId];
+        TipsConfig memory config = _tipsConfigs[tipConfigId];
         uint256 elapsed = block.timestamp - config.startTime;
 
         uint256 cycles = elapsed / config.interval;

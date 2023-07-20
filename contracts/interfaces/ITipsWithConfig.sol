@@ -43,6 +43,17 @@ interface ITipsWithConfig {
     function triggerTips4Character(uint256 tipConfigId) external;
 
     /**
+     * @notice Return the tips configId.
+     * @param fromCharacterId The from character ID.
+     * @param toCharacterId The to character ID.
+     * @return tipConfigId tips config ID.
+     */
+    function getTipsConfigId(
+        uint256 fromCharacterId,
+        uint256 toCharacterId
+    ) external view returns (uint256 tipConfigId);
+
+    /**
      * @notice Return the tips config.
      * @return fromCharacterId The from character ID.
      * @return toCharacterId The to character ID.
