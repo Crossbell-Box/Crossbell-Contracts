@@ -37,7 +37,8 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         uint256 totalApprovedAmount;
     }
 
-    IERC1820Registry public constant ERC1820_REGISTRY = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+    IERC1820Registry public constant ERC1820_REGISTRY =
+        IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
     bytes32 public constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
 
     // slither-disable-start naming-convention
@@ -124,13 +125,21 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
      * @param token_ Address of token.
      * @param tips_ Address of tips.
      */
-    function initialize(address web3Entry_, address token_, address tips_) external override initializer {
+    function initialize(
+        address web3Entry_,
+        address token_,
+        address tips_
+    ) external override initializer {
         _web3Entry = web3Entry_;
         _token = token_;
         _tips = tips_;
 
         // register interfaces
-        ERC1820_REGISTRY.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, address(this));
+        ERC1820_REGISTRY.setInterfaceImplementer(
+            address(this),
+            TOKENS_RECIPIENT_INTERFACE_HASH,
+            address(this)
+        );
     }
 
     /// @inheritdoc ITipsWithConfig
@@ -155,7 +164,10 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             config.redeemedTimes = 0;
         } else {
             // if tipConfigId is not 0, update the config
-            require(tipsConfigs[tipConfigId].id == tipConfigId, "TipsWithConfig: invalid tip config id");
+            require(
+                tipsConfigs[tipConfigId].id == tipConfigId,
+                "TipsWithConfig: invalid tip config id"
+            );
             config.token = token;
             config.amount = amount;
             config.expiration = expiration;
@@ -191,7 +203,9 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         // prepare tipCharacter `data` for `Tips` contract's `tokensReceived` callback method
         bytes memory data = abi.encode(config.fromCharacterId, config.toCharacterId);
 
-        (uint256 availableTipTimes, uint256 unRedeemedAmount) = _calculateUnredeemedTimesAndAmount(tipConfigId);
+        (uint256 availableTipTimes, uint256 unRedeemedAmount) = _calculateUnredeemedTimesAndAmount(
+            tipConfigId
+        );
         (tipConfigId);
 
         // send token
@@ -207,12 +221,19 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         tipsConfigs[tipConfigId].redeemedTimes = availableTipTimes;
 
         emit TriggerTips4Character(
-            config.id, config.fromCharacterId, config.toCharacterId, config.token, config.amount, unRedeemedAmount
+            config.id,
+            config.fromCharacterId,
+            config.toCharacterId,
+            config.token,
+            config.amount,
+            unRedeemedAmount
         );
     }
 
     /// @inheritdoc ITipsWithConfig
-    function getTipsConfig(uint256 tipConfigId)
+    function getTipsConfig(
+        uint256 tipConfigId
+    )
         external
         view
         override
@@ -248,7 +269,9 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         authorizedAmount[address(this)] = amount;
     }
 
-    function _getTipsConfig(uint256 tipConfigId)
+    function _getTipsConfig(
+        uint256 tipConfigId
+    )
         internal
         view
         returns (
@@ -271,7 +294,9 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         );
     }
 
-    function _calculateUnredeemedTimesAndAmount(uint256 tipConfigId) internal view returns (uint256, uint256) {
+    function _calculateUnredeemedTimesAndAmount(
+        uint256 tipConfigId
+    ) internal view returns (uint256, uint256) {
         TipsConfig memory config = tipsConfigs[tipConfigId];
         uint256 elapsed = block.timestamp - config.startTime;
 
@@ -287,11 +312,11 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         return (availableTipTimes, unredeemedTimes * config.amount);
     }
 
-    function _calculateTipTimes(uint256 startTime, uint256 expireTime, uint256 interval)
-        internal
-        pure
-        returns (uint256)
-    {
+    function _calculateTipTimes(
+        uint256 startTime,
+        uint256 expireTime,
+        uint256 interval
+    ) internal pure returns (uint256) {
         uint256 totalInterval = expireTime - startTime;
 
         if (interval == 0) {

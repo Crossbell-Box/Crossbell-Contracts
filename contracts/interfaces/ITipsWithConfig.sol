@@ -55,7 +55,9 @@ interface ITipsWithConfig {
      * @return interval The interval of tips with periodical config.
      * @return expiration The expiration of tips with periodical config.
      */
-    function getTipsConfig(uint256 tipConfigId)
+    function getTipsConfig(
+        uint256 tipConfigId
+    )
         external
         view
         returns (
