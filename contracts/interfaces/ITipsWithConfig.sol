@@ -14,9 +14,8 @@ interface ITipsWithConfig {
      * @notice Initializes the ITipsWithConfig.
      * @param web3Entry_ Address of web3Entry.
      * @param token_ Address of token.
-     * @param tips_ Address of tips.
      */
-    function initialize(address web3Entry_, address token_, address tips_) external;
+    function initialize(address web3Entry_, address token_) external;
 
     /**
      * @notice Set the tips config for character.

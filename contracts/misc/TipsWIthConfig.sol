@@ -45,7 +45,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
     // address of web3Entry
     address internal _web3Entry;
     address internal _token; // mira token, erc777 standard
-    address internal _tips; // tips contract
 
     uint256 public tipsConfigIndex;
     mapping(uint256 tipsConfigId => TipsConfig tipsConfig) public tipsConfigs;
@@ -76,8 +75,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         uint256 expiration,
         uint256 interval,
         uint256 tipTimes,
-        uint256 redeemedTimes,
-        uint256 totalApprovedAmount
+        uint256 redeemedTimes
     );
 
     /**
@@ -104,16 +102,10 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
      * @notice Initialize the contract, setting web3Entry address and token address.
      * @param web3Entry_ Address of web3Entry.
      * @param token_ Address of token.
-     * @param tips_ Address of tips.
      */
-    function initialize(
-        address web3Entry_,
-        address token_,
-        address tips_
-    ) external override initializer {
+    function initialize(address web3Entry_, address token_) external override initializer {
         _web3Entry = web3Entry_;
         _token = token_;
-        _tips = tips_;
 
         // register interfaces
         ERC1820_REGISTRY.setInterfaceImplementer(
@@ -154,7 +146,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
 
         // approve the total tip amount of  token to this contract
         config.tipTimes = _calculateTipTimes(config.startTime, config.expiration, config.interval);
-        config.totalApprovedAmount = amount * config.tipTimes;
 
         emit SetTipsConfig4Character(
             config.id,
@@ -166,8 +157,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             config.expiration,
             config.interval,
             config.tipTimes,
-            config.redeemedTimes,
-            config.totalApprovedAmount
+            config.redeemedTimes
         );
     }
 
@@ -180,7 +170,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         (uint256 availableTipTimes, uint256 unRedeemedAmount) = _calculateUnredeemedTimesAndAmount(
             tipConfigId
         );
-        (tipConfigId);
 
         // send token
         IERC20(_token).transferFrom(
@@ -202,11 +191,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             0,
             address(0)
         );
-    }
-
-    function approveTokenWithAmount(uint256 amount) external {
-        IERC20(_token).approve(address(this), amount);
-        authorizedAmount[msg.sender] = amount;
     }
 
     /// @inheritdoc ITipsWithConfig
