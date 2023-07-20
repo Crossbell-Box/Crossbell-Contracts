@@ -50,6 +50,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
     mapping(uint256 tipsConfigId => TipsConfig tipsConfig) internal _tipsConfigs;
     mapping(uint256 fromCharacterId => mapping(uint256 toCharacterId => uint256 tipsConfigId))
         internal _tipsConfigIds;
+    // slither-disable-end naming-convention
 
     // events
     /**
