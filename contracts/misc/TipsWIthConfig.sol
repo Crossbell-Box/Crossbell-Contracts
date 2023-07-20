@@ -130,6 +130,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             config.id = _tipsConfigIndex;
             config.fromCharacterId = fromCharacterId;
             config.toCharacterId = toCharacterId;
+            _tipsConfigIds[fromCharacterId][toCharacterId] = config.id;
         } else {
             // if tipConfigId is not 0, update the config
             config.token = token;
@@ -161,6 +162,8 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         config.redeemedTimes = 0;
         // approve the total tip amount of  token to this contract
         config.tipTimes = _calculateTipTimes(config.startTime, config.expiration, config.interval);
+
+        _tipsConfigs[config.id] = config;
 
         emit SetTipsConfig4Character(
             config.id,
