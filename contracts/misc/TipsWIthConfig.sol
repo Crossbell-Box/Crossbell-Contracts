@@ -71,8 +71,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         uint256 startTime,
         uint256 expiration,
         uint256 interval,
-        uint256 tipTimes,
-        uint256 redeemedTimes
+        uint256 tipTimes
     );
 
     /**
@@ -131,7 +130,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             config.id = _tipsConfigIndex;
             config.fromCharacterId = fromCharacterId;
             config.toCharacterId = toCharacterId;
-            config.redeemedTimes = 0;
         } else {
             // if tipConfigId is not 0, update the config
             config.token = token;
@@ -145,8 +143,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
                     config.fromCharacterId,
                     config.toCharacterId
                 );
-
-                _tipsConfigs[tipConfigId].redeemedTimes = 0;
 
                 emit TriggerTips4Character(
                     config.id,
@@ -162,6 +158,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         }
 
         config.startTime = block.timestamp;
+        config.redeemedTimes = 0;
         // approve the total tip amount of  token to this contract
         config.tipTimes = _calculateTipTimes(config.startTime, config.expiration, config.interval);
 
@@ -174,8 +171,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             config.startTime,
             config.expiration,
             config.interval,
-            config.tipTimes,
-            config.redeemedTimes
+            config.tipTimes
         );
     }
 
