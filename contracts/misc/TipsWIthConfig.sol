@@ -4,8 +4,8 @@ pragma solidity 0.8.18;
 
 import {ITipsWithConfig} from "../interfaces/ITipsWithConfig.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {IERC777} from "@openzeppelin/contracts/token/ERC777/IERC777.sol";
-import {IERC777Recipient} from "@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1820Registry} from "@openzeppelin/contracts/utils/introspection/IERC1820Registry.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
@@ -46,36 +46,15 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
     address internal _web3Entry;
     address internal _token; // mira token, erc777 standard
     address internal _tips; // tips contract
-    // address => feeFraction
-    mapping(address => uint256) internal _feeFractions;
-    // address => character => feeFraction
-    mapping(address => mapping(uint256 => uint256)) internal _feeFractions4Character;
-    // address => character => note => feeFraction
-    mapping(address => mapping(uint256 => mapping(uint256 => uint256))) internal _feeFractions4Note;
-    // slither-disable-end naming-convention
 
     uint256 public tipsConfigIndex;
+    mapping(uint256 tipsConfigId => TipsConfig tipsConfig) public tipsConfigs;
+    mapping(uint256 fromCharacterId => mapping(uint256 toCharacterId => uint256 tipsConfigId))
+        public tipsConfigIds;
+
     mapping(address => uint256) public authorizedAmount;
-    mapping(uint256 => TipsConfig) public tipsConfigs;
 
     // events
-    /**
-     * @dev Emitted when the assets are rewarded to a character.
-     * @param fromCharacterId The token ID of character that initiated a reward.
-     * @param toCharacterId The token ID of character that.
-     * @param token Address of token to reward.
-     * @param amount Amount of token to reward.
-     * @param fee Amount of fee.
-     * @param feeReceiver Fee receiver address.
-     */
-    event TipCharacter(
-        uint256 indexed fromCharacterId,
-        uint256 indexed toCharacterId,
-        address token,
-        uint256 amount,
-        uint256 fee,
-        address feeReceiver
-    );
 
     /**
      * @dev Emitted when a user set a tip with periodical config.
@@ -116,7 +95,9 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         uint256 indexed toCharacterId,
         address token,
         uint256 amount,
-        uint256 redeemedAmount
+        uint256 redeemedAmount,
+        uint256 fee,
+        address feeReceiver
     );
 
     /**
@@ -144,7 +125,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
 
     /// @inheritdoc ITipsWithConfig
     function setTipsConfig4Character(
-        uint256 tipConfigId,
         uint256 fromCharacterId,
         uint256 toCharacterId,
         address token,
@@ -153,6 +133,8 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         uint256 expiration
     ) external override {
         TipsConfig memory config;
+        uint256 tipConfigId = tipsConfigIds[fromCharacterId][toCharacterId];
+        config = tipsConfigs[tipConfigId];
 
         if (tipConfigId == 0) {
             // if tipConfigId is 0, create a new config
@@ -164,10 +146,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             config.redeemedTimes = 0;
         } else {
             // if tipConfigId is not 0, update the config
-            require(
-                tipsConfigs[tipConfigId].id == tipConfigId,
-                "TipsWithConfig: invalid tip config id"
-            );
             config.token = token;
             config.amount = amount;
             config.expiration = expiration;
@@ -177,7 +155,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         // approve the total tip amount of  token to this contract
         config.tipTimes = _calculateTipTimes(config.startTime, config.expiration, config.interval);
         config.totalApprovedAmount = amount * config.tipTimes;
-        _authorizeOperatorWithAmount(config.totalApprovedAmount);
 
         emit SetTipsConfig4Character(
             config.id,
@@ -200,21 +177,16 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
 
         require(config.redeemedTimes < config.tipTimes, "TipsWithConfig: all tips redeemed");
 
-        // prepare tipCharacter `data` for `Tips` contract's `tokensReceived` callback method
-        bytes memory data = abi.encode(config.fromCharacterId, config.toCharacterId);
-
         (uint256 availableTipTimes, uint256 unRedeemedAmount) = _calculateUnredeemedTimesAndAmount(
             tipConfigId
         );
         (tipConfigId);
 
         // send token
-        IERC777(_token).operatorSend(
+        IERC20(_token).transferFrom(
             IERC721(_web3Entry).ownerOf(config.fromCharacterId),
             IERC721(_web3Entry).ownerOf(config.toCharacterId),
-            unRedeemedAmount,
-            data,
-            ""
+            unRedeemedAmount
         );
 
         // update redeemedTimes
@@ -226,8 +198,15 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             config.toCharacterId,
             config.token,
             config.amount,
-            unRedeemedAmount
+            unRedeemedAmount,
+            0,
+            address(0)
         );
+    }
+
+    function approveTokenWithAmount(uint256 amount) external {
+        IERC20(_token).approve(address(this), amount);
+        authorizedAmount[msg.sender] = amount;
     }
 
     /// @inheritdoc ITipsWithConfig
@@ -262,11 +241,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
     /// @inheritdoc ITipsWithConfig
     function getToken() external view override returns (address) {
         return _token;
-    }
-
-    function _authorizeOperatorWithAmount(uint256 amount) internal {
-        IERC777(_token).authorizeOperator(address(this));
-        authorizedAmount[address(this)] = amount;
     }
 
     function _getTipsConfig(

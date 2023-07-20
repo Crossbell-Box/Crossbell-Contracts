@@ -20,7 +20,6 @@ interface ITipsWithConfig {
 
     /**
      * @notice Set the tips config for character.
-     * @param tipConfigId The tip config ID.
      * @param fromCharacterId The from character ID.
      * @param toCharacterId The to character ID.
      * @param token The tip token address.
@@ -29,7 +28,6 @@ interface ITipsWithConfig {
      * @param expiration The expiration of tips with periodical config.
      */
     function setTipsConfig4Character(
-        uint256 tipConfigId,
         uint256 fromCharacterId,
         uint256 toCharacterId,
         address token,
@@ -47,7 +45,6 @@ interface ITipsWithConfig {
 
     /**
      * @notice Return the tips config.
-     * @param tipConfigId The tip config ID.
      * @return fromCharacterId The from character ID.
      * @return toCharacterId The to character ID.
      * @return token The tip token address.
