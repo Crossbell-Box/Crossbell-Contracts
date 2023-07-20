@@ -66,12 +66,6 @@ interface ITipsWithConfig {
         );
 
     /**
-     * @notice Returns the authorized amount of a user to the tipWithConfig contract.
-     * @return The authorized amount.
-     */
-    function getAuthorizedAmount() external view returns (uint256);
-
-    /**
      * @notice Returns the address of web3Entry contract.
      * @return The address of web3Entry contract.
      */

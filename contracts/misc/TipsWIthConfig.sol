@@ -51,10 +51,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
     mapping(uint256 fromCharacterId => mapping(uint256 toCharacterId => uint256 tipsConfigId))
         public tipsConfigIds;
 
-    mapping(address => uint256) public authorizedAmount;
-
     // events
-
     /**
      * @dev Emitted when a user set a tip with periodical config.
      * @param tipConfigId The tip config id.
@@ -210,11 +207,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         )
     {
         return _getTipsConfig(tipConfigId);
-    }
-
-    /// @inheritdoc ITipsWithConfig
-    function getAuthorizedAmount() external view returns (uint256) {
-        return authorizedAmount[address(this)];
     }
 
     /// @inheritdoc ITipsWithConfig
