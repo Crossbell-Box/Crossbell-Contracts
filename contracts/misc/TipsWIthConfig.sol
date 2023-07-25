@@ -6,7 +6,6 @@ import {ITipsWithConfig} from "../interfaces/ITipsWithConfig.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IERC1820Registry} from "@openzeppelin/contracts/utils/introspection/IERC1820Registry.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 /**
@@ -39,14 +38,9 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         uint256 redeemedTimes;
     }
 
-    IERC1820Registry public constant ERC1820_REGISTRY =
-        IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
-    bytes32 public constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
-
     // slither-disable-start naming-convention
     // address of web3Entry
     address internal _web3Entry;
-    address internal _token; // erc20 token address
 
     uint256 internal _tipsConfigIndex;
     mapping(uint256 tipsConfigId => TipsConfig tipsConfig) internal _tipsConfigs;
@@ -231,22 +225,20 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         return _web3Entry;
     }
 
-    /// @inheritdoc ITipsWithConfig
-    function getToken() external view override returns (address) {
-        return _token;
-    }
-
     function _redeemTips4Character(
         uint256 tipConfigId,
         uint256 fromCharacterId,
         uint256 toCharacterId
     ) internal returns (uint256 availableTipTimes, uint256 unRedeemedAmount) {
-        (availableTipTimes, unRedeemedAmount) = _calculateUnredeemedTimesAndAmount(tipConfigId);
+        address token;
+        (token, availableTipTimes, unRedeemedAmount) = _calculateUnredeemedTimesAndAmount(
+            tipConfigId
+        );
 
         // send token
         address from = IERC721(_web3Entry).ownerOf(fromCharacterId);
         address to = IERC721(_web3Entry).ownerOf(toCharacterId);
-        IERC20(_token).safeTransferFrom(from, to, unRedeemedAmount);
+        IERC20(token).safeTransferFrom(from, to, unRedeemedAmount);
 
         return (availableTipTimes, unRedeemedAmount);
     }
@@ -278,7 +270,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
 
     function _calculateUnredeemedTimesAndAmount(
         uint256 tipConfigId
-    ) internal view returns (uint256, uint256) {
+    ) internal view returns (address, uint256, uint256) {
         TipsConfig storage config = _tipsConfigs[tipConfigId];
         uint256 elapsed = block.timestamp - config.startTime;
 
@@ -292,7 +284,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         }
 
         uint256 unredeemedTimes = availableTipTimes - config.redeemedTimes;
-        return (availableTipTimes, unredeemedTimes * config.amount);
+        return (config.token, availableTipTimes, unredeemedTimes * config.amount);
     }
 
     function _calculateTipTimes(

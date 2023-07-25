@@ -80,10 +80,4 @@ interface ITipsWithConfig {
      * @return The address of web3Entry contract.
      */
     function getWeb3Entry() external view returns (address);
-
-    /**
-     * @notice Returns the address of mira token contract.
-     * @return The address of mira token contract.
-     */
-    function getToken() external view returns (address);
 }
