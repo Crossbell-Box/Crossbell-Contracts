@@ -44,7 +44,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
     // slither-disable-start naming-convention
     // address of web3Entry
     address internal _web3Entry;
-    address internal _token; // mira token, erc777 standard
+    address internal _token; // erc20 token address
 
     uint256 internal _tipsConfigIndex;
     mapping(uint256 tipsConfigId => TipsConfig tipsConfig) internal _tipsConfigs;
@@ -116,7 +116,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
     function setTipsConfig4Character(
         uint256 fromCharacterId,
         uint256 toCharacterId,
-        address token,
         uint256 amount,
         uint256 interval,
         uint256 expiration
@@ -134,7 +133,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             _tipsConfigIds[fromCharacterId][toCharacterId] = config.id;
         } else {
             // if tipConfigId is not 0, update the config
-            config.token = token;
+            config.token = _token;
             config.amount = amount;
             config.expiration = expiration;
             config.interval = interval;
