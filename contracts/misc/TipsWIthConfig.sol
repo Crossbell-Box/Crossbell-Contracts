@@ -23,6 +23,8 @@ import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.s
  *  to the to character.
  */
 contract TipsWithConfig is ITipsWithConfig, Initializable {
+    using SafeERC20 for IERC20;
+
     // structs
     struct TipsConfig {
         uint256 id;
@@ -98,31 +100,23 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
     /**
      * @notice Initialize the contract, setting web3Entry address and token address.
      * @param web3Entry_ Address of web3Entry.
-     * @param token_ Address of token.
      */
-    function initialize(address web3Entry_, address token_) external override initializer {
+    function initialize(address web3Entry_) external override initializer {
         _web3Entry = web3Entry_;
-        _token = token_;
-
-        // register interfaces
-        ERC1820_REGISTRY.setInterfaceImplementer(
-            address(this),
-            TOKENS_RECIPIENT_INTERFACE_HASH,
-            address(this)
-        );
     }
 
     /// @inheritdoc ITipsWithConfig
     function setTipsConfig4Character(
         uint256 fromCharacterId,
         uint256 toCharacterId,
+        address token,
         uint256 amount,
         uint256 interval,
         uint256 expiration
     ) external override {
-        TipsConfig memory config;
+        require(interval > 0, "TipsWithConfig: interval must be greater than 0");
         uint256 tipConfigId = _tipsConfigIds[fromCharacterId][toCharacterId];
-        config = _tipsConfigs[tipConfigId];
+        TipsConfig storage config = _tipsConfigs[tipConfigId];
 
         if (tipConfigId == 0) {
             // if tipConfigId is 0, create a new config
@@ -133,7 +127,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             _tipsConfigIds[fromCharacterId][toCharacterId] = config.id;
         } else {
             // if tipConfigId is not 0, update the config
-            config.token = _token;
+            config.token = token;
             config.amount = amount;
             config.expiration = expiration;
             config.interval = interval;
@@ -180,7 +174,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
 
     /// @inheritdoc ITipsWithConfig
     function triggerTips4Character(uint256 tipConfigId) external override {
-        TipsConfig memory config = _tipsConfigs[tipConfigId];
+        TipsConfig storage config = _tipsConfigs[tipConfigId];
 
         require(config.redeemedTimes < config.tipTimes, "TipsWithConfig: all tips redeemed");
 
@@ -252,11 +246,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         // send token
         address from = IERC721(_web3Entry).ownerOf(fromCharacterId);
         address to = IERC721(_web3Entry).ownerOf(toCharacterId);
-        bool success = IERC20(_token).transferFrom(from, to, unRedeemedAmount);
-
-        if (!success) {
-            revert("TipsWithConfig: transfer token failed");
-        }
+        IERC20(_token).safeTransferFrom(from, to, unRedeemedAmount);
 
         return (availableTipTimes, unRedeemedAmount);
     }
@@ -275,7 +265,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             uint256 expiration
         )
     {
-        TipsConfig memory config = _tipsConfigs[tipConfigId];
+        TipsConfig storage config = _tipsConfigs[tipConfigId];
         return (
             config.fromCharacterId,
             config.toCharacterId,
@@ -289,11 +279,12 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
     function _calculateUnredeemedTimesAndAmount(
         uint256 tipConfigId
     ) internal view returns (uint256, uint256) {
-        TipsConfig memory config = _tipsConfigs[tipConfigId];
+        TipsConfig storage config = _tipsConfigs[tipConfigId];
         uint256 elapsed = block.timestamp - config.startTime;
 
         uint256 cycles = elapsed / config.interval;
 
+        // When user tip for a character, instant count once
         uint256 availableTipTimes = cycles + 1;
 
         if (availableTipTimes > config.tipTimes) {
@@ -309,13 +300,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         uint256 expireTime,
         uint256 interval
     ) internal pure returns (uint256) {
-        uint256 totalInterval = expireTime - startTime;
-
-        if (interval == 0) {
-            return 0;
-        }
-
-        uint256 intervals = totalInterval / interval;
+        uint256 intervals = expireTime - startTime / interval;
 
         return intervals + 1;
     }

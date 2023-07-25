@@ -13,14 +13,14 @@ interface ITipsWithConfig {
     /**
      * @notice Initializes the ITipsWithConfig.
      * @param web3Entry_ Address of web3Entry.
-     * @param token_ Address of token.
      */
-    function initialize(address web3Entry_, address token_) external;
+    function initialize(address web3Entry_) external;
 
     /**
      * @notice Set the tips config for character.
      * @param fromCharacterId The from character ID.
      * @param toCharacterId The to character ID.
+     * @param token The tip token address.
      * @param amount The amount of token.
      * @param interval The interval of tips with periodical config.
      * @param expiration The expiration of tips with periodical config.
@@ -28,6 +28,7 @@ interface ITipsWithConfig {
     function setTipsConfig4Character(
         uint256 fromCharacterId,
         uint256 toCharacterId,
+        address token,
         uint256 amount,
         uint256 interval,
         uint256 expiration

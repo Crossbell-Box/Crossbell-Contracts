@@ -47,7 +47,7 @@ contract TipsWithFeeTest is CommonTest {
 
         // deploy and init Tips contract
         _tips = new TipsWithConfig();
-        _tips.initialize(address(web3Entry), address(token));
+        _tips.initialize(address(web3Entry));
 
         // create characters
         _createCharacter(CHARACTER_HANDLE, alice);
@@ -57,26 +57,13 @@ contract TipsWithFeeTest is CommonTest {
     function testSetupState() public {
         // check status after initialization
         assertEq(_tips.getWeb3Entry(), address(web3Entry));
-        assertEq(_tips.getToken(), address(token));
     }
 
     function testReinitializeFail() public {
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
-        _tips.initialize(address(0x10), address(0x10));
+        _tips.initialize(address(0x10));
 
         // check status
         assertEq(_tips.getWeb3Entry(), address(web3Entry));
-        assertEq(_tips.getToken(), address(token));
     }
-
-    // function testSetTipsConfig4Character(uint256 amount) public {
-    //     vm.assume(amount < 1 ether && amount > 0);
-
-    //     vm.prank(alice);
-    //     _tips.setTipsConfig4Character(1, 2, amount, 3600, 1690365841);
-
-    //     // expect events
-    //     expectEmit(CheckAll);
-    //     emit SetTipsConfig4Character(1, 1, 2, address(token), amount, 0, 3600, 1690365841, 0);
-    // }
 }
