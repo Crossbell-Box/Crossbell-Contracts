@@ -32,9 +32,9 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         address token;
         uint256 amount;
         uint256 startTime;
-        uint256 expiration;
+        uint256 endTime;
         uint256 interval;
-        uint256 tipTimes;
+        uint256 tipsTimes;
         uint256 redeemedTimes;
     }
 
@@ -56,8 +56,10 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
      * @param toCharacterId The token ID of character that.
      * @param token Address of token to reward.
      * @param amount Amount of token to reward.
+     * @param startTime The start time of tip.
+     * @param endTime The end time of tip.
      * @param interval Interval of the tip.
-     * @param expiration Expiration of the tip.
+     * @param tipTimes Tip times of the tip.
      */
     event SetTipsConfig4Character(
         uint256 indexed tipConfigId,
@@ -66,7 +68,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         address token,
         uint256 amount,
         uint256 startTime,
-        uint256 expiration,
+        uint256 endTime,
         uint256 interval,
         uint256 tipTimes
     );
@@ -99,59 +101,64 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         _web3Entry = web3Entry_;
     }
 
+    // solhint-disable-next-line function-max-lines
     /// @inheritdoc ITipsWithConfig
     function setTipsConfig4Character(
         uint256 fromCharacterId,
         uint256 toCharacterId,
         address token,
         uint256 amount,
-        uint256 interval,
-        uint256 expiration
+        uint256 startTime,
+        uint256 endTime,
+        uint256 interval
     ) external override {
+        require(
+            msg.sender == IERC721(_web3Entry).ownerOf(fromCharacterId),
+            "TipsWithConfig: not character owner"
+        );
+        require(startTime >= block.timestamp, "TipsWithConfig: invalid startTime");
         require(interval > 0, "TipsWithConfig: interval must be greater than 0");
-        uint256 tipConfigId = _tipsConfigIds[fromCharacterId][toCharacterId];
+        require(endTime >= startTime + interval, "TipsWithConfig: invalid endTime");
+
+        uint256 tipConfigId = _getTipsConfigId(fromCharacterId, toCharacterId);
         TipsConfig storage config = _tipsConfigs[tipConfigId];
+        if (tipConfigId > 0) {
+            // if tipConfigId is not 0, try to trigger tips first
+            (, uint256 availableAmount) = _redeemTips4Character(
+                tipConfigId,
+                config.fromCharacterId,
+                config.toCharacterId
+            );
 
-        if (tipConfigId == 0) {
-            // if tipConfigId is 0, create a new config
-            _tipsConfigIndex++;
-            config.id = _tipsConfigIndex;
-            config.fromCharacterId = fromCharacterId;
-            config.toCharacterId = toCharacterId;
-            _tipsConfigIds[fromCharacterId][toCharacterId] = config.id;
-        } else {
-            // if tipConfigId is not 0, update the config
-            config.token = token;
-            config.amount = amount;
-            config.expiration = expiration;
-            config.interval = interval;
-
-            if (config.redeemedTimes < config.tipTimes) {
-                (, uint256 unRedeemedAmount) = _redeemTips4Character(
-                    tipConfigId,
-                    config.fromCharacterId,
-                    config.toCharacterId
-                );
-
+            if (availableAmount > 0) {
                 emit TriggerTips4Character(
                     config.id,
                     config.fromCharacterId,
                     config.toCharacterId,
                     config.token,
                     config.amount,
-                    unRedeemedAmount,
+                    availableAmount,
                     0,
                     address(0)
                 );
             }
+        } else {
+            tipConfigId = ++_tipsConfigIndex;
+            config = _tipsConfigs[tipConfigId];
+            _tipsConfigIds[fromCharacterId][toCharacterId] = tipConfigId;
         }
 
-        config.startTime = block.timestamp;
+        // update tips config
+        config.id = tipConfigId;
+        config.fromCharacterId = fromCharacterId;
+        config.toCharacterId = toCharacterId;
+        config.token = token;
+        config.amount = amount;
+        config.startTime = startTime;
+        config.endTime = endTime;
+        config.interval = interval;
         config.redeemedTimes = 0;
-        // approve the total tip amount of  token to this contract
-        config.tipTimes = _calculateTipTimes(config.startTime, config.expiration, config.interval);
-
-        _tipsConfigs[config.id] = config;
+        config.tipsTimes = _calculateTipTimes(startTime, endTime, interval);
 
         emit SetTipsConfig4Character(
             config.id,
@@ -160,9 +167,9 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             config.token,
             config.amount,
             config.startTime,
-            config.expiration,
+            config.endTime,
             config.interval,
-            config.tipTimes
+            config.tipsTimes
         );
     }
 
@@ -170,9 +177,9 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
     function triggerTips4Character(uint256 tipConfigId) external override {
         TipsConfig storage config = _tipsConfigs[tipConfigId];
 
-        require(config.redeemedTimes < config.tipTimes, "TipsWithConfig: all tips redeemed");
+        require(config.redeemedTimes < config.tipsTimes, "TipsWithConfig: all tips redeemed");
 
-        (uint256 availableTipTimes, uint256 unRedeemedAmount) = _redeemTips4Character(
+        (uint256 availableTipTimes, uint256 availableAmount) = _redeemTips4Character(
             tipConfigId,
             config.fromCharacterId,
             config.toCharacterId
@@ -187,7 +194,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             config.toCharacterId,
             config.token,
             config.amount,
-            unRedeemedAmount,
+            availableAmount,
             0,
             address(0)
         );
@@ -197,8 +204,8 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
     function getTipsConfigId(
         uint256 fromCharacterId,
         uint256 toCharacterId
-    ) external view returns (uint256 tipConfigId) {
-        return _tipsConfigIds[fromCharacterId][toCharacterId];
+    ) external view returns (uint256) {
+        return _getTipsConfigId(fromCharacterId, toCharacterId);
     }
 
     /// @inheritdoc ITipsWithConfig
@@ -229,18 +236,19 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
         uint256 tipConfigId,
         uint256 fromCharacterId,
         uint256 toCharacterId
-    ) internal returns (uint256 availableTipTimes, uint256 unRedeemedAmount) {
+    ) internal returns (uint256 availableTipTimes, uint256 availableAmount) {
         address token;
-        (token, availableTipTimes, unRedeemedAmount) = _calculateUnredeemedTimesAndAmount(
+        (token, availableTipTimes, availableAmount) = _calculateAvailableTimesAndAmount(
             tipConfigId
         );
 
-        // send token
-        address from = IERC721(_web3Entry).ownerOf(fromCharacterId);
-        address to = IERC721(_web3Entry).ownerOf(toCharacterId);
-        IERC20(token).safeTransferFrom(from, to, unRedeemedAmount);
-
-        return (availableTipTimes, unRedeemedAmount);
+        if (availableAmount > 0) {
+            // send token
+            address from = IERC721(_web3Entry).ownerOf(fromCharacterId);
+            address to = IERC721(_web3Entry).ownerOf(toCharacterId);
+            // slither-disable-next-line arbitrary-send-erc20
+            IERC20(token).safeTransferFrom(from, to, availableAmount);
+        }
     }
 
     function _getTipsConfig(
@@ -264,23 +272,29 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
             config.token,
             config.amount,
             config.interval,
-            config.expiration
+            config.endTime
         );
     }
 
-    function _calculateUnredeemedTimesAndAmount(
+    function _getTipsConfigId(
+        uint256 fromCharacterId,
+        uint256 toCharacterId
+    ) internal view returns (uint256) {
+        return _tipsConfigIds[fromCharacterId][toCharacterId];
+    }
+
+    function _calculateAvailableTimesAndAmount(
         uint256 tipConfigId
     ) internal view returns (address, uint256, uint256) {
         TipsConfig storage config = _tipsConfigs[tipConfigId];
-        uint256 elapsed = block.timestamp - config.startTime;
+        uint256 availableTipTimes = _calculateTipTimes(
+            config.startTime,
+            block.timestamp,
+            config.interval
+        );
 
-        uint256 cycles = elapsed / config.interval;
-
-        // When user tip for a character, instant count once
-        uint256 availableTipTimes = cycles + 1;
-
-        if (availableTipTimes > config.tipTimes) {
-            availableTipTimes = config.tipTimes;
+        if (availableTipTimes > config.tipsTimes) {
+            availableTipTimes = config.tipsTimes;
         }
 
         uint256 unredeemedTimes = availableTipTimes - config.redeemedTimes;
@@ -289,11 +303,10 @@ contract TipsWithConfig is ITipsWithConfig, Initializable {
 
     function _calculateTipTimes(
         uint256 startTime,
-        uint256 expireTime,
+        uint256 endTime,
         uint256 interval
-    ) internal pure returns (uint256) {
-        uint256 intervals = expireTime - startTime / interval;
-
-        return intervals + 1;
+    ) internal view returns (uint256) {
+        // why add 1 here: when user tips for a character, instant count once
+        return (endTime - startTime) / interval + 1;
     }
 }
