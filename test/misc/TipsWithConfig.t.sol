@@ -6,7 +6,7 @@ import {CommonTest} from "../helpers/CommonTest.sol";
 import {TipsWithConfig} from "../../contracts/misc/TipsWithConfig.sol";
 import {MiraToken} from "../../contracts/mocks/MiraToken.sol";
 
-contract TipsWithFeeTest is CommonTest {
+contract TipsWithConfigTest is CommonTest {
     uint256 public constant initialBalance = 10 ether;
 
     TipsWithConfig internal _tips;

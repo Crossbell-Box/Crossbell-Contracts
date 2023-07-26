@@ -10,6 +10,19 @@ import {DataTypes} from "../libraries/DataTypes.sol";
  */
 
 interface ITipsWithConfig {
+    struct TipsConfig {
+        uint256 id;
+        uint256 fromCharacterId;
+        uint256 toCharacterId;
+        address token;
+        uint256 amount;
+        uint256 startTime;
+        uint256 endTime;
+        uint256 interval;
+        uint256 tipsTimes;
+        uint256 redeemedTimes;
+    }
+
     /**
      * @notice Initializes the ITipsWithConfig.
      * @param web3Entry_ Address of web3Entry.
@@ -56,26 +69,9 @@ interface ITipsWithConfig {
 
     /**
      * @notice Return the tips config.
-     * @return fromCharacterId The from character ID.
-     * @return toCharacterId The to character ID.
-     * @return token The tip token address.
-     * @return amount The amount of token.
-     * @return interval The interval of tips with periodical config.
-     * @return expiration The expiration of tips with periodical config.
+     * @param tipConfigId The tip config ID.
      */
-    function getTipsConfig(
-        uint256 tipConfigId
-    )
-        external
-        view
-        returns (
-            uint256 fromCharacterId,
-            uint256 toCharacterId,
-            address token,
-            uint256 amount,
-            uint256 interval,
-            uint256 expiration
-        );
+    function getTipsConfig(uint256 tipConfigId) external view returns (TipsConfig memory config);
 
     /**
      * @notice Returns the address of web3Entry contract.
