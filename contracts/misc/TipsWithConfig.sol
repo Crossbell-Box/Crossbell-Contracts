@@ -115,7 +115,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             _tipsConfigIds[fromCharacterId][toCharacterId] = tipConfigId;
         }
 
-        uint256 tipsTimes = _calculateTipTimes(startTime, endTime, interval);
+        uint256 tipsTimes = _getTipTimes(startTime, endTime, interval);
         // update tips config
         _tipsConfigs[tipConfigId] = TipsConfig({
             id: tipConfigId,
@@ -178,9 +178,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     }
 
     function _triggerTips4Character(TipsConfig memory config) internal returns (uint256, uint256) {
-        (uint256 availableTipTimes, uint256 availableAmount) = _calculateAvailableTimesAndAmount(
-            config
-        );
+        (uint256 availableTipTimes, uint256 availableAmount) = _getAvailableTimesAndAmount(config);
 
         if (availableAmount > 0) {
             if (availableAmount > 0) {
@@ -213,10 +211,10 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         return _tipsConfigIds[fromCharacterId][toCharacterId];
     }
 
-    function _calculateAvailableTimesAndAmount(
+    function _getAvailableTimesAndAmount(
         TipsConfig memory config
     ) internal view returns (uint256, uint256) {
-        uint256 availableTipTimes = _calculateTipTimes(
+        uint256 availableTipTimes = _getTipTimes(
             config.startTime,
             block.timestamp,
             config.interval
@@ -230,7 +228,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         return (availableTipTimes, unredeemedTimes * config.amount);
     }
 
-    function _calculateTipTimes(
+    function _getTipTimes(
         uint256 startTime,
         uint256 endTime,
         uint256 interval

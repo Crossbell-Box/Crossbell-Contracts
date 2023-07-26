@@ -5,9 +5,10 @@ pragma solidity 0.8.18;
 import {CommonTest} from "../helpers/CommonTest.sol";
 import {TipsWithConfig} from "../../contracts/misc/TipsWithConfig.sol";
 import {MiraToken} from "../../contracts/mocks/MiraToken.sol";
+import {ITipsWithConfig} from "../../contracts/interfaces/ITipsWithConfig.sol";
 
 contract TipsWithConfigTest is CommonTest {
-    uint256 public constant initialBalance = 10 ether;
+    uint256 public constant initialBalance = 10000 ether;
 
     TipsWithConfig internal _tips;
 
@@ -93,11 +94,100 @@ contract TipsWithConfigTest is CommonTest {
             endTime,
             interval
         );
+
+        // check status
+        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 1);
+        _checkConfig(
+            _tips.getTipsConfig(1),
+            ITipsWithConfig.TipsConfig({
+                id: 1,
+                fromCharacterId: FIRST_CHARACTER_ID,
+                toCharacterId: SECOND_CHARACTER_ID,
+                token: address(token),
+                amount: amount,
+                startTime: startTime,
+                endTime: endTime,
+                interval: interval,
+                tipsTimes: (endTime - startTime) / interval + 1,
+                redeemedTimes: 0
+            })
+        );
     }
 
     function testSetTipsConfig4CharacterWithUpdateConfig() public {
-        // TODO
-        vm.prank(alice);
+        uint256 amount = 1 ether;
+        uint256 interval = 10 days;
+        uint256 startTime = block.timestamp;
+        uint256 endTime = startTime + 2 * interval;
+
+        vm.startPrank(alice);
+        token.approve(address(_tips), 1 ether);
+        _tips.setTipsConfig4Character(
+            FIRST_CHARACTER_ID,
+            SECOND_CHARACTER_ID,
+            address(token),
+            amount,
+            startTime,
+            endTime,
+            interval
+        );
+
+        // check status
+        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 1);
+        _checkConfig(
+            _tips.getTipsConfig(1),
+            ITipsWithConfig.TipsConfig({
+                id: 1,
+                fromCharacterId: FIRST_CHARACTER_ID,
+                toCharacterId: SECOND_CHARACTER_ID,
+                token: address(token),
+                amount: amount,
+                startTime: startTime,
+                endTime: endTime,
+                interval: interval,
+                tipsTimes: (endTime - startTime) / interval + 1,
+                redeemedTimes: 0
+            })
+        );
+
+        skip(interval / 2);
+
+        amount = 2 ether;
+        interval = 20 days;
+        startTime = block.timestamp;
+        endTime = startTime + interval;
+
+        _tips.setTipsConfig4Character(
+            FIRST_CHARACTER_ID,
+            SECOND_CHARACTER_ID,
+            address(token),
+            amount,
+            startTime,
+            endTime,
+            interval
+        );
+        vm.stopPrank();
+
+        // check status
+        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 1);
+        _checkConfig(
+            _tips.getTipsConfig(1),
+            ITipsWithConfig.TipsConfig({
+                id: 1,
+                fromCharacterId: FIRST_CHARACTER_ID,
+                toCharacterId: SECOND_CHARACTER_ID,
+                token: address(token),
+                amount: amount,
+                startTime: startTime,
+                endTime: endTime,
+                interval: interval,
+                tipsTimes: (endTime - startTime) / interval + 1,
+                redeemedTimes: 0
+            })
+        );
+        // check balances
+        assertEq(token.balanceOf(alice), initialBalance - 1 ether);
+        assertEq(token.balanceOf(bob), 1 ether);
     }
 
     function testSetTipsConfig4CharacterFail(uint256 interval) public {
@@ -163,5 +253,21 @@ contract TipsWithConfigTest is CommonTest {
     function testTriggerTips4CharacterFail() public {
         // TODO
         vm.prank(alice);
+    }
+
+    function _checkConfig(
+        ITipsWithConfig.TipsConfig memory config1,
+        ITipsWithConfig.TipsConfig memory config2
+    ) internal {
+        assertEq(config1.id, config2.id);
+        assertEq(config1.fromCharacterId, config2.fromCharacterId);
+        assertEq(config1.toCharacterId, config2.toCharacterId);
+        assertEq(config1.token, config2.token);
+        assertEq(config1.amount, config2.amount);
+        assertEq(config1.startTime, config2.startTime);
+        assertEq(config1.endTime, config2.endTime);
+        assertEq(config1.interval, config2.interval);
+        assertEq(config1.tipsTimes, config2.tipsTimes);
+        assertEq(config1.redeemedTimes, config2.redeemedTimes);
     }
 }
