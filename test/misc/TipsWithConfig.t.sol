@@ -32,8 +32,19 @@ contract TipsWithConfigTest is CommonTest {
         uint256 amount,
         uint256 fee,
         address feeReceiver,
-        address currentRound
+        uint256 currentRound
     );
+
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Sent(
+        address indexed operator,
+        address indexed from,
+        address indexed to,
+        uint256 amount,
+        bytes data,
+        bytes operatorData
+    );
+    event Transfer(address indexed from, address indexed to, uint256 value);
 
     function setUp() public {
         _setUp();
@@ -245,14 +256,87 @@ contract TipsWithConfigTest is CommonTest {
         );
     }
 
-    function testTriggerTips4Character() public {
-        // TODO
-        vm.prank(alice);
+    function testTriggerTips4Characterx(uint256 amount, uint256 interval) public {
+        vm.assume(amount > 0 && amount < initialBalance);
+        vm.assume(interval > 0 && interval < 100 days);
+
+        uint256 startTime = block.timestamp + 10;
+        uint256 endTime = startTime + 2 * interval;
+
+        vm.startPrank(alice);
+        token.approve(address(_tips), amount);
+        _tips.setTipsConfig4Character(
+            FIRST_CHARACTER_ID,
+            SECOND_CHARACTER_ID,
+            address(token),
+            amount,
+            startTime,
+            endTime,
+            interval
+        );
+        vm.stopPrank();
+
+        skip(10);
+
+        // expect events
+        expectEmit(CheckAll);
+        emit Approval(alice, address(_tips), 0);
+        expectEmit(CheckAll);
+        emit Sent(address(_tips), alice, bob, amount, "", "");
+        expectEmit(CheckAll);
+        emit Transfer(alice, bob, amount);
+        expectEmit(CheckAll);
+        emit TriggerTips4Character(
+            1,
+            FIRST_CHARACTER_ID,
+            SECOND_CHARACTER_ID,
+            address(token),
+            amount,
+            0,
+            address(0),
+            1
+        );
+        _tips.triggerTips4Character(1);
+
+        // check status
+        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 1);
+        _checkConfig(
+            _tips.getTipsConfig(1),
+            ITipsWithConfig.TipsConfig({
+                id: 1,
+                fromCharacterId: FIRST_CHARACTER_ID,
+                toCharacterId: SECOND_CHARACTER_ID,
+                token: address(token),
+                amount: amount,
+                startTime: startTime,
+                endTime: endTime,
+                interval: interval,
+                totalRound: (endTime - startTime) / interval + 1,
+                currentRound: 1
+            })
+        );
+        // check balances
+        assertEq(token.balanceOf(alice), initialBalance - amount);
+        assertEq(token.balanceOf(bob), amount);
     }
 
-    function testTriggerTips4CharacterFail() public {
-        // TODO
+    function testTriggerTips4CharacterFailInvalidStartTime() public {
+        uint256 startTime = block.timestamp + 10;
+        uint256 endTime = startTime + 20;
+
         vm.prank(alice);
+        _tips.setTipsConfig4Character(
+            FIRST_CHARACTER_ID,
+            SECOND_CHARACTER_ID,
+            address(token),
+            1 ether,
+            startTime,
+            endTime,
+            1
+        );
+
+        vm.expectRevert(abi.encodePacked("TipsWithConfig: start time not comes"));
+        _tips.triggerTips4Character(1);
     }
 
     function _checkConfig(

@@ -150,7 +150,11 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         TipsConfig storage config = _tipsConfigs[tipConfigId];
 
         require(block.timestamp >= config.startTime, "TipsWithConfig: start time not comes");
-        require(config.currentRound <= config.totalRound, "TipsWithConfig: all tips redeemed");
+
+        // all the tips have been finished
+        if (config.currentRound >= config.totalRound) {
+            return;
+        }
 
         // trigger tips
         (uint256 currentRound, ) = _triggerTips4Character(config);
