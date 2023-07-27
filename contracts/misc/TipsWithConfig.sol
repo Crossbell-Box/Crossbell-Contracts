@@ -192,7 +192,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         // trigger tips
         (uint256 currentRound, ) = _triggerTips4Character(config);
 
-        // update redeemedTimes
+        // update currentRound
         _tipsConfigs[tipConfigId].currentRound = currentRound;
     }
 
@@ -312,7 +312,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         uint256 endTime,
         uint256 interval
     ) internal pure returns (uint256) {
-        // why add 1 here: when user tips for a character, instant count once
+        // why add 1 here: when user tips for a character, instantly add one round
         return (endTime - startTime) / interval + 1;
     }
 

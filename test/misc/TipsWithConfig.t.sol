@@ -267,7 +267,7 @@ contract TipsWithConfigTest is CommonTest {
         );
     }
 
-    function testTriggerTips4Characterx(uint256 amount, uint256 interval) public {
+    function testTriggerTips4Character(uint256 amount, uint256 interval) public {
         vm.assume(amount > 0 && amount < initialBalance);
         vm.assume(interval > 0 && interval < 100 days);
 
