@@ -33,6 +33,9 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     mapping(uint256 tipsConfigId => TipsConfig tipsConfig) internal _tipsConfigs;
     mapping(uint256 fromCharacterId => mapping(uint256 toCharacterId => uint256 tipsConfigId))
         internal _tipsConfigIds;
+    mapping(address feeReceiver => uint256 fraction) internal _feeFractions;
+    mapping(address feeReceiver => mapping(uint256 characterId => uint256 fraction))
+        internal _feeFractions4Character;
     // slither-disable-end naming-convention
 
     // events
@@ -46,6 +49,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
      * @param startTime The start time of tip.
      * @param endTime The end time of tip.
      * @param interval Interval of the tip.
+     * @param feeReceiver Fee receiver address.
      * @param totalRound Total round of the tip.
      */
     event SetTipsConfig4Character(
@@ -57,6 +61,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         uint256 startTime,
         uint256 endTime,
         uint256 interval,
+        address feeReceiver,
         uint256 totalRound
     );
 
@@ -82,12 +87,36 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         uint256 currentRound
     );
 
-    /**
-     * @notice Initialize the contract, setting web3Entry address and token address.
-     * @param web3Entry_ Address of web3Entry.
-     */
+    modifier onlyFeeReceiver(address feeReceiver) {
+        require(feeReceiver == msg.sender, "TipsWithConfig: caller is not fee receiver");
+        _;
+    }
+
+    modifier validateFraction(uint256 fraction) {
+        require(fraction <= _feeDenominator(), "TipsWithConfig: fraction out of range");
+        _;
+    }
+
+    /// @inheritdoc ITipsWithConfig
     function initialize(address web3Entry_) external override initializer {
         _web3Entry = web3Entry_;
+    }
+
+    /// @inheritdoc ITipsWithConfig
+    function setDefaultFeeFraction(
+        address feeReceiver,
+        uint256 fraction
+    ) external override onlyFeeReceiver(feeReceiver) validateFraction(fraction) {
+        _feeFractions[feeReceiver] = fraction;
+    }
+
+    /// @inheritdoc ITipsWithConfig
+    function setFeeFraction4Character(
+        address feeReceiver,
+        uint256 characterId,
+        uint256 fraction
+    ) external override onlyFeeReceiver(feeReceiver) validateFraction(fraction) {
+        _feeFractions4Character[feeReceiver][characterId] = fraction;
     }
 
     /// @inheritdoc ITipsWithConfig
@@ -98,7 +127,8 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         uint256 amount,
         uint256 startTime,
         uint256 endTime,
-        uint256 interval
+        uint256 interval,
+        address feeReceiver
     ) external override nonReentrant {
         require(
             msg.sender == IERC721(_web3Entry).ownerOf(fromCharacterId),
@@ -113,6 +143,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             // if tipConfigId is not 0, try to trigger tips first
             _triggerTips4Character(_tipsConfigs[tipConfigId]);
         } else {
+            // allocate and save new tipConfigId
             tipConfigId = ++_tipsConfigIndex;
             _tipsConfigIds[fromCharacterId][toCharacterId] = tipConfigId;
         }
@@ -128,6 +159,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             startTime: startTime,
             endTime: endTime,
             interval: interval,
+            feeReceiver: feeReceiver,
             currentRound: 0,
             totalRound: totalRound
         });
@@ -141,6 +173,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             startTime,
             endTime,
             interval,
+            feeReceiver,
             totalRound
         );
     }
@@ -161,6 +194,23 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
 
         // update redeemedTimes
         _tipsConfigs[tipConfigId].currentRound = currentRound;
+    }
+
+    /// @inheritdoc ITipsWithConfig
+    function getFeeFraction(
+        address feeReceiver,
+        uint256 characterId
+    ) external view override returns (uint256) {
+        return _getFeeFraction(feeReceiver, characterId);
+    }
+
+    /// @inheritdoc ITipsWithConfig
+    function getFeeAmount(
+        address feeReceiver,
+        uint256 characterId,
+        uint256 tipAmount
+    ) external view override returns (uint256) {
+        return _getFeeAmount(feeReceiver, characterId, tipAmount);
     }
 
     /// @inheritdoc ITipsWithConfig
@@ -185,13 +235,22 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
 
     function _triggerTips4Character(TipsConfig memory config) internal returns (uint256, uint256) {
         (uint256 currentRound, uint256 availableAmount) = _getAvailableRoundAndAmount(config);
-
         if (availableAmount > 0) {
             // send token
             address from = IERC721(_web3Entry).ownerOf(config.fromCharacterId);
             address to = IERC721(_web3Entry).ownerOf(config.toCharacterId);
+            // fee
+            uint256 feeAmount = _getFeeAmount(
+                config.feeReceiver,
+                config.toCharacterId,
+                availableAmount
+            );
             // slither-disable-next-line arbitrary-send-erc20
-            IERC20(config.token).safeTransferFrom(from, to, availableAmount);
+            IERC20(config.token).safeTransferFrom(from, to, availableAmount - feeAmount);
+            if (feeAmount > 0) {
+                // slither-disable-next-line arbitrary-send-erc20
+                IERC20(config.token).safeTransferFrom(from, config.feeReceiver, feeAmount);
+            }
 
             emit TriggerTips4Character(
                 config.id,
@@ -199,8 +258,8 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
                 config.toCharacterId,
                 config.token,
                 availableAmount,
-                0,
-                address(0),
+                feeAmount,
+                config.feeReceiver,
                 currentRound
             );
         }
@@ -227,6 +286,27 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         return (currentRound, (currentRound - config.currentRound) * config.amount);
     }
 
+    function _getFeeFraction(
+        address feeReceiver,
+        uint256 characterId
+    ) internal view returns (uint256) {
+        // get character fraction
+        uint256 fraction = _feeFractions4Character[feeReceiver][characterId];
+        if (fraction > 0) return fraction;
+        // get default fraction
+        return _feeFractions[feeReceiver];
+    }
+
+    function _getFeeAmount(
+        address feeReceiver,
+        uint256 characterId,
+        uint256 tipAmount
+    ) internal view returns (uint256) {
+        uint256 fraction = _getFeeFraction(feeReceiver, characterId);
+        uint256 feeAmount = (tipAmount * fraction) / _feeDenominator();
+        return feeAmount;
+    }
+
     function _getTipRound(
         uint256 startTime,
         uint256 endTime,
@@ -234,5 +314,12 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     ) internal pure returns (uint256) {
         // why add 1 here: when user tips for a character, instant count once
         return (endTime - startTime) / interval + 1;
+    }
+
+    /**
+     * @dev Defaults to 10000 so fees are expressed in basis points.
+     */
+    function _feeDenominator() internal pure virtual returns (uint96) {
+        return 10000;
     }
 }

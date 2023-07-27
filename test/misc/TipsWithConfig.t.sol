@@ -21,6 +21,7 @@ contract TipsWithConfigTest is CommonTest {
         uint256 startTime,
         uint256 endTime,
         uint256 interval,
+        address feeReceiver,
         uint256 totalRound
     );
 
@@ -52,7 +53,6 @@ contract TipsWithConfigTest is CommonTest {
         // deploy and mint token
         token = new MiraToken("Mira Token", "MIRA", address(this));
         token.mint(alice, initialBalance);
-        //        token.mint(carol, initialBalance);
 
         // deploy and init Tips contract
         _tips = new TipsWithConfig();
@@ -93,6 +93,7 @@ contract TipsWithConfigTest is CommonTest {
             startTime,
             endTime,
             interval,
+            address(1),
             (endTime - startTime) / interval + 1
         );
         vm.prank(alice);
@@ -103,7 +104,8 @@ contract TipsWithConfigTest is CommonTest {
             amount,
             startTime,
             endTime,
-            interval
+            interval,
+            address(1)
         );
 
         // check status
@@ -119,6 +121,7 @@ contract TipsWithConfigTest is CommonTest {
                 startTime: startTime,
                 endTime: endTime,
                 interval: interval,
+                feeReceiver: address(1),
                 totalRound: (endTime - startTime) / interval + 1,
                 currentRound: 0
             })
@@ -140,7 +143,8 @@ contract TipsWithConfigTest is CommonTest {
             amount,
             startTime,
             endTime,
-            interval
+            interval,
+            address(1)
         );
 
         // check status
@@ -156,6 +160,7 @@ contract TipsWithConfigTest is CommonTest {
                 startTime: startTime,
                 endTime: endTime,
                 interval: interval,
+                feeReceiver: address(1),
                 totalRound: (endTime - startTime) / interval + 1,
                 currentRound: 0
             })
@@ -175,7 +180,8 @@ contract TipsWithConfigTest is CommonTest {
             amount,
             startTime,
             endTime,
-            interval
+            interval,
+            address(2)
         );
         vm.stopPrank();
 
@@ -192,6 +198,7 @@ contract TipsWithConfigTest is CommonTest {
                 startTime: startTime,
                 endTime: endTime,
                 interval: interval,
+                feeReceiver: address(2),
                 totalRound: (endTime - startTime) / interval + 1,
                 currentRound: 0
             })
@@ -213,7 +220,8 @@ contract TipsWithConfigTest is CommonTest {
             1 ether,
             block.timestamp + 10,
             block.timestamp + interval,
-            interval
+            interval,
+            address(0)
         );
 
         // case 2: invalid startTime
@@ -226,7 +234,8 @@ contract TipsWithConfigTest is CommonTest {
             1 ether,
             0,
             block.timestamp + 20,
-            interval
+            interval,
+            address(0)
         );
 
         // case 3: invalid endTime
@@ -239,7 +248,8 @@ contract TipsWithConfigTest is CommonTest {
             1 ether,
             block.timestamp,
             block.timestamp,
-            interval
+            interval,
+            address(0)
         );
 
         // case 4: invalid interval
@@ -252,7 +262,8 @@ contract TipsWithConfigTest is CommonTest {
             1 ether,
             block.timestamp + 10,
             block.timestamp + 20,
-            0
+            0,
+            address(0)
         );
     }
 
@@ -272,7 +283,8 @@ contract TipsWithConfigTest is CommonTest {
             amount,
             startTime,
             endTime,
-            interval
+            interval,
+            address(0)
         );
         vm.stopPrank();
 
@@ -311,6 +323,7 @@ contract TipsWithConfigTest is CommonTest {
                 startTime: startTime,
                 endTime: endTime,
                 interval: interval,
+                feeReceiver: address(0),
                 totalRound: (endTime - startTime) / interval + 1,
                 currentRound: 1
             })
@@ -332,7 +345,8 @@ contract TipsWithConfigTest is CommonTest {
             1 ether,
             startTime,
             endTime,
-            1
+            1,
+            address(0)
         );
 
         vm.expectRevert(abi.encodePacked("TipsWithConfig: start time not comes"));
@@ -351,6 +365,7 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(config1.startTime, config2.startTime);
         assertEq(config1.endTime, config2.endTime);
         assertEq(config1.interval, config2.interval);
+        assertEq(config1.feeReceiver, config2.feeReceiver);
         assertEq(config1.totalRound, config2.totalRound);
         assertEq(config1.currentRound, config2.currentRound);
     }

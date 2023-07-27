@@ -19,15 +19,37 @@ interface ITipsWithConfig {
         uint256 startTime;
         uint256 endTime;
         uint256 interval;
+        address feeReceiver;
         uint256 totalRound;
         uint256 currentRound;
     }
 
     /**
-     * @notice Initializes the ITipsWithConfig.
+     * @notice Initialize the contract, setting web3Entry address.
      * @param web3Entry_ Address of web3Entry.
      */
     function initialize(address web3Entry_) external;
+
+    /**
+     * @notice Changes the default fee percentage of specific receiver.
+     * @dev The feeReceiver can be a platform account.
+     * @param feeReceiver The fee receiver address.
+     * @param fraction The percentage measured in basis points. Each basis point represents 0.01%.
+     */
+    function setDefaultFeeFraction(address feeReceiver, uint256 fraction) external;
+
+    /**
+     * @notice Changes the fee percentage of specific <receiver, character>.
+     * @dev If feeFraction4Character is set, it will override the default fee fraction.
+     * @param feeReceiver The fee receiver address.
+     * @param characterId The character ID.
+     * @param fraction The percentage measured in basis points. Each basis point represents 0.01%.
+     */
+    function setFeeFraction4Character(
+        address feeReceiver,
+        uint256 characterId,
+        uint256 fraction
+    ) external;
 
     /**
      * @notice Set the tips config for character.
@@ -38,6 +60,7 @@ interface ITipsWithConfig {
      * @param startTime The start time of tips.
      * @param endTime The end time of tips.
      * @param interval The interval of tips.
+     * @param feeReceiver Fee receiver address.
      */
     function setTipsConfig4Character(
         uint256 fromCharacterId,
@@ -46,7 +69,8 @@ interface ITipsWithConfig {
         uint256 amount,
         uint256 startTime,
         uint256 endTime,
-        uint256 interval
+        uint256 interval,
+        address feeReceiver
     ) external;
 
     /**
@@ -55,6 +79,30 @@ interface ITipsWithConfig {
      * @param tipConfigId The tip config ID.
      */
     function triggerTips4Character(uint256 tipConfigId) external;
+
+    /**
+     * @notice Returns the fee percentage of specific <receiver, note>.
+     * @dev It will return the first non-zero value by priority feeFraction4Character and defaultFeeFraction.
+     * @param feeReceiver The fee receiver address.
+     * @param characterId The character ID .
+     * @return fraction The percentage measured in basis points. Each basis point represents 0.01%.
+     */
+    function getFeeFraction(
+        address feeReceiver,
+        uint256 characterId
+    ) external view returns (uint256);
+
+    /**
+     * @notice Returns how much the fee is owed by <feeFraction, tipAmount>.
+     * @param feeReceiver The fee receiver address.
+     * @param characterId The character ID .
+     * @return The fee amount.
+     */
+    function getFeeAmount(
+        address feeReceiver,
+        uint256 characterId,
+        uint256 tipAmount
+    ) external view returns (uint256);
 
     /**
      * @notice Return the tips configId.
