@@ -76,6 +76,62 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(_tips.getWeb3Entry(), address(web3Entry));
     }
 
+    function testSetDefaultFeeFraction(uint256 fraction) public {
+        vm.assume(fraction <= 10000);
+
+        vm.prank(alice);
+        _tips.setDefaultFeeFraction(alice, fraction);
+
+        assertEq(_tips.getFeeFraction(alice, 1), fraction);
+        assertEq(_tips.getFeeAmount(alice, 1, 10000), fraction);
+    }
+
+    function testSetDefaultFeeFractionFail() public {
+        vm.expectRevert("TipsWithConfig: caller is not fee receiver");
+        _tips.setDefaultFeeFraction(alice, 100);
+
+        vm.expectRevert("TipsWithConfig: fraction out of range");
+        vm.prank(alice);
+        _tips.setDefaultFeeFraction(alice, 10001);
+
+        assertEq(_tips.getFeeFraction(alice, 1), 0);
+    }
+
+    function testSetFeeFraction4Character(uint256 fraction, uint256 characterId) public {
+        vm.assume(fraction <= 10000);
+        vm.assume(characterId < 10 && characterId > 0);
+
+        vm.prank(alice);
+        _tips.setFeeFraction4Character(alice, characterId, fraction);
+
+        assertEq(_tips.getFeeFraction(alice, characterId), fraction);
+        assertEq(_tips.getFeeAmount(alice, characterId, 10000), fraction);
+    }
+
+    function testSetFeeFraction4CharacterFail() public {
+        vm.expectRevert("TipsWithConfig: caller is not fee receiver");
+        _tips.setFeeFraction4Character(alice, 1, 100);
+
+        vm.expectRevert("TipsWithConfig: fraction out of range");
+        vm.prank(alice);
+        _tips.setFeeFraction4Character(alice, 1, 10001);
+
+        assertEq(_tips.getFeeFraction(alice, 1), 0);
+    }
+
+    function testGetFeeFraction(uint256 fraction, uint256 characterId) public {
+        vm.assume(fraction <= 10000);
+        vm.assume(characterId < 10 && characterId > 0);
+
+        vm.startPrank(alice);
+        _tips.setDefaultFeeFraction(alice, fraction);
+        assertEq(_tips.getFeeFraction(alice, characterId), fraction);
+
+        _tips.setFeeFraction4Character(alice, characterId, fraction + 2);
+        assertEq(_tips.getFeeFraction(alice, characterId), fraction + 2);
+        vm.stopPrank();
+    }
+
     function testSetTipsConfig4Character(uint256 amount, uint256 interval) public {
         vm.assume(amount > 0);
         vm.assume(interval > 0 && interval < 10 days);
@@ -331,6 +387,71 @@ contract TipsWithConfigTest is CommonTest {
         // check balances
         assertEq(token.balanceOf(alice), initialBalance - amount);
         assertEq(token.balanceOf(bob), amount);
+    }
+
+    function testCollectTips4CharacterWithFee(
+        uint256 amount,
+        uint256 interval,
+        uint256 fraction
+    ) public {
+        vm.assume(amount > 0 && amount < initialBalance / 3);
+        vm.assume(interval > 0 && interval < 100 days);
+        vm.assume(fraction > 0 && fraction < 10000);
+
+        uint256 startTime = block.timestamp;
+        uint256 endTime = startTime + 2 * interval;
+
+        // set fee fraction
+        address feeReceiver = address(123456);
+        vm.startPrank(feeReceiver);
+        _tips.setDefaultFeeFraction(feeReceiver, fraction / 2);
+        _tips.setFeeFraction4Character(feeReceiver, SECOND_CHARACTER_ID, fraction);
+        vm.stopPrank();
+
+        // set tips config
+        vm.startPrank(alice);
+        token.approve(address(_tips), initialBalance);
+        _tips.setTipsConfig4Character(
+            FIRST_CHARACTER_ID,
+            SECOND_CHARACTER_ID,
+            address(token),
+            amount,
+            startTime,
+            endTime,
+            interval,
+            feeReceiver
+        );
+        vm.stopPrank();
+
+        // some times later
+        skip(interval);
+
+        // collect tips
+        _tips.collectTips4Character(1);
+
+        // check status
+        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 1);
+        _checkConfig(
+            _tips.getTipsConfig(1),
+            ITipsWithConfig.TipsConfig({
+                id: 1,
+                fromCharacterId: FIRST_CHARACTER_ID,
+                toCharacterId: SECOND_CHARACTER_ID,
+                token: address(token),
+                amount: amount,
+                startTime: startTime,
+                endTime: endTime,
+                interval: interval,
+                feeReceiver: feeReceiver,
+                totalRound: (endTime - startTime) / interval + 1,
+                currentRound: 2
+            })
+        );
+        // check balances
+        uint256 feeAmount = (amount * 2 * fraction) / 10000;
+        assertEq(token.balanceOf(alice), initialBalance - amount * 2);
+        assertEq(token.balanceOf(bob), amount * 2 - feeAmount);
+        assertEq(token.balanceOf(feeReceiver), feeAmount);
     }
 
     function testCollectTips4CharacterFailInvalidStartTime() public {
