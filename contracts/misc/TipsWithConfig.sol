@@ -46,7 +46,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
      * @param startTime The start time of tip.
      * @param endTime The end time of tip.
      * @param interval Interval of the tip.
-     * @param tipTimes Tip times of the tip.
+     * @param totalRound Total round of the tip.
      */
     event SetTipsConfig4Character(
         uint256 indexed tipConfigId,
@@ -57,7 +57,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         uint256 startTime,
         uint256 endTime,
         uint256 interval,
-        uint256 tipTimes
+        uint256 totalRound
     );
 
     /**
@@ -66,8 +66,10 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
      * @param fromCharacterId The token ID of character that initiated a reward.
      * @param toCharacterId The token ID of character that.
      * @param token Address of token to reward.
-     * @param amount Amount of token to reward.
-     * @param redeemedAmount Actual amount of token to reward.
+     * @param amount Actual amount of token to reward.
+     * @param fee The amount of fee.
+     * @param feeReceiver The fee receiver address.
+     * @param currentRound The current round of tip.
      */
     event TriggerTips4Character(
         uint256 indexed tipConfigId,
@@ -75,9 +77,9 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         uint256 indexed toCharacterId,
         address token,
         uint256 amount,
-        uint256 redeemedAmount,
         uint256 fee,
-        address feeReceiver
+        address feeReceiver,
+        uint256 currentRound
     );
 
     /**
@@ -115,7 +117,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             _tipsConfigIds[fromCharacterId][toCharacterId] = tipConfigId;
         }
 
-        uint256 tipsTimes = _getTipTimes(startTime, endTime, interval);
+        uint256 totalRound = _getTipRound(startTime, endTime, interval);
         // update tips config
         _tipsConfigs[tipConfigId] = TipsConfig({
             id: tipConfigId,
@@ -126,8 +128,8 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             startTime: startTime,
             endTime: endTime,
             interval: interval,
-            redeemedTimes: 0,
-            tipsTimes: tipsTimes
+            currentRound: 0,
+            totalRound: totalRound
         });
 
         emit SetTipsConfig4Character(
@@ -139,7 +141,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             startTime,
             endTime,
             interval,
-            tipsTimes
+            totalRound
         );
     }
 
@@ -147,14 +149,14 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     function triggerTips4Character(uint256 tipConfigId) external override nonReentrant {
         TipsConfig storage config = _tipsConfigs[tipConfigId];
 
-        require(block.timestamp > config.startTime, "TipsWithConfig: start time not comes");
-        require(config.redeemedTimes < config.tipsTimes, "TipsWithConfig: all tips redeemed");
+        require(block.timestamp >= config.startTime, "TipsWithConfig: start time not comes");
+        require(config.currentRound <= config.totalRound, "TipsWithConfig: all tips redeemed");
 
         // trigger tips
-        (uint256 availableTipTimes, ) = _triggerTips4Character(config);
+        (uint256 currentRound, ) = _triggerTips4Character(config);
 
         // update redeemedTimes
-        _tipsConfigs[tipConfigId].redeemedTimes = availableTipTimes;
+        _tipsConfigs[tipConfigId].currentRound = currentRound;
     }
 
     /// @inheritdoc ITipsWithConfig
@@ -178,30 +180,28 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     }
 
     function _triggerTips4Character(TipsConfig memory config) internal returns (uint256, uint256) {
-        (uint256 availableTipTimes, uint256 availableAmount) = _getAvailableTimesAndAmount(config);
+        (uint256 currentRound, uint256 availableAmount) = _getAvailableRoundAndAmount(config);
 
         if (availableAmount > 0) {
-            if (availableAmount > 0) {
-                // send token
-                address from = IERC721(_web3Entry).ownerOf(config.fromCharacterId);
-                address to = IERC721(_web3Entry).ownerOf(config.toCharacterId);
-                // slither-disable-next-line arbitrary-send-erc20
-                IERC20(config.token).safeTransferFrom(from, to, availableAmount);
-            }
+            // send token
+            address from = IERC721(_web3Entry).ownerOf(config.fromCharacterId);
+            address to = IERC721(_web3Entry).ownerOf(config.toCharacterId);
+            // slither-disable-next-line arbitrary-send-erc20
+            IERC20(config.token).safeTransferFrom(from, to, availableAmount);
 
             emit TriggerTips4Character(
                 config.id,
                 config.fromCharacterId,
                 config.toCharacterId,
                 config.token,
-                config.amount,
                 availableAmount,
                 0,
-                address(0)
+                address(0),
+                currentRound
             );
         }
 
-        return (availableTipTimes, availableAmount);
+        return (currentRound, availableAmount);
     }
 
     function _getTipsConfigId(
@@ -211,24 +211,19 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         return _tipsConfigIds[fromCharacterId][toCharacterId];
     }
 
-    function _getAvailableTimesAndAmount(
+    function _getAvailableRoundAndAmount(
         TipsConfig memory config
     ) internal view returns (uint256, uint256) {
-        uint256 availableTipTimes = _getTipTimes(
-            config.startTime,
-            block.timestamp,
-            config.interval
-        );
+        uint256 currentRound = _getTipRound(config.startTime, block.timestamp, config.interval);
 
-        if (availableTipTimes > config.tipsTimes) {
-            availableTipTimes = config.tipsTimes;
+        if (currentRound > config.totalRound) {
+            currentRound = config.totalRound;
         }
 
-        uint256 unredeemedTimes = availableTipTimes - config.redeemedTimes;
-        return (availableTipTimes, unredeemedTimes * config.amount);
+        return (currentRound, (currentRound - config.currentRound) * config.amount);
     }
 
-    function _getTipTimes(
+    function _getTipRound(
         uint256 startTime,
         uint256 endTime,
         uint256 interval

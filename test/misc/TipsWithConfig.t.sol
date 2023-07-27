@@ -21,7 +21,7 @@ contract TipsWithConfigTest is CommonTest {
         uint256 startTime,
         uint256 endTime,
         uint256 interval,
-        uint256 tipTimes
+        uint256 totalRound
     );
 
     event TriggerTips4Character(
@@ -30,9 +30,9 @@ contract TipsWithConfigTest is CommonTest {
         uint256 indexed toCharacterId,
         address token,
         uint256 amount,
-        uint256 redeemedAmount,
         uint256 fee,
-        address feeReceiver
+        address feeReceiver,
+        address currentRound
     );
 
     function setUp() public {
@@ -108,8 +108,8 @@ contract TipsWithConfigTest is CommonTest {
                 startTime: startTime,
                 endTime: endTime,
                 interval: interval,
-                tipsTimes: (endTime - startTime) / interval + 1,
-                redeemedTimes: 0
+                totalRound: (endTime - startTime) / interval + 1,
+                currentRound: 0
             })
         );
     }
@@ -145,8 +145,8 @@ contract TipsWithConfigTest is CommonTest {
                 startTime: startTime,
                 endTime: endTime,
                 interval: interval,
-                tipsTimes: (endTime - startTime) / interval + 1,
-                redeemedTimes: 0
+                totalRound: (endTime - startTime) / interval + 1,
+                currentRound: 0
             })
         );
 
@@ -181,8 +181,8 @@ contract TipsWithConfigTest is CommonTest {
                 startTime: startTime,
                 endTime: endTime,
                 interval: interval,
-                tipsTimes: (endTime - startTime) / interval + 1,
-                redeemedTimes: 0
+                totalRound: (endTime - startTime) / interval + 1,
+                currentRound: 0
             })
         );
         // check balances
@@ -267,7 +267,7 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(config1.startTime, config2.startTime);
         assertEq(config1.endTime, config2.endTime);
         assertEq(config1.interval, config2.interval);
-        assertEq(config1.tipsTimes, config2.tipsTimes);
-        assertEq(config1.redeemedTimes, config2.redeemedTimes);
+        assertEq(config1.totalRound, config2.totalRound);
+        assertEq(config1.currentRound, config2.currentRound);
     }
 }

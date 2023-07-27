@@ -19,8 +19,8 @@ interface ITipsWithConfig {
         uint256 startTime;
         uint256 endTime;
         uint256 interval;
-        uint256 tipsTimes;
-        uint256 redeemedTimes;
+        uint256 totalRound;
+        uint256 currentRound;
     }
 
     /**
