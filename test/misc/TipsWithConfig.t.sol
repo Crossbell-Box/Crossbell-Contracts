@@ -25,7 +25,7 @@ contract TipsWithConfigTest is CommonTest {
         uint256 totalRound
     );
 
-    event TriggerTips4Character(
+    event CollectTips4Character(
         uint256 indexed tipConfigId,
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,
@@ -267,7 +267,7 @@ contract TipsWithConfigTest is CommonTest {
         );
     }
 
-    function testTriggerTips4Character(uint256 amount, uint256 interval) public {
+    function testcollectTips4Character(uint256 amount, uint256 interval) public {
         vm.assume(amount > 0 && amount < initialBalance);
         vm.assume(interval > 0 && interval < 100 days);
 
@@ -298,7 +298,7 @@ contract TipsWithConfigTest is CommonTest {
         expectEmit(CheckAll);
         emit Transfer(alice, bob, amount);
         expectEmit(CheckAll);
-        emit TriggerTips4Character(
+        emit CollectTips4Character(
             1,
             FIRST_CHARACTER_ID,
             SECOND_CHARACTER_ID,
@@ -308,7 +308,7 @@ contract TipsWithConfigTest is CommonTest {
             address(0),
             1
         );
-        _tips.triggerTips4Character(1);
+        _tips.collectTips4Character(1);
 
         // check status
         assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 1);
@@ -333,7 +333,7 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(token.balanceOf(bob), amount);
     }
 
-    function testTriggerTips4CharacterFailInvalidStartTime() public {
+    function testCollectTips4CharacterFailInvalidStartTime() public {
         uint256 startTime = block.timestamp + 10;
         uint256 endTime = startTime + 20;
 
@@ -350,7 +350,7 @@ contract TipsWithConfigTest is CommonTest {
         );
 
         vm.expectRevert(abi.encodePacked("TipsWithConfig: start time not comes"));
-        _tips.triggerTips4Character(1);
+        _tips.collectTips4Character(1);
     }
 
     function _checkConfig(

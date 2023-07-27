@@ -12,14 +12,14 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
 /**
  * @title TipsWithConfig
  * @notice Logic to handle the periodical tips that user can send to character periodically.
- * @dev User can set config for a specific tip with config, and any one can trigger the tip with config id.
+ * @dev User can set config for a specific tip with config, and any one can collect the tip with config id.
  *
  * For `setTipsConfig4Character`
  * User can set the tips config for a specific tip with config id, from character id, to character id,
  *  token address, amount, interval and expiration. <br>
  *
- * For `triggerTips4Character`
- * Anyone can trigger the tip with config id, and it will transfer all unredeemed token from the from character
+ * For `collectTips4Character`
+ * Anyone can collect the tip with config id, and it will transfer all unredeemed token from the from character
  *  to the to character.
  */
 contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
@@ -66,7 +66,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     );
 
     /**
-     * @dev Emitted when a user trigger a tip with periodical config.
+     * @dev Emitted when a user collect a tip with periodical config.
      * @param tipConfigId The tip config id.
      * @param fromCharacterId The token ID of character that initiated a reward.
      * @param toCharacterId The token ID of character that.
@@ -76,7 +76,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
      * @param feeReceiver The fee receiver address.
      * @param currentRound The current round of tip.
      */
-    event TriggerTips4Character(
+    event CollectTips4Character(
         uint256 indexed tipConfigId,
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,
@@ -140,8 +140,8 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
 
         uint256 tipConfigId = _getTipsConfigId(fromCharacterId, toCharacterId);
         if (tipConfigId > 0) {
-            // if tipConfigId is not 0, try to trigger tips first
-            _triggerTips4Character(_tipsConfigs[tipConfigId]);
+            // if tipConfigId is not 0, try to collect tips first
+            _collectTips4Character(_tipsConfigs[tipConfigId]);
         } else {
             // allocate and save new tipConfigId
             tipConfigId = ++_tipsConfigIndex;
@@ -179,7 +179,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     }
 
     /// @inheritdoc ITipsWithConfig
-    function triggerTips4Character(uint256 tipConfigId) external override nonReentrant {
+    function collectTips4Character(uint256 tipConfigId) external override nonReentrant {
         TipsConfig storage config = _tipsConfigs[tipConfigId];
 
         require(block.timestamp >= config.startTime, "TipsWithConfig: start time not comes");
@@ -189,8 +189,8 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             return;
         }
 
-        // trigger tips
-        (uint256 currentRound, ) = _triggerTips4Character(config);
+        // collect tips
+        (uint256 currentRound, ) = _collectTips4Character(config);
 
         // update currentRound
         _tipsConfigs[tipConfigId].currentRound = currentRound;
@@ -233,7 +233,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         return _web3Entry;
     }
 
-    function _triggerTips4Character(TipsConfig memory config) internal returns (uint256, uint256) {
+    function _collectTips4Character(TipsConfig memory config) internal returns (uint256, uint256) {
         (uint256 currentRound, uint256 availableAmount) = _getAvailableRoundAndAmount(config);
         if (availableAmount > 0) {
             // send token
@@ -252,7 +252,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
                 IERC20(config.token).safeTransferFrom(from, config.feeReceiver, feeAmount);
             }
 
-            emit TriggerTips4Character(
+            emit CollectTips4Character(
                 config.id,
                 config.fromCharacterId,
                 config.toCharacterId,
