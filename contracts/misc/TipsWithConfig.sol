@@ -180,13 +180,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     function collectTips4Character(uint256 tipConfigId) external override nonReentrant {
         TipsConfig storage config = _tipsConfigs[tipConfigId];
 
-        require(block.timestamp >= config.startTime, "TipsWithConfig: start time not comes");
-
-        // all the tips have been finished
-        if (config.currentRound >= config.totalRound) {
-            return;
-        }
-
         // collect tips
         (uint256 currentRound, ) = _collectTips4Character(config);
 
@@ -232,6 +225,16 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     }
 
     function _collectTips4Character(TipsConfig memory config) internal returns (uint256, uint256) {
+        // start time not comes
+        if (block.timestamp < config.startTime) {
+            return (0, 0);
+        }
+
+        // all the tips have been finished
+        if (config.currentRound >= config.totalRound) {
+            return (config.totalRound, 0);
+        }
+
         (uint256 currentRound, uint256 availableAmount) = _getAvailableRoundAndAmount(config);
         if (availableAmount > 0) {
             // send token

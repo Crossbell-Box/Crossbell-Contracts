@@ -440,24 +440,50 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(token.balanceOf(feeReceiver), feeAmount);
     }
 
-    function testCollectTips4CharacterFailInvalidStartTime() public {
+    function testCollectTips4CharacterWithFutureStartTime() public {
+        // expect nothing happens as startTime not comes
+
         uint256 startTime = block.timestamp + 10;
         uint256 endTime = startTime + 20;
+        uint256 interval = 2;
+        uint256 amount = 1 ether;
 
         vm.prank(alice);
         _tips.setTipsConfig4Character(
             FIRST_CHARACTER_ID,
             SECOND_CHARACTER_ID,
             address(token),
-            1 ether,
+            amount,
             startTime,
             endTime,
-            1,
+            interval,
             address(0)
         );
 
-        vm.expectRevert(abi.encodePacked("TipsWithConfig: start time not comes"));
         _tips.collectTips4Character(1);
+        _tips.collectTips4Character(1);
+
+        // check status
+        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 1);
+        _checkConfig(
+            _tips.getTipsConfig(1),
+            ITipsWithConfig.TipsConfig({
+                id: 1,
+                fromCharacterId: FIRST_CHARACTER_ID,
+                toCharacterId: SECOND_CHARACTER_ID,
+                token: address(token),
+                amount: amount,
+                startTime: startTime,
+                endTime: endTime,
+                interval: interval,
+                feeReceiver: address(0),
+                totalRound: (endTime - startTime) / interval + 1,
+                currentRound: 0
+            })
+        );
+        // check balances
+        assertEq(token.balanceOf(alice), initialBalance);
+        assertEq(token.balanceOf(bob), 0);
     }
 
     function _checkConfig(
