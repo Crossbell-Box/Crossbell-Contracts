@@ -139,7 +139,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         uint256 tipConfigId = _getTipsConfigId(fromCharacterId, toCharacterId);
         if (tipConfigId > 0) {
             // if tipConfigId is not 0, try to collect tips first
-            _collectTips4Character(_tipsConfigs[tipConfigId]);
+            _collectTips4Character(tipConfigId);
         } else {
             // allocate and save new tipConfigId
             tipConfigId = ++_tipsConfigIndex;
@@ -178,13 +178,8 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
 
     /// @inheritdoc ITipsWithConfig
     function collectTips4Character(uint256 tipConfigId) external override nonReentrant {
-        TipsConfig storage config = _tipsConfigs[tipConfigId];
-
         // collect tips
-        (uint256 currentRound, ) = _collectTips4Character(config);
-
-        // update currentRound
-        _tipsConfigs[tipConfigId].currentRound = currentRound;
+        _collectTips4Character(tipConfigId);
     }
 
     /// @inheritdoc ITipsWithConfig
@@ -224,19 +219,24 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         return _web3Entry;
     }
 
-    function _collectTips4Character(TipsConfig memory config) internal returns (uint256, uint256) {
+    function _collectTips4Character(uint256 tipConfigId) internal {
+        TipsConfig storage config = _tipsConfigs[tipConfigId];
+
         // start time not comes
-        if (block.timestamp < config.startTime) {
-            return (0, 0);
+        if (config.startTime > block.timestamp) {
+            return;
         }
 
         // all the tips have been finished
         if (config.currentRound >= config.totalRound) {
-            return (config.totalRound, 0);
+            return;
         }
 
         (uint256 currentRound, uint256 availableAmount) = _getAvailableRoundAndAmount(config);
         if (availableAmount > 0) {
+            // update currentRound
+            config.currentRound = currentRound;
+
             // send token
             address from = IERC721(_web3Entry).ownerOf(config.fromCharacterId);
             address to = IERC721(_web3Entry).ownerOf(config.toCharacterId);
@@ -264,8 +264,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
                 currentRound
             );
         }
-
-        return (currentRound, availableAmount);
     }
 
     function _getTipsConfigId(
