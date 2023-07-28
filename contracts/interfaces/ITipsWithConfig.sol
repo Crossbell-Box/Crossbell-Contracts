@@ -75,7 +75,7 @@ interface ITipsWithConfig {
 
     /**
      * @notice Anyone can call this function to collect a specific tip with periodical config.
-     * @dev It will transfer all unredeemed token from the fromCharacter to the toCharacter.
+     * @dev It will transfer all unredeemed token from the `fromCharacter` to the `toCharacter`.
      * @param tipConfigId The tip config ID.
      */
     function collectTips4Character(uint256 tipConfigId) external;

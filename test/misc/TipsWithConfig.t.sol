@@ -442,7 +442,6 @@ contract TipsWithConfigTest is CommonTest {
 
     function testCollectTips4CharacterWithFutureStartTime() public {
         // expect nothing happens as startTime not comes
-
         uint256 startTime = block.timestamp + 10;
         uint256 endTime = startTime + 20;
         uint256 interval = 2;
@@ -484,6 +483,72 @@ contract TipsWithConfigTest is CommonTest {
         // check balances
         assertEq(token.balanceOf(alice), initialBalance);
         assertEq(token.balanceOf(bob), 0);
+    }
+
+    function testCollectTips4CharacterMultiTimes(
+        uint256 amount,
+        uint256 interval,
+        uint256 num
+    ) public {
+        vm.assume(amount > 0 && amount < initialBalance / 10000);
+        vm.assume(interval > 0 && interval < 100 days);
+        vm.assume(num > 0 && num < 500);
+
+        uint256 startTime = block.timestamp;
+        uint256 endTime = startTime + interval * num;
+
+        // set fee
+        uint256 feeFraction = 1000;
+        address feeReceiver = address(123456);
+        vm.startPrank(feeReceiver);
+        _tips.setDefaultFeeFraction(feeReceiver, feeFraction);
+        vm.stopPrank();
+
+        // set tips config
+        vm.startPrank(alice);
+        token.approve(address(_tips), initialBalance);
+        _tips.setTipsConfig4Character(
+            FIRST_CHARACTER_ID,
+            SECOND_CHARACTER_ID,
+            address(token),
+            amount,
+            startTime,
+            endTime,
+            interval,
+            feeReceiver
+        );
+        vm.stopPrank();
+
+        // collect tips
+        for (uint256 i = 1; i <= num; i++) {
+            _tips.collectTips4Character(1);
+
+            // check status
+            _checkConfig(
+                _tips.getTipsConfig(1),
+                ITipsWithConfig.TipsConfig({
+                    id: 1,
+                    fromCharacterId: FIRST_CHARACTER_ID,
+                    toCharacterId: SECOND_CHARACTER_ID,
+                    token: address(token),
+                    amount: amount,
+                    startTime: startTime,
+                    endTime: endTime,
+                    interval: interval,
+                    feeReceiver: feeReceiver,
+                    totalRound: (endTime - startTime) / interval + 1,
+                    currentRound: i
+                })
+            );
+
+            // check balances
+            uint256 feeAmount = ((amount * feeFraction) / 10000) * i;
+            assertEq(token.balanceOf(alice), initialBalance - amount * i);
+            assertEq(token.balanceOf(bob), amount * i - feeAmount);
+            assertEq(token.balanceOf(feeReceiver), feeAmount);
+
+            skip(interval);
+        }
     }
 
     function _checkConfig(

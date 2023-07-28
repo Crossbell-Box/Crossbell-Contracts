@@ -302,8 +302,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         uint256 tipAmount
     ) internal view returns (uint256) {
         uint256 fraction = _getFeeFraction(feeReceiver, characterId);
-        uint256 feeAmount = (tipAmount * fraction) / _feeDenominator();
-        return feeAmount;
+        return (tipAmount * fraction) / _feeDenominator();
     }
 
     function _getTipRound(
