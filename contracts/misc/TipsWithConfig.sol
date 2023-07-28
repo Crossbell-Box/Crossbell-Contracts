@@ -12,21 +12,20 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
 /**
  * @title TipsWithConfig
  * @notice Logic to handle the periodical tips that user can send to character periodically.
- * @dev User can set config for a specific tip with config, and any one can collect the tip with config id.
+ * @dev User can set config for a specific character, and anyone can collect the tip by config id.
  *
  * For `setTipsConfig4Character`
- * User can set the tips config for a specific tip with config id, from character id, to character id,
- *  token address, amount, interval and expiration. <br>
+ * User can set the tips config for a specific character. <br>
  *
  * For `collectTips4Character`
- * Anyone can collect the tip with config id, and it will transfer all unredeemed token from the from character
- *  to the to character.
+ * Anyone can collect the tip by config id, and it will transfer all available tokens
+ * from the `fromCharacterId` account to the `toCharacterId` account.
  */
 contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     // slither-disable-start naming-convention
-    // address of web3Entry
+    // address of web3Entry contract
     address internal _web3Entry;
 
     uint256 internal _tipsConfigIndex;
@@ -43,12 +42,12 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
      * @dev Emitted when a user set a tip with periodical config.
      * @param tipConfigId The tip config id.
      * @param fromCharacterId The token ID of character that initiated a reward.
-     * @param toCharacterId The token ID of character that.
+     * @param toCharacterId The token ID of character that would receive the reward.
      * @param token Address of token to reward.
-     * @param amount Amount of token to reward.
+     * @param amount Amount of token to reward each round.
      * @param startTime The start time of tip.
      * @param endTime The end time of tip.
-     * @param interval Interval of the tip.
+     * @param interval Interval of the tip each round.
      * @param feeReceiver Fee receiver address.
      * @param totalRound Total round of the tip.
      */
@@ -69,9 +68,9 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
      * @dev Emitted when a user collect a tip with periodical config.
      * @param tipConfigId The tip config id.
      * @param fromCharacterId The token ID of character that initiated a reward.
-     * @param toCharacterId The token ID of character that.
+     * @param toCharacterId The token ID of character that would receive the reward.
      * @param token Address of token to reward.
-     * @param amount Actual amount of token to reward.
+     * @param amount Actual amount of tokens to reward.
      * @param fee The amount of fee.
      * @param feeReceiver The fee receiver address.
      * @param currentRound The current round of tip.
@@ -134,7 +133,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             msg.sender == IERC721(_web3Entry).ownerOf(fromCharacterId),
             "TipsWithConfig: not character owner"
         );
-        require(startTime >= block.timestamp, "TipsWithConfig: invalid startTime");
         require(interval > 0, "TipsWithConfig: interval must be greater than 0");
         require(endTime >= startTime + interval, "TipsWithConfig: invalid endTime");
 

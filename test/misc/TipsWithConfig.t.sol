@@ -280,21 +280,7 @@ contract TipsWithConfigTest is CommonTest {
             address(0)
         );
 
-        // case 2: invalid startTime
-        vm.expectRevert("TipsWithConfig: invalid startTime");
-        vm.prank(alice);
-        _tips.setTipsConfig4Character(
-            1,
-            2,
-            address(token),
-            1 ether,
-            0,
-            block.timestamp + 20,
-            interval,
-            address(0)
-        );
-
-        // case 3: invalid endTime
+        // case 2: invalid endTime
         vm.expectRevert("TipsWithConfig: invalid endTime");
         vm.prank(alice);
         _tips.setTipsConfig4Character(
@@ -308,7 +294,7 @@ contract TipsWithConfigTest is CommonTest {
             address(0)
         );
 
-        // case 4: invalid interval
+        // case 3: invalid interval
         vm.expectRevert("TipsWithConfig: interval must be greater than 0");
         vm.prank(alice);
         _tips.setTipsConfig4Character(
@@ -323,7 +309,7 @@ contract TipsWithConfigTest is CommonTest {
         );
     }
 
-    function testcollectTips4Character(uint256 amount, uint256 interval) public {
+    function testCollectTips4Character(uint256 amount, uint256 interval) public {
         vm.assume(amount > 0 && amount < initialBalance);
         vm.assume(interval > 0 && interval < 100 days);
 

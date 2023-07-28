@@ -31,7 +31,7 @@ interface ITipsWithConfig {
     function initialize(address web3Entry_) external;
 
     /**
-     * @notice Changes the default fee percentage of specific receiver.
+     * @notice Sets the default fee percentage of specific receiver.
      * @dev The feeReceiver can be a platform account.
      * @param feeReceiver The fee receiver address.
      * @param fraction The percentage measured in basis points. Each basis point represents 0.01%.
@@ -39,8 +39,8 @@ interface ITipsWithConfig {
     function setDefaultFeeFraction(address feeReceiver, uint256 fraction) external;
 
     /**
-     * @notice Changes the fee percentage of specific <receiver, character>.
-     * @dev If feeFraction4Character is set, it will override the default fee fraction.
+     * @notice Sets the fee percentage of specific <receiver, character>.
+     * @dev If this is set, it will override the default fee fraction.
      * @param feeReceiver The fee receiver address.
      * @param characterId The character ID.
      * @param fraction The percentage measured in basis points. Each basis point represents 0.01%.
@@ -53,8 +53,8 @@ interface ITipsWithConfig {
 
     /**
      * @notice Set the tips config for character.
-     * @param fromCharacterId The from character ID.
-     * @param toCharacterId The to character ID.
+     * @param fromCharacterId The token ID of character that initiated a reward.
+     * @param toCharacterId The token ID of character that would receive the reward.
      * @param token The tip token address.
      * @param amount The amount of token.
      * @param startTime The start time of tips.
@@ -105,9 +105,9 @@ interface ITipsWithConfig {
     ) external view returns (uint256);
 
     /**
-     * @notice Return the tips configId.
-     * @param fromCharacterId The from character ID.
-     * @param toCharacterId The to character ID.
+     * @notice Return the tips config Id.
+     * @param fromCharacterId The token ID of character that initiated a reward.
+     * @param toCharacterId The token ID of character that would receive the reward.
      * @return uint256 Returns tips config ID.
      */
     function getTipsConfigId(
