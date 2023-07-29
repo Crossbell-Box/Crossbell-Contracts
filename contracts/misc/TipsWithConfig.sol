@@ -44,12 +44,12 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
      * @param fromCharacterId The token ID of character that initiated a reward.
      * @param toCharacterId The token ID of character that would receive the reward.
      * @param token Address of token to reward.
-     * @param amount Amount of token to reward each round.
+     * @param amount The amount of tokens to reward each round.
      * @param startTime The start time of tip.
      * @param endTime The end time of tip.
-     * @param interval Interval of the tip each round.
-     * @param feeReceiver Fee receiver address.
-     * @param totalRound Total round of the tip.
+     * @param interval The interval of tip.
+     * @param feeReceiver The fee receiver address.
+     * @param totalRound The total round of tip.
      */
     event SetTipsConfig4Character(
         uint256 indexed tipConfigId,
@@ -71,7 +71,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
      * @param toCharacterId The token ID of character that would receive the reward.
      * @param token Address of token to reward.
      * @param amount Actual amount of tokens to reward.
-     * @param fee The amount of fee.
+     * @param fee Actual amount of fee.
      * @param feeReceiver The fee receiver address.
      * @param currentRound The current round of tip.
      */
@@ -162,6 +162,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             totalRound: totalRound
         });
 
+        // emit event
         emit SetTipsConfig4Character(
             tipConfigId,
             fromCharacterId,
@@ -222,12 +223,12 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     function _collectTips4Character(uint256 tipConfigId) internal {
         TipsConfig storage config = _tipsConfigs[tipConfigId];
 
-        // start time not comes
+        // not started
         if (config.startTime > block.timestamp) {
             return;
         }
 
-        // all the tips have been finished
+        // already ended
         if (config.currentRound >= config.totalRound) {
             return;
         }
@@ -237,7 +238,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             // update currentRound
             config.currentRound = currentRound;
 
-            // send token
+            // collect tips
             address from = IERC721(_web3Entry).ownerOf(config.fromCharacterId);
             address to = IERC721(_web3Entry).ownerOf(config.toCharacterId);
             // fee
@@ -253,6 +254,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
                 IERC20(config.token).safeTransferFrom(from, config.feeReceiver, feeAmount);
             }
 
+            // emit event
             emit CollectTips4Character(
                 config.id,
                 config.fromCharacterId,
@@ -310,7 +312,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         uint256 endTime,
         uint256 interval
     ) internal pure returns (uint256) {
-        // why add 1 here: when user tips for a character, instantly add one round
+        // why +1? because the first round is 1
         return (endTime - startTime) / interval + 1;
     }
 

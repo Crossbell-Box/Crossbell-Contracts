@@ -52,15 +52,15 @@ interface ITipsWithConfig {
     ) external;
 
     /**
-     * @notice Set the tips config for character.
-     * @param fromCharacterId The token ID of character that initiated a reward.
+     * @notice Sets the tips config of specific <fromCharacter, toCharacter>.
+     * @param fromCharacterId The token ID of character that would send the reward.
      * @param toCharacterId The token ID of character that would receive the reward.
-     * @param token The tip token address.
+     * @param token The token address.
      * @param amount The amount of token.
      * @param startTime The start time of tips.
      * @param endTime The end time of tips.
      * @param interval The interval of tips.
-     * @param feeReceiver Fee receiver address.
+     * @param feeReceiver The fee receiver address.
      */
     function setTipsConfig4Character(
         uint256 fromCharacterId,
@@ -74,7 +74,7 @@ interface ITipsWithConfig {
     ) external;
 
     /**
-     * @notice Anyone can call this function to collect a specific tip with periodical config.
+     * @notice Collects all unredeemed token from the `fromCharacter` to the `toCharacter`.
      * @dev It will transfer all unredeemed token from the `fromCharacter` to the `toCharacter`.
      * @param tipConfigId The tip config ID.
      */
