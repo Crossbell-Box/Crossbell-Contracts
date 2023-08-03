@@ -128,7 +128,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         uint256 endTime,
         uint256 interval,
         address feeReceiver
-    ) external override nonReentrant {
+    ) external override {
         require(
             msg.sender == IERC721(_web3Entry).ownerOf(fromCharacterId),
             "TipsWithConfig: not character owner"
