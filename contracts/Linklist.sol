@@ -8,7 +8,11 @@ import {NFTBase} from "./base/NFTBase.sol";
 import {ERC721} from "./base/ERC721.sol";
 import {Events} from "./libraries/Events.sol";
 import {DataTypes} from "./libraries/DataTypes.sol";
-import {ErrCallerNotWeb3Entry, ErrCallerNotWeb3EntryOrNotOwner} from "./libraries/Error.sol";
+import {
+    ErrCallerNotWeb3Entry,
+    ErrCallerNotWeb3EntryOrNotOwner,
+    ErrNotOwner
+} from "./libraries/Error.sol";
 import {LinklistStorage} from "./storage/LinklistStorage.sol";
 import {LinklistExtendStorage} from "./storage/LinklistExtendStorage.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -24,6 +28,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     using EnumerableSet for EnumerableSet.AddressSet;
 
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
+    event Burn(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
 
     function initialize(
         string calldata name_,
@@ -31,6 +36,9 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         address web3Entry_
     ) external override initializer {
         Web3Entry = web3Entry_;
+
+        // initialize totalSupply for upgrade
+        _totalSupply = _tokenCount;
 
         super._initialize(name_, symbol_);
         emit Events.LinklistNFTInitialized(block.timestamp);
@@ -47,6 +55,8 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         // mint tokenId to characterId
         _linklistOwners[tokenId] = characterId;
         _linklistBalances[characterId]++;
+        // update totalSupply
+        _totalSupply++;
 
         emit Transfer(address(0), characterId, tokenId);
     }
@@ -380,9 +390,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     }
 
     // slither-disable-end naming-convention
-    function totalSupply() public view override returns (uint256) {
-        return _tokenCount;
-    }
 
     function balanceOf(uint256 characterId) public view override returns (uint256) {
         return _linklistBalances[characterId];
@@ -412,6 +419,10 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         uint256 characterId = characterOwnerOf(tokenId);
         address owner = IERC721(Web3Entry).ownerOf(characterId);
         return owner;
+    }
+
+    function totalSupply() public view override returns (uint256) {
+        return _totalSupply;
     }
 
     function _getTokenUri(uint256 tokenId) internal view returns (string memory) {
@@ -444,6 +455,22 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     ) internal pure override {
         // this function will do nothing, as linklist is a character bounded token
         // users should never transfer a linklist directly
+    }
+
+    function burn(uint256 tokenId) public virtual override {
+        if (msg.sender != ownerOf(tokenId)) revert ErrNotOwner();
+
+        uint256 characterId = _linklistOwners[tokenId];
+
+        // Ownership check above ensures no underflow.
+        unchecked {
+            _linklistBalances[characterId]--;
+            _totalSupply--;
+        }
+        delete _linkTypes[tokenId];
+        delete _linklistOwners[tokenId];
+
+        emit Burn(msg.sender, characterId, tokenId);
     }
 }
 // slither-disable-end unused-return

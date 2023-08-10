@@ -76,3 +76,6 @@ error ErrSignatureExpired();
 
 /// @dev Signature is invalid
 error ErrSignatureInvalid();
+
+/// @dev Caller not owner
+error ErrNotOwner();

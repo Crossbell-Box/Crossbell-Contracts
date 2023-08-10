@@ -9,5 +9,6 @@ contract LinklistExtendStorage {
     mapping(uint256 => uint256) internal _linklistOwners;
     // characterId => balances
     mapping(uint256 => uint256) internal _linklistBalances;
+    uint256 internal _totalSupply;
 }
 // slither-disable-end naming-convention
