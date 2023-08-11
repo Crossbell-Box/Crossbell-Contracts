@@ -169,4 +169,33 @@ contract LinklistTest is CommonTest {
         vm.expectRevert("ERC721: owner query for nonexistent token");
         linklist.burn(2);
     }
+
+    function testBurnFuzz(uint256 amount) public {
+        vm.assume(amount > 0 && amount < 1000);
+        uint256 mintAmount = amount;
+        uint256 burnAmount = amount / 2;
+
+        // mint linklist
+        for (uint256 i = 0; i < mintAmount; i++) {
+            vm.prank(address(web3Entry));
+            linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
+        }
+        // check balances
+        assertEq(linklist.balanceOf(FIRST_CHARACTER_ID), mintAmount);
+        // check totalSupply
+        assertEq(linklist.balanceOf(alice), mintAmount);
+        assertEq(linklist.totalSupply(), mintAmount);
+
+        // burn linklist
+        for (uint256 i = 1; i <= burnAmount; i++) {
+            vm.prank(alice);
+            linklist.burn(i);
+        }
+        // check balances
+        uint256 leftAmount = mintAmount - burnAmount;
+        assertEq(linklist.balanceOf(FIRST_CHARACTER_ID), leftAmount);
+        assertEq(linklist.balanceOf(alice), leftAmount);
+        // check totalSupply
+        assertEq(linklist.totalSupply(), mintAmount - burnAmount);
+    }
 }
