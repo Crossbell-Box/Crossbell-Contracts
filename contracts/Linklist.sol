@@ -3,8 +3,7 @@
 pragma solidity 0.8.18;
 
 import {ILinklist} from "./interfaces/ILinklist.sol";
-import {IWeb3Entry} from "./interfaces/IWeb3Entry.sol";
-import {NFTBase} from "./base/NFTBase.sol";
+import {LinklistBase} from "./base/LinklistBase.sol";
 import {ERC721} from "./base/ERC721.sol";
 import {Events} from "./libraries/Events.sol";
 import {DataTypes} from "./libraries/DataTypes.sol";
@@ -22,7 +21,13 @@ import {
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, LinklistExtendStorage {
+contract Linklist is
+    ILinklist,
+    LinklistBase,
+    LinklistStorage,
+    Initializable,
+    LinklistExtendStorage
+{
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -30,6 +35,13 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
     event Burn(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
 
+    modifier onlyWeb3Entry() {
+        if (msg.sender != Web3Entry) revert ErrCallerNotWeb3Entry();
+
+        _;
+    }
+
+    /// @inheritdoc ILinklist
     function initialize(
         string calldata name_,
         string calldata symbol_,
@@ -44,12 +56,11 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         emit Events.LinklistNFTInitialized(block.timestamp);
     }
 
+    /// @inheritdoc ILinklist
     function mint(
         uint256 characterId,
         bytes32 linkType
-    ) external override returns (uint256 tokenId) {
-        _validateCallerIsWeb3Entry();
-
+    ) external override onlyWeb3Entry returns (uint256 tokenId) {
         tokenId = ++_tokenCount;
         _linkTypes[tokenId] = linkType;
         // mint tokenId to characterId
@@ -62,21 +73,45 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     }
 
     /// @inheritdoc ILinklist
+    function burn(uint256 tokenId) external override {
+        if (msg.sender != ownerOf(tokenId)) revert ErrNotOwner();
+
+        uint256 characterId = _linklistOwners[tokenId];
+
+        // Ownership check above ensures no underflow.
+        unchecked {
+            _linklistBalances[characterId]--;
+            _totalSupply--;
+        }
+        delete _linkTypes[tokenId];
+        delete _linklistOwners[tokenId];
+
+        emit Burn(msg.sender, characterId, tokenId);
+    }
+
+    /// @inheritdoc ILinklist
     function setUri(uint256 tokenId, string memory newUri) external override {
-        _validateCallerIsWeb3EntryOrOwner(tokenId);
+        // caller must be web3Entry or owner
+        if (msg.sender != Web3Entry && msg.sender != ownerOf(tokenId))
+            revert ErrCallerNotWeb3EntryOrNotOwner();
+
         _uris[tokenId] = newUri;
     }
 
     /////////////////////////////////
     // linking Character
     /////////////////////////////////
-    function addLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external override {
-        _validateCallerIsWeb3Entry();
+    function addLinkingCharacterId(
+        uint256 tokenId,
+        uint256 toCharacterId
+    ) external override onlyWeb3Entry {
         _linkingCharacters[tokenId].add(toCharacterId);
     }
 
-    function removeLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external override {
-        _validateCallerIsWeb3Entry();
+    function removeLinkingCharacterId(
+        uint256 tokenId,
+        uint256 toCharacterId
+    ) external override onlyWeb3Entry {
         _linkingCharacters[tokenId].remove(toCharacterId);
     }
 
@@ -87,9 +122,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         uint256 tokenId,
         uint256 toCharacterId,
         uint256 toNoteId
-    ) external override returns (bytes32) {
-        _validateCallerIsWeb3Entry();
-
+    ) external override onlyWeb3Entry returns (bytes32) {
         bytes32 linkKey = keccak256(abi.encodePacked("Note", toCharacterId, toNoteId));
         if (tokenId != 0) {
             _linkNoteKeys[tokenId].add(linkKey);
@@ -103,9 +136,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         uint256 tokenId,
         uint256 toCharacterId,
         uint256 toNoteId
-    ) external override {
-        _validateCallerIsWeb3Entry();
-
+    ) external override onlyWeb3Entry {
         bytes32 linkKey = keccak256(abi.encodePacked("Note", toCharacterId, toNoteId));
         _linkNoteKeys[tokenId].remove(linkKey);
 
@@ -119,9 +150,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     function addLinkingCharacterLink(
         uint256 tokenId,
         DataTypes.CharacterLinkStruct calldata linkData
-    ) external override {
-        _validateCallerIsWeb3Entry();
-
+    ) external override onlyWeb3Entry {
         bytes32 linkKey = keccak256(
             abi.encodePacked(
                 "CharacterLink",
@@ -139,9 +168,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     function removeLinkingCharacterLink(
         uint256 tokenId,
         DataTypes.CharacterLinkStruct calldata linkData
-    ) external override {
-        _validateCallerIsWeb3Entry();
-
+    ) external override onlyWeb3Entry {
         bytes32 linkKey = keccak256(
             abi.encodePacked(
                 "CharacterLink",
@@ -163,9 +190,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         uint256 tokenId,
         address tokenAddress,
         uint256 erc721TokenId
-    ) external override returns (bytes32) {
-        _validateCallerIsWeb3Entry();
-
+    ) external override onlyWeb3Entry returns (bytes32) {
         bytes32 linkKey = keccak256(abi.encodePacked("ERC721", tokenAddress, erc721TokenId));
         if (tokenId != 0) {
             _linkingERC721Keys[tokenId].add(linkKey);
@@ -182,9 +207,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         uint256 tokenId,
         address tokenAddress,
         uint256 erc721TokenId
-    ) external override {
-        _validateCallerIsWeb3Entry();
-
+    ) external override onlyWeb3Entry {
         bytes32 linkKey = keccak256(abi.encodePacked("ERC721", tokenAddress, erc721TokenId));
         _linkingERC721Keys[tokenId].remove(linkKey);
 
@@ -195,13 +218,17 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     /////////////////////////////////
     // linking Address
     /////////////////////////////////
-    function addLinkingAddress(uint256 tokenId, address ethAddress) external override {
-        _validateCallerIsWeb3Entry();
+    function addLinkingAddress(
+        uint256 tokenId,
+        address ethAddress
+    ) external override onlyWeb3Entry {
         _linkingAddresses[tokenId].add(ethAddress);
     }
 
-    function removeLinkingAddress(uint256 tokenId, address ethAddress) external override {
-        _validateCallerIsWeb3Entry();
+    function removeLinkingAddress(
+        uint256 tokenId,
+        address ethAddress
+    ) external override onlyWeb3Entry {
         _linkingAddresses[tokenId].remove(ethAddress);
     }
 
@@ -211,9 +238,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     function addLinkingAnyUri(
         uint256 tokenId,
         string memory toUri
-    ) external override returns (bytes32) {
-        _validateCallerIsWeb3Entry();
-
+    ) external override onlyWeb3Entry returns (bytes32) {
         bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", toUri));
         if (tokenId != 0) {
             _linkingAnyKeys[tokenId].add(linkKey);
@@ -222,9 +247,10 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         return linkKey;
     }
 
-    function removeLinkingAnyUri(uint256 tokenId, string memory toUri) external override {
-        _validateCallerIsWeb3Entry();
-
+    function removeLinkingAnyUri(
+        uint256 tokenId,
+        string memory toUri
+    ) external override onlyWeb3Entry {
         bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", toUri));
         _linkingAnyKeys[tokenId].remove(linkKey);
 
@@ -235,13 +261,17 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     /////////////////////////////////
     // linking Linklist
     /////////////////////////////////
-    function addLinkingLinklistId(uint256 tokenId, uint256 linklistId) external override {
-        _validateCallerIsWeb3Entry();
+    function addLinkingLinklistId(
+        uint256 tokenId,
+        uint256 linklistId
+    ) external override onlyWeb3Entry {
         _linkingLinklists[tokenId].add(linklistId);
     }
 
-    function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId) external override {
-        _validateCallerIsWeb3Entry();
+    function removeLinkingLinklistId(
+        uint256 tokenId,
+        uint256 linklistId
+    ) external override onlyWeb3Entry {
         _linkingLinklists[tokenId].remove(linklistId);
     }
 
@@ -375,9 +405,8 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     /////////////////////////////////
     // common
     /////////////////////////////////
-    function getCurrentTakeOver(
-        uint256 tokenId
-    ) external view override returns (uint256 characterId) {} // solhint-disable-line no-empty-blocks
+    // solhint-disable-next-line no-empty-blocks
+    function getCurrentTakeOver(uint256 tokenId) external view override returns (uint256) {}
 
     function getLinkType(uint256 tokenId) external view override returns (bytes32) {
         return _linkTypes[tokenId];
@@ -396,9 +425,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     }
 
     // slither-disable-next-line calls-loop
-    function balanceOf(
-        address account
-    ) public view override(IERC721, ERC721) returns (uint256 balance) {
+    function balanceOf(address account) public view override(ERC721) returns (uint256 balance) {
         uint256 characterCount = IERC721(Web3Entry).balanceOf(account);
         for (uint256 i = 0; i < characterCount; i++) {
             uint256 characterId = IERC721Enumerable(Web3Entry).tokenOfOwnerByIndex(account, i);
@@ -410,32 +437,22 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
      * @notice returns the characterId who owns the given tokenId.
      * @param tokenId The token id of the linklist.
      */
-    function characterOwnerOf(uint256 tokenId) public view override returns (uint256) {
-        uint256 characterId = _linklistOwners[tokenId];
-        return characterId;
+    function characterOwnerOf(uint256 tokenId) external view override returns (uint256) {
+        return _linklistOwners[tokenId];
     }
 
-    function ownerOf(uint256 tokenId) public view override(IERC721, ERC721) returns (address) {
-        uint256 characterId = characterOwnerOf(tokenId);
+    function ownerOf(uint256 tokenId) public view override(ERC721) returns (address) {
+        uint256 characterId = _linklistOwners[tokenId];
         address owner = IERC721(Web3Entry).ownerOf(characterId);
         return owner;
     }
 
-    function totalSupply() public view override returns (uint256) {
+    function totalSupply() external view override returns (uint256) {
         return _totalSupply;
     }
 
     function _getTokenUri(uint256 tokenId) internal view returns (string memory) {
         return _uris[tokenId];
-    }
-
-    function _validateCallerIsWeb3Entry() internal view {
-        if (msg.sender != Web3Entry) revert ErrCallerNotWeb3Entry();
-    }
-
-    function _validateCallerIsWeb3EntryOrOwner(uint256 tokenId) internal view {
-        if (msg.sender != Web3Entry && msg.sender != ownerOf(tokenId))
-            revert ErrCallerNotWeb3EntryOrNotOwner();
     }
 
     function _safeTransfer(
@@ -455,22 +472,6 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
     ) internal pure override {
         // this function will do nothing, as linklist is a character bounded token
         // users should never transfer a linklist directly
-    }
-
-    function burn(uint256 tokenId) public virtual override {
-        if (msg.sender != ownerOf(tokenId)) revert ErrNotOwner();
-
-        uint256 characterId = _linklistOwners[tokenId];
-
-        // Ownership check above ensures no underflow.
-        unchecked {
-            _linklistBalances[characterId]--;
-            _totalSupply--;
-        }
-        delete _linkTypes[tokenId];
-        delete _linklistOwners[tokenId];
-
-        emit Burn(msg.sender, characterId, tokenId);
     }
 }
 // slither-disable-end unused-return

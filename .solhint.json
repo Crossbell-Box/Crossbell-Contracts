@@ -13,6 +13,7 @@
     "event-name-camelcase": "error",
     "function-max-lines": ["warn",50],
     "func-name-mixedcase": "error",
+    "func-named-parameters": "off",
     "func-visibility": ["error", { "ignoreConstructors": true }],
     "imports-on-top": "error",
     "max-line-length": ["error", 120],
