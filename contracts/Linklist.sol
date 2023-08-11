@@ -34,7 +34,7 @@ contract Linklist is ILinklist, NFTBase, LinklistStorage, Initializable, Linklis
         string calldata name_,
         string calldata symbol_,
         address web3Entry_
-    ) external override initializer {
+    ) external override reinitializer(2) {
         Web3Entry = web3Entry_;
 
         // initialize totalSupply for upgrade
