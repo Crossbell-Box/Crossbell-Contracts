@@ -1,0 +1,34 @@
+| Name                      | Type                                                     | Slot | Offset | Bytes | Contract                        |
+|---------------------------|----------------------------------------------------------|------|--------|-------|---------------------------------|
+| _name                     | string                                                   | 0    | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _symbol                   | string                                                   | 1    | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _owners                   | mapping(uint256 => address)                              | 2    | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _balances                 | mapping(address => uint256)                              | 3    | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _tokenApprovals           | mapping(uint256 => address)                              | 4    | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _operatorApprovals        | mapping(address => mapping(address => bool))             | 5    | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _ownedTokens              | mapping(address => mapping(uint256 => uint256))          | 6    | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _ownedTokensIndex         | mapping(uint256 => uint256)                              | 7    | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _allTokens                | uint256[]                                                | 8    | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _allTokensIndex           | mapping(uint256 => uint256)                              | 9    | 0      | 32    | contracts/Linklist.sol:Linklist |
+| Web3Entry                 | address                                                  | 10   | 0      | 20    | contracts/Linklist.sol:Linklist |
+| _linkTypes                | mapping(uint256 => bytes32)                              | 11   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linkingCharacters        | mapping(uint256 => struct EnumerableSet.UintSet)         | 12   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linkingAddresses         | mapping(uint256 => struct EnumerableSet.AddressSet)      | 13   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linkingLinklists         | mapping(uint256 => struct EnumerableSet.UintSet)         | 14   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linkKeys                 | mapping(uint256 => struct EnumerableSet.Bytes32Set)      | 15   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linkingERC721s           | mapping(bytes32 => struct DataTypes.ERC721Struct)        | 16   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linkNotes                | mapping(bytes32 => struct DataTypes.NoteStruct)          | 17   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linkingCharacterLinks    | mapping(bytes32 => struct DataTypes.CharacterLinkStruct) | 18   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linkingAnys              | mapping(bytes32 => string)                               | 19   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _currentTakeOver          | mapping(uint256 => uint256)                              | 20   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _uris                     | mapping(uint256 => string)                               | 21   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linkingERC721Keys        | mapping(uint256 => struct EnumerableSet.Bytes32Set)      | 22   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linkNoteKeys             | mapping(uint256 => struct EnumerableSet.Bytes32Set)      | 23   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linkingCharacterLinkKeys | mapping(uint256 => struct EnumerableSet.Bytes32Set)      | 24   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linkingAnyKeys           | mapping(uint256 => struct EnumerableSet.Bytes32Set)      | 25   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _initialized              | uint8                                                    | 26   | 0      | 1     | contracts/Linklist.sol:Linklist |
+| _initializing             | bool                                                     | 26   | 1      | 1     | contracts/Linklist.sol:Linklist |
+| _tokenCount               | uint256                                                  | 27   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linklistOwners           | mapping(uint256 => uint256)                              | 28   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _linklistBalances         | mapping(uint256 => uint256)                              | 29   | 0      | 32    | contracts/Linklist.sol:Linklist |
+| _totalSupply              | uint256                                                  | 30   | 0      | 32    | contracts/Linklist.sol:Linklist |
