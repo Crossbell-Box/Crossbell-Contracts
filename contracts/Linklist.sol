@@ -101,6 +101,7 @@ contract Linklist is
     /////////////////////////////////
     // linking Character
     /////////////////////////////////
+    /// @inheritdoc ILinklist
     function addLinkingCharacterId(
         uint256 tokenId,
         uint256 toCharacterId
@@ -108,6 +109,7 @@ contract Linklist is
         _linkingCharacters[tokenId].add(toCharacterId);
     }
 
+    /// @inheritdoc ILinklist
     function removeLinkingCharacterId(
         uint256 tokenId,
         uint256 toCharacterId
@@ -118,6 +120,7 @@ contract Linklist is
     /////////////////////////////////
     // linking Note
     /////////////////////////////////
+    /// @inheritdoc ILinklist
     function addLinkingNote(
         uint256 tokenId,
         uint256 toCharacterId,
@@ -132,6 +135,7 @@ contract Linklist is
         return linkKey;
     }
 
+    /// @inheritdoc ILinklist
     function removeLinkingNote(
         uint256 tokenId,
         uint256 toCharacterId,
@@ -147,6 +151,7 @@ contract Linklist is
     /////////////////////////////////
     // linking CharacterLink
     /////////////////////////////////
+    /// @inheritdoc ILinklist
     function addLinkingCharacterLink(
         uint256 tokenId,
         DataTypes.CharacterLinkStruct calldata linkData
@@ -165,6 +170,7 @@ contract Linklist is
         _linkingCharacterLinks[linkKey] = linkData;
     }
 
+    /// @inheritdoc ILinklist
     function removeLinkingCharacterLink(
         uint256 tokenId,
         DataTypes.CharacterLinkStruct calldata linkData
@@ -186,6 +192,7 @@ contract Linklist is
     /////////////////////////////////
     // linking ERC721
     /////////////////////////////////
+    /// @inheritdoc ILinklist
     function addLinkingERC721(
         uint256 tokenId,
         address tokenAddress,
@@ -203,6 +210,7 @@ contract Linklist is
         return linkKey;
     }
 
+    /// @inheritdoc ILinklist
     function removeLinkingERC721(
         uint256 tokenId,
         address tokenAddress,
@@ -218,6 +226,7 @@ contract Linklist is
     /////////////////////////////////
     // linking Address
     /////////////////////////////////
+    /// @inheritdoc ILinklist
     function addLinkingAddress(
         uint256 tokenId,
         address ethAddress
@@ -225,6 +234,7 @@ contract Linklist is
         _linkingAddresses[tokenId].add(ethAddress);
     }
 
+    /// @inheritdoc ILinklist
     function removeLinkingAddress(
         uint256 tokenId,
         address ethAddress
@@ -235,6 +245,7 @@ contract Linklist is
     /////////////////////////////////
     // linking Any Uri
     /////////////////////////////////
+    /// @inheritdoc ILinklist
     function addLinkingAnyUri(
         uint256 tokenId,
         string memory toUri
@@ -247,6 +258,7 @@ contract Linklist is
         return linkKey;
     }
 
+    /// @inheritdoc ILinklist
     function removeLinkingAnyUri(
         uint256 tokenId,
         string memory toUri
@@ -261,6 +273,7 @@ contract Linklist is
     /////////////////////////////////
     // linking Linklist
     /////////////////////////////////
+    /// @inheritdoc ILinklist
     function addLinkingLinklistId(
         uint256 tokenId,
         uint256 linklistId
@@ -268,6 +281,7 @@ contract Linklist is
         _linkingLinklists[tokenId].add(linklistId);
     }
 
+    /// @inheritdoc ILinklist
     function removeLinkingLinklistId(
         uint256 tokenId,
         uint256 linklistId
@@ -275,23 +289,27 @@ contract Linklist is
         _linkingLinklists[tokenId].remove(linklistId);
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingCharacterIds(
         uint256 tokenId
     ) external view override returns (uint256[] memory) {
         return _linkingCharacters[tokenId].values();
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingCharacterListLength(
         uint256 tokenId
     ) external view override returns (uint256) {
         return _linkingCharacters[tokenId].length();
     }
 
+    /// @inheritdoc ILinklist
     function getOwnerCharacterId(uint256 tokenId) external view override returns (uint256) {
         uint256 characterId = _linklistOwners[tokenId];
         return characterId;
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingNotes(
         uint256 tokenId
     ) external view override returns (DataTypes.NoteStruct[] memory results) {
@@ -303,16 +321,19 @@ contract Linklist is
         }
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingNote(
         bytes32 linkKey
     ) external view override returns (DataTypes.NoteStruct memory) {
         return _linkNotes[linkKey];
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingNoteListLength(uint256 tokenId) external view override returns (uint256) {
         return _linkNoteKeys[tokenId].length();
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingCharacterLinks(
         uint256 tokenId
     ) external view override returns (DataTypes.CharacterLinkStruct[] memory results) {
@@ -324,18 +345,21 @@ contract Linklist is
         }
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingCharacterLink(
         bytes32 linkKey
     ) external view override returns (DataTypes.CharacterLinkStruct memory) {
         return _linkingCharacterLinks[linkKey];
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingCharacterLinkListLength(
         uint256 tokenId
     ) external view override returns (uint256) {
         return _linkingCharacterLinkKeys[tokenId].length();
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingERC721s(
         uint256 tokenId
     ) external view override returns (DataTypes.ERC721Struct[] memory results) {
@@ -347,26 +371,31 @@ contract Linklist is
         }
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingERC721(
         bytes32 linkKey
     ) external view override returns (DataTypes.ERC721Struct memory) {
         return _linkingERC721s[linkKey];
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingERC721ListLength(uint256 tokenId) external view override returns (uint256) {
         return _linkingERC721Keys[tokenId].length();
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingAddresses(
         uint256 tokenId
     ) external view override returns (address[] memory) {
         return _linkingAddresses[tokenId].values();
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingAddressListLength(uint256 tokenId) external view override returns (uint256) {
         return _linkingAddresses[tokenId].length();
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingAnyUris(
         uint256 tokenId
     ) external view override returns (string[] memory results) {
@@ -378,26 +407,31 @@ contract Linklist is
         }
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingAnyUri(bytes32 linkKey) external view override returns (string memory) {
         return _linkingAnys[linkKey];
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingAnyUriKeys(
         uint256 tokenId
     ) external view override returns (bytes32[] memory) {
         return _linkingAnyKeys[tokenId].values();
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingAnyListLength(uint256 tokenId) external view override returns (uint256) {
         return _linkingAnyKeys[tokenId].length();
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingLinklistIds(
         uint256 tokenId
     ) external view override returns (uint256[] memory) {
         return _linkingLinklists[tokenId].values();
     }
 
+    /// @inheritdoc ILinklist
     function getLinkingLinklistLength(uint256 tokenId) external view override returns (uint256) {
         return _linkingLinklists[tokenId].length();
     }
@@ -408,6 +442,7 @@ contract Linklist is
     // solhint-disable-next-line no-empty-blocks
     function getCurrentTakeOver(uint256 tokenId) external view override returns (uint256) {}
 
+    /// @inheritdoc ILinklist
     function getLinkType(uint256 tokenId) external view override returns (bytes32) {
         return _linkTypes[tokenId];
     }
@@ -415,11 +450,12 @@ contract Linklist is
     // slither-disable-start naming-convention
     // solhint-disable-next-line func-name-mixedcase
     function Uri(uint256 tokenId) external view override returns (string memory) {
-        return _getTokenUri(tokenId);
+        return _uris[tokenId];
     }
 
     // slither-disable-end naming-convention
 
+    /// @inheritdoc ILinklist
     function balanceOf(uint256 characterId) public view override returns (uint256) {
         return _linklistBalances[characterId];
     }
@@ -433,26 +469,21 @@ contract Linklist is
         }
     }
 
-    /**
-     * @notice returns the characterId who owns the given tokenId.
-     * @param tokenId The token id of the linklist.
-     */
+    /// @inheritdoc ILinklist
     function characterOwnerOf(uint256 tokenId) external view override returns (uint256) {
         return _linklistOwners[tokenId];
     }
 
+    /// @inheritdoc ERC721
     function ownerOf(uint256 tokenId) public view override(ERC721) returns (address) {
         uint256 characterId = _linklistOwners[tokenId];
         address owner = IERC721(Web3Entry).ownerOf(characterId);
         return owner;
     }
 
+    /// @inheritdoc ILinklist
     function totalSupply() external view override returns (uint256) {
         return _totalSupply;
-    }
-
-    function _getTokenUri(uint256 tokenId) internal view returns (string memory) {
-        return _uris[tokenId];
     }
 
     function _safeTransfer(
