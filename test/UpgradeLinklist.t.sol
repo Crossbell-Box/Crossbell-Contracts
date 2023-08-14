@@ -1,69 +1,35 @@
 // SPDX-License-Identifier: MIT
-// slither-disable-start unused-return
+// solhint-disable comprehensive-interface
 pragma solidity 0.8.18;
 
-import {NFTBase} from "../contracts/base/NFTBase.sol";
 import {CommonTest} from "./helpers/CommonTest.sol";
 import {Linklist} from "../contracts/Linklist.sol";
 import {
     TransparentUpgradeableProxy
 } from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
-import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-
-contract LinklistOld is NFTBase, Initializable {
-    address public web3Entry;
-
-    // solhint-disable comprehensive-interface
-    function initialize(
-        string calldata name_,
-        string calldata symbol_,
-        address web3Entry_
-    ) external initializer {
-        web3Entry = web3Entry_;
-
-        super._initialize(name_, symbol_);
-    }
-
-    function getVersion() external pure returns (uint256) {
-        return 1;
-    }
-}
 
 contract UpgradeLinklistTest is CommonTest {
-    address internal _web3Entry = address(0x123456789);
-
-    TransparentUpgradeableProxy internal _proxyLinklist;
-    Linklist internal _linklist;
-    LinklistOld internal _linklistOld;
+    // test upgradeability of Linklist from crossbell fork
+    address internal _web3Entry = address(0xa6f969045641Cf486a747A2688F3a5A6d43cd0D8);
+    address payable internal _linklist =
+        payable(address(0xFc8C75bD5c26F50798758f387B698f207a016b6A));
+    address internal _proxyAdmin = address(0x5f603895B48F0C451af39bc7e0c587aE15718e4d);
 
     function setUp() public {
-        _linklist = new Linklist();
-        _linklistOld = new LinklistOld();
-
-        _proxyLinklist = new TransparentUpgradeableProxy(
-            address(_linklistOld),
-            admin,
-            abi.encodeWithSignature(
-                "initialize(string,string,address)",
-                "Linklist",
-                "LIT",
-                _web3Entry
-            )
-        );
+        // create and select a fork from crossbell at block 41621719
+        vm.createSelectFork(vm.envString("CROSSBELL_RPC_URL"), 41621719);
     }
 
     function testCheckSetupState() public {
-        vm.prank(admin);
-        assertEq(_proxyLinklist.implementation(), address(_linklistOld));
-        assertEq(LinklistOld(address(_proxyLinklist)).web3Entry(), _web3Entry);
-        assertEq(LinklistOld(address(_proxyLinklist)).getVersion(), 1);
+        assertEq(Linklist(_linklist).Web3Entry(), _web3Entry);
     }
 
     function testUpgradeLinklist() public {
+        Linklist newImpl = new Linklist();
         // upgrade and initialize
-        vm.prank(admin);
-        _proxyLinklist.upgradeToAndCall(
-            address(_linklist),
+        vm.prank(_proxyAdmin);
+        TransparentUpgradeableProxy(_linklist).upgradeToAndCall(
+            address(newImpl),
             abi.encodeWithSignature(
                 "initialize(string,string,address)",
                 "Linklist",
@@ -71,16 +37,21 @@ contract UpgradeLinklistTest is CommonTest {
                 _web3Entry
             )
         );
-        assertEq(Linklist(address(_proxyLinklist)).Web3Entry(), _web3Entry);
-        vm.prank(admin);
-        assertEq(_proxyLinklist.implementation(), address(_linklist));
+        // check newImpl
+        vm.prank(_proxyAdmin);
+        assertEq(TransparentUpgradeableProxy(_linklist).implementation(), address(newImpl));
+        // check initialize
+        assertEq(Linklist(_linklist).Web3Entry(), _web3Entry);
+        assertEq(Linklist(_linklist).name(), "Linklist");
+        assertEq(Linklist(_linklist).symbol(), "LIT");
     }
 
     function testInitializeFail() public {
+        Linklist newImpl = new Linklist();
         // upgrade and initialize
-        vm.prank(admin);
-        _proxyLinklist.upgradeToAndCall(
-            address(_linklist),
+        vm.prank(_proxyAdmin);
+        TransparentUpgradeableProxy(_linklist).upgradeToAndCall(
+            address(newImpl),
             abi.encodeWithSignature(
                 "initialize(string,string,address)",
                 "Linklist",
@@ -91,6 +62,32 @@ contract UpgradeLinklistTest is CommonTest {
 
         // initialize again
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
-        Linklist(address(_proxyLinklist)).initialize("Linklist", "LIT", _web3Entry);
+        Linklist(address(_linklist)).initialize("Linklist", "LIT", _web3Entry);
+    }
+
+    function testUpgradeLinklistWithBurn() public {
+        Linklist newImpl = new Linklist();
+        // upgrade and initialize
+        vm.prank(_proxyAdmin);
+        TransparentUpgradeableProxy(_linklist).upgradeToAndCall(
+            address(newImpl),
+            abi.encodeWithSignature(
+                "initialize(string,string,address)",
+                "Linklist",
+                "LIT",
+                _web3Entry
+            )
+        );
+
+        uint256 totalSupply = Linklist(_linklist).totalSupply();
+        // mint a linklist
+        vm.prank(_web3Entry);
+        uint256 tokenId = Linklist(_linklist).mint(FIRST_CHARACTER_ID, FollowLinkType);
+        assertEq(totalSupply + 1, Linklist(_linklist).totalSupply());
+        // burn a linklist
+        vm.prank(Linklist(_linklist).ownerOf(tokenId));
+        Linklist(_linklist).burn(tokenId);
+        // check totalSupply
+        assertEq(totalSupply, Linklist(_linklist).totalSupply());
     }
 }
