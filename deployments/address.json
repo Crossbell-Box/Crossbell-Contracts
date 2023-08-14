@@ -11,6 +11,12 @@
 	"Tips": {
 		"address": "0x0058be0845952D887D1668B5545de995E12e8783"
 	},
+	"TipsWithFee": {
+		"address": "0xf3158018f932981d0005701dDC22Ce51477E436d"
+	},
+	"TipsWithConfig": {
+		"address": "0xF1375C069998d06E123B800cF0566e44DA1BE30E"
+	},
 	"MintModules": {
 		"ApprovalMintModule": {
 			"address": "0x35572B091802626e724b19b492F54e71CF01B7FC"
