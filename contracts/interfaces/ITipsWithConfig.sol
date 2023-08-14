@@ -74,6 +74,12 @@ interface ITipsWithConfig {
     ) external;
 
     /**
+     * @notice Cancels the tips config.
+     * @param tipConfigId The tip config ID.
+     */
+    function cancelTips4Character(uint256 tipConfigId) external;
+
+    /**
      * @notice Collects all unredeemed token from the `fromCharacter` to the `toCharacter`.
      * @dev It will transfer all unredeemed token from the `fromCharacter` to the `toCharacter`.
      * @param tipConfigId The tip config ID.

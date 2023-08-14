@@ -29,7 +29,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     address internal _web3Entry;
 
     uint256 internal _tipsConfigIndex;
-    mapping(uint256 tipsConfigId => TipsConfig tipsConfig) internal _tipsConfigs;
+    mapping(uint256 tipsConfigId => TipsConfig) internal _tipsConfigs;
     mapping(uint256 fromCharacterId => mapping(uint256 toCharacterId => uint256 tipsConfigId))
         internal _tipsConfigIds;
     mapping(address feeReceiver => uint256 fraction) internal _feeFractions;
@@ -63,6 +63,12 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         address feeReceiver,
         uint256 totalRound
     );
+
+    /**
+     * @dev Emitted when a periodical config is canceled.
+     * @param tipConfigId The tip config id.
+     */
+    event CancelTips4Character(uint256 indexed tipConfigId);
 
     /**
      * @dev Emitted when a user collect a tip with periodical config.
@@ -134,6 +140,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             "TipsWithConfig: not character owner"
         );
         require(interval > 0, "TipsWithConfig: interval must be greater than 0");
+        require(amount > 0, "TipsWithConfig: amount must be greater than 0");
         require(endTime >= startTime + interval, "TipsWithConfig: invalid endTime");
 
         uint256 tipConfigId = _getTipsConfigId(fromCharacterId, toCharacterId);
@@ -175,6 +182,26 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             feeReceiver,
             totalRound
         );
+    }
+
+    /// @inheritdoc ITipsWithConfig
+    function cancelTips4Character(uint256 tipConfigId) external override {
+        TipsConfig storage config = _tipsConfigs[tipConfigId];
+        require(config.id > 0, "TipsWithConfig: invalid tipConfigId");
+        require(
+            msg.sender == IERC721(_web3Entry).ownerOf(config.fromCharacterId),
+            "TipsWithConfig: not character owner"
+        );
+
+        // try to collect tips first
+        _collectTips4Character(config.id);
+
+        // delete tips config
+        delete _tipsConfigIds[config.fromCharacterId][config.toCharacterId];
+        delete _tipsConfigs[config.id];
+
+        // emit event
+        emit CancelTips4Character(tipConfigId);
     }
 
     /// @inheritdoc ITipsWithConfig
