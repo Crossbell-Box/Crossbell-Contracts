@@ -24,23 +24,15 @@ contract LinkNoteTest is CommonTest {
 
     // solhint-disable-next-line function-max-lines
     function testLinkNote() public {
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.LinkNote(
-            FIRST_CHARACTER_ID,
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            FollowLinkType,
-            FIRST_LINKLIST_ID
-        );
+        uint256 fromCharacterId = 1;
+        uint256 toCharacterId = 1;
+        uint256 toNoteId = 1;
+
+        expectEmit(CheckAll);
+        emit Events.LinkNote(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, 1);
         vm.prank(alice);
         web3Entry.linkNote(
-            DataTypes.linkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
         );
 
         // check linklist
@@ -49,26 +41,14 @@ contract LinkNoteTest is CommonTest {
         vm.prank(alice);
         // link twice
         web3Entry.linkNote(
-            DataTypes.linkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
         );
 
         // periphery can link
         // the first input is msg.sender and the second input is tx.origin
         vm.prank(address(periphery), alice);
         web3Entry.linkNote(
-            DataTypes.linkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
         );
 
         // check state
@@ -77,105 +57,68 @@ contract LinkNoteTest is CommonTest {
         DataTypes.NoteStruct memory linkingNote = linkingNotes[0];
         assertEq(linkingNote.characterId, 1);
         assertEq(linkingNote.noteId, 1);
-        bytes32 linkKey = keccak256(abi.encodePacked("Note", FIRST_CHARACTER_ID, FIRST_NOTE_ID));
+        bytes32 linkKey = keccak256(abi.encodePacked("Note", toCharacterId, toNoteId));
         linkingNote = linklist.getLinkingNote(linkKey);
-        assertEq(linkingNote.characterId, 1);
-        assertEq(linkingNote.noteId, 1);
+        assertEq(linkingNote.characterId, toCharacterId);
+        assertEq(linkingNote.noteId, toNoteId);
         assertEq(linklist.getLinkingNoteListLength(1), 1);
     }
 
     function testLinkNoteFail() public {
+        uint256 fromCharacterId = 1;
+        uint256 toCharacterId = 1;
+        uint256 toNoteId = 1;
+
         // case 1: NotEnoughPermission
-        vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
         web3Entry.linkNote(
-            DataTypes.linkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
         );
 
         // case 2: link a nonexistent note
-        vm.prank(alice);
         vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
+        vm.prank(alice);
         web3Entry.linkNote(
-            DataTypes.linkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                SECOND_NOTE_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkNoteData(fromCharacterId, toCharacterId, 2, FollowLinkType, "")
         );
 
         // case 3: link a deleted note
         vm.prank(alice);
-        web3Entry.deleteNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
+        web3Entry.deleteNote(toCharacterId, toNoteId);
         vm.expectRevert(abi.encodeWithSelector(ErrNoteIsDeleted.selector));
         vm.prank(alice);
         web3Entry.linkNote(
-            DataTypes.linkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
         );
     }
 
     // solhint-disable-next-line function-max-lines
     function testUnLinkNote() public {
+        uint256 fromCharacterId = 1;
+        uint256 toCharacterId = 1;
+        uint256 toNoteId = 1;
+
         vm.startPrank(alice);
         web3Entry.linkNote(
-            DataTypes.linkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
         );
 
         // unlink
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
-        emit Events.UnlinkNote(
-            FIRST_CHARACTER_ID,
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            FollowLinkType,
-            FIRST_LINKLIST_ID
-        );
+        expectEmit(CheckAll);
+        emit Events.UnlinkNote(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, 1);
         web3Entry.unlinkNote(
-            DataTypes.unlinkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                FollowLinkType
-            )
+            DataTypes.unlinkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType)
         );
 
         // unlink twice
         web3Entry.unlinkNote(
-            DataTypes.unlinkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                FollowLinkType
-            )
+            DataTypes.unlinkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType)
         );
 
         // unlink a non-existing character
         web3Entry.unlinkNote(
-            DataTypes.unlinkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                FollowLinkType
-            )
+            DataTypes.unlinkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType)
         );
         vm.stopPrank();
 
@@ -185,35 +128,28 @@ contract LinkNoteTest is CommonTest {
         // check state
         DataTypes.NoteStruct[] memory linkingNotes = linklist.getLinkingNotes(1);
         assertEq(linkingNotes.length, 0);
-        bytes32 linkKey = keccak256(abi.encodePacked("Note", FIRST_CHARACTER_ID, FIRST_NOTE_ID));
+        bytes32 linkKey = keccak256(abi.encodePacked("Note", toCharacterId, toNoteId));
         DataTypes.NoteStruct memory linkingNote = linklist.getLinkingNote(linkKey);
-        assertEq(linkingNote.characterId, 1);
-        assertEq(linkingNote.noteId, 1);
+        assertEq(linkingNote.characterId, toCharacterId);
+        assertEq(linkingNote.noteId, toNoteId);
         assertEq(linklist.getLinkingNoteListLength(1), 0);
     }
 
     function testUnLinkNoteFail() public {
+        uint256 fromCharacterId = 1;
+        uint256 toCharacterId = 1;
+        uint256 toNoteId = 1;
+
         vm.prank(alice);
         web3Entry.linkNote(
-            DataTypes.linkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
         );
 
         // unlink
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.unlinkNote(
-            DataTypes.unlinkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                FollowLinkType
-            )
+            DataTypes.unlinkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType)
         );
     }
 }
