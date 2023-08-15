@@ -380,9 +380,7 @@ contract Web3EntryBase is
         );
     }
 
-    /**
-     * @notice set link module for his character
-     */
+    /// @inheritdoc IWeb3Entry
     function setLinkModule4Character(
         DataTypes.setLinkModule4CharacterData calldata vars
     ) external override {
@@ -396,6 +394,7 @@ contract Web3EntryBase is
         );
     }
 
+    /// @inheritdoc IWeb3Entry
     function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external override {
         _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE);
         _validateCallerPermission4Note(vars.characterId, vars.noteId);

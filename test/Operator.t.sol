@@ -20,7 +20,7 @@ import {
 } from "../contracts/libraries/Error.sol";
 import {
     ApprovalLinkModule4Character
-} from "../contracts/modules/link/ApprovalLinkModule4Character.sol";
+} from "../contracts/mocks/linkModule/ApprovalLinkModule4Character.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract OperatorTest is CommonTest {
@@ -462,14 +462,12 @@ contract OperatorTest is CommonTest {
         );
         // unlinkLinklist
         web3Entry.unlinkLinklist(DataTypes.unlinkLinklistData(FIRST_CHARACTER_ID, 1, LikeLinkType));
-        ApprovalLinkModule4Character linkModule4Character = new ApprovalLinkModule4Character(
-            address(web3Entry)
-        );
+
         // setLinkModule4Character
         web3Entry.setLinkModule4Character(
             DataTypes.setLinkModule4CharacterData(
                 FIRST_CHARACTER_ID,
-                address(linkModule4Character),
+                address(approvalLinkModule4Character),
                 new bytes(0)
             )
         );

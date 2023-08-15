@@ -3,8 +3,8 @@
 pragma solidity 0.8.18;
 
 import {ILinkModule4Character} from "../../interfaces/ILinkModule4Character.sol";
+import {ModuleBase} from "../../modules/ModuleBase.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {ModuleBase} from "../ModuleBase.sol";
 
 /**
  * @title ApprovalLinkModule4Character

@@ -3,7 +3,7 @@
 pragma solidity 0.8.18;
 
 import {ILinkModule4Note} from "../../interfaces/ILinkModule4Note.sol";
-import {ModuleBase} from "../ModuleBase.sol";
+import {ModuleBase} from "../../modules/ModuleBase.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /**

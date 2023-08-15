@@ -18,7 +18,10 @@ import {
 } from "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import {
     ApprovalLinkModule4Character
-} from "../../contracts/modules/link/ApprovalLinkModule4Character.sol";
+} from "../../contracts/mocks/linkModule/ApprovalLinkModule4Character.sol";
+import {
+    ApprovalLinkModule4Note
+} from "../../contracts/mocks/linkModule/ApprovalLinkModule4Note.sol";
 import {ApprovalMintModule} from "../../contracts/modules/mint/ApprovalMintModule.sol";
 import {LimitedMintModule} from "../../contracts/modules/mint/LimitedMintModule.sol";
 import {NFT, ERC1155} from "../../contracts/mocks/NFT.sol";
@@ -32,7 +35,8 @@ contract CommonTest is Utils {
     MiraToken public token;
     Tips public tips;
     MintNFT public mintNFTImpl;
-    ApprovalLinkModule4Character public linkModule4Character;
+    ApprovalLinkModule4Character public approvalLinkModule4Character;
+    ApprovalLinkModule4Note public approvalLinkModule4Note;
     ApprovalMintModule public approvalMintModule;
     LimitedMintModule public limitedMintModule;
     NFT public nft;
@@ -104,8 +108,10 @@ contract CommonTest is Utils {
         // deploy token
         token = new MiraToken("Mira Token", "MIRA", address(this));
 
-        // deploy linkModule4Character
-        linkModule4Character = new ApprovalLinkModule4Character(address(web3Entry));
+        // deploy linkModule
+        approvalLinkModule4Character = new ApprovalLinkModule4Character(address(web3Entry));
+        approvalLinkModule4Note = new ApprovalLinkModule4Note(address(web3Entry));
+
         // deploy mintModule4Note
         approvalMintModule = new ApprovalMintModule(address(web3Entry));
         limitedMintModule = new LimitedMintModule(address(web3Entry));
@@ -148,8 +154,11 @@ contract CommonTest is Utils {
         nft.initialize("NFT", "NFT");
     }
 
-    function _createCharacter(string memory handle, address to) internal {
-        web3Entry.createCharacter(makeCharacterData(handle, to));
+    function _createCharacter(
+        string memory handle,
+        address to
+    ) internal returns (uint256 characterId) {
+        return web3Entry.createCharacter(makeCharacterData(handle, to));
     }
 
     function _mintNote(
