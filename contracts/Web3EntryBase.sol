@@ -380,17 +380,12 @@ contract Web3EntryBase is
         );
     }
 
-    //////////////////////////////////////////////////////////////
-    /*
-     * These functions are temporarily commented out, in order to limit the contract code size within 24K.
-     * These functions will be restored when necessary in the future.
-     */
     /**
      * @notice set link module for his character
      */
-
-    /*
-    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external  override {
+    function setLinkModule4Character(
+        DataTypes.setLinkModule4CharacterData calldata vars
+    ) external override {
         _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_CHARACTER);
 
         CharacterLogic.setCharacterLinkModule(
@@ -401,7 +396,7 @@ contract Web3EntryBase is
         );
     }
 
-    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external override  {
+    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external override {
         _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE);
         _validateCallerPermission4Note(vars.characterId, vars.noteId);
         _validateNoteExists(vars.characterId, vars.noteId);
@@ -413,58 +408,6 @@ contract Web3EntryBase is
             vars.linkModule,
             vars.linkModuleInitData,
             _noteByIdByCharacter
-        );
-    }
-    */
-
-    /**
-     * @notice Set linkModule for a ERC721 token that you own.
-     * Operators can't setLinkModule4ERC721, because operators are set for
-     characters but erc721 tokens belong to address and not characters.
-     */
-    /*
-   function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external  override {
-       require(msg.sender == ERC721(vars.tokenAddress).ownerOf(vars.tokenId), "NotERC721Owner");
-
-       LinkModuleLogic.setLinkModule4ERC721(
-           vars.tokenAddress,
-           vars.tokenId,
-           vars.linkModule,
-           vars.linkModuleInitData,
-           _linkModules4ERC721
-       );
-   }
-     */
-    //////////////////////////////////////////////////////////////
-
-    /// @inheritdoc IWeb3Entry
-    function setLinkModule4Linklist(
-        DataTypes.setLinkModule4LinklistData calldata vars
-    ) external override {
-        // get character id of the owner of this linklist
-        uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(vars.linklistId);
-
-        _validateCallerPermission(ownerCharacterId, OP.SET_LINK_MODULE_FOR_LINKLIST);
-
-        LinkModuleLogic.setLinkModule4Linklist(
-            vars.linklistId,
-            vars.linkModule,
-            vars.linkModuleInitData,
-            _linkModules4Linklist
-        );
-    }
-
-    /// @inheritdoc IWeb3Entry
-    function setLinkModule4Address(
-        DataTypes.setLinkModule4AddressData calldata vars
-    ) external override {
-        if (msg.sender != vars.account) revert ErrNotAddressOwner();
-
-        LinkModuleLogic.setLinkModule4Address(
-            vars.account,
-            vars.linkModule,
-            vars.linkModuleInitData,
-            _linkModules4Address
         );
     }
 

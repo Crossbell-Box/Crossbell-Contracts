@@ -57,7 +57,7 @@ contract Deploy is Script {
             address(linklist),
             address(mintNFT),
             address(periphery), // periphery
-            address(0x2) // resolver
+            address(0x2) // newbieVilla
         );
         // initialize linklist
         linklist.initialize(LINK_LIST_NFT_NAME, LINK_LIST_NFT_SYMBOL, address(web3Entry));

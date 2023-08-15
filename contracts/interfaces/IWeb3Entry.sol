@@ -227,20 +227,6 @@ interface IWeb3Entry {
      */
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external;
 
-    /*
-    function linkCharacterLink(
-        uint256 fromCharacterId,
-        DataTypes.CharacterLinkStruct calldata linkData,
-        bytes32 linkType
-    ) external;
-
-    function unlinkCharacterLink(
-        uint256 fromCharacterId,
-        DataTypes.CharacterLinkStruct calldata linkData,
-        bytes32 linkType
-    ) external;
-    */
-
     /**
      * @notice Links a linklist with the given parameters.
      * @param vars The linkLinklistData struct containing the linking parameters:<br>
@@ -260,22 +246,24 @@ interface IWeb3Entry {
      */
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external;
 
-    /*
-     * These functions are temporarily commented out, in order to limit the contract code size within 24K.
-     * These functions will be restored when necessary in the future.
+    /**
+     * @notice Sets a link module for a given character.
+     * @param vars The setLinkModule4CharacterData struct containing the parameters:<br>
+     * `characterId`: The character ID to set for.<br>
+     * `linkModule`: The address of link module contract to set.<br>
+     * `linkModuleInitData`: The data passed to the link module to use, if any.<br>
      */
-    //    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external;
-    //    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external;
-    //    function setLinkModule4ERC721(DataTypes.setLinkModule4ERC721Data calldata vars) external;
-
-    function setLinkModule4Linklist(DataTypes.setLinkModule4LinklistData calldata vars) external;
+    function setLinkModule4Character(DataTypes.setLinkModule4CharacterData calldata vars) external;
 
     /**
-     * @notice Sets linkModule for an address.
-     * @dev Operators can't setLinkModule4Address, because this linkModule is for
-     * addresses and is irrelevant to characters.
+     * @notice Sets a link module for a given note.
+     * @param vars The setLinkModule4NoteData struct containing the parameters:<br>
+     * `characterId`: The character ID to set for.<br>
+     * `noteId`: The note ID to set for.<br>
+     * `linkModule`: The address of link module contract to set.<br>
+     * `linkModuleInitData`: The data passed to the link module to use, if any.<br>
      */
-    function setLinkModule4Address(DataTypes.setLinkModule4AddressData calldata vars) external;
+    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external;
 
     /**
      * @notice Mints an nft with the given note.

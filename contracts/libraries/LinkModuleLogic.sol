@@ -45,29 +45,6 @@ library LinkModuleLogic {
     }
 
     /**
-     * @notice  Sets link module for a given address.
-     * @param   account  The address to set link module for.
-     * @param   linkModule  The link module to set.
-     * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
-     */
-    function setLinkModule4Address(
-        address account,
-        address linkModule,
-        bytes calldata linkModuleInitData,
-        mapping(address => address) storage _linkModules4Address
-    ) external {
-        if (linkModule != address(0)) {
-            _linkModules4Address[account] = linkModule;
-            bytes memory returnData = ILinkModule4Address(linkModule).initializeLinkModule(
-                account,
-                linkModuleInitData
-            );
-
-            emit Events.SetLinkModule4Address(account, linkModule, linkModuleInitData, returnData);
-        }
-    }
-
-    /**
      * @notice  Sets the mint module for a given note.
      * @param   characterId  The character ID of note to set the mint module for.
      * @param   noteId  The note ID of note.
@@ -96,64 +73,6 @@ library LinkModuleLogic {
                 mintModule,
                 mintModuleInitData,
                 returnData
-            );
-        }
-    }
-
-    /**
-     * @notice  Sets link module for a given linklist.
-     * @param   linklistId  The linklist ID to set link module for.
-     * @param   linkModule  The link module to set.
-     * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
-     */
-    function setLinkModule4Linklist(
-        uint256 linklistId,
-        address linkModule,
-        bytes calldata linkModuleInitData,
-        mapping(uint256 => address) storage _linkModules4Linklist
-    ) external {
-        if (linkModule != address(0)) {
-            _linkModules4Linklist[linklistId] = linkModule;
-            bytes memory linkModuleReturnData = ILinkModule4Linklist(linkModule)
-                .initializeLinkModule(linklistId, linkModuleInitData);
-
-            emit Events.SetLinkModule4Linklist(
-                linklistId,
-                linkModule,
-                linkModuleInitData,
-                linkModuleReturnData
-            );
-        }
-    }
-
-    /**
-     * @notice  Sets link module for a given ERC721 token.
-     * @param   tokenAddress  The token address of erc721 to set link module for.
-     * @param   tokenId  The token ID of erc721 to set link module for.
-     * @param   linkModule  The link module to set.
-     * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
-     */
-    function setLinkModule4ERC721(
-        address tokenAddress,
-        uint256 tokenId,
-        address linkModule,
-        bytes calldata linkModuleInitData,
-        mapping(address => mapping(uint256 => address)) storage _linkModules4ERC721
-    ) external {
-        if (linkModule != address(0)) {
-            _linkModules4ERC721[tokenAddress][tokenId] = linkModule;
-            bytes memory linkModuleReturnData = ILinkModule4ERC721(linkModule).initializeLinkModule(
-                tokenAddress,
-                tokenId,
-                linkModuleInitData
-            );
-
-            emit Events.SetLinkModule4ERC721(
-                tokenAddress,
-                tokenId,
-                linkModule,
-                linkModuleInitData,
-                linkModuleReturnData
             );
         }
     }

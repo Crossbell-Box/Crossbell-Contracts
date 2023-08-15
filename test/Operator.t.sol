@@ -466,18 +466,9 @@ contract OperatorTest is CommonTest {
             address(web3Entry)
         );
         // setLinkModule4Character
-        //        web3Entry.setLinkModule4Character(
-        //            DataTypes.setLinkModule4CharacterData(
-        //                FIRST_CHARACTER_ID,
-        //                address(linkModule4Character),
-        //                new bytes(0)
-        //            )
-        //        );
-        // setLinkModule4Linklist
-        // i use the address(linkModule4Character) for link module(cuz the logic here is the same)
-        web3Entry.setLinkModule4Linklist(
-            DataTypes.setLinkModule4LinklistData(
-                FIRST_LINKLIST_ID,
+        web3Entry.setLinkModule4Character(
+            DataTypes.setLinkModule4CharacterData(
+                FIRST_CHARACTER_ID,
                 address(linkModule4Character),
                 new bytes(0)
             )

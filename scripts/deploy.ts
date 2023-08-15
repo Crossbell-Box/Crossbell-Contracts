@@ -16,6 +16,8 @@ async function main() {
     const [owner, addr1] = await ethers.getSigners();
     const admin = owner.address;
 
+    const newbieVilla = "0xD0c83f0BB2c61D55B3d33950b70C59ba2f131caA";
+
     // We get the contract to deploy
 
     const MintNFT = await ethers.getContractFactory("MintNFT");
@@ -27,14 +29,14 @@ async function main() {
     const Periphery = await ethers.getContractFactory("Periphery");
     const periphery = await Periphery.deploy();
 
-    const Resolver = await ethers.getContractFactory("Resolver");
-    const resolver = await Resolver.deploy();
-
     const LinkModuleLogic = await ethers.getContractFactory("LinkModuleLogic");
     const linkModuleLogic = await LinkModuleLogic.deploy();
 
     const CharacterLogic = await ethers.getContractFactory("CharacterLogic");
     const characterLogic = await CharacterLogic.deploy();
+
+    const OperatorLogic = await ethers.getContractFactory("OperatorLogic");
+    const operatorLogic = await OperatorLogic.deploy();
 
     const PostLogic = await ethers.getContractFactory("PostLogic");
     const postLogic = await PostLogic.deploy();
@@ -46,6 +48,7 @@ async function main() {
         libraries: {
             LinkModuleLogic: linkModuleLogic.address,
             CharacterLogic: characterLogic.address,
+            OperatorLogic: operatorLogic.address,
             PostLogic: postLogic.address,
             LinkLogic: linkLogic.address,
         },
@@ -73,7 +76,7 @@ async function main() {
             proxyLinklist.address,
             mintNFT.address,
             proxyPeriphery.address,
-            resolver.address,
+            newbieVilla,
         );
 
     await linkList

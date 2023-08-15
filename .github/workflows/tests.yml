@@ -40,7 +40,7 @@ jobs:
         run: |
           lcov --remove lcov.info 'test/*' -o lcov.info
           lcov --remove lcov.info 'contracts/mocks/*' 'contracts/misc/Periphery.sol' -o lcov.info
-          lcov --remove lcov.info 'contracts/base/*' 'contracts/modules/mint/FeeMintModule.sol' -o lcov.info
+          lcov --remove lcov.info 'contracts/modules/mint/FeeMintModule.sol' -o lcov.info
           lcov --remove lcov.info 'contracts/modules/link/*'  'contracts/upgradeability/*' -o lcov.info
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
