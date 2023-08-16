@@ -12,6 +12,11 @@ import {
     ErrHandleContainsInvalidCharacters
 } from "../../contracts/libraries/Error.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
+import {
+    IERC721Enumerable
+} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 contract CharacterSettingsTest is CommonTest {
     /* solhint-disable comprehensive-interface */
@@ -213,12 +218,12 @@ contract CharacterSettingsTest is CommonTest {
     }
 
     function testSetSocialTokenFailWithoutPermission() public {
-        // not owner can't set social token
+        // case 1: not owner can't set social token
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
 
-        // operator without enough permission can't set social token
+        // case 2: operator without enough permission can't set social token
         // alice grant bob POST_NOTE_DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
@@ -230,17 +235,19 @@ contract CharacterSettingsTest is CommonTest {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
 
-        //  operator behind periphery without enough permission can't set social token
+        //  case 3: operator behind periphery without enough permission can't set social token
         vm.prank(address(periphery), bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setCharacterUri(1, MOCK_URI);
+        web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
     }
 
     function testSetSocialTokenFailAlreadySet() public {
         vm.startPrank(alice);
         web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
+        // set social token again
         vm.expectRevert(abi.encodePacked(ErrSocialTokenExists.selector));
         web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
+        vm.stopPrank();
     }
 
     // Character Setting 2: Set uri
@@ -302,6 +309,32 @@ contract CharacterSettingsTest is CommonTest {
         web3Entry.setCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
     }
 
+    function testSupportsInterface() public {
+        assertTrue(web3Entry.supportsInterface(type(IERC721).interfaceId));
+        assertTrue(web3Entry.supportsInterface(type(IERC721Enumerable).interfaceId));
+        assertTrue(web3Entry.supportsInterface(type(IERC721Metadata).interfaceId));
+    }
+
+    function testTransferCharacterWithApproval() public {
+        // alice approve bob to transfer NFT to bob
+        vm.prank(alice);
+        web3Entry.approve(bob, FIRST_CHARACTER_ID);
+        assertEq(web3Entry.getApproved(FIRST_CHARACTER_ID), bob);
+        vm.prank(bob);
+        web3Entry.transferFrom(alice, bob, FIRST_CHARACTER_ID);
+        assertEq(web3Entry.ownerOf(FIRST_CHARACTER_ID), bob);
+        assertEq(web3Entry.getApproved(FIRST_CHARACTER_ID), address(0));
+
+        // bob approve alice to transfer NFT to carol
+        vm.prank(bob);
+        web3Entry.setApprovalForAll(alice, true);
+        assertEq(web3Entry.isApprovedForAll(bob, alice), true);
+        vm.prank(alice);
+        web3Entry.transferFrom(bob, carol, FIRST_CHARACTER_ID);
+        assertEq(web3Entry.ownerOf(FIRST_CHARACTER_ID), carol);
+        assertEq(web3Entry.getApproved(FIRST_CHARACTER_ID), address(0));
+    }
+
     function _checkHandle(uint256 characterId, string memory handle) internal {
         // query character by handle
         DataTypes.Character memory character = web3Entry.getCharacterByHandle(handle);
@@ -315,7 +348,6 @@ contract CharacterSettingsTest is CommonTest {
 
     function _checkCharacterUri(uint256 characterId, string memory characterUri) internal {
         assertEq(web3Entry.getCharacterUri(characterId), characterUri);
-
         assertEq(web3Entry.tokenURI(FIRST_CHARACTER_ID), CHARACTER_URI);
     }
 

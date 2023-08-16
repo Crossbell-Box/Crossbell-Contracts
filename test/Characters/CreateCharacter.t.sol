@@ -131,25 +131,43 @@ contract CreateCharacterTest is CommonTest {
         }
     }
 
+    function testCreateCharacterWithBurnedHandle() public {
+        _createCharacter(CHARACTER_HANDLE, alice);
+
+        // burn character
+        vm.prank(alice);
+        web3Entry.burn(FIRST_CHARACTER_ID);
+
+        // create character with a burned handle
+        uint256 characterId = _createCharacter(CHARACTER_HANDLE, bob);
+        // check handle
+        assertEq(CHARACTER_HANDLE, web3Entry.getHandle(characterId));
+    }
+
     // test for ERC721Enumerable
-    function testCreateCharacters() public {
+    function testCreateCharactersWithBurn() public {
         _createCharacter("alice", alice);
         _createCharacter("bob", alice);
         _createCharacter("carol", alice);
+        _createCharacter("dick", alice);
+
+        // burn tokenId 3
+        vm.prank(alice);
+        web3Entry.burn(3);
 
         // check owner
-        assertEq(web3Entry.ownerOf(FIRST_CHARACTER_ID), alice);
-        assertEq(web3Entry.ownerOf(SECOND_CHARACTER_ID), alice);
-        assertEq(web3Entry.ownerOf(THIRD_CHARACTER_ID), alice);
+        assertEq(web3Entry.ownerOf(1), alice);
+        assertEq(web3Entry.ownerOf(2), alice);
+        assertEq(web3Entry.ownerOf(4), alice);
         // check total supply
         assertEq(web3Entry.totalSupply(), 3);
         // check tokenOfOwnerByIndex
         assertEq(web3Entry.tokenOfOwnerByIndex(alice, 0), FIRST_CHARACTER_ID);
         assertEq(web3Entry.tokenOfOwnerByIndex(alice, 1), SECOND_CHARACTER_ID);
-        assertEq(web3Entry.tokenOfOwnerByIndex(alice, 2), THIRD_CHARACTER_ID);
+        assertEq(web3Entry.tokenOfOwnerByIndex(alice, 2), 4);
         // check tokenByIndex
         assertEq(web3Entry.tokenByIndex(0), FIRST_CHARACTER_ID);
         assertEq(web3Entry.tokenByIndex(1), SECOND_CHARACTER_ID);
-        assertEq(web3Entry.tokenByIndex(2), THIRD_CHARACTER_ID);
+        assertEq(web3Entry.tokenByIndex(2), 4);
     }
 }
