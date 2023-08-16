@@ -20,7 +20,7 @@ contract LinkUriTest is CommonTest {
     }
 
     function testLinkAddress() public {
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.LinkAnyUri(FIRST_CHARACTER_ID, "ipfs://anyURI", FollowLinkType, 1);
         // alice link an uri
         vm.prank(alice);
@@ -98,7 +98,7 @@ contract LinkUriTest is CommonTest {
         );
 
         // unlink
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.UnlinkAnyUri(FIRST_CHARACTER_ID, "ipfs://anyURI", FollowLinkType);
         web3Entry.unlinkAnyUri(
             DataTypes.unlinkAnyUriData(FIRST_CHARACTER_ID, "ipfs://anyURI", FollowLinkType)

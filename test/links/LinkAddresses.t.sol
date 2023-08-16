@@ -20,7 +20,7 @@ contract LinkAddressTest is CommonTest {
     }
 
     function testLinkAddress() public {
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.LinkAddress(FIRST_CHARACTER_ID, address(0x1232414), FollowLinkType, 1);
         // alice link an address
         vm.prank(alice);
@@ -93,7 +93,7 @@ contract LinkAddressTest is CommonTest {
         );
 
         // unlink
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.UnlinkAddress(FIRST_CHARACTER_ID, address(0x1232414), FollowLinkType);
         web3Entry.unlinkAddress(
             DataTypes.unlinkAddressData(FIRST_CHARACTER_ID, address(0x1232414), FollowLinkType)

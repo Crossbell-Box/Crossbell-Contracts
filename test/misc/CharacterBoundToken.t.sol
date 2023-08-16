@@ -38,7 +38,7 @@ contract CbtTest is CommonTest {
         assertEq(cbt.balanceOf(FIRST_CHARACTER_ID, SECOND_CBT_ID), amount);
 
         // expect correct emit
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Mint(FIRST_CHARACTER_ID, FIRST_CBT_ID, 2);
         cbt.mint(FIRST_CHARACTER_ID, FIRST_CBT_ID);
         assertEq(cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID), amount * 2);
@@ -75,7 +75,7 @@ contract CbtTest is CommonTest {
         //owner should burn
         uint256 preBalance = cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID);
         vm.prank(alice);
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Burn(FIRST_CHARACTER_ID, FIRST_CBT_ID, amount);
         cbt.burn(FIRST_CHARACTER_ID, FIRST_CBT_ID, amount);
         uint256 postBalance = cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID);

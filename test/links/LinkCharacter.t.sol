@@ -24,7 +24,7 @@ contract LinkCharacterTest is CommonTest {
 
     function testLinkCharacter() public {
         vm.startPrank(alice);
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.LinkCharacter(
             alice,
             FIRST_CHARACTER_ID,
@@ -128,7 +128,7 @@ contract LinkCharacterTest is CommonTest {
         );
 
         // unlink
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.UnlinkCharacter(alice, FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FollowLinkType);
         web3Entry.unlinkCharacter(
             DataTypes.unlinkCharacterData(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FollowLinkType)
@@ -223,7 +223,7 @@ contract LinkCharacterTest is CommonTest {
         address to = address(0x56789);
 
         vm.prank(alice);
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.LinkCharacter(alice, FIRST_CHARACTER_ID, 3, FollowLinkType, 1);
         web3Entry.createThenLinkCharacter(
             DataTypes.createThenLinkCharacterData(FIRST_CHARACTER_ID, to, FollowLinkType)

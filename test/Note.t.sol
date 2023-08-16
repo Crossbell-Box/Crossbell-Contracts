@@ -41,7 +41,7 @@ contract NoteTest is CommonTest {
     }
 
     function testPostNote() public {
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.PostNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID, 0, 0, "");
         vm.prank(alice);
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));

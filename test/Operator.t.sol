@@ -44,7 +44,7 @@ contract OperatorTest is CommonTest {
     }
 
     function testGrantOperatorPermissions() public {
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.GrantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
 
         // alice set bob as her operator with OP.DEFAULT_PERMISSION_BITMAP
@@ -200,7 +200,7 @@ contract OperatorTest is CommonTest {
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
 
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.GrantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, allowlist);
 
         web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, allowlist);

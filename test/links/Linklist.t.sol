@@ -27,7 +27,7 @@ contract LinklistTest is CommonTest {
 
     function testMint() public {
         // link character
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Transfer(address(0), FIRST_CHARACTER_ID, FIRST_LINKLIST_ID);
         vm.prank(alice);
         web3Entry.linkCharacter(
@@ -145,7 +145,7 @@ contract LinklistTest is CommonTest {
         vm.prank(address(web3Entry));
         linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
 
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Burn(alice, FIRST_CHARACTER_ID, FIRST_LINKLIST_ID);
         vm.prank(alice);
         linklist.burn(1);

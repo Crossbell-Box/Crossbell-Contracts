@@ -23,7 +23,7 @@ contract LinkLinklistTest is CommonTest {
     }
 
     function testLinkLinklist() public {
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.LinkLinklist(
             FIRST_CHARACTER_ID,
             FIRST_LINKLIST_ID,
@@ -97,7 +97,7 @@ contract LinkLinklistTest is CommonTest {
         );
 
         // unlink
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.UnlinkLinklist(
             FIRST_CHARACTER_ID,
             FIRST_LINKLIST_ID,

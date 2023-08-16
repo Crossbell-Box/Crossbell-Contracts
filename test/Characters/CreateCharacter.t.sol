@@ -21,7 +21,7 @@ contract CreateCharacterTest is CommonTest {
             bob
         );
 
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         // The event we expect
         emit Events.CharacterCreated(1, bob, bob, CHARACTER_HANDLE, block.timestamp);
         // The event we get

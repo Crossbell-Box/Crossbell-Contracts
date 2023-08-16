@@ -25,7 +25,7 @@ contract LinkERC721Test is CommonTest {
     function testLinkERC721() public {
         nft.mint(bob);
         vm.prank(alice);
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.LinkERC721(FIRST_CHARACTER_ID, address(nft), 1, LikeLinkType, 1);
         web3Entry.linkERC721(
             DataTypes.linkERC721Data(
@@ -107,7 +107,7 @@ contract LinkERC721Test is CommonTest {
         );
 
         // unlink
-        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        expectEmit(CheckAll);
         emit Events.UnlinkERC721(FIRST_CHARACTER_ID, address(nft), 1, LikeLinkType, 1);
         web3Entry.unlinkERC721(
             DataTypes.unlinkERC721Data(FIRST_CHARACTER_ID, address(nft), 1, LikeLinkType)
