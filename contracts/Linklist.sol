@@ -149,47 +149,6 @@ contract Linklist is
     }
 
     /////////////////////////////////
-    // linking CharacterLink
-    /////////////////////////////////
-    /// @inheritdoc ILinklist
-    function addLinkingCharacterLink(
-        uint256 tokenId,
-        DataTypes.CharacterLinkStruct calldata linkData
-    ) external override onlyWeb3Entry {
-        bytes32 linkKey = keccak256(
-            abi.encodePacked(
-                "CharacterLink",
-                linkData.fromCharacterId,
-                linkData.toCharacterId,
-                linkData.linkType
-            )
-        );
-        if (tokenId != 0) {
-            _linkingCharacterLinkKeys[tokenId].add(linkKey);
-        }
-        _linkingCharacterLinks[linkKey] = linkData;
-    }
-
-    /// @inheritdoc ILinklist
-    function removeLinkingCharacterLink(
-        uint256 tokenId,
-        DataTypes.CharacterLinkStruct calldata linkData
-    ) external override onlyWeb3Entry {
-        bytes32 linkKey = keccak256(
-            abi.encodePacked(
-                "CharacterLink",
-                linkData.fromCharacterId,
-                linkData.toCharacterId,
-                linkData.linkType
-            )
-        );
-        _linkingCharacterLinkKeys[tokenId].remove(linkKey);
-
-        // do note delete
-        // delete linkingCharacterLinkList[linkKey];
-    }
-
-    /////////////////////////////////
     // linking ERC721
     /////////////////////////////////
     /// @inheritdoc ILinklist
@@ -331,32 +290,6 @@ contract Linklist is
     /// @inheritdoc ILinklist
     function getLinkingNoteListLength(uint256 tokenId) external view override returns (uint256) {
         return _linkNoteKeys[tokenId].length();
-    }
-
-    /// @inheritdoc ILinklist
-    function getLinkingCharacterLinks(
-        uint256 tokenId
-    ) external view override returns (DataTypes.CharacterLinkStruct[] memory results) {
-        bytes32[] memory linkKeys = _linkingCharacterLinkKeys[tokenId].values();
-        results = new DataTypes.CharacterLinkStruct[](linkKeys.length);
-        for (uint256 i = 0; i < linkKeys.length; i++) {
-            bytes32 key = linkKeys[i];
-            results[i] = _linkingCharacterLinks[key];
-        }
-    }
-
-    /// @inheritdoc ILinklist
-    function getLinkingCharacterLink(
-        bytes32 linkKey
-    ) external view override returns (DataTypes.CharacterLinkStruct memory) {
-        return _linkingCharacterLinks[linkKey];
-    }
-
-    /// @inheritdoc ILinklist
-    function getLinkingCharacterLinkListLength(
-        uint256 tokenId
-    ) external view override returns (uint256) {
-        return _linkingCharacterLinkKeys[tokenId].length();
     }
 
     /// @inheritdoc ILinklist

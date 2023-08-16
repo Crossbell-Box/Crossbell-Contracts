@@ -19,22 +19,23 @@ contract LinkUriTest is CommonTest {
         _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
-    function testLinkAddress() public {
+    function testLinkAnyUri() public {
+        string memory uri = "ipfs://anyURI";
+        bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", uri));
+
         expectEmit(CheckAll);
-        emit Events.LinkAnyUri(FIRST_CHARACTER_ID, "ipfs://anyURI", FollowLinkType, 1);
+        emit Events.LinkAnyUri(FIRST_CHARACTER_ID, uri, FollowLinkType, 1);
         // alice link an uri
         vm.prank(alice);
         web3Entry.linkAnyUri(
-            DataTypes.linkAnyUriData(
-                FIRST_CHARACTER_ID,
-                "ipfs://anyURI",
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkAnyUriData(FIRST_CHARACTER_ID, uri, FollowLinkType, new bytes(0))
         );
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
+        assertEq(linklist.getLinkingAnyListLength(1), 1);
+        assertEq(linklist.getLinkingAnyUriKeys(1)[0], linkKey);
+        assertEq(linklist.getLinkingAnyUri(linkKey), uri);
 
         // link twice
         vm.prank(alice);
@@ -60,18 +61,18 @@ contract LinkUriTest is CommonTest {
         );
 
         // check state
+        assertEq(linklist.getLinkingAnyListLength(1), 1);
         string[] memory linkingUris = linklist.getLinkingAnyUris(1);
         assertEq(linkingUris.length, 1);
-        assertEq(linkingUris[0], "ipfs://anyURI");
-        bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", "ipfs://anyURI"));
+        assertEq(linkingUris[0], uri);
         string memory linkingUri = linklist.getLinkingAnyUri(linkKey);
-        assertEq(linkingUri, "ipfs://anyURI");
+        assertEq(linkingUri, uri);
         bytes32[] memory linkingUriKeys = linklist.getLinkingAnyUriKeys(1);
         assertEq(linkingUriKeys.length, 1);
         assertEq(linkingUriKeys[0], linkKey);
     }
 
-    function testLinkUriFail() public {
+    function testLinkAnyUriFail() public {
         // case 1: NotEnoughPermission
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
@@ -85,45 +86,32 @@ contract LinkUriTest is CommonTest {
         );
     }
 
-    function testUnlinkUri() public {
-        nft.mint(bob);
+    function testUnlinkAnyUri() public {
+        string memory uri = "ipfs://anyURI";
+
         vm.startPrank(alice);
-        web3Entry.linkAnyUri(
-            DataTypes.linkAnyUriData(
-                FIRST_CHARACTER_ID,
-                "ipfs://anyURI",
-                FollowLinkType,
-                new bytes(0)
-            )
-        );
+        web3Entry.linkAnyUri(DataTypes.linkAnyUriData(FIRST_CHARACTER_ID, uri, FollowLinkType, ""));
 
         // unlink
         expectEmit(CheckAll);
-        emit Events.UnlinkAnyUri(FIRST_CHARACTER_ID, "ipfs://anyURI", FollowLinkType);
-        web3Entry.unlinkAnyUri(
-            DataTypes.unlinkAnyUriData(FIRST_CHARACTER_ID, "ipfs://anyURI", FollowLinkType)
-        );
+        emit Events.UnlinkAnyUri(FIRST_CHARACTER_ID, uri, FollowLinkType);
+        web3Entry.unlinkAnyUri(DataTypes.unlinkAnyUriData(FIRST_CHARACTER_ID, uri, FollowLinkType));
 
         // unlink twice
-        web3Entry.unlinkAnyUri(
-            DataTypes.unlinkAnyUriData(FIRST_CHARACTER_ID, "ipfs://anyURI", FollowLinkType)
-        );
+        web3Entry.unlinkAnyUri(DataTypes.unlinkAnyUriData(FIRST_CHARACTER_ID, uri, FollowLinkType));
         vm.stopPrank();
 
-        // check linklist
-        assertEq(linklist.ownerOf(1), alice);
-
         // check state
-        string[] memory linkingUris = linklist.getLinkingAnyUris(1);
-        assertEq(linkingUris.length, 0);
-        // bytes32 linkKey = keccak256(abi.encodePacked("AnyUri", "ipfs://anyURI"));
-        // string memory linkingUri = linklist.getLinkingAnyUri(linkKey);
-        // assertEq(linkingUri, "");
-        bytes32[] memory linkingUriKeys = linklist.getLinkingAnyUriKeys(1);
-        assertEq(linkingUriKeys.length, 0);
+        assertEq(linklist.getLinkingAnyListLength(1), 0);
+        assertEq(linklist.ownerOf(1), alice);
+        assertEq(linklist.getLinkingAnyListLength(1), 0);
+        string[] memory uris = linklist.getLinkingAnyUris(1);
+        assertEq(uris.length, 0);
+        bytes32[] memory keys = linklist.getLinkingAnyUriKeys(1);
+        assertEq(keys.length, 0);
     }
 
-    function testUnlinkAddressFail() public {
+    function testUnlinkAnyUriFail() public {
         vm.prank(alice);
         web3Entry.linkAnyUri(
             DataTypes.linkAnyUriData(

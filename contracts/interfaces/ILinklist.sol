@@ -118,19 +118,6 @@ interface ILinklist {
 
     function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId) external;
 
-    /////////////////////////////////
-    // linking CharacterLink
-    /////////////////////////////////
-    function addLinkingCharacterLink(
-        uint256 tokenId,
-        DataTypes.CharacterLinkStruct calldata linkData
-    ) external;
-
-    function removeLinkingCharacterLink(
-        uint256 tokenId,
-        DataTypes.CharacterLinkStruct calldata linkData
-    ) external;
-
     function getLinkingCharacterIds(uint256 tokenId) external view returns (uint256[] memory);
 
     function getLinkingCharacterListLength(uint256 tokenId) external view returns (uint256);
@@ -144,16 +131,6 @@ interface ILinklist {
     function getLinkingNote(bytes32 linkKey) external view returns (DataTypes.NoteStruct memory);
 
     function getLinkingNoteListLength(uint256 tokenId) external view returns (uint256);
-
-    function getLinkingCharacterLinks(
-        uint256 tokenId
-    ) external view returns (DataTypes.CharacterLinkStruct[] memory results);
-
-    function getLinkingCharacterLink(
-        bytes32 linkKey
-    ) external view returns (DataTypes.CharacterLinkStruct memory);
-
-    function getLinkingCharacterLinkListLength(uint256 tokenId) external view returns (uint256);
 
     function getLinkingERC721s(
         uint256 tokenId
