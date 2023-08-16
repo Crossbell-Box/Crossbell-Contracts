@@ -522,31 +522,6 @@ interface IWeb3Entry {
     ) external view returns (DataTypes.Note memory);
 
     /**
-     * @notice Returns the linkModule address of a given address.
-     * @param account The address to query.
-     * @return The address of linkModule.
-     */
-    function getLinkModule4Address(address account) external view returns (address);
-
-    /**
-     * @notice Returns the linkModule address of a given linklist.
-     * @param tokenId The token ID of linklist to query.
-     * @return The address of linkModule.
-     */
-    function getLinkModule4Linklist(uint256 tokenId) external view returns (address);
-
-    /**
-     * @notice Returns the linkModule address of a given ERC721.
-     * @param tokenAddress The token address of ERC721 to query.
-     * @param tokenId The token ID of ERC721 to query.
-     * @return The address of linkModule.
-     */
-    function getLinkModule4ERC721(
-        address tokenAddress,
-        uint256 tokenId
-    ) external view returns (address);
-
-    /**
      * @notice Returns the uri of linklist with a given linklist.
      * @param tokenId The token ID of the linklist to query.
      * @return string The uri of given linklist.

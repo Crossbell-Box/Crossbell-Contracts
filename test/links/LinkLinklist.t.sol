@@ -146,4 +146,39 @@ contract LinkLinklistTest is CommonTest {
             DataTypes.unlinkLinklistData(FIRST_CHARACTER_ID, FIRST_LINKLIST_ID, FollowLinkType)
         );
     }
+
+    function testSetLinklistUri() public {
+        vm.startPrank(alice);
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                FollowLinkType,
+                new bytes(0)
+            )
+        );
+
+        // set uri
+        web3Entry.setLinklistUri(1, MOCK_URI);
+        // check uri
+        assertEq(web3Entry.getLinklistUri(1), MOCK_URI);
+        vm.stopPrank();
+    }
+
+    function testSetLinklistUriFail() public {
+        vm.prank(alice);
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(
+                FIRST_CHARACTER_ID,
+                SECOND_CHARACTER_ID,
+                FollowLinkType,
+                new bytes(0)
+            )
+        );
+
+        //  caller has no permission
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
+        web3Entry.setLinklistUri(1, MOCK_URI);
+    }
 }

@@ -702,24 +702,6 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
-    function getLinkModule4Address(address account) external view override returns (address) {
-        return _linkModules4Address[account];
-    }
-
-    /// @inheritdoc IWeb3Entry
-    function getLinkModule4Linklist(uint256 tokenId) external view override returns (address) {
-        return _linkModules4Linklist[tokenId];
-    }
-
-    /// @inheritdoc IWeb3Entry
-    function getLinkModule4ERC721(
-        address tokenAddress,
-        uint256 tokenId
-    ) external view override returns (address) {
-        return _linkModules4ERC721[tokenAddress][tokenId];
-    }
-
-    /// @inheritdoc IWeb3Entry
     function getLinklistUri(uint256 tokenId) external view override returns (string memory) {
         return ILinklist(_linklist).Uri(tokenId);
     }

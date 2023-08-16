@@ -43,16 +43,7 @@ contract LinkCharacterTest is CommonTest {
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
-
-        // link twice
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
-        );
+        assertEq(web3Entry.getLinklistType(1), FollowLinkType);
         vm.stopPrank();
 
         // periphery can link

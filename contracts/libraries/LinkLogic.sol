@@ -133,69 +133,6 @@ library LinkLogic {
     }
 
     /**
-     * @notice  Links a characterLink.
-     * @param   fromCharacterId  The from character ID of characterLink.
-     * @param   toCharacterId  The to character ID of characterLink.
-     * @param   linkType  The linkType of characterLink.
-     * @param   linklist  The linklist contract address.
-     */
-    function linkCharacterLink(
-        uint256 fromCharacterId,
-        uint256 toCharacterId,
-        bytes32 linkType,
-        address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
-    ) external {
-        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist, _attachedLinklists);
-
-        // add to link list
-        ILinklist(linklist).addLinkingCharacterLink(
-            linklistId,
-            DataTypes.CharacterLinkStruct(fromCharacterId, toCharacterId, linkType)
-        );
-
-        // event
-        emit Events.LinkCharacterLink(
-            fromCharacterId,
-            linkType,
-            fromCharacterId,
-            toCharacterId,
-            linkType
-        );
-    }
-
-    /**
-     * @notice  Unlinks a characterLink.
-     * @param   fromCharacterId  The from character ID of characterLink.
-     * @param   toCharacterId  The to character ID of characterLink.
-     * @param   linkType  The linkType of characterLink.
-     * @param   linklist  The linklist contract address.
-     * @param   linklistId  The ID of the linklist to unlink.
-     */
-    function unlinkCharacterLink(
-        uint256 fromCharacterId,
-        uint256 toCharacterId,
-        bytes32 linkType,
-        address linklist,
-        uint256 linklistId
-    ) external {
-        // remove from link list
-        ILinklist(linklist).removeLinkingCharacterLink(
-            linklistId,
-            DataTypes.CharacterLinkStruct(fromCharacterId, toCharacterId, linkType)
-        );
-
-        // event
-        emit Events.UnlinkCharacterLink(
-            fromCharacterId,
-            linkType,
-            fromCharacterId,
-            toCharacterId,
-            linkType
-        );
-    }
-
-    /**
      * @notice  Links a linklist.
      * @param   fromCharacterId  The character ID to sponsor an link action.
      * @param   toLinkListId  The linklist if to link.

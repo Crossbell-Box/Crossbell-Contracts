@@ -27,8 +27,9 @@ contract LinkModuleTest is CommonTest {
     }
 
     function testSetLinkModule4Note() public {
+        // case 1: set linkModule when posting a note
         uint256 characterId = _createCharacter("alice", alice);
-        vm.prank(alice);
+        vm.startPrank(alice);
         web3Entry.postNote(
             DataTypes.PostNoteData(
                 characterId,
@@ -40,10 +41,25 @@ contract LinkModuleTest is CommonTest {
                 false
             )
         );
-
         // check linkModule
         DataTypes.Note memory note = web3Entry.getNote(characterId, 1);
         assertEq(note.linkModule, address(approvalLinkModule4Note), "linkModule not set");
+
+        // case 2: set linkModule by setLinkModule4Note
+        _postNote(characterId, NOTE_URI);
+        // set linkModule for note
+        web3Entry.setLinkModule4Note(
+            DataTypes.setLinkModule4NoteData(
+                characterId,
+                2,
+                address(approvalLinkModule4Note),
+                abi.encode(array(bob, carol))
+            )
+        );
+        // check linkModule
+        note = web3Entry.getNote(characterId, 2);
+        assertEq(note.linkModule, address(approvalLinkModule4Note), "linkModule not set");
+        vm.stopPrank();
     }
 
     function testLinkCharacterWithLinkModule() public {
