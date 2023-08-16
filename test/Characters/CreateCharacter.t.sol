@@ -130,4 +130,26 @@ contract CreateCharacterTest is CommonTest {
             web3Entry.setHandle(1, handles[i]);
         }
     }
+
+    // test for ERC721Enumerable
+    function testCreateCharacters() public {
+        _createCharacter("alice", alice);
+        _createCharacter("bob", alice);
+        _createCharacter("carol", alice);
+
+        // check owner
+        assertEq(web3Entry.ownerOf(FIRST_CHARACTER_ID), alice);
+        assertEq(web3Entry.ownerOf(SECOND_CHARACTER_ID), alice);
+        assertEq(web3Entry.ownerOf(THIRD_CHARACTER_ID), alice);
+        // check total supply
+        assertEq(web3Entry.totalSupply(), 3);
+        // check tokenOfOwnerByIndex
+        assertEq(web3Entry.tokenOfOwnerByIndex(alice, 0), FIRST_CHARACTER_ID);
+        assertEq(web3Entry.tokenOfOwnerByIndex(alice, 1), SECOND_CHARACTER_ID);
+        assertEq(web3Entry.tokenOfOwnerByIndex(alice, 2), THIRD_CHARACTER_ID);
+        // check tokenByIndex
+        assertEq(web3Entry.tokenByIndex(0), FIRST_CHARACTER_ID);
+        assertEq(web3Entry.tokenByIndex(1), SECOND_CHARACTER_ID);
+        assertEq(web3Entry.tokenByIndex(2), THIRD_CHARACTER_ID);
+    }
 }
