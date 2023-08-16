@@ -34,7 +34,7 @@ contract LinkModuleTest is CommonTest {
                 characterId,
                 NOTE_URI,
                 address(approvalLinkModule4Note),
-                abi.encode(array(bob, carol)),
+                abi.encode(array(bob, carol)), // allowlist
                 address(0),
                 "",
                 false

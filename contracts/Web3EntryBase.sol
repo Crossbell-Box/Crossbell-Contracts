@@ -14,7 +14,6 @@ import {Events} from "./libraries/Events.sol";
 import {CharacterLogic} from "./libraries/CharacterLogic.sol";
 import {PostLogic} from "./libraries/PostLogic.sol";
 import {OperatorLogic} from "./libraries/OperatorLogic.sol";
-import {LinkModuleLogic} from "./libraries/LinkModuleLogic.sol";
 import {LinkLogic} from "./libraries/LinkLogic.sol";
 import {OP} from "./libraries/OP.sol";
 import {
@@ -401,7 +400,7 @@ contract Web3EntryBase is
         _validateNoteExists(vars.characterId, vars.noteId);
         _validateNoteNotLocked(vars.characterId, vars.noteId);
 
-        LinkModuleLogic.setLinkModule4Note(
+        PostLogic.setLinkModule4Note(
             vars.characterId,
             vars.noteId,
             vars.linkModule,
@@ -432,7 +431,7 @@ contract Web3EntryBase is
         _validateNoteExists(vars.characterId, vars.noteId);
         _validateNoteNotLocked(vars.characterId, vars.noteId);
 
-        LinkModuleLogic.setMintModule4Note(
+        PostLogic.setMintModule4Note(
             vars.characterId,
             vars.noteId,
             vars.mintModule,

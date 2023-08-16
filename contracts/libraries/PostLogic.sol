@@ -7,6 +7,9 @@ import {Events} from "./Events.sol";
 import {ILinkModule4Note} from "../interfaces/ILinkModule4Note.sol";
 import {IMintModule4Note} from "../interfaces/IMintModule4Note.sol";
 import {IMintNFT} from "../interfaces/IMintNFT.sol";
+import {ILinkModule4ERC721} from "../interfaces/ILinkModule4ERC721.sol";
+import {ILinkModule4Linklist} from "../interfaces/ILinkModule4Linklist.sol";
+import {ILinkModule4Address} from "../interfaces/ILinkModule4Address.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
@@ -32,36 +35,22 @@ library PostLogic {
         }
 
         // init link module
-        if (vars.linkModule != address(0)) {
-            note.linkModule = vars.linkModule;
-
-            bytes memory linkModuleReturnData = ILinkModule4Note(vars.linkModule)
-                .initializeLinkModule(characterId, noteId, vars.linkModuleInitData);
-
-            emit Events.SetLinkModule4Note(
-                characterId,
-                noteId,
-                vars.linkModule,
-                vars.linkModuleInitData,
-                linkModuleReturnData
-            );
-        }
+        _setLinkModule4Note(
+            characterId,
+            noteId,
+            vars.linkModule,
+            vars.linkModuleInitData,
+            _noteByIdByCharacter
+        );
 
         // init mint module
-        if (vars.mintModule != address(0)) {
-            note.mintModule = vars.mintModule;
-
-            bytes memory mintModuleReturnData = IMintModule4Note(vars.mintModule)
-                .initializeMintModule(characterId, noteId, vars.mintModuleInitData);
-
-            emit Events.SetMintModule4Note(
-                characterId,
-                noteId,
-                vars.mintModule,
-                vars.mintModuleInitData,
-                mintModuleReturnData
-            );
-        }
+        _setMintModule4Note(
+            characterId,
+            noteId,
+            vars.mintModule,
+            vars.mintModuleInitData,
+            _noteByIdByCharacter
+        );
 
         emit Events.PostNote(characterId, noteId, linkKey, linkItemType, data);
     }
@@ -103,6 +92,52 @@ library PostLogic {
         emit Events.SetNoteUri(characterId, noteId, newUri);
     }
 
+    /**
+     * @notice  Sets link module for a given note.
+     * @param   characterId  The character ID to set link module for.
+     * @param   noteId  The note ID to set link module for.
+     * @param   linkModule  The link module to set.
+     * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
+     */
+    function setLinkModule4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address linkModule,
+        bytes calldata linkModuleInitData,
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+    ) external {
+        _setLinkModule4Note(
+            characterId,
+            noteId,
+            linkModule,
+            linkModuleInitData,
+            _noteByIdByCharacter
+        );
+    }
+
+    /**
+     * @notice  Sets the mint module for a given note.
+     * @param   characterId  The character ID of note to set the mint module for.
+     * @param   noteId  The note ID of note.
+     * @param   mintModule  The mint module to set for note.
+     * @param   mintModuleInitData  The data to pass to the mint module.
+     */
+    function setMintModule4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address mintModule,
+        bytes calldata mintModuleInitData,
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+    ) external {
+        _setMintModule4Note(
+            characterId,
+            noteId,
+            mintModule,
+            mintModuleInitData,
+            _noteByIdByCharacter
+        );
+    }
+
     function _deployMintNFT(
         uint256 characterId,
         uint256 noteId,
@@ -119,5 +154,57 @@ library PostLogic {
         mintNFT = Clones.clone(mintNFTImpl);
         // initialize nft
         IMintNFT(mintNFT).initialize(characterId, noteId, address(this), symbol, symbol);
+    }
+
+    function _setLinkModule4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address linkModule,
+        bytes calldata linkModuleInitData,
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+    ) internal {
+        if (linkModule != address(0)) {
+            _noteByIdByCharacter[characterId][noteId].linkModule = linkModule;
+
+            bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
+                characterId,
+                noteId,
+                linkModuleInitData
+            );
+
+            emit Events.SetLinkModule4Note(
+                characterId,
+                noteId,
+                linkModule,
+                linkModuleInitData,
+                returnData
+            );
+        }
+    }
+
+    function _setMintModule4Note(
+        uint256 characterId,
+        uint256 noteId,
+        address mintModule,
+        bytes calldata mintModuleInitData,
+        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+    ) internal {
+        if (mintModule != address(0)) {
+            _noteByIdByCharacter[characterId][noteId].mintModule = mintModule;
+
+            bytes memory returnData = IMintModule4Note(mintModule).initializeMintModule(
+                characterId,
+                noteId,
+                mintModuleInitData
+            );
+
+            emit Events.SetMintModule4Note(
+                characterId,
+                noteId,
+                mintModule,
+                mintModuleInitData,
+                returnData
+            );
+        }
     }
 }
