@@ -10,6 +10,12 @@ import {
     ErrNotOwner
 } from "../../contracts/libraries/Error.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
+import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {
+    IERC721Enumerable
+} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 
 contract LinklistTest is CommonTest {
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
@@ -23,6 +29,17 @@ contract LinklistTest is CommonTest {
         // create character
         _createCharacter(CHARACTER_HANDLE, alice);
         _createCharacter(CHARACTER_HANDLE2, bob);
+    }
+
+    function testSetupState() public {
+        assertEq(linklist.Web3Entry(), address(web3Entry));
+    }
+
+    function testSupportsInterface() public {
+        assertTrue(web3Entry.supportsInterface(type(IERC721).interfaceId));
+        assertTrue(web3Entry.supportsInterface(type(IERC721Enumerable).interfaceId));
+        assertTrue(web3Entry.supportsInterface(type(IERC721Metadata).interfaceId));
+        assertTrue(web3Entry.supportsInterface(type(IERC165).interfaceId));
     }
 
     function testMint() public {

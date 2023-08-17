@@ -309,12 +309,6 @@ contract CharacterSettingsTest is CommonTest {
         web3Entry.setCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
     }
 
-    function testSupportsInterface() public {
-        assertTrue(web3Entry.supportsInterface(type(IERC721).interfaceId));
-        assertTrue(web3Entry.supportsInterface(type(IERC721Enumerable).interfaceId));
-        assertTrue(web3Entry.supportsInterface(type(IERC721Metadata).interfaceId));
-    }
-
     function testTransferCharacterWithApproval() public {
         // alice approve bob to transfer NFT to bob
         vm.prank(alice);

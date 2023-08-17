@@ -36,6 +36,7 @@ contract LinkUriTest is CommonTest {
         assertEq(linklist.getLinkingAnyListLength(1), 1);
         assertEq(linklist.getLinkingAnyUriKeys(1)[0], linkKey);
         assertEq(linklist.getLinkingAnyUri(linkKey), uri);
+        assertEq(linklist.getLinkingAnyUris(1)[0], uri);
         // check link type
         assertEq(web3Entry.getLinklistType(1), FollowLinkType);
     }
@@ -54,6 +55,7 @@ contract LinkUriTest is CommonTest {
         assertEq(linklist.getLinkingAnyListLength(1), 1);
         assertEq(linklist.getLinkingAnyUriKeys(1)[0], linkKey);
         assertEq(linklist.getLinkingAnyUri(linkKey), uri);
+        assertEq(linklist.getLinkingAnyUris(1)[0], uri);
         // check link type
         assertEq(web3Entry.getLinklistType(1), FollowLinkType);
     }
@@ -74,6 +76,7 @@ contract LinkUriTest is CommonTest {
         assertEq(linklist.getLinkingAnyListLength(1), 1);
         assertEq(linklist.getLinkingAnyUriKeys(1)[0], linkKey);
         assertEq(linklist.getLinkingAnyUri(linkKey), uri);
+        assertEq(linklist.getLinkingAnyUris(1)[0], uri);
         // check link type
         assertEq(web3Entry.getLinklistType(1), FollowLinkType);
     }

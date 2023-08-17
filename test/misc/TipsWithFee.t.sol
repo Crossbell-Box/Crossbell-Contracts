@@ -218,9 +218,15 @@ contract TipsWithFeeTest is CommonTest {
             abi.encode(3, SECOND_CHARACTER_ID, FIRST_NOTE_ID, carol)
         );
 
+        // case 3: target character does not exist
         vm.expectRevert("ERC721: owner query for nonexistent token");
         vm.prank(alice);
         token.send(address(_tips), amount, abi.encode(FIRST_CHARACTER_ID, 4, FIRST_NOTE_ID, carol));
+
+        // case 4: invalid data on tokensReceived
+        vm.expectRevert("TipsWithFee: unknown receiving");
+        vm.prank(alice);
+        token.send(address(_tips), amount, abi.encode(FIRST_CHARACTER_ID, 1));
 
         // check balance
         assertEq(token.balanceOf(alice), initialBalance);

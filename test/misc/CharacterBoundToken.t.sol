@@ -5,6 +5,14 @@ import {CommonTest} from "../helpers/CommonTest.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {CharacterBoundToken} from "../../contracts/misc/CharacterBoundToken.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
+import {
+    IERC721Enumerable
+} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import {
+    IERC1155MetadataURI
+} from "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 
 contract CbtTest is CommonTest {
     uint256 public amount = 1;
@@ -27,6 +35,12 @@ contract CbtTest is CommonTest {
         // bob mint second character
         vm.prank(bob);
         _createCharacter(CHARACTER_HANDLE2, bob);
+    }
+
+    function testSupportsInterfacexxx() public {
+        assertTrue(cbt.supportsInterface(type(IERC1155).interfaceId));
+        assertTrue(cbt.supportsInterface(type(IERC1155MetadataURI).interfaceId));
+        assertTrue(cbt.supportsInterface(type(IERC165).interfaceId));
     }
 
     function testMint() public {

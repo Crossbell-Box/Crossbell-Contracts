@@ -252,9 +252,7 @@ contract NewbieVillaTest is CommonTest {
 
     function testNewbieCreateCharacter() public {
         vm.prank(alice);
-        Web3Entry(address(web3Entry)).createCharacter(
-            makeCharacterData(CHARACTER_HANDLE, address(newbieVilla))
-        );
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, address(newbieVilla)));
 
         // check operators
         address[] memory operators = web3Entry.getOperators(FIRST_CHARACTER_ID);
@@ -282,7 +280,6 @@ contract NewbieVillaTest is CommonTest {
 
     // transfer character to newbieVilla contract
     function testTransferNewbieIn() public {
-        vm.prank(alice);
         web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, alice));
         vm.prank(alice);
         web3Entry.safeTransferFrom(alice, address(newbieVilla), FIRST_CHARACTER_ID);

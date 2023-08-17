@@ -172,5 +172,6 @@ contract MintNFTTest is CommonTest {
         assertTrue(IERC165(mintNFT).supportsInterface(type(IERC721).interfaceId));
         assertTrue(IERC165(mintNFT).supportsInterface(type(IERC721Enumerable).interfaceId));
         assertTrue(IERC165(mintNFT).supportsInterface(type(IERC2981).interfaceId));
+        assertTrue(web3Entry.supportsInterface(type(IERC165).interfaceId));
     }
 }
