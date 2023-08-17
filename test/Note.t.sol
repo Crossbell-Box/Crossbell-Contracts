@@ -14,9 +14,6 @@ import {
     ErrNoteIsDeleted
 } from "../contracts/libraries/Error.sol";
 import {IWeb3Entry} from "../contracts/interfaces/IWeb3Entry.sol";
-import {
-    TransparentUpgradeableProxy
-} from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import {CommonTest} from "./helpers/CommonTest.sol";
 import {
     IERC721Enumerable

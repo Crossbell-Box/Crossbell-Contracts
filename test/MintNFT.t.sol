@@ -4,7 +4,6 @@ pragma solidity 0.8.18;
 
 import {DataTypes} from "../contracts/libraries/DataTypes.sol";
 import {ErrCallerNotWeb3Entry, ErrNotCharacterOwner} from "../contracts/libraries/Error.sol";
-import {MintNFT} from "../contracts/MintNFT.sol";
 import {IMintNFT} from "../contracts/interfaces/IMintNFT.sol";
 import {CommonTest} from "./helpers/CommonTest.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";

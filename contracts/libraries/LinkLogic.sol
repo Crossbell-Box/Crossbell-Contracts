@@ -3,7 +3,6 @@
 pragma solidity 0.8.18;
 
 import {Events} from "./Events.sol";
-import {DataTypes} from "./DataTypes.sol";
 import {ILinklist} from "../interfaces/ILinklist.sol";
 import {ILinkModule4Character} from "../interfaces/ILinkModule4Character.sol";
 import {ILinkModule4Note} from "../interfaces/ILinkModule4Note.sol";

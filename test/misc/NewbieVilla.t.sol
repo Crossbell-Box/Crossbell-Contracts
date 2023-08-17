@@ -2,12 +2,8 @@
 // solhint-disable comprehensive-interface,check-send-result,multiple-sends
 pragma solidity 0.8.18;
 
-import {Test, stdError} from "forge-std/Test.sol";
-import {Utils} from "../helpers/Utils.sol";
+import {stdError} from "forge-std/Test.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
-import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
-import {NewbieVilla} from "../../contracts/misc/NewbieVilla.sol";
-import {Web3Entry} from "../../contracts/Web3Entry.sol";
 import {NFT} from "../../contracts/mocks/NFT.sol";
 import {OP} from "../../contracts/libraries/OP.sol";
 
@@ -112,32 +108,29 @@ contract NewbieVillaTest is CommonTest {
         vm.assume(amount > 0 && amount < 10 ether);
 
         // 1. admin create and transfer web3Entry nft to newbieVilla
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, newbieAdmin));
+        uint256 newbieCharacterId = _createCharacter(CHARACTER_HANDLE, newbieAdmin);
         vm.prank(newbieAdmin);
-        web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), FIRST_CHARACTER_ID);
+        web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), newbieCharacterId);
 
-        // 2. user create web3Entity nft
-        vm.prank(bob);
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE2, bob));
-
-        // 3. send some token to web3Entry nft in newbieVilla
+        // 3. send some token to newbieCharacter in newbieVilla contract
         vm.prank(alice);
-        token.send(address(newbieVilla), amount, abi.encode(2, FIRST_CHARACTER_ID));
+        token.send(address(newbieVilla), amount, abi.encode(2, newbieCharacterId));
 
         // 4. check balance and state before tip
         assertEq(token.balanceOf(alice), initialBalance - amount);
-        assertEq(newbieVilla.balanceOf(FIRST_CHARACTER_ID), amount);
-        assertEq(token.balanceOf(bob), initialBalance);
+        assertEq(newbieVilla.balanceOf(newbieCharacterId), amount);
 
         // 5. tip another character for certain amount
-        vm.prank(alice);
+        uint256 bobCharacterId = _createCharacter(CHARACTER_HANDLE2, bob);
         vm.expectRevert(stdError.arithmeticError);
-        newbieVilla.tipCharacter(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, amount + 1);
+        // alice has no permission to tip newbieCharacter
+        // newbieCharacter only has `amount` token in newbieVilla , so it will overflow
+        vm.prank(alice);
+        newbieVilla.tipCharacter(newbieCharacterId, bobCharacterId, amount + 1);
 
         // 6. check balance and state after tip
         assertEq(token.balanceOf(alice), initialBalance - amount);
-        assertEq(newbieVilla.balanceOf(FIRST_CHARACTER_ID), amount);
-        assertEq(token.balanceOf(bob), initialBalance);
+        assertEq(newbieVilla.balanceOf(newbieCharacterId), amount);
     }
 
     function testNewbieTipCharacterForNote(uint256 amount) public {

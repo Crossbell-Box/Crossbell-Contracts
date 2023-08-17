@@ -6,21 +6,15 @@ import {CommonTest} from "./helpers/CommonTest.sol";
 import {OP} from "../contracts/libraries/OP.sol";
 import {Events} from "../contracts/libraries/Events.sol";
 import {Constants} from "../contracts/libraries/Constants.sol";
-import {NewbieVilla} from "../contracts/misc/NewbieVilla.sol";
 import {DataTypes} from "../contracts/libraries/DataTypes.sol";
 import {
     ErrNotCharacterOwner,
     ErrNotEnoughPermission,
     ErrNotEnoughPermissionForThisNote,
-    ErrNoteIsDeleted,
     ErrNoteNotExists,
-    ErrNoteLocked,
     ErrSignatureExpired,
     ErrSignatureInvalid
 } from "../contracts/libraries/Error.sol";
-import {
-    ApprovalLinkModule4Character
-} from "../contracts/mocks/linkModule/ApprovalLinkModule4Character.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract OperatorTest is CommonTest {

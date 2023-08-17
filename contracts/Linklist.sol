@@ -389,6 +389,11 @@ contract Linklist is
     // slither-disable-end naming-convention
 
     /// @inheritdoc ILinklist
+    function characterOwnerOf(uint256 tokenId) external view override returns (uint256) {
+        return _linklistOwners[tokenId];
+    }
+
+    /// @inheritdoc ILinklist
     function balanceOf(uint256 characterId) public view override returns (uint256) {
         return _linklistBalances[characterId];
     }
@@ -400,11 +405,6 @@ contract Linklist is
             uint256 characterId = IERC721Enumerable(Web3Entry).tokenOfOwnerByIndex(account, i);
             balance += balanceOf(characterId);
         }
-    }
-
-    /// @inheritdoc ILinklist
-    function characterOwnerOf(uint256 tokenId) external view override returns (uint256) {
-        return _linklistOwners[tokenId];
     }
 
     /// @inheritdoc ERC721

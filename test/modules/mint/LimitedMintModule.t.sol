@@ -5,20 +5,15 @@ pragma solidity 0.8.18;
 import {
     ErrExceedMaxSupply,
     ErrExceedApproval,
-    ErrCallerNotWeb3Entry,
-    ErrNotCharacterOwner
+    ErrCallerNotWeb3Entry
 } from "../../../contracts/libraries/Error.sol";
 import {CommonTest} from "../../helpers/CommonTest.sol";
 import {DataTypes} from "../../../contracts/libraries/DataTypes.sol";
-import {Events} from "../../../contracts/libraries/Events.sol";
 import {IMintModule4Note} from "../../../contracts/interfaces/IMintModule4Note.sol";
-import {IMintNFT} from "../../../contracts/interfaces/IMintNFT.sol";
-import {LimitedMintModule} from "../../../contracts/modules/mint/LimitedMintModule.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {
     IERC721Enumerable
 } from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract LimitedMintModuleTest is CommonTest {
     function setUp() public {

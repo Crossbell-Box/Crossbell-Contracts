@@ -2,8 +2,6 @@
 
 pragma solidity 0.8.18;
 
-import {DataTypes} from "../libraries/DataTypes.sol";
-
 /**
  * @title ITipsWithFee
  * @notice This is the interface for the TipsWithFee contract.

@@ -7,9 +7,6 @@ import {Events} from "./Events.sol";
 import {ILinkModule4Note} from "../interfaces/ILinkModule4Note.sol";
 import {IMintModule4Note} from "../interfaces/IMintModule4Note.sol";
 import {IMintNFT} from "../interfaces/IMintNFT.sol";
-import {ILinkModule4ERC721} from "../interfaces/ILinkModule4ERC721.sol";
-import {ILinkModule4Linklist} from "../interfaces/ILinkModule4Linklist.sol";
-import {ILinkModule4Address} from "../interfaces/ILinkModule4Address.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 

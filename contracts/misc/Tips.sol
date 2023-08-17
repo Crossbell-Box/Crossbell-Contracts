@@ -23,9 +23,6 @@ contract Tips is Initializable, IERC777Recipient {
     address internal _token; // mira token, erc777 standard
     // slither-disable-end naming-convention
 
-    // custom errors
-    error ErrCallerNotCharacterOwner();
-
     // events
     /**
      * @dev Emitted when the assets are rewarded to a character.
@@ -55,6 +52,9 @@ contract Tips is Initializable, IERC777Recipient {
         address token,
         uint256 amount
     );
+
+    // custom errors
+    error ErrCallerNotCharacterOwner();
 
     /**
      * @notice Initialize the contract, setting web3Entry address and token address.

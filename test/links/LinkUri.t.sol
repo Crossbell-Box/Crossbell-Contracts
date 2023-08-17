@@ -3,10 +3,7 @@ pragma solidity 0.8.18;
 
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {Events} from "../../contracts/libraries/Events.sol";
-import {
-    ErrNotEnoughPermission,
-    ErrNotEnoughPermissionForThisNote
-} from "../../contracts/libraries/Error.sol";
+import {ErrNotEnoughPermission} from "../../contracts/libraries/Error.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
 
 contract LinkUriTest is CommonTest {

@@ -9,9 +9,6 @@ import {MiraToken} from "../../contracts/mocks/MiraToken.sol";
 contract TipsTest is CommonTest {
     uint256 public constant initialBalance = 10 ether;
 
-    // custom errors
-    error ErrCallerNotCharacterOwner();
-
     // events
     event TipCharacter(
         uint256 indexed fromCharacterId,
@@ -35,6 +32,9 @@ contract TipsTest is CommonTest {
         bytes operatorData
     );
     event Transfer(address indexed from, address indexed to, uint256 value);
+
+    // custom errors
+    error ErrCallerNotCharacterOwner();
 
     function setUp() public {
         _setUp();

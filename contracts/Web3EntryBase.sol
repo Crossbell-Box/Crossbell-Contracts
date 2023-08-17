@@ -4,7 +4,6 @@ pragma solidity 0.8.18;
 
 import {IWeb3Entry} from "./interfaces/IWeb3Entry.sol";
 import {ILinklist} from "./interfaces/ILinklist.sol";
-import {ILinkModule4Note} from "./interfaces/ILinkModule4Note.sol";
 import {NFTBase} from "./base/NFTBase.sol";
 import {Web3EntryStorage} from "./storage/Web3EntryStorage.sol";
 import {Web3EntryExtendStorage} from "./storage/Web3EntryExtendStorage.sol";
@@ -18,7 +17,6 @@ import {LinkLogic} from "./libraries/LinkLogic.sol";
 import {OP} from "./libraries/OP.sol";
 import {
     ErrSocialTokenExists,
-    ErrNotAddressOwner,
     ErrHandleExists,
     ErrNotCharacterOwner,
     ErrNotEnoughPermission,

@@ -8,7 +8,6 @@ import {ILinklist} from "../interfaces/ILinklist.sol";
 import {DataTypes} from "../libraries/DataTypes.sol";
 import {ErrArrayLengthMismatch} from "../libraries/Error.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 contract Periphery is Initializable {

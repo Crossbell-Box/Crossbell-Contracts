@@ -2,8 +2,6 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.18;
 
-import {Test} from "forge-std/Test.sol";
-import {Vm} from "forge-std/Vm.sol";
 import {Web3Entry} from "../../contracts/Web3Entry.sol";
 import {Linklist} from "../../contracts/Linklist.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
@@ -24,7 +22,7 @@ import {
 } from "../../contracts/mocks/linkModule/ApprovalLinkModule4Note.sol";
 import {ApprovalMintModule} from "../../contracts/modules/mint/ApprovalMintModule.sol";
 import {LimitedMintModule} from "../../contracts/modules/mint/LimitedMintModule.sol";
-import {NFT, ERC1155} from "../../contracts/mocks/NFT.sol";
+import {NFT} from "../../contracts/mocks/NFT.sol";
 import {Utils} from "./Utils.sol";
 
 contract CommonTest is Utils {

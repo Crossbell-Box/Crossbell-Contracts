@@ -5,7 +5,6 @@ import {Events} from "../../contracts/libraries/Events.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {
     ErrNotEnoughPermission,
-    ErrNotEnoughPermissionForThisNote,
     ErrCharacterNotExists,
     ErrHandleExists
 } from "../../contracts/libraries/Error.sol";
