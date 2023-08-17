@@ -25,6 +25,8 @@ contract TipsWithConfigTest is CommonTest {
         uint256 totalRound
     );
 
+    event CancelTips4Character(uint256 indexed tipConfigId);
+
     event CollectTips4Character(
         uint256 indexed tipConfigId,
         uint256 indexed fromCharacterId,
@@ -307,6 +309,84 @@ contract TipsWithConfigTest is CommonTest {
             0,
             address(0)
         );
+
+        // case 4: invalid amount
+        vm.expectRevert("TipsWithConfig: amount must be greater than 0");
+        vm.prank(alice);
+        _tips.setTipsConfig4Character(
+            1,
+            2,
+            address(token),
+            0,
+            block.timestamp + 10,
+            block.timestamp + 20,
+            interval,
+            address(0)
+        );
+    }
+
+    function testCancelTips4Character() public {
+        // set config
+        vm.prank(alice);
+        _tips.setTipsConfig4Character(
+            FIRST_CHARACTER_ID,
+            SECOND_CHARACTER_ID,
+            address(token),
+            1 ether,
+            block.timestamp + 10,
+            block.timestamp + 20,
+            1,
+            address(1)
+        );
+
+        // cancel
+        expectEmit(CheckAll);
+        emit CancelTips4Character(1);
+        vm.prank(alice);
+        _tips.cancelTips4Character(1);
+
+        // check status
+        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 0);
+        _checkConfig(
+            _tips.getTipsConfig(1),
+            ITipsWithConfig.TipsConfig({
+                id: 0,
+                fromCharacterId: 0,
+                toCharacterId: 0,
+                token: address(0),
+                amount: 0,
+                startTime: 0,
+                endTime: 0,
+                interval: 0,
+                feeReceiver: address(0),
+                totalRound: 0,
+                currentRound: 0
+            })
+        );
+    }
+
+    function testCancelTips4CharacterFail() public {
+        // set config
+        vm.prank(alice);
+        _tips.setTipsConfig4Character(
+            FIRST_CHARACTER_ID,
+            SECOND_CHARACTER_ID,
+            address(token),
+            1 ether,
+            block.timestamp + 10,
+            block.timestamp + 20,
+            1,
+            address(1)
+        );
+
+        // cancel
+        // case 1: caller is not character owner
+        vm.expectRevert("TipsWithConfig: not character owner");
+        _tips.cancelTips4Character(1);
+
+        // case 2: invalid config id
+        vm.expectRevert("TipsWithConfig: invalid tipConfigId");
+        _tips.cancelTips4Character(2);
     }
 
     function testCollectTips4Character(uint256 amount, uint256 interval) public {

@@ -52,7 +52,10 @@ interface ITipsWithConfig {
     ) external;
 
     /**
-     * @notice Sets the tips config of specific <fromCharacter, toCharacter>.
+     * @notice Sets the tips config of specific <fromCharacter, toCharacter>. <br>
+     * Emits a {SetTipsConfig4Character} event.
+     * @dev If the tips config of specific <fromCharacter, toCharacter> is already,
+     * it will try to collect the tips first, and then override the tips config.
      * @param fromCharacterId The token ID of character that would send the reward.
      * @param toCharacterId The token ID of character that would receive the reward.
      * @param token The token address.
@@ -74,7 +77,16 @@ interface ITipsWithConfig {
     ) external;
 
     /**
-     * @notice Collects all unredeemed token from the `fromCharacter` to the `toCharacter`.
+     * @notice Cancels the tips config. <br>
+     * Emits a {CancelTips4Character} event.
+     * @dev It will try to collect the tips first, and then delete the tips config.
+     * @param tipConfigId The tip config ID to cancel.
+     */
+    function cancelTips4Character(uint256 tipConfigId) external;
+
+    /**
+     * @notice Collects all unredeemed token from the `fromCharacter` to the `toCharacter`. <br>
+     * Emits a {CollectTips4Character} event if collects successfully.
      * @dev It will transfer all unredeemed token from the `fromCharacter` to the `toCharacter`.
      * @param tipConfigId The tip config ID.
      */
