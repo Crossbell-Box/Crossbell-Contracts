@@ -277,22 +277,15 @@ contract NewbieVillaTest is CommonTest {
         // bob has no mint role, so he can't send character to newbieVilla contract
         vm.prank(bob);
         vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
-        Web3Entry(address(web3Entry)).createCharacter(
-            makeCharacterData(CHARACTER_HANDLE, address(newbieVilla))
-        );
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, address(newbieVilla)));
     }
 
+    // transfer character to newbieVilla contract
     function testTransferNewbieIn() public {
         vm.prank(alice);
-        Web3Entry(address(web3Entry)).createCharacter(
-            makeCharacterData(CHARACTER_HANDLE, address(alice))
-        );
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, alice));
         vm.prank(alice);
-        Web3Entry(address(web3Entry)).safeTransferFrom(
-            address(alice),
-            address(newbieVilla),
-            FIRST_CHARACTER_ID
-        );
+        web3Entry.safeTransferFrom(alice, address(newbieVilla), FIRST_CHARACTER_ID);
         // check operators
         address[] memory operators = web3Entry.getOperators(FIRST_CHARACTER_ID);
         assertEq(operators[0], alice);
@@ -311,22 +304,51 @@ contract NewbieVillaTest is CommonTest {
         );
     }
 
-    function testTransferNewbieInFail() public {
-        vm.startPrank(bob);
-        Web3Entry(address(web3Entry)).createCharacter(
-            makeCharacterData(CHARACTER_HANDLE, address(bob))
-        );
-        vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
-        Web3Entry(address(web3Entry)).safeTransferFrom(
-            address(bob),
+    // transfer character to newbieVilla contract with data
+    function testTransferNewbieInWithData() public {
+        address selectedOperator = bob;
+
+        _createCharacter(CHARACTER_HANDLE, alice);
+
+        vm.prank(alice);
+        web3Entry.safeTransferFrom(
+            alice,
             address(newbieVilla),
-            FIRST_CHARACTER_ID
+            FIRST_CHARACTER_ID,
+            abi.encode(selectedOperator)
         );
+
+        // check operators
+        address[] memory operators = web3Entry.getOperators(FIRST_CHARACTER_ID);
+        assertEq(operators[0], selectedOperator);
+        assertEq(operators[1], xsyncOperator);
+
+        // check operator permission bitmap
+        // selectedOperator has DEFAULT_PERMISSION_BITMAP.
+        assertEq(
+            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, selectedOperator),
+            OP.DEFAULT_PERMISSION_BITMAP
+        );
+        // xsyncOperator has POST_NOTE_DEFAULT_PERMISSION_BITMAP
+        assertEq(
+            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, xsyncOperator),
+            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
+        );
+    }
+
+    function testTransferNewbieInFail() public {
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, bob));
+
+        vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
+        vm.prank(bob);
+        web3Entry.safeTransferFrom(bob, address(newbieVilla), FIRST_CHARACTER_ID);
 
         NFT nft = new NFT();
         nft.mint(bob);
+
         vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown token"));
-        nft.safeTransferFrom(address(bob), address(newbieVilla), FIRST_CHARACTER_ID);
+        vm.prank(bob);
+        nft.safeTransferFrom(bob, address(newbieVilla), FIRST_CHARACTER_ID);
     }
 
     function testWithdrawNewbieOut(uint256 amount) public {

@@ -124,7 +124,7 @@ contract NoteTest is CommonTest {
         web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, 1 << OP.SET_NOTE_URI);
         assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob), 1 << OP.SET_NOTE_URI);
 
-        // update note
+        // set note uri by operator
         expectEmit(CheckAll);
         emit Events.SetNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
         vm.prank(bob);
@@ -141,14 +141,14 @@ contract NoteTest is CommonTest {
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
 
         // grant operator
-        vm.prank(address(periphery), alice);
+        vm.prank(alice);
         web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, 1 << OP.SET_NOTE_URI);
         assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob), 1 << OP.SET_NOTE_URI);
 
-        // update note
+        // set note uri by operator through periphery contract
         expectEmit(CheckAll);
         emit Events.SetNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
-        vm.prank(bob);
+        vm.prank(address(periphery), bob);
         web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
 
         // check note
