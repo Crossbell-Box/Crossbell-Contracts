@@ -73,13 +73,13 @@ contract NoteTest is CommonTest {
         _matchNote(note, 0, 0, NOTE_URI, address(0), address(0), address(0), false, false);
     }
 
-    function testUpdateNote() public {
+    function testSetNoteUri() public {
         // post note
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
 
         // update note
-        expectEmit(CheckTopic1 | CheckData);
+        expectEmit(CheckAll);
         emit Events.SetNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
         web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
         vm.stopPrank();
@@ -89,24 +89,24 @@ contract NoteTest is CommonTest {
         _matchNote(note, 0, 0, NEW_NOTE_URI, address(0), address(0), address(0), false, false);
     }
 
-    function testUpdateNoteFail() public {
-        // NotEnoughPermission
+    function testSetNoteUriFail() public {
+        // case 1: NotEnoughPermission
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
         vm.prank(bob);
         web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
 
         vm.startPrank(alice);
-        // NoteNotExists
+        // case 2: NoteNotExists
         vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
         web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
 
-        // NoteLocked
+        // case 3: NoteLocked
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
         web3Entry.lockNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
         vm.expectRevert(abi.encodeWithSelector(ErrNoteLocked.selector));
         web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
 
-        // NoteIsDeleted
+        // case 4: NoteIsDeleted
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
         web3Entry.deleteNote(FIRST_CHARACTER_ID, SECOND_NOTE_ID);
         vm.expectRevert(abi.encodeWithSelector(ErrNoteIsDeleted.selector));
@@ -114,11 +114,53 @@ contract NoteTest is CommonTest {
         vm.stopPrank();
     }
 
+    function testSetNoteUriByOperator() public {
+        // post note
+        vm.prank(alice);
+        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+
+        // grant operator
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, 1 << OP.SET_NOTE_URI);
+        assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob), 1 << OP.SET_NOTE_URI);
+
+        // update note
+        expectEmit(CheckAll);
+        emit Events.SetNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
+        vm.prank(bob);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
+
+        // check note
+        DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
+        _matchNote(note, 0, 0, NEW_NOTE_URI, address(0), address(0), address(0), false, false);
+    }
+
+    function testSetNoteUriByOperatorByPeriphery() public {
+        // post note
+        vm.prank(alice);
+        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+
+        // grant operator
+        vm.prank(address(periphery), alice);
+        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, 1 << OP.SET_NOTE_URI);
+        assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob), 1 << OP.SET_NOTE_URI);
+
+        // update note
+        expectEmit(CheckAll);
+        emit Events.SetNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
+        vm.prank(bob);
+        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
+
+        // check note
+        DataTypes.Note memory note = web3Entry.getNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
+        _matchNote(note, 0, 0, NEW_NOTE_URI, address(0), address(0), address(0), false, false);
+    }
+
     function testLockNote() public {
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
 
-        expectEmit(CheckTopic1 | CheckData);
+        expectEmit(CheckAll);
         emit Events.LockNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
         web3Entry.lockNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
         vm.stopPrank();
@@ -152,7 +194,7 @@ contract NoteTest is CommonTest {
         vm.startPrank(alice);
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
 
-        expectEmit(CheckTopic1 | CheckData);
+        expectEmit(CheckAll);
         emit Events.DeleteNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
         web3Entry.deleteNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
         vm.stopPrank();

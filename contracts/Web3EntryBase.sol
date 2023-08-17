@@ -161,8 +161,9 @@ contract Web3EntryBase is
     function setPrimaryCharacterId(uint256 characterId) external override {
         _validateCallerIsCharacterOwner(characterId);
 
-        uint256 oldCharacterId = _primaryCharacterByAddress[msg.sender];
-        _primaryCharacterByAddress[msg.sender] = characterId;
+        // `tx.origin` is used here because the caller may be the periphery contract
+        uint256 oldCharacterId = _primaryCharacterByAddress[tx.origin];
+        _primaryCharacterByAddress[tx.origin] = characterId;
 
         emit Events.SetPrimaryCharacterId(msg.sender, characterId, oldCharacterId);
     }
