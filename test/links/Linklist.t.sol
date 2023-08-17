@@ -5,13 +5,16 @@ import {Events} from "../../contracts/libraries/Events.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {
     ErrNotEnoughPermission,
-    ErrCallerNotWeb3EntryOrNotOwner
+    ErrCallerNotWeb3EntryOrNotOwner,
+    ErrCallerNotWeb3Entry,
+    ErrNotOwner
 } from "../../contracts/libraries/Error.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
 
 contract LinklistTest is CommonTest {
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+    event Burn(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
 
     /* solhint-disable comprehensive-interface */
     function setUp() public {
@@ -50,7 +53,7 @@ contract LinklistTest is CommonTest {
     }
 
     function testMintFail() public {
-        // not owner can't link character
+        // case 1: not owner can't link character
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.linkCharacter(
@@ -61,6 +64,10 @@ contract LinklistTest is CommonTest {
                 new bytes(0)
             )
         );
+
+        // case 2: caller not web3Entry
+        vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
+        linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
 
         // check state
         assertEq(linklist.totalSupply(), 0);
@@ -112,7 +119,7 @@ contract LinklistTest is CommonTest {
         linklist.setUri(1, TOKEN_URI);
     }
 
-    function testTotalSupply(uint256 amount) public {
+    function testMintFuzz(uint256 amount) public {
         vm.assume(amount > 0);
         vm.assume(amount < 100);
         vm.startPrank(address(web3Entry));
@@ -121,24 +128,74 @@ contract LinklistTest is CommonTest {
             linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
         }
 
-        uint256 totalSupply = linklist.totalSupply();
-        uint256 expectedTotalSupply = amount;
-        assertEq(totalSupply, expectedTotalSupply);
-    }
-
-    function testBalanceOf(uint256 amount) public {
-        vm.assume(amount > 0);
-        vm.assume(amount < 100);
-        vm.startPrank(address(web3Entry));
-
-        for (uint256 i = 1; i <= amount; i++) {
-            linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
-        }
-
+        // check balances
         uint256 balanceOfCharacter = linklist.balanceOf(1);
         assertEq(balanceOfCharacter, amount);
 
         uint256 balanceOfAddress = linklist.balanceOf(alice);
         assertEq(balanceOfAddress, amount);
+
+        // check totalSupply
+        uint256 totalSupply = linklist.totalSupply();
+        uint256 expectedTotalSupply = amount;
+        assertEq(totalSupply, expectedTotalSupply);
+    }
+
+    function testBurn() public {
+        vm.prank(address(web3Entry));
+        linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
+
+        expectEmit(CheckTopic1 | CheckTopic2 | CheckTopic3 | CheckData);
+        emit Burn(alice, FIRST_CHARACTER_ID, FIRST_LINKLIST_ID);
+        vm.prank(alice);
+        linklist.burn(1);
+
+        // check balances
+        assertEq(linklist.balanceOf(FIRST_CHARACTER_ID), 0);
+        assertEq(linklist.balanceOf(alice), 0);
+        // check totalSupply
+        assertEq(linklist.totalSupply(), 0);
+    }
+
+    function testBurnFail() public {
+        vm.prank(address(web3Entry));
+        linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
+
+        // case 1: caller not owner
+        vm.expectRevert(abi.encodeWithSelector(ErrNotOwner.selector));
+        linklist.burn(1);
+
+        // case 2: token not exist
+        vm.expectRevert("ERC721: owner query for nonexistent token");
+        linklist.burn(2);
+    }
+
+    function testBurnFuzz(uint256 amount) public {
+        vm.assume(amount > 0 && amount < 1000);
+        uint256 mintAmount = amount;
+        uint256 burnAmount = amount / 2;
+
+        // mint linklist
+        for (uint256 i = 0; i < mintAmount; i++) {
+            vm.prank(address(web3Entry));
+            linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
+        }
+        // check balances
+        assertEq(linklist.balanceOf(FIRST_CHARACTER_ID), mintAmount);
+        // check totalSupply
+        assertEq(linklist.balanceOf(alice), mintAmount);
+        assertEq(linklist.totalSupply(), mintAmount);
+
+        // burn linklist
+        for (uint256 i = 1; i <= burnAmount; i++) {
+            vm.prank(alice);
+            linklist.burn(i);
+        }
+        // check balances
+        uint256 leftAmount = mintAmount - burnAmount;
+        assertEq(linklist.balanceOf(FIRST_CHARACTER_ID), leftAmount);
+        assertEq(linklist.balanceOf(alice), leftAmount);
+        // check totalSupply
+        assertEq(linklist.totalSupply(), mintAmount - burnAmount);
     }
 }

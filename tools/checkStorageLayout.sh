@@ -7,7 +7,7 @@ if [ ! -d "contracts" ]; then
 fi
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-for contract in Web3Entry Tips NewbieVilla
+for contract in Web3Entry Tips NewbieVilla Linklist
 do
   file=$(mktemp /tmp/contracts-storage-layout-${contract}.XXXXX) || exit 2
   forge inspect ${contract} storage-layout --pretty > ${file} || exit 3
