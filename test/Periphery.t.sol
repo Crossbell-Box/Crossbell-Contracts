@@ -14,8 +14,8 @@ contract PeripheryTest is CommonTest {
         // create character
         _createCharacter(CHARACTER_HANDLE, alice);
         _createCharacter(CHARACTER_HANDLE2, bob);
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE3, carol));
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE4, dick));
+        _createCharacter(CHARACTER_HANDLE3, carol);
+        _createCharacter(CHARACTER_HANDLE4, dick);
     }
 
     function testLinkCharactersInBatch() public {
