@@ -7,7 +7,8 @@ import {
     ErrCallerNotWeb3EntryOrNotOwner,
     ErrCallerNotWeb3Entry,
     ErrNotOwner,
-    ErrTokenNotExists
+    ErrTokenNotExists,
+    ErrNotCharacterOwner
 } from "../../contracts/libraries/Error.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
@@ -136,7 +137,8 @@ contract LinklistTest is CommonTest {
         linklist.setUri(1, TOKEN_URI);
     }
 
-    function testUri() public {
+    function testUriFail() public {
+        // token not exist
         vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
         linklist.Uri(2);
     }
@@ -252,5 +254,22 @@ contract LinklistTest is CommonTest {
         assertEq(web3Entry.getLinklistId(1, FollowLinkType), 2);
         assertEq(web3Entry.getLinklistType(2), FollowLinkType);
         vm.stopPrank();
+    }
+
+    function testBurnLinklistFailByWeb3Entry() public {
+        vm.prank(alice);
+        // link character
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
+        // check
+        assertEq(web3Entry.getLinklistId(1, FollowLinkType), 1);
+        assertEq(web3Entry.getLinklistType(1), FollowLinkType);
+
+        // case 1: caller not web3Entry
+        vm.expectRevert(abi.encodeWithSelector(ErrNotCharacterOwner.selector));
+        web3Entry.burnLinklist(1);
+
+        // case 2: linklist not exist
+        vm.expectRevert("ERC721: owner query for nonexistent token");
+        web3Entry.burnLinklist(100);
     }
 }
