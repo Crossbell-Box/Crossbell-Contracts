@@ -21,4 +21,4 @@ libs = ["node_modules", "lib"]
 
 # Extreme Fuzzing CI Profile :P
 [profile.ci]
-fuzz_runs = 256
+fuzz_runs = 1_000
