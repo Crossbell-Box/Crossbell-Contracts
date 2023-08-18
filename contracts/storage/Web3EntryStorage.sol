@@ -5,17 +5,6 @@ pragma solidity 0.8.18;
 import {DataTypes} from "../libraries/DataTypes.sol";
 
 contract Web3EntryStorage {
-    // solhint-disable-next-line private-vars-leading-underscore, var-name-mixedcase
-    bytes32 internal constant EIP712_DOMAIN_TYPEHASH =
-        keccak256(
-            "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
-        );
-    // solhint-disable-next-line private-vars-leading-underscore, var-name-mixedcase
-    bytes32 internal constant GRANT_OPERATOR_PERMISSIONS_WITH_SIG_TYPEHASH =
-        keccak256( // solhint-disable-next-line max-line-length
-            "grantOperatorPermissions(uint256 characterId,address operator,uint256 permissionBitMap,uint256 nonce,uint256 deadline)"
-        );
-
     // characterId => Character
     mapping(uint256 => DataTypes.Character) internal _characterById;
     // handleHash => characterId

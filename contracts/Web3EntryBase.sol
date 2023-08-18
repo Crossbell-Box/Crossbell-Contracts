@@ -14,6 +14,8 @@ import {CharacterLogic} from "./libraries/CharacterLogic.sol";
 import {PostLogic} from "./libraries/PostLogic.sol";
 import {OperatorLogic} from "./libraries/OperatorLogic.sol";
 import {LinkLogic} from "./libraries/LinkLogic.sol";
+import {MetaTxLib} from "./libraries/MetaTxLib.sol";
+import {StorageLib} from "./libraries/StorageLib.sol";
 import {OP} from "./libraries/OP.sol";
 import {
     ErrSocialTokenExists,
@@ -82,27 +84,16 @@ contract Web3EntryBase is
         uint256 characterId,
         address operator,
         uint256 permissionBitMap,
-        DataTypes.EIP712Signature calldata sig
+        DataTypes.EIP712Signature calldata signature
     ) external override {
-        address owner = ownerOf(characterId);
+        if (signature.signer != ownerOf(characterId)) revert ErrNotCharacterOwner();
 
-        unchecked {
-            bytes32 hashedMessage = keccak256(
-                abi.encode(
-                    GRANT_OPERATOR_PERMISSIONS_WITH_SIG_TYPEHASH,
-                    characterId,
-                    operator,
-                    permissionBitMap,
-                    _sigNonces[owner]++,
-                    sig.deadline
-                )
-            );
-            _validateRecoveredAddress(
-                ECDSA.toTypedDataHash(_calculateDomainSeparator(), hashedMessage),
-                owner,
-                sig
-            );
-        }
+        MetaTxLib.validateGrantOperatorPermissionsSignature(
+            signature,
+            characterId,
+            operator,
+            permissionBitMap
+        );
 
         _grantOperatorPermissions(characterId, operator, permissionBitMap);
     }
@@ -725,7 +716,7 @@ contract Web3EntryBase is
 
     /// @inheritdoc IWeb3Entry
     function getDomainSeparator() external view override returns (bytes32) {
-        return _calculateDomainSeparator();
+        return MetaTxLib._calculateDomainSeparator();
     }
 
     /// @inheritdoc IWeb3Entry
@@ -971,22 +962,6 @@ contract Web3EntryBase is
 
     function _validateNoteNotLocked(uint256 characterId, uint256 noteId) internal view {
         if (_noteByIdByCharacter[characterId][noteId].locked) revert ErrNoteLocked();
-    }
-
-    /**
-     * @dev Calculates EIP712 DOMAIN_SEPARATOR based on the current contract and chain ID.
-     */
-    function _calculateDomainSeparator() internal view returns (bytes32) {
-        return
-            keccak256(
-                abi.encode(
-                    EIP712_DOMAIN_TYPEHASH,
-                    keccak256(bytes(name())),
-                    1,
-                    block.chainid,
-                    address(this)
-                )
-            );
     }
 
     /**

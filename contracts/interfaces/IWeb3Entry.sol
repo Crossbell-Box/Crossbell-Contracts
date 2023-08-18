@@ -86,14 +86,14 @@ interface IWeb3Entry {
      * @param characterId ID of your character that you want to authorize.
      * @param operator Address to grant operator permissions to.
      * @param permissionBitMap Bitmap used for finer grained operator permissions controls.
-     * @param sig The EIP712Signature struct containing the character owner's signature.
+     * @param signature The EIP712Signature struct containing the character owner's signature.
      * @dev Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol.
      */
     function grantOperatorPermissionsWithSig(
         uint256 characterId,
         address operator,
         uint256 permissionBitMap,
-        DataTypes.EIP712Signature calldata sig
+        DataTypes.EIP712Signature calldata signature
     ) external;
 
     /**

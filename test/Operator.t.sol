@@ -699,6 +699,7 @@ contract OperatorTest is CommonTest {
         bytes32 domainSeparator = web3Entry.getDomainSeparator();
         bytes32 typedDataHash = ECDSA.toTypedDataHash(domainSeparator, hashedMessage);
 
+        sig.signer = vm.addr(privateKey);
         sig.deadline = block.timestamp + 10;
         (sig.v, sig.r, sig.s) = vm.sign(privateKey, typedDataHash);
     }
