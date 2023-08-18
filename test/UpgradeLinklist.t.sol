@@ -85,7 +85,7 @@ contract UpgradeLinklistTest is CommonTest {
         uint256 tokenId = Linklist(_linklist).mint(FIRST_CHARACTER_ID, FollowLinkType);
         assertEq(totalSupply + 1, Linklist(_linklist).totalSupply());
         // burn a linklist
-        vm.prank(Linklist(_linklist).ownerOf(tokenId));
+        vm.prank(_web3Entry);
         Linklist(_linklist).burn(tokenId);
         // check totalSupply
         assertEq(totalSupply, Linklist(_linklist).totalSupply());

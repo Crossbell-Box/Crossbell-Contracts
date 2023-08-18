@@ -625,6 +625,20 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
+    function burnLinklist(uint256 linklistId) external override {
+        // only the owner of the character can burn the linklist through web3Entry contract
+        uint256 characterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
+        if (msg.sender != ownerOf(characterId)) revert ErrNotCharacterOwner();
+
+        // delete _attachedLinklist
+        bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
+        delete _attachedLinklists[characterId][linkType];
+
+        // burn linklist
+        ILinklist(_linklist).burn(linklistId);
+    }
+
+    /// @inheritdoc IWeb3Entry
     function getOperators(uint256 characterId) external view override returns (address[] memory) {
         return _operatorsByCharacter[characterId].values();
     }

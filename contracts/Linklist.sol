@@ -10,7 +10,8 @@ import {DataTypes} from "./libraries/DataTypes.sol";
 import {
     ErrCallerNotWeb3Entry,
     ErrCallerNotWeb3EntryOrNotOwner,
-    ErrNotOwner
+    ErrNotOwner,
+    ErrTokenNotExists
 } from "./libraries/Error.sol";
 import {LinklistStorage} from "./storage/LinklistStorage.sol";
 import {LinklistExtendStorage} from "./storage/LinklistExtendStorage.sol";
@@ -33,7 +34,7 @@ contract Linklist is
     using EnumerableSet for EnumerableSet.AddressSet;
 
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
-    event Burn(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
+    event Burn(uint256 indexed from, uint256 indexed tokenId);
 
     modifier onlyWeb3Entry() {
         if (msg.sender != Web3Entry) revert ErrCallerNotWeb3Entry();
@@ -73,10 +74,9 @@ contract Linklist is
     }
 
     /// @inheritdoc ILinklist
-    function burn(uint256 tokenId) external override {
-        if (msg.sender != ownerOf(tokenId)) revert ErrNotOwner();
-
+    function burn(uint256 tokenId) external override onlyWeb3Entry {
         uint256 characterId = _linklistOwners[tokenId];
+        if (characterId == 0) revert ErrTokenNotExists();
 
         // Ownership check above ensures no underflow.
         unchecked {
@@ -86,7 +86,7 @@ contract Linklist is
         delete _linkTypes[tokenId];
         delete _linklistOwners[tokenId];
 
-        emit Burn(msg.sender, characterId, tokenId);
+        emit Burn(characterId, tokenId);
     }
 
     /// @inheritdoc ILinklist
@@ -383,6 +383,8 @@ contract Linklist is
     // slither-disable-start naming-convention
     // solhint-disable-next-line func-name-mixedcase
     function Uri(uint256 tokenId) external view override returns (string memory) {
+        if (0 == _linklistOwners[tokenId]) revert ErrTokenNotExists();
+
         return _uris[tokenId];
     }
 

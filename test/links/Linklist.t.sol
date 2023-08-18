@@ -6,7 +6,8 @@ import {
     ErrNotEnoughPermission,
     ErrCallerNotWeb3EntryOrNotOwner,
     ErrCallerNotWeb3Entry,
-    ErrNotOwner
+    ErrNotOwner,
+    ErrTokenNotExists
 } from "../../contracts/libraries/Error.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
@@ -19,7 +20,7 @@ import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 contract LinklistTest is CommonTest {
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
-    event Burn(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
+    event Burn(uint256 indexed from, uint256 indexed tokenId);
 
     /* solhint-disable comprehensive-interface */
     function setUp() public {
@@ -135,6 +136,11 @@ contract LinklistTest is CommonTest {
         linklist.setUri(1, TOKEN_URI);
     }
 
+    function testUri() public {
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.Uri(2);
+    }
+
     function testMintFuzz(uint256 amount) public {
         vm.assume(amount > 0);
         vm.assume(amount < 100);
@@ -158,13 +164,13 @@ contract LinklistTest is CommonTest {
     }
 
     function testBurn() public {
-        vm.prank(address(web3Entry));
+        vm.startPrank(address(web3Entry));
         linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
 
         expectEmit(CheckAll);
-        emit Burn(alice, FIRST_CHARACTER_ID, FIRST_LINKLIST_ID);
-        vm.prank(alice);
+        emit Burn(FIRST_CHARACTER_ID, FIRST_LINKLIST_ID);
         linklist.burn(1);
+        vm.stopPrank();
 
         // check balances
         assertEq(linklist.balanceOf(FIRST_CHARACTER_ID), 0);
@@ -177,12 +183,13 @@ contract LinklistTest is CommonTest {
         vm.prank(address(web3Entry));
         linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
 
-        // case 1: caller not owner
-        vm.expectRevert(abi.encodeWithSelector(ErrNotOwner.selector));
+        // case 1: caller not web3Entry
+        vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
         linklist.burn(1);
 
         // case 2: token not exist
-        vm.expectRevert("ERC721: owner query for nonexistent token");
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        vm.prank(address(web3Entry));
         linklist.burn(2);
     }
 
@@ -191,9 +198,9 @@ contract LinklistTest is CommonTest {
         uint256 mintAmount = amount;
         uint256 burnAmount = amount / 2;
 
+        vm.startPrank(address(web3Entry));
         // mint linklist
         for (uint256 i = 0; i < mintAmount; i++) {
-            vm.prank(address(web3Entry));
             linklist.mint(FIRST_CHARACTER_ID, FollowLinkType);
         }
         // check balances
@@ -204,14 +211,46 @@ contract LinklistTest is CommonTest {
 
         // burn linklist
         for (uint256 i = 1; i <= burnAmount; i++) {
-            vm.prank(alice);
             linklist.burn(i);
         }
+        vm.stopPrank();
+
         // check balances
         uint256 leftAmount = mintAmount - burnAmount;
         assertEq(linklist.balanceOf(FIRST_CHARACTER_ID), leftAmount);
         assertEq(linklist.balanceOf(alice), leftAmount);
         // check totalSupply
         assertEq(linklist.totalSupply(), mintAmount - burnAmount);
+    }
+
+    function testBurnLinklistByWeb3Entry() public {
+        vm.startPrank(alice);
+        // link character
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
+        // check
+        assertEq(linklist.balanceOf(1), 1);
+        assertEq(linklist.balanceOf(alice), 1);
+        assertEq(linklist.totalSupply(), 1);
+        assertEq(web3Entry.getLinklistId(1, FollowLinkType), 1);
+        assertEq(web3Entry.getLinklistType(1), FollowLinkType);
+
+        // burn linklist
+        web3Entry.burnLinklist(1);
+        // check linklist 1
+        assertEq(linklist.balanceOf(1), 0);
+        assertEq(linklist.balanceOf(alice), 0);
+        assertEq(linklist.totalSupply(), 0);
+        assertEq(web3Entry.getLinklistId(1, FollowLinkType), 0);
+        assertEq(web3Entry.getLinklistType(1), bytes32Zero);
+
+        // link character
+        // check linklist 2
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
+        assertEq(linklist.balanceOf(1), 1);
+        assertEq(linklist.balanceOf(alice), 1);
+        assertEq(linklist.totalSupply(), 1);
+        assertEq(web3Entry.getLinklistId(1, FollowLinkType), 2);
+        assertEq(web3Entry.getLinklistType(2), FollowLinkType);
+        vm.stopPrank();
     }
 }
