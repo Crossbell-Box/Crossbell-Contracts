@@ -19,3 +19,5 @@ analyze:
     - contracts/misc/NewbieVilla.sol
     - contracts/misc/Tips.sol
     - contracts/misc/Periphery.sol
+    - contracts/misc/TipsWithFee.sol
+    - contracts/misc/TipsWithConfig.sol
