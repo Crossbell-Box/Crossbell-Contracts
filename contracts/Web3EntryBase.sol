@@ -127,7 +127,7 @@ contract Web3EntryBase is
         // check if the handle is valid
         _validateHandle(newHandle);
 
-        CharacterLib.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
+        CharacterLib.setHandle(characterId, newHandle);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -137,7 +137,7 @@ contract Web3EntryBase is
         // check if the social token exists
         if (_characterById[characterId].socialToken != address(0)) revert ErrSocialTokenExists();
 
-        CharacterLib.setSocialToken(characterId, tokenAddress, _characterById);
+        CharacterLib.setSocialToken(characterId, tokenAddress);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -372,8 +372,7 @@ contract Web3EntryBase is
         CharacterLib.setCharacterLinkModule(
             vars.characterId,
             vars.linkModule,
-            vars.linkModuleInitData,
-            _characterById[vars.characterId]
+            vars.linkModuleInitData
         );
     }
 
@@ -770,9 +769,7 @@ contract Web3EntryBase is
             vars.uri,
             vars.linkModule,
             vars.linkModuleInitData,
-            characterId,
-            _characterIdByHandleHash,
-            _characterById
+            characterId
         );
     }
 

@@ -4,6 +4,7 @@ pragma solidity 0.8.18;
 
 import {DataTypes} from "./DataTypes.sol";
 import {Events} from "./Events.sol";
+import {StorageLib} from "./StorageLib.sol";
 import {ILinkModule4Character} from "../interfaces/ILinkModule4Character.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
@@ -25,20 +26,20 @@ library CharacterLib {
         string memory uri,
         address linkModule,
         bytes memory linkModuleInitData,
-        uint256 characterId,
-        mapping(bytes32 => uint256) storage _characterIdByHandleHash,
-        mapping(uint256 => DataTypes.Character) storage _characterById
+        uint256 characterId
     ) external {
         bytes32 handleHash = keccak256(bytes(handle));
-        _characterIdByHandleHash[handleHash] = characterId;
+        StorageLib.characterIdByHandleHash()[handleHash] = characterId;
 
-        _characterById[characterId].characterId = characterId;
-        _characterById[characterId].handle = handle;
-        _characterById[characterId].uri = uri;
+        // save character
+        DataTypes.Character storage _character = StorageLib.getCharacter(characterId);
+        _character.characterId = characterId;
+        _character.handle = handle;
+        _character.uri = uri;
 
         // init link module
         if (linkModule != address(0)) {
-            _characterById[characterId].linkModule = linkModule;
+            _character.linkModule = linkModule;
 
             ILinkModule4Character(linkModule).initializeLinkModule(characterId, linkModuleInitData);
         }
@@ -51,13 +52,8 @@ library CharacterLib {
      * @param   characterId  	The character ID to set social token for.
      * @param   tokenAddress  Token address to be set.
      */
-    function setSocialToken(
-        uint256 characterId,
-        address tokenAddress,
-        mapping(uint256 => DataTypes.Character) storage _characterById
-    ) external {
-        _characterById[characterId].socialToken = tokenAddress;
-
+    function setSocialToken(uint256 characterId, address tokenAddress) external {
+        StorageLib.getCharacter(characterId).socialToken = tokenAddress;
         emit Events.SetSocialToken(msg.sender, characterId, tokenAddress);
     }
 
@@ -70,10 +66,9 @@ library CharacterLib {
     function setCharacterLinkModule(
         uint256 characterId,
         address linkModule,
-        bytes calldata linkModuleInitData,
-        DataTypes.Character storage _character
+        bytes calldata linkModuleInitData
     ) external {
-        _character.linkModule = linkModule;
+        StorageLib.getCharacter(characterId).linkModule = linkModule;
 
         bytes memory returnData = "";
         if (linkModule != address(0)) {
@@ -95,21 +90,16 @@ library CharacterLib {
      * @param   characterId  The character ID to set new handle for.
      * @param   newHandle  New handle to set.
      */
-    function setHandle(
-        uint256 characterId,
-        string calldata newHandle,
-        mapping(bytes32 => uint256) storage _characterIdByHandleHash,
-        mapping(uint256 => DataTypes.Character) storage _characterById
-    ) external {
+    function setHandle(uint256 characterId, string calldata newHandle) external {
         // remove old handle
-        string memory oldHandle = _characterById[characterId].handle;
+        string memory oldHandle = StorageLib.getCharacter(characterId).handle;
         bytes32 oldHandleHash = keccak256(bytes(oldHandle));
-        delete _characterIdByHandleHash[oldHandleHash];
+        delete StorageLib.characterIdByHandleHash()[oldHandleHash];
 
         // set new handle
         bytes32 handleHash = keccak256(bytes(newHandle));
-        _characterIdByHandleHash[handleHash] = characterId;
-        _characterById[characterId].handle = newHandle;
+        StorageLib.characterIdByHandleHash()[handleHash] = characterId;
+        StorageLib.getCharacter(characterId).handle = newHandle;
 
         emit Events.SetHandle(msg.sender, characterId, newHandle);
     }
