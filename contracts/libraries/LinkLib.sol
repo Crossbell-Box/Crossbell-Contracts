@@ -9,7 +9,7 @@ import {ILinkModule4Note} from "../interfaces/ILinkModule4Note.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-library LinkLogic {
+library LinkLib {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     /**

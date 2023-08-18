@@ -7,7 +7,7 @@ import {DataTypes} from "./DataTypes.sol";
 import {OP} from "./OP.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-library OperatorLogic {
+library OperatorLib {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /**

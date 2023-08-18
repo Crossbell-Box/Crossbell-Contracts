@@ -50,10 +50,10 @@ async function main() {
     await proxyWeb3Entry.upgradeTo(web3Entry.address);
 
     console.log("LinkModuleLogic deployed to:", linkModuleLogic.address);
-    console.log("CharacterLogic deployed to:", characterLogic.address);
-    console.log("PostLogic deployed to:", postLogic.address);
-    console.log("LinkLogic deployed to:", linkLogic.address);
-    console.log("OperatorLogic deployed to:", operatorLogic.address);
+    console.log("CharacterLib.sol deployed to:", characterLogic.address);
+    console.log("PostLib.sol deployed to:", postLogic.address);
+    console.log("LinkLib.sol deployed to:", linkLogic.address);
+    console.log("OperatorLib.sol deployed to:", operatorLogic.address);
     console.log("Web3Entry deployed to:", web3Entry.address);
 }
 

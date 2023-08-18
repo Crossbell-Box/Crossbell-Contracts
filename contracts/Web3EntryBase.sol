@@ -10,10 +10,10 @@ import {Web3EntryExtendStorage} from "./storage/Web3EntryExtendStorage.sol";
 import {DataTypes} from "./libraries/DataTypes.sol";
 import {Constants} from "./libraries/Constants.sol";
 import {Events} from "./libraries/Events.sol";
-import {CharacterLogic} from "./libraries/CharacterLogic.sol";
-import {PostLogic} from "./libraries/PostLogic.sol";
-import {OperatorLogic} from "./libraries/OperatorLogic.sol";
-import {LinkLogic} from "./libraries/LinkLogic.sol";
+import {CharacterLib} from "./libraries/CharacterLib.sol";
+import {PostLib} from "./libraries/PostLib.sol";
+import {OperatorLib} from "./libraries/OperatorLib.sol";
+import {LinkLib} from "./libraries/LinkLib.sol";
 import {MetaTxLib} from "./libraries/MetaTxLib.sol";
 import {StorageLib} from "./libraries/StorageLib.sol";
 import {OP} from "./libraries/OP.sol";
@@ -107,13 +107,7 @@ contract Web3EntryBase is
     ) external override {
         _validateCallerPermission(characterId, OP.GRANT_OPERATORS_FOR_NOTE);
         _validateNoteExists(characterId, noteId);
-        OperatorLogic.grantOperators4Note(
-            characterId,
-            noteId,
-            blocklist,
-            allowlist,
-            _operators4Note
-        );
+        OperatorLib.grantOperators4Note(characterId, noteId, blocklist, allowlist, _operators4Note);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -133,7 +127,7 @@ contract Web3EntryBase is
         // check if the handle is valid
         _validateHandle(newHandle);
 
-        CharacterLogic.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
+        CharacterLib.setHandle(characterId, newHandle, _characterIdByHandleHash, _characterById);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -143,7 +137,7 @@ contract Web3EntryBase is
         // check if the social token exists
         if (_characterById[characterId].socialToken != address(0)) revert ErrSocialTokenExists();
 
-        CharacterLogic.setSocialToken(characterId, tokenAddress, _characterById);
+        CharacterLib.setSocialToken(characterId, tokenAddress, _characterById);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -178,7 +172,7 @@ contract Web3EntryBase is
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
         _validateCharacterExists(vars.toCharacterId);
 
-        LinkLogic.linkCharacter(
+        LinkLib.linkCharacter(
             vars.fromCharacterId,
             vars.toCharacterId,
             vars.linkType,
@@ -193,7 +187,7 @@ contract Web3EntryBase is
     function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
 
-        LinkLogic.unlinkCharacter(
+        LinkLib.unlinkCharacter(
             vars.fromCharacterId,
             vars.toCharacterId,
             vars.linkType,
@@ -221,7 +215,7 @@ contract Web3EntryBase is
         );
 
         // link character
-        LinkLogic.linkCharacter(
+        LinkLib.linkCharacter(
             vars.fromCharacterId,
             characterId,
             vars.linkType,
@@ -237,7 +231,7 @@ contract Web3EntryBase is
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_NOTE);
         _validateNoteExists(vars.toCharacterId, vars.toNoteId);
 
-        LinkLogic.linkNote(
+        LinkLib.linkNote(
             vars.fromCharacterId,
             vars.toCharacterId,
             vars.toNoteId,
@@ -253,7 +247,7 @@ contract Web3EntryBase is
     function unlinkNote(DataTypes.unlinkNoteData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_NOTE);
 
-        LinkLogic.unlinkNote(
+        LinkLib.unlinkNote(
             vars.fromCharacterId,
             vars.toCharacterId,
             vars.toNoteId,
@@ -267,7 +261,7 @@ contract Web3EntryBase is
     function linkERC721(DataTypes.linkERC721Data calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ERC721);
 
-        LinkLogic.linkERC721(
+        LinkLib.linkERC721(
             vars.fromCharacterId,
             vars.tokenAddress,
             vars.tokenId,
@@ -281,7 +275,7 @@ contract Web3EntryBase is
     function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ERC721);
 
-        LinkLogic.unlinkERC721(
+        LinkLib.unlinkERC721(
             vars.fromCharacterId,
             vars.tokenAddress,
             vars.tokenId,
@@ -295,7 +289,7 @@ contract Web3EntryBase is
     function linkAddress(DataTypes.linkAddressData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ADDRESS);
 
-        LinkLogic.linkAddress(
+        LinkLib.linkAddress(
             vars.fromCharacterId,
             vars.ethAddress,
             vars.linkType,
@@ -308,7 +302,7 @@ contract Web3EntryBase is
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ADDRESS);
 
-        LinkLogic.unlinkAddress(
+        LinkLib.unlinkAddress(
             vars.fromCharacterId,
             vars.ethAddress,
             vars.linkType,
@@ -321,7 +315,7 @@ contract Web3EntryBase is
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ANYURI);
 
-        LinkLogic.linkAnyUri(
+        LinkLib.linkAnyUri(
             vars.fromCharacterId,
             vars.toUri,
             vars.linkType,
@@ -334,7 +328,7 @@ contract Web3EntryBase is
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ANYURI);
 
-        LinkLogic.unlinkAnyUri(
+        LinkLib.unlinkAnyUri(
             vars.fromCharacterId,
             vars.toUri,
             vars.linkType,
@@ -347,7 +341,7 @@ contract Web3EntryBase is
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_LINKLIST);
 
-        LinkLogic.linkLinklist(
+        LinkLib.linkLinklist(
             vars.fromCharacterId,
             vars.toLinkListId,
             vars.linkType,
@@ -360,7 +354,7 @@ contract Web3EntryBase is
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_LINKLIST);
 
-        LinkLogic.unlinkLinklist(
+        LinkLib.unlinkLinklist(
             vars.fromCharacterId,
             vars.toLinkListId,
             vars.linkType,
@@ -375,7 +369,7 @@ contract Web3EntryBase is
     ) external override {
         _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_CHARACTER);
 
-        CharacterLogic.setCharacterLinkModule(
+        CharacterLib.setCharacterLinkModule(
             vars.characterId,
             vars.linkModule,
             vars.linkModuleInitData,
@@ -390,7 +384,7 @@ contract Web3EntryBase is
         _validateNoteExists(vars.characterId, vars.noteId);
         _validateNoteNotLocked(vars.characterId, vars.noteId);
 
-        PostLogic.setLinkModule4Note(
+        PostLib.setLinkModule4Note(
             vars.characterId,
             vars.noteId,
             vars.linkModule,
@@ -405,7 +399,7 @@ contract Web3EntryBase is
     ) external override returns (uint256 tokenId) {
         _validateNoteExists(vars.characterId, vars.noteId);
 
-        tokenId = PostLogic.mintNote(
+        tokenId = PostLib.mintNote(
             vars.characterId,
             vars.noteId,
             vars.to,
@@ -421,7 +415,7 @@ contract Web3EntryBase is
         _validateNoteExists(vars.characterId, vars.noteId);
         _validateNoteNotLocked(vars.characterId, vars.noteId);
 
-        PostLogic.setMintModule4Note(
+        PostLib.setMintModule4Note(
             vars.characterId,
             vars.noteId,
             vars.mintModule,
@@ -437,7 +431,7 @@ contract Web3EntryBase is
         _validateCallerPermission(vars.characterId, OP.POST_NOTE);
 
         noteId = _nextNoteId(vars.characterId);
-        PostLogic.postNoteWithLink(vars, noteId, 0, 0, "", _noteByIdByCharacter);
+        PostLib.postNoteWithLink(vars, noteId, 0, 0, "", _noteByIdByCharacter);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -450,7 +444,7 @@ contract Web3EntryBase is
         _validateNoteExists(characterId, noteId);
         _validateNoteNotLocked(characterId, noteId);
 
-        PostLogic.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
+        PostLib.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -484,7 +478,7 @@ contract Web3EntryBase is
         uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = bytes32(toCharacterId);
 
-        PostLogic.postNoteWithLink(
+        PostLib.postNoteWithLink(
             vars,
             noteId,
             linkItemType,
@@ -507,7 +501,7 @@ contract Web3EntryBase is
         uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
 
-        PostLogic.postNoteWithLink(
+        PostLib.postNoteWithLink(
             vars,
             noteId,
             linkItemType,
@@ -530,7 +524,7 @@ contract Web3EntryBase is
         uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = bytes32(toLinklistId);
 
-        PostLogic.postNoteWithLink(
+        PostLib.postNoteWithLink(
             vars,
             noteId,
             linkItemType,
@@ -553,7 +547,7 @@ contract Web3EntryBase is
         uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = ILinklist(_linklist).addLinkingNote(0, note.characterId, note.noteId);
 
-        PostLogic.postNoteWithLink(
+        PostLib.postNoteWithLink(
             vars,
             noteId,
             linkItemType,
@@ -580,7 +574,7 @@ contract Web3EntryBase is
             erc721.erc721TokenId
         );
 
-        PostLogic.postNoteWithLink(
+        PostLib.postNoteWithLink(
             vars,
             noteId,
             linkItemType,
@@ -603,7 +597,7 @@ contract Web3EntryBase is
         uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
 
-        PostLogic.postNoteWithLink(
+        PostLib.postNoteWithLink(
             vars,
             noteId,
             linkItemType,
@@ -770,7 +764,7 @@ contract Web3EntryBase is
         // mint character nft
         _safeMint(vars.to, characterId);
 
-        CharacterLogic.createCharacter(
+        CharacterLib.createCharacter(
             vars.to,
             vars.handle,
             vars.uri,
@@ -840,7 +834,7 @@ contract Web3EntryBase is
         address operator,
         uint256 permissionBitMap
     ) internal {
-        OperatorLogic.grantOperatorPermissions(
+        OperatorLib.grantOperatorPermissions(
             characterId,
             operator,
             permissionBitMap,

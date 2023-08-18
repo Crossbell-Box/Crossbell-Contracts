@@ -10,7 +10,7 @@ import {IMintNFT} from "../interfaces/IMintNFT.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-library PostLogic {
+library PostLib {
     using Strings for uint256;
 
     function postNoteWithLink(

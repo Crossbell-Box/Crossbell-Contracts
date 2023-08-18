@@ -7,7 +7,7 @@ import {Events} from "./Events.sol";
 import {ILinkModule4Character} from "../interfaces/ILinkModule4Character.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-library CharacterLogic {
+library CharacterLib {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     /**
