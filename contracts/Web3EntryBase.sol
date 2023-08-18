@@ -107,7 +107,7 @@ contract Web3EntryBase is
     ) external override {
         _validateCallerPermission(characterId, OP.GRANT_OPERATORS_FOR_NOTE);
         _validateNoteExists(characterId, noteId);
-        OperatorLib.grantOperators4Note(characterId, noteId, blocklist, allowlist, _operators4Note);
+        OperatorLib.grantOperators4Note(characterId, noteId, blocklist, allowlist);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -387,8 +387,7 @@ contract Web3EntryBase is
             vars.characterId,
             vars.noteId,
             vars.linkModule,
-            vars.linkModuleInitData,
-            _noteByIdByCharacter
+            vars.linkModuleInitData
         );
     }
 
@@ -418,8 +417,7 @@ contract Web3EntryBase is
             vars.characterId,
             vars.noteId,
             vars.mintModule,
-            vars.mintModuleInitData,
-            _noteByIdByCharacter
+            vars.mintModuleInitData
         );
     }
 
@@ -430,7 +428,7 @@ contract Web3EntryBase is
         _validateCallerPermission(vars.characterId, OP.POST_NOTE);
 
         noteId = _nextNoteId(vars.characterId);
-        PostLib.postNoteWithLink(vars, noteId, 0, 0, "", _noteByIdByCharacter);
+        PostLib.postNoteWithLink(vars, noteId, 0, 0, "");
     }
 
     /// @inheritdoc IWeb3Entry
@@ -482,8 +480,7 @@ contract Web3EntryBase is
             noteId,
             linkItemType,
             linkKey,
-            abi.encodePacked(toCharacterId),
-            _noteByIdByCharacter
+            abi.encodePacked(toCharacterId)
         );
 
         return noteId;
@@ -500,14 +497,7 @@ contract Web3EntryBase is
         uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
 
-        PostLib.postNoteWithLink(
-            vars,
-            noteId,
-            linkItemType,
-            linkKey,
-            abi.encodePacked(ethAddress),
-            _noteByIdByCharacter
-        );
+        PostLib.postNoteWithLink(vars, noteId, linkItemType, linkKey, abi.encodePacked(ethAddress));
 
         return noteId;
     }
@@ -528,8 +518,7 @@ contract Web3EntryBase is
             noteId,
             linkItemType,
             linkKey,
-            abi.encodePacked(toLinklistId),
-            _noteByIdByCharacter
+            abi.encodePacked(toLinklistId)
         );
 
         return noteId;
@@ -551,8 +540,7 @@ contract Web3EntryBase is
             noteId,
             linkItemType,
             linkKey,
-            abi.encodePacked(note.characterId, note.noteId),
-            _noteByIdByCharacter
+            abi.encodePacked(note.characterId, note.noteId)
         );
 
         return noteId;
@@ -578,8 +566,7 @@ contract Web3EntryBase is
             noteId,
             linkItemType,
             linkKey,
-            abi.encodePacked(erc721.tokenAddress, erc721.erc721TokenId),
-            _noteByIdByCharacter
+            abi.encodePacked(erc721.tokenAddress, erc721.erc721TokenId)
         );
 
         return noteId;
@@ -596,14 +583,7 @@ contract Web3EntryBase is
         uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
 
-        PostLib.postNoteWithLink(
-            vars,
-            noteId,
-            linkItemType,
-            linkKey,
-            abi.encodePacked(uri),
-            _noteByIdByCharacter
-        );
+        PostLib.postNoteWithLink(vars, noteId, linkItemType, linkKey, abi.encodePacked(uri));
 
         return noteId;
     }
@@ -831,13 +811,7 @@ contract Web3EntryBase is
         address operator,
         uint256 permissionBitMap
     ) internal {
-        OperatorLib.grantOperatorPermissions(
-            characterId,
-            operator,
-            permissionBitMap,
-            _operatorsByCharacter,
-            _operatorsPermissionBitMap
-        );
+        OperatorLib.grantOperatorPermissions(characterId, operator, permissionBitMap);
     }
 
     function _isOperatorAllowedForNote(

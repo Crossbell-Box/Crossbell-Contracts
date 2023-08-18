@@ -2,11 +2,12 @@
 // solhint-disable private-vars-leading-underscore
 pragma solidity 0.8.18;
 
-import {DataTypes} from "./DataTypes.sol";
-import {Events} from "./Events.sol";
 import {ILinkModule4Note} from "../interfaces/ILinkModule4Note.sol";
 import {IMintModule4Note} from "../interfaces/IMintModule4Note.sol";
 import {IMintNFT} from "../interfaces/IMintNFT.sol";
+import {StorageLib} from "./StorageLib.sol";
+import {DataTypes} from "./DataTypes.sol";
+import {Events} from "./Events.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
@@ -18,36 +19,23 @@ library PostLib {
         uint256 noteId,
         bytes32 linkItemType,
         bytes32 linkKey,
-        bytes calldata data,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+        bytes calldata data
     ) external {
         uint256 characterId = vars.characterId;
-        DataTypes.Note storage note = _noteByIdByCharacter[characterId][noteId];
+        DataTypes.Note storage _note = StorageLib.getNote(characterId, noteId);
 
         // save note
-        note.contentUri = vars.contentUri;
+        _note.contentUri = vars.contentUri;
         if (linkItemType != bytes32(0)) {
-            note.linkItemType = linkItemType;
-            note.linkKey = linkKey;
+            _note.linkItemType = linkItemType;
+            _note.linkKey = linkKey;
         }
 
         // init link module
-        _setLinkModule4Note(
-            characterId,
-            noteId,
-            vars.linkModule,
-            vars.linkModuleInitData,
-            _noteByIdByCharacter
-        );
+        _setLinkModule4Note(characterId, noteId, vars.linkModule, vars.linkModuleInitData, _note);
 
         // init mint module
-        _setMintModule4Note(
-            characterId,
-            noteId,
-            vars.mintModule,
-            vars.mintModuleInitData,
-            _noteByIdByCharacter
-        );
+        _setMintModule4Note(characterId, noteId, vars.mintModule, vars.mintModuleInitData, _note);
 
         emit Events.PostNote(characterId, noteId, linkKey, linkItemType, data);
     }
@@ -100,15 +88,14 @@ library PostLib {
         uint256 characterId,
         uint256 noteId,
         address linkModule,
-        bytes calldata linkModuleInitData,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+        bytes calldata linkModuleInitData
     ) external {
         _setLinkModule4Note(
             characterId,
             noteId,
             linkModule,
             linkModuleInitData,
-            _noteByIdByCharacter
+            StorageLib.getNote(characterId, noteId)
         );
     }
 
@@ -123,15 +110,14 @@ library PostLib {
         uint256 characterId,
         uint256 noteId,
         address mintModule,
-        bytes calldata mintModuleInitData,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+        bytes calldata mintModuleInitData
     ) external {
         _setMintModule4Note(
             characterId,
             noteId,
             mintModule,
             mintModuleInitData,
-            _noteByIdByCharacter
+            StorageLib.getNote(characterId, noteId)
         );
     }
 
@@ -158,10 +144,10 @@ library PostLib {
         uint256 noteId,
         address linkModule,
         bytes calldata linkModuleInitData,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+        DataTypes.Note storage _note
     ) internal {
         if (linkModule != address(0)) {
-            _noteByIdByCharacter[characterId][noteId].linkModule = linkModule;
+            _note.linkModule = linkModule;
 
             bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
                 characterId,
@@ -184,10 +170,10 @@ library PostLib {
         uint256 noteId,
         address mintModule,
         bytes calldata mintModuleInitData,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+        DataTypes.Note storage _note
     ) internal {
         if (mintModule != address(0)) {
-            _noteByIdByCharacter[characterId][noteId].mintModule = mintModule;
+            _note.mintModule = mintModule;
 
             bytes memory returnData = IMintModule4Note(mintModule).initializeMintModule(
                 characterId,

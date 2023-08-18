@@ -5,6 +5,7 @@ pragma solidity 0.8.18;
 import {Events} from "./Events.sol";
 import {DataTypes} from "./DataTypes.sol";
 import {OP} from "./OP.sol";
+import {StorageLib} from "./StorageLib.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 library OperatorLib {
@@ -19,18 +20,16 @@ library OperatorLib {
     function grantOperatorPermissions(
         uint256 characterId,
         address operator,
-        uint256 permissionBitMap,
-        mapping(uint256 => EnumerableSet.AddressSet) storage _operatorsByCharacter,
-        mapping(uint256 => mapping(address => uint256)) storage _operatorsPermissionBitMap
+        uint256 permissionBitMap
     ) external {
         if (permissionBitMap == 0) {
-            _operatorsByCharacter[characterId].remove(operator);
+            StorageLib.operatorsByCharacter()[characterId].remove(operator);
         } else {
-            _operatorsByCharacter[characterId].add(operator);
+            StorageLib.operatorsByCharacter()[characterId].add(operator);
         }
 
         uint256 bitmap = _bitmapFilter(permissionBitMap);
-        _operatorsPermissionBitMap[characterId][operator] = bitmap;
+        StorageLib.operatorsPermissionBitMap()[characterId][operator] = bitmap;
         emit Events.GrantOperatorPermissions(characterId, operator, bitmap);
     }
 
@@ -45,10 +44,12 @@ library OperatorLib {
         uint256 characterId,
         uint256 noteId,
         address[] calldata blocklist,
-        address[] calldata allowlist,
-        mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
+        address[] calldata allowlist
     ) external {
-        DataTypes.Operators4Note storage operators4Note = _operators4Note[characterId][noteId];
+        DataTypes.Operators4Note storage operators4Note = StorageLib.getOperators4Note(
+            characterId,
+            noteId
+        );
         // clear all iterms in blocklist and allowlist first
         _clearOperators4Note(operators4Note);
 
