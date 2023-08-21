@@ -28,7 +28,8 @@ import {
     ErrHandleLengthInvalid,
     ErrHandleContainsInvalidCharacters,
     ErrSignatureExpired,
-    ErrSignatureInvalid
+    ErrSignatureInvalid,
+    ErrTokenNotExists
 } from "./libraries/Error.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
@@ -48,6 +49,11 @@ contract Web3EntryBase is
 
     // solhint-disable-next-line private-vars-leading-underscore
     uint256 internal constant REVISION = 4;
+
+    modifier onlyExistingToken(uint256 tokenId) {
+        if (!_exists(tokenId)) revert ErrTokenNotExists();
+        _;
+    }
 
     /// @inheritdoc IWeb3Entry
     function initialize(
@@ -625,6 +631,20 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
+    function burnLinklist(uint256 linklistId) external override {
+        // only the owner of the character can burn the linklist through web3Entry contract
+        uint256 characterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
+        if (msg.sender != ownerOf(characterId)) revert ErrNotCharacterOwner();
+
+        // delete _attachedLinklist
+        bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
+        delete _attachedLinklists[characterId][linkType];
+
+        // burn linklist
+        ILinklist(_linklist).burn(linklistId);
+    }
+
+    /// @inheritdoc IWeb3Entry
     function getOperators(uint256 characterId) external view override returns (address[] memory) {
         return _operatorsByCharacter[characterId].values();
     }
@@ -669,7 +689,7 @@ contract Web3EntryBase is
     /// @inheritdoc IWeb3Entry
     function getCharacter(
         uint256 characterId
-    ) external view override returns (DataTypes.Character memory) {
+    ) external view override onlyExistingToken(characterId) returns (DataTypes.Character memory) {
         return _characterById[characterId];
     }
 
@@ -683,7 +703,9 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
-    function getHandle(uint256 characterId) external view override returns (string memory) {
+    function getHandle(
+        uint256 characterId
+    ) external view override onlyExistingToken(characterId) returns (string memory) {
         return _characterById[characterId].handle;
     }
 
@@ -759,7 +781,9 @@ contract Web3EntryBase is
      * @param characterId The character ID to query.
      * @return The token URI.
      */
-    function tokenURI(uint256 characterId) public view override returns (string memory) {
+    function tokenURI(
+        uint256 characterId
+    ) public view override onlyExistingToken(characterId) returns (string memory) {
         return _characterById[characterId].uri;
     }
 

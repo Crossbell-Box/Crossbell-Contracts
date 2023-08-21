@@ -27,6 +27,7 @@ interface ILinklist {
 
     /**
      * @notice Burns a Linklist NFT.
+     * @dev Only web3Entry can burn the Linklist NFT.
      * @param tokenId The token ID to burn.
      */
     function burn(uint256 tokenId) external;

@@ -10,7 +10,7 @@ import {DataTypes} from "./libraries/DataTypes.sol";
 import {
     ErrCallerNotWeb3Entry,
     ErrCallerNotWeb3EntryOrNotOwner,
-    ErrNotOwner
+    ErrTokenNotExists
 } from "./libraries/Error.sol";
 import {LinklistStorage} from "./storage/LinklistStorage.sol";
 import {LinklistExtendStorage} from "./storage/LinklistExtendStorage.sol";
@@ -33,11 +33,15 @@ contract Linklist is
     using EnumerableSet for EnumerableSet.AddressSet;
 
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
-    event Burn(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
+    event Burn(uint256 indexed from, uint256 indexed tokenId);
 
     modifier onlyWeb3Entry() {
         if (msg.sender != Web3Entry) revert ErrCallerNotWeb3Entry();
+        _;
+    }
 
+    modifier onlyExistingToken(uint256 tokenId) {
+        if (0 == _linklistOwners[tokenId]) revert ErrTokenNotExists();
         _;
     }
 
@@ -73,10 +77,9 @@ contract Linklist is
     }
 
     /// @inheritdoc ILinklist
-    function burn(uint256 tokenId) external override {
-        if (msg.sender != ownerOf(tokenId)) revert ErrNotOwner();
-
+    function burn(uint256 tokenId) external override onlyWeb3Entry {
         uint256 characterId = _linklistOwners[tokenId];
+        if (characterId == 0) revert ErrTokenNotExists();
 
         // Ownership check above ensures no underflow.
         unchecked {
@@ -86,11 +89,14 @@ contract Linklist is
         delete _linkTypes[tokenId];
         delete _linklistOwners[tokenId];
 
-        emit Burn(msg.sender, characterId, tokenId);
+        emit Burn(characterId, tokenId);
     }
 
     /// @inheritdoc ILinklist
-    function setUri(uint256 tokenId, string memory newUri) external override {
+    function setUri(
+        uint256 tokenId,
+        string memory newUri
+    ) external override onlyExistingToken(tokenId) {
         // caller must be web3Entry or owner
         if (msg.sender != Web3Entry && msg.sender != ownerOf(tokenId))
             revert ErrCallerNotWeb3EntryOrNotOwner();
@@ -251,19 +257,21 @@ contract Linklist is
     /// @inheritdoc ILinklist
     function getLinkingCharacterIds(
         uint256 tokenId
-    ) external view override returns (uint256[] memory) {
+    ) external view override onlyExistingToken(tokenId) returns (uint256[] memory) {
         return _linkingCharacters[tokenId].values();
     }
 
     /// @inheritdoc ILinklist
     function getLinkingCharacterListLength(
         uint256 tokenId
-    ) external view override returns (uint256) {
+    ) external view override onlyExistingToken(tokenId) returns (uint256) {
         return _linkingCharacters[tokenId].length();
     }
 
     /// @inheritdoc ILinklist
-    function getOwnerCharacterId(uint256 tokenId) external view override returns (uint256) {
+    function getOwnerCharacterId(
+        uint256 tokenId
+    ) external view override onlyExistingToken(tokenId) returns (uint256) {
         uint256 characterId = _linklistOwners[tokenId];
         return characterId;
     }
@@ -271,7 +279,13 @@ contract Linklist is
     /// @inheritdoc ILinklist
     function getLinkingNotes(
         uint256 tokenId
-    ) external view override returns (DataTypes.NoteStruct[] memory results) {
+    )
+        external
+        view
+        override
+        onlyExistingToken(tokenId)
+        returns (DataTypes.NoteStruct[] memory results)
+    {
         bytes32[] memory linkKeys = _linkNoteKeys[tokenId].values();
         results = new DataTypes.NoteStruct[](linkKeys.length);
         for (uint256 i = 0; i < linkKeys.length; i++) {
@@ -288,14 +302,22 @@ contract Linklist is
     }
 
     /// @inheritdoc ILinklist
-    function getLinkingNoteListLength(uint256 tokenId) external view override returns (uint256) {
+    function getLinkingNoteListLength(
+        uint256 tokenId
+    ) external view override onlyExistingToken(tokenId) returns (uint256) {
         return _linkNoteKeys[tokenId].length();
     }
 
     /// @inheritdoc ILinklist
     function getLinkingERC721s(
         uint256 tokenId
-    ) external view override returns (DataTypes.ERC721Struct[] memory results) {
+    )
+        external
+        view
+        override
+        onlyExistingToken(tokenId)
+        returns (DataTypes.ERC721Struct[] memory results)
+    {
         bytes32[] memory linkKeys = _linkingERC721Keys[tokenId].values();
         results = new DataTypes.ERC721Struct[](linkKeys.length);
         for (uint256 i = 0; i < linkKeys.length; i++) {
@@ -312,26 +334,30 @@ contract Linklist is
     }
 
     /// @inheritdoc ILinklist
-    function getLinkingERC721ListLength(uint256 tokenId) external view override returns (uint256) {
+    function getLinkingERC721ListLength(
+        uint256 tokenId
+    ) external view override onlyExistingToken(tokenId) returns (uint256) {
         return _linkingERC721Keys[tokenId].length();
     }
 
     /// @inheritdoc ILinklist
     function getLinkingAddresses(
         uint256 tokenId
-    ) external view override returns (address[] memory) {
+    ) external view override onlyExistingToken(tokenId) returns (address[] memory) {
         return _linkingAddresses[tokenId].values();
     }
 
     /// @inheritdoc ILinklist
-    function getLinkingAddressListLength(uint256 tokenId) external view override returns (uint256) {
+    function getLinkingAddressListLength(
+        uint256 tokenId
+    ) external view override onlyExistingToken(tokenId) returns (uint256) {
         return _linkingAddresses[tokenId].length();
     }
 
     /// @inheritdoc ILinklist
     function getLinkingAnyUris(
         uint256 tokenId
-    ) external view override returns (string[] memory results) {
+    ) external view override onlyExistingToken(tokenId) returns (string[] memory results) {
         bytes32[] memory linkKeys = _linkingAnyKeys[tokenId].values();
         results = new string[](linkKeys.length);
         for (uint256 i = 0; i < linkKeys.length; i++) {
@@ -348,24 +374,28 @@ contract Linklist is
     /// @inheritdoc ILinklist
     function getLinkingAnyUriKeys(
         uint256 tokenId
-    ) external view override returns (bytes32[] memory) {
+    ) external view override onlyExistingToken(tokenId) returns (bytes32[] memory) {
         return _linkingAnyKeys[tokenId].values();
     }
 
     /// @inheritdoc ILinklist
-    function getLinkingAnyListLength(uint256 tokenId) external view override returns (uint256) {
+    function getLinkingAnyListLength(
+        uint256 tokenId
+    ) external view override onlyExistingToken(tokenId) returns (uint256) {
         return _linkingAnyKeys[tokenId].length();
     }
 
     /// @inheritdoc ILinklist
     function getLinkingLinklistIds(
         uint256 tokenId
-    ) external view override returns (uint256[] memory) {
+    ) external view override onlyExistingToken(tokenId) returns (uint256[] memory) {
         return _linkingLinklists[tokenId].values();
     }
 
     /// @inheritdoc ILinklist
-    function getLinkingLinklistLength(uint256 tokenId) external view override returns (uint256) {
+    function getLinkingLinklistLength(
+        uint256 tokenId
+    ) external view override onlyExistingToken(tokenId) returns (uint256) {
         return _linkingLinklists[tokenId].length();
     }
 
@@ -376,20 +406,26 @@ contract Linklist is
     function getCurrentTakeOver(uint256 tokenId) external view override returns (uint256) {}
 
     /// @inheritdoc ILinklist
-    function getLinkType(uint256 tokenId) external view override returns (bytes32) {
+    function getLinkType(
+        uint256 tokenId
+    ) external view override onlyExistingToken(tokenId) returns (bytes32) {
         return _linkTypes[tokenId];
     }
 
     // slither-disable-start naming-convention
     // solhint-disable-next-line func-name-mixedcase
-    function Uri(uint256 tokenId) external view override returns (string memory) {
+    function Uri(
+        uint256 tokenId
+    ) external view override onlyExistingToken(tokenId) returns (string memory) {
         return _uris[tokenId];
     }
 
     // slither-disable-end naming-convention
 
     /// @inheritdoc ILinklist
-    function characterOwnerOf(uint256 tokenId) external view override returns (uint256) {
+    function characterOwnerOf(
+        uint256 tokenId
+    ) external view override onlyExistingToken(tokenId) returns (uint256) {
         return _linklistOwners[tokenId];
     }
 
@@ -408,7 +444,9 @@ contract Linklist is
     }
 
     /// @inheritdoc ERC721
-    function ownerOf(uint256 tokenId) public view override(ERC721) returns (address) {
+    function ownerOf(
+        uint256 tokenId
+    ) public view override(ERC721) onlyExistingToken(tokenId) returns (address) {
         uint256 characterId = _linklistOwners[tokenId];
         address owner = IERC721(Web3Entry).ownerOf(characterId);
         return owner;
