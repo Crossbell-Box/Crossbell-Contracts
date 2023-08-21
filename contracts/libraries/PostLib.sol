@@ -6,6 +6,7 @@ import {ILinkModule4Note} from "../interfaces/ILinkModule4Note.sol";
 import {IMintModule4Note} from "../interfaces/IMintModule4Note.sol";
 import {IMintNFT} from "../interfaces/IMintNFT.sol";
 import {StorageLib} from "./StorageLib.sol";
+import {ValidationLib} from "./ValidationLib.sol";
 import {DataTypes} from "./DataTypes.sol";
 import {Events} from "./Events.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
@@ -83,6 +84,22 @@ library PostLib {
         emit Events.SetNoteUri(characterId, noteId, newUri);
     }
 
+    function lockNote(uint256 characterId, uint256 noteId) external {
+        ValidationLib.validateNoteExists(characterId, noteId);
+
+        StorageLib.getNote(characterId, noteId).locked = true;
+
+        emit Events.LockNote(characterId, noteId);
+    }
+
+    function deleteNote(uint256 characterId, uint256 noteId) external {
+        ValidationLib.validateNoteExists(characterId, noteId);
+
+        StorageLib.getNote(characterId, noteId).deleted = true;
+
+        emit Events.DeleteNote(characterId, noteId);
+    }
+
     /**
      * @notice  Sets link module for a given note.
      * @param   characterId  The character ID to set link module for.
@@ -96,6 +113,9 @@ library PostLib {
         address linkModule,
         bytes calldata linkModuleInitData
     ) external {
+        ValidationLib.validateNoteExists(characterId, noteId);
+        ValidationLib.validateNoteNotLocked(characterId, noteId);
+
         _setLinkModule4Note(
             characterId,
             noteId,

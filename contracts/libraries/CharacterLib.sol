@@ -5,6 +5,7 @@ pragma solidity 0.8.18;
 import {DataTypes} from "./DataTypes.sol";
 import {Events} from "./Events.sol";
 import {StorageLib} from "./StorageLib.sol";
+import {ValidationLib} from "./ValidationLib.sol";
 import {ILinkModule4Character} from "../interfaces/ILinkModule4Character.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
@@ -12,13 +13,14 @@ library CharacterLib {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     /**
-     * @notice  Creates a character.
-     * @param   to  The address to mint the character to.
-     * @param   handle  The handle to set for the new character.
-     * @param   uri  The URI to set for the new character’s metadata.
-     * @param   linkModule  The link module to set for the new character or the zero address.
-     * @param   linkModuleInitData  Arbitrary data to be decoded in the link module for initialization.
-     * @param   characterId The ID of the new character.
+     * @notice Creates a character.
+     * @param to The address to mint the character to.
+     * @param handle The handle to set for the new character.
+     * @param uri The URI to set for the new character’s metadata.
+     * @param linkModule The link module to set for the new character or the zero address.
+     * @param linkModuleInitData Arbitrary data to be decoded in the link module for initialization.
+     * @param characterId The ID of the new character.
+     * @param validateHandle Whether to validate the handle or not.
      */
     function createCharacter(
         address to,
@@ -26,8 +28,13 @@ library CharacterLib {
         string memory uri,
         address linkModule,
         bytes memory linkModuleInitData,
-        uint256 characterId
+        uint256 characterId,
+        bool validateHandle
     ) external {
+        if (validateHandle) {
+            ValidationLib.validateHandle(handle);
+        }
+
         bytes32 handleHash = keccak256(bytes(handle));
         StorageLib.characterIdByHandleHash()[handleHash] = characterId;
 
@@ -91,6 +98,8 @@ library CharacterLib {
      * @param   newHandle  New handle to set.
      */
     function setHandle(uint256 characterId, string calldata newHandle) external {
+        ValidationLib.validateHandle(newHandle);
+
         // remove old handle
         string memory oldHandle = StorageLib.getCharacter(characterId).handle;
         bytes32 oldHandleHash = _handleHash(oldHandle);

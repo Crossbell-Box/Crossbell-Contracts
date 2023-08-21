@@ -16,6 +16,7 @@ import {OperatorLib} from "./libraries/OperatorLib.sol";
 import {LinkLib} from "./libraries/LinkLib.sol";
 import {MetaTxLib} from "./libraries/MetaTxLib.sol";
 import {StorageLib} from "./libraries/StorageLib.sol";
+import {ValidationLib} from "./libraries/ValidationLib.sol";
 import {OP} from "./libraries/OP.sol";
 import {
     ErrSocialTokenExists,
@@ -51,6 +52,11 @@ contract Web3EntryBase is
     // solhint-disable-next-line private-vars-leading-underscore
     uint256 internal constant REVISION = 4;
 
+    modifier validateCallerPermission(uint256 characterId, uint256 permissionId) {
+        _validateCallerPermission(characterId, permissionId);
+        _;
+    }
+
     /// @inheritdoc IWeb3Entry
     function initialize(
         string calldata name_,
@@ -74,8 +80,7 @@ contract Web3EntryBase is
         uint256 characterId,
         address operator,
         uint256 permissionBitMap
-    ) external override {
-        _validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS);
+    ) external override validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS) {
         _grantOperatorPermissions(characterId, operator, permissionBitMap);
     }
 
@@ -104,9 +109,8 @@ contract Web3EntryBase is
         uint256 noteId,
         address[] calldata blocklist,
         address[] calldata allowlist
-    ) external override {
-        _validateCallerPermission(characterId, OP.GRANT_OPERATORS_FOR_NOTE);
-        _validateNoteExists(characterId, noteId);
+    ) external override validateCallerPermission(characterId, OP.GRANT_OPERATORS_FOR_NOTE) {
+        ValidationLib.validateNoteExists(characterId, noteId);
         OperatorLib.grantOperators4Note(characterId, noteId, blocklist, allowlist);
     }
 
@@ -118,22 +122,21 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
-    function setHandle(uint256 characterId, string calldata newHandle) external override {
-        _validateCallerPermission(characterId, OP.SET_HANDLE);
-
+    function setHandle(
+        uint256 characterId,
+        string calldata newHandle
+    ) external override validateCallerPermission(characterId, OP.SET_HANDLE) {
         // check if the handle exists
         _checkHandleExists(_handleHash(newHandle));
-
-        // check if the handle is valid
-        _validateHandle(newHandle);
 
         CharacterLib.setHandle(characterId, newHandle);
     }
 
     /// @inheritdoc IWeb3Entry
-    function setSocialToken(uint256 characterId, address tokenAddress) external override {
-        _validateCallerPermission(characterId, OP.SET_SOCIAL_TOKEN);
-
+    function setSocialToken(
+        uint256 characterId,
+        address tokenAddress
+    ) external override validateCallerPermission(characterId, OP.SET_SOCIAL_TOKEN) {
         // check if the social token exists
         if (_characterById[characterId].socialToken != address(0)) revert ErrSocialTokenExists();
 
@@ -152,8 +155,10 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
-    function setCharacterUri(uint256 characterId, string calldata newUri) external override {
-        _validateCallerPermission(characterId, OP.SET_CHARACTER_URI);
+    function setCharacterUri(
+        uint256 characterId,
+        string calldata newUri
+    ) external override validateCallerPermission(characterId, OP.SET_CHARACTER_URI) {
         _characterById[characterId].uri = newUri;
 
         emit Events.SetCharacterUri(characterId, newUri);
@@ -168,8 +173,9 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
-    function linkCharacter(DataTypes.linkCharacterData calldata vars) external override {
-        _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
+    function linkCharacter(
+        DataTypes.linkCharacterData calldata vars
+    ) external override validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER) {
         _validateCharacterExists(vars.toCharacterId);
 
         LinkLib.linkCharacter(
@@ -183,18 +189,21 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
-    function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external override {
-        _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
-
+    function unlinkCharacter(
+        DataTypes.unlinkCharacterData calldata vars
+    ) external override validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER) {
         LinkLib.unlinkCharacter(vars.fromCharacterId, vars.toCharacterId, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
     function createThenLinkCharacter(
         DataTypes.createThenLinkCharacterData calldata vars
-    ) external override returns (uint256 characterId) {
-        _validateCallerPermission(vars.fromCharacterId, OP.CREATE_THEN_LINK_CHARACTER);
-
+    )
+        external
+        override
+        validateCallerPermission(vars.fromCharacterId, OP.CREATE_THEN_LINK_CHARACTER)
+        returns (uint256 characterId)
+    {
         // create character
         characterId = _createCharacter(
             DataTypes.CreateCharacterData({
@@ -219,9 +228,10 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
-    function linkNote(DataTypes.linkNoteData calldata vars) external override {
-        _validateCallerPermission(vars.fromCharacterId, OP.LINK_NOTE);
-        _validateNoteExists(vars.toCharacterId, vars.toNoteId);
+    function linkNote(
+        DataTypes.linkNoteData calldata vars
+    ) external override validateCallerPermission(vars.fromCharacterId, OP.LINK_NOTE) {
+        ValidationLib.validateNoteExists(vars.toCharacterId, vars.toNoteId);
 
         LinkLib.linkNote(
             vars.fromCharacterId,
@@ -235,9 +245,9 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
-    function unlinkNote(DataTypes.unlinkNoteData calldata vars) external override {
-        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_NOTE);
-
+    function unlinkNote(
+        DataTypes.unlinkNoteData calldata vars
+    ) external override validateCallerPermission(vars.fromCharacterId, OP.UNLINK_NOTE) {
         LinkLib.unlinkNote(
             vars.fromCharacterId,
             vars.toCharacterId,
@@ -248,9 +258,9 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
-    function linkERC721(DataTypes.linkERC721Data calldata vars) external override {
-        _validateCallerPermission(vars.fromCharacterId, OP.LINK_ERC721);
-
+    function linkERC721(
+        DataTypes.linkERC721Data calldata vars
+    ) external override validateCallerPermission(vars.fromCharacterId, OP.LINK_ERC721) {
         LinkLib.linkERC721(
             vars.fromCharacterId,
             vars.tokenAddress,
@@ -261,67 +271,68 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
-    function unlinkERC721(DataTypes.unlinkERC721Data calldata vars) external override {
-        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ERC721);
-
+    function unlinkERC721(
+        DataTypes.unlinkERC721Data calldata vars
+    ) external override validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ERC721) {
         LinkLib.unlinkERC721(
             vars.fromCharacterId,
             vars.tokenAddress,
             vars.tokenId,
             vars.linkType,
-            _linklist,
-            _attachedLinklists[vars.fromCharacterId][vars.linkType]
+            _linklist
         );
     }
 
     /// @inheritdoc IWeb3Entry
-    function linkAddress(DataTypes.linkAddressData calldata vars) external override {
-        _validateCallerPermission(vars.fromCharacterId, OP.LINK_ADDRESS);
-
+    function linkAddress(
+        DataTypes.linkAddressData calldata vars
+    ) external override validateCallerPermission(vars.fromCharacterId, OP.LINK_ADDRESS) {
         LinkLib.linkAddress(vars.fromCharacterId, vars.ethAddress, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
-    function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external override {
-        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ADDRESS);
-
+    function unlinkAddress(
+        DataTypes.unlinkAddressData calldata vars
+    ) external override validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ADDRESS) {
         LinkLib.unlinkAddress(vars.fromCharacterId, vars.ethAddress, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
-    function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external override {
-        _validateCallerPermission(vars.fromCharacterId, OP.LINK_ANYURI);
-
+    function linkAnyUri(
+        DataTypes.linkAnyUriData calldata vars
+    ) external override validateCallerPermission(vars.fromCharacterId, OP.LINK_ANYURI) {
         LinkLib.linkAnyUri(vars.fromCharacterId, vars.toUri, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
-    function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external override {
-        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ANYURI);
-
+    function unlinkAnyUri(
+        DataTypes.unlinkAnyUriData calldata vars
+    ) external override validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ANYURI) {
         LinkLib.unlinkAnyUri(vars.fromCharacterId, vars.toUri, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
-    function linkLinklist(DataTypes.linkLinklistData calldata vars) external override {
-        _validateCallerPermission(vars.fromCharacterId, OP.LINK_LINKLIST);
-
+    function linkLinklist(
+        DataTypes.linkLinklistData calldata vars
+    ) external override validateCallerPermission(vars.fromCharacterId, OP.LINK_LINKLIST) {
         LinkLib.linkLinklist(vars.fromCharacterId, vars.toLinkListId, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
-    function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external override {
-        _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_LINKLIST);
-
+    function unlinkLinklist(
+        DataTypes.unlinkLinklistData calldata vars
+    ) external override validateCallerPermission(vars.fromCharacterId, OP.UNLINK_LINKLIST) {
         LinkLib.unlinkLinklist(vars.fromCharacterId, vars.toLinkListId, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
     function setLinkModule4Character(
         DataTypes.setLinkModule4CharacterData calldata vars
-    ) external override {
-        _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_CHARACTER);
-
+    )
+        external
+        override
+        validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_CHARACTER)
+    {
         CharacterLib.setCharacterLinkModule(
             vars.characterId,
             vars.linkModule,
@@ -330,11 +341,10 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
-    function setLinkModule4Note(DataTypes.setLinkModule4NoteData calldata vars) external override {
-        _validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE);
+    function setLinkModule4Note(
+        DataTypes.setLinkModule4NoteData calldata vars
+    ) external override validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE) {
         _validateCallerPermission4Note(vars.characterId, vars.noteId);
-        _validateNoteExists(vars.characterId, vars.noteId);
-        _validateNoteNotLocked(vars.characterId, vars.noteId);
 
         PostLib.setLinkModule4Note(
             vars.characterId,
@@ -348,7 +358,7 @@ contract Web3EntryBase is
     function mintNote(
         DataTypes.MintNoteData calldata vars
     ) external override returns (uint256 tokenId) {
-        _validateNoteExists(vars.characterId, vars.noteId);
+        ValidationLib.validateNoteExists(vars.characterId, vars.noteId);
 
         tokenId = PostLib.mintNote(
             vars.characterId,
@@ -360,10 +370,11 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
-    function setMintModule4Note(DataTypes.setMintModule4NoteData calldata vars) external override {
-        _validateCallerPermission(vars.characterId, OP.SET_MINT_MODULE_FOR_NOTE);
-        _validateNoteExists(vars.characterId, vars.noteId);
-        _validateNoteNotLocked(vars.characterId, vars.noteId);
+    function setMintModule4Note(
+        DataTypes.setMintModule4NoteData calldata vars
+    ) external override validateCallerPermission(vars.characterId, OP.SET_MINT_MODULE_FOR_NOTE) {
+        ValidationLib.validateNoteExists(vars.characterId, vars.noteId);
+        ValidationLib.validateNoteNotLocked(vars.characterId, vars.noteId);
 
         PostLib.setMintModule4Note(
             vars.characterId,
@@ -376,9 +387,12 @@ contract Web3EntryBase is
     /// @inheritdoc IWeb3Entry
     function postNote(
         DataTypes.PostNoteData calldata vars
-    ) external override returns (uint256 noteId) {
-        _validateCallerPermission(vars.characterId, OP.POST_NOTE);
-
+    )
+        external
+        override
+        validateCallerPermission(vars.characterId, OP.POST_NOTE)
+        returns (uint256 noteId)
+    {
         noteId = _nextNoteId(vars.characterId);
         PostLib.postNoteWithLink(vars, noteId, 0, 0, "");
     }
@@ -390,39 +404,38 @@ contract Web3EntryBase is
         string calldata newUri
     ) external override {
         _validateCallerPermission4Note(characterId, noteId);
-        _validateNoteExists(characterId, noteId);
-        _validateNoteNotLocked(characterId, noteId);
+        ValidationLib.validateNoteExists(characterId, noteId);
+        ValidationLib.validateNoteNotLocked(characterId, noteId);
 
         PostLib.setNoteUri(characterId, noteId, newUri);
     }
 
     /// @inheritdoc IWeb3Entry
-    function lockNote(uint256 characterId, uint256 noteId) external override {
-        _validateCallerPermission(characterId, OP.LOCK_NOTE);
-        _validateNoteExists(characterId, noteId);
-
-        _noteByIdByCharacter[characterId][noteId].locked = true;
-
-        emit Events.LockNote(characterId, noteId);
+    function lockNote(
+        uint256 characterId,
+        uint256 noteId
+    ) external override validateCallerPermission(characterId, OP.LOCK_NOTE) {
+        PostLib.lockNote(characterId, noteId);
     }
 
     /// @inheritdoc IWeb3Entry
-    function deleteNote(uint256 characterId, uint256 noteId) external override {
-        _validateCallerPermission(characterId, OP.DELETE_NOTE);
-        _validateNoteExists(characterId, noteId);
-
-        _noteByIdByCharacter[characterId][noteId].deleted = true;
-
-        emit Events.DeleteNote(characterId, noteId);
+    function deleteNote(
+        uint256 characterId,
+        uint256 noteId
+    ) external override validateCallerPermission(characterId, OP.DELETE_NOTE) {
+        PostLib.deleteNote(characterId, noteId);
     }
 
     /// @inheritdoc IWeb3Entry
     function postNote4Character(
         DataTypes.PostNoteData calldata vars,
         uint256 toCharacterId
-    ) external override returns (uint256 noteId) {
-        _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_CHARACTER);
-
+    )
+        external
+        override
+        validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_CHARACTER)
+        returns (uint256 noteId)
+    {
         noteId = _nextNoteId(vars.characterId);
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_CHARACTER;
         bytes32 linkKey = bytes32(toCharacterId);
@@ -440,9 +453,12 @@ contract Web3EntryBase is
     function postNote4Address(
         DataTypes.PostNoteData calldata vars,
         address ethAddress
-    ) external override returns (uint256 noteId) {
-        _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ADDRESS);
-
+    )
+        external
+        override
+        validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ADDRESS)
+        returns (uint256 noteId)
+    {
         noteId = _nextNoteId(vars.characterId);
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ADDRESS;
         bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
@@ -454,9 +470,12 @@ contract Web3EntryBase is
     function postNote4Linklist(
         DataTypes.PostNoteData calldata vars,
         uint256 toLinklistId
-    ) external override returns (uint256 noteId) {
-        _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_LINKLIST);
-
+    )
+        external
+        override
+        validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_LINKLIST)
+        returns (uint256 noteId)
+    {
         noteId = _nextNoteId(vars.characterId);
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_LINKLIST;
         bytes32 linkKey = bytes32(toLinklistId);
@@ -474,9 +493,12 @@ contract Web3EntryBase is
     function postNote4Note(
         DataTypes.PostNoteData calldata vars,
         DataTypes.NoteStruct calldata note
-    ) external override returns (uint256 noteId) {
-        _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_NOTE);
-
+    )
+        external
+        override
+        validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_NOTE)
+        returns (uint256 noteId)
+    {
         noteId = _nextNoteId(vars.characterId);
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_NOTE;
         bytes32 linkKey = ILinklist(_linklist).addLinkingNote(0, note.characterId, note.noteId);
@@ -494,9 +516,12 @@ contract Web3EntryBase is
     function postNote4ERC721(
         DataTypes.PostNoteData calldata vars,
         DataTypes.ERC721Struct calldata erc721
-    ) external override returns (uint256 noteId) {
-        _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ERC721);
-
+    )
+        external
+        override
+        validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ERC721)
+        returns (uint256 noteId)
+    {
         noteId = _nextNoteId(vars.characterId);
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ERC721;
         bytes32 linkKey = ILinklist(_linklist).addLinkingERC721(
@@ -518,9 +543,12 @@ contract Web3EntryBase is
     function postNote4AnyUri(
         DataTypes.PostNoteData calldata vars,
         string calldata uri
-    ) external override returns (uint256 noteId) {
-        _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ANYURI);
-
+    )
+        external
+        override
+        validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ANYURI)
+        returns (uint256 noteId)
+    {
         noteId = _nextNoteId(vars.characterId);
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ANYURI;
         bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
@@ -673,11 +701,6 @@ contract Web3EntryBase is
         // check if the handle exists
         _checkHandleExists(_handleHash(vars.handle));
 
-        // check if the handle is valid
-        if (validateHandle) {
-            _validateHandle(vars.handle);
-        }
-
         characterId = ++_characterCounter;
         // mint character nft
         _safeMint(vars.to, characterId);
@@ -688,7 +711,8 @@ contract Web3EntryBase is
             vars.uri,
             vars.linkModule,
             vars.linkModuleInitData,
-            characterId
+            characterId,
+            validateHandle
         );
     }
 
@@ -857,51 +881,6 @@ contract Web3EntryBase is
 
     function _validateCharacterExists(uint256 characterId) internal view {
         if (!_exists(characterId)) revert ErrCharacterNotExists(characterId);
-    }
-
-    function _validateNoteExists(uint256 characterId, uint256 noteId) internal view {
-        if (_noteByIdByCharacter[characterId][noteId].deleted) revert ErrNoteIsDeleted();
-        if (noteId > _characterById[characterId].noteCount) revert ErrNoteNotExists();
-    }
-
-    function _validateNoteNotLocked(uint256 characterId, uint256 noteId) internal view {
-        if (_noteByIdByCharacter[characterId][noteId].locked) revert ErrNoteLocked();
-    }
-
-    /**
-     * @dev Wrapper for ecrecover to reduce code size, used in meta-tx specific functions.
-     */
-    function _validateRecoveredAddress(
-        bytes32 digest,
-        address expectedAddress,
-        DataTypes.EIP712Signature calldata sig
-    ) internal view {
-        // slither-disable-next-line timestamp
-        if (sig.deadline < block.timestamp) revert ErrSignatureExpired();
-        address recoveredAddress = ecrecover(digest, sig.v, sig.r, sig.s);
-        if (recoveredAddress == address(0) || recoveredAddress != expectedAddress)
-            revert ErrSignatureInvalid();
-    }
-
-    function _validateHandle(string memory handle) internal pure {
-        bytes memory byteHandle = bytes(handle);
-        uint256 len = byteHandle.length;
-        if (len > Constants.MAX_HANDLE_LENGTH || len < Constants.MIN_HANDLE_LENGTH)
-            revert ErrHandleLengthInvalid();
-
-        for (uint256 i = 0; i < len; ) {
-            _validateChar(byteHandle[i]);
-
-            unchecked {
-                ++i;
-            }
-        }
-    }
-
-    function _validateChar(bytes1 c) internal pure {
-        // char range: [0,9][a,z][-][_]
-        if ((c < "0" || c > "z" || (c > "9" && c < "a")) && c != "-" && c != "_")
-            revert ErrHandleContainsInvalidCharacters();
     }
 
     /**

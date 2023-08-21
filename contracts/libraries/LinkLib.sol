@@ -197,16 +197,16 @@ library LinkLib {
      * @param   tokenId  The token ID of ERC721 to unlink.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
-     * @param   linklistId  The ID of the linklist to unlink.
      */
     function unlinkERC721(
         uint256 fromCharacterId,
         address tokenAddress,
         uint256 tokenId,
         bytes32 linkType,
-        address linklist,
-        uint256 linklistId
+        address linklist
     ) external {
+        uint256 linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
+
         // remove from linklist
         ILinklist(linklist).removeLinkingERC721(linklistId, tokenAddress, tokenId);
 
