@@ -6,7 +6,6 @@ import {
     ErrNotEnoughPermission,
     ErrCallerNotWeb3EntryOrNotOwner,
     ErrCallerNotWeb3Entry,
-    ErrNotOwner,
     ErrTokenNotExists,
     ErrNotCharacterOwner
 } from "../../contracts/libraries/Error.sol";
@@ -131,16 +130,71 @@ contract LinklistTest is CommonTest {
             )
         );
 
-        // bob sets linklist uri
+        // case 1: caller not web3Entry or not owner
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3EntryOrNotOwner.selector));
         vm.prank(bob);
         linklist.setUri(1, TOKEN_URI);
+
+        // case 2: token not exist
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        vm.prank(address(web3Entry));
+        linklist.setUri(2, TOKEN_URI);
     }
 
     function testUriFail() public {
         // token not exist
         vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
         linklist.Uri(2);
+    }
+
+    function testQueryWithTokenNotExists() public {
+        // token not exist
+        uint256 tokenId = 2;
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getLinkingCharacterIds(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getLinkingCharacterListLength(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getOwnerCharacterId(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getLinkingNotes(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getLinkingERC721s(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getLinkingERC721ListLength(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getLinkingAddresses(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getLinkingAddressListLength(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getLinkingAnyUris(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getLinkingAnyUriKeys(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getLinkingAnyListLength(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getLinkingLinklistIds(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getLinkingLinklistLength(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.getLinkType(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.Uri(tokenId);
     }
 
     function testMintFuzz(uint256 amount) public {
@@ -243,6 +297,8 @@ contract LinklistTest is CommonTest {
         assertEq(linklist.balanceOf(alice), 0);
         assertEq(linklist.totalSupply(), 0);
         assertEq(web3Entry.getLinklistId(1, FollowLinkType), 0);
+        // query linkType error
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
         assertEq(web3Entry.getLinklistType(1), bytes32Zero);
 
         // link character
@@ -269,7 +325,7 @@ contract LinklistTest is CommonTest {
         web3Entry.burnLinklist(1);
 
         // case 2: linklist not exist
-        vm.expectRevert("ERC721: owner query for nonexistent token");
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
         web3Entry.burnLinklist(100);
     }
 }
