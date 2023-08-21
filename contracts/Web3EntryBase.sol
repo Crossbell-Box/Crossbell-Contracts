@@ -344,6 +344,7 @@ contract Web3EntryBase is
     function setLinkModule4Note(
         DataTypes.setLinkModule4NoteData calldata vars
     ) external override validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE) {
+        // @dev only check operators permission currently
         PostLib.setLinkModule4Note(
             vars.characterId,
             vars.noteId,
@@ -775,6 +776,9 @@ contract Web3EntryBase is
         OperatorLib.grantOperatorPermissions(characterId, operator, permissionBitMap);
     }
 
+    /**
+     * @dev It will first check note permission, and then check operators permission.
+     */
     function _isOperatorAllowedForNote(
         uint256 characterId,
         uint256 noteId,
@@ -805,16 +809,9 @@ contract Web3EntryBase is
             return;
         }
 
-        // check operator permission for tx.origin
-        if (msg.sender == _periphery) {
-            // solhint-disable-next-line avoid-tx-origin
-            if (_checkBit(_operatorsPermissionBitMap[characterId][tx.origin], permissionId)) {
-                return;
-            }
-        }
-
-        //  check operator permission for msg.sender
-        if (_checkBit(_operatorsPermissionBitMap[characterId][msg.sender], permissionId)) {
+        // check operator permission for caller
+        address caller = (msg.sender == _periphery) ? tx.origin : msg.sender;
+        if (_checkBit(_operatorsPermissionBitMap[characterId][caller], permissionId)) {
             return;
         }
 
@@ -844,16 +841,9 @@ contract Web3EntryBase is
             return;
         }
 
-        // check note permission for tx.origin
-        if (msg.sender == _periphery) {
-            // solhint-disable-next-line avoid-tx-origin
-            if (_isOperatorAllowedForNote(characterId, noteId, tx.origin)) {
-                return;
-            }
-        }
-
         // check note permission for caller
-        if (_isOperatorAllowedForNote(characterId, noteId, msg.sender)) {
+        address caller = (msg.sender == _periphery) ? tx.origin : msg.sender;
+        if (_isOperatorAllowedForNote(characterId, noteId, caller)) {
             return;
         }
 
