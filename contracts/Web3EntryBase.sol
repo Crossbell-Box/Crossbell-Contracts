@@ -355,8 +355,7 @@ contract Web3EntryBase is
             vars.noteId,
             vars.to,
             vars.mintModuleData,
-            MINT_NFT_IMPL,
-            _noteByIdByCharacter
+            MINT_NFT_IMPL
         );
     }
 
@@ -394,7 +393,7 @@ contract Web3EntryBase is
         _validateNoteExists(characterId, noteId);
         _validateNoteNotLocked(characterId, noteId);
 
-        PostLib.setNoteUri(characterId, noteId, newUri, _noteByIdByCharacter);
+        PostLib.setNoteUri(characterId, noteId, newUri);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -421,11 +420,11 @@ contract Web3EntryBase is
     function postNote4Character(
         DataTypes.PostNoteData calldata vars,
         uint256 toCharacterId
-    ) external override returns (uint256) {
+    ) external override returns (uint256 noteId) {
         _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_CHARACTER);
 
+        noteId = _nextNoteId(vars.characterId);
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_CHARACTER;
-        uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = bytes32(toCharacterId);
 
         PostLib.postNoteWithLink(
@@ -435,35 +434,31 @@ contract Web3EntryBase is
             linkKey,
             abi.encodePacked(toCharacterId)
         );
-
-        return noteId;
     }
 
     /// @inheritdoc IWeb3Entry
     function postNote4Address(
         DataTypes.PostNoteData calldata vars,
         address ethAddress
-    ) external override returns (uint256) {
+    ) external override returns (uint256 noteId) {
         _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ADDRESS);
 
+        noteId = _nextNoteId(vars.characterId);
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ADDRESS;
-        uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = bytes32(uint256(uint160(ethAddress)));
 
         PostLib.postNoteWithLink(vars, noteId, linkItemType, linkKey, abi.encodePacked(ethAddress));
-
-        return noteId;
     }
 
     /// @inheritdoc IWeb3Entry
     function postNote4Linklist(
         DataTypes.PostNoteData calldata vars,
         uint256 toLinklistId
-    ) external override returns (uint256) {
+    ) external override returns (uint256 noteId) {
         _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_LINKLIST);
 
+        noteId = _nextNoteId(vars.characterId);
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_LINKLIST;
-        uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = bytes32(toLinklistId);
 
         PostLib.postNoteWithLink(
@@ -473,19 +468,17 @@ contract Web3EntryBase is
             linkKey,
             abi.encodePacked(toLinklistId)
         );
-
-        return noteId;
     }
 
     /// @inheritdoc IWeb3Entry
     function postNote4Note(
         DataTypes.PostNoteData calldata vars,
         DataTypes.NoteStruct calldata note
-    ) external override returns (uint256) {
+    ) external override returns (uint256 noteId) {
         _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_NOTE);
 
+        noteId = _nextNoteId(vars.characterId);
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_NOTE;
-        uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = ILinklist(_linklist).addLinkingNote(0, note.characterId, note.noteId);
 
         PostLib.postNoteWithLink(
@@ -495,19 +488,17 @@ contract Web3EntryBase is
             linkKey,
             abi.encodePacked(note.characterId, note.noteId)
         );
-
-        return noteId;
     }
 
     /// @inheritdoc IWeb3Entry
     function postNote4ERC721(
         DataTypes.PostNoteData calldata vars,
         DataTypes.ERC721Struct calldata erc721
-    ) external override returns (uint256) {
+    ) external override returns (uint256 noteId) {
         _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ERC721);
 
+        noteId = _nextNoteId(vars.characterId);
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ERC721;
-        uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = ILinklist(_linklist).addLinkingERC721(
             0,
             erc721.tokenAddress,
@@ -521,24 +512,20 @@ contract Web3EntryBase is
             linkKey,
             abi.encodePacked(erc721.tokenAddress, erc721.erc721TokenId)
         );
-
-        return noteId;
     }
 
     /// @inheritdoc IWeb3Entry
     function postNote4AnyUri(
         DataTypes.PostNoteData calldata vars,
         string calldata uri
-    ) external override returns (uint256) {
+    ) external override returns (uint256 noteId) {
         _validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ANYURI);
 
+        noteId = _nextNoteId(vars.characterId);
         bytes32 linkItemType = Constants.LINK_ITEM_TYPE_ANYURI;
-        uint256 noteId = _nextNoteId(vars.characterId);
         bytes32 linkKey = ILinklist(_linklist).addLinkingAnyUri(0, uri);
 
         PostLib.postNoteWithLink(vars, noteId, linkItemType, linkKey, abi.encodePacked(uri));
-
-        return noteId;
     }
 
     /// @inheritdoc IWeb3Entry

@@ -22,14 +22,15 @@ library OperatorLib {
         address operator,
         uint256 permissionBitMap
     ) external {
+        EnumerableSet.AddressSet storage operators = StorageLib.operatorsByCharacter()[characterId];
         if (permissionBitMap == 0) {
-            StorageLib.operatorsByCharacter()[characterId].remove(operator);
+            operators.remove(operator);
         } else {
-            StorageLib.operatorsByCharacter()[characterId].add(operator);
+            operators.add(operator);
         }
 
         uint256 bitmap = _bitmapFilter(permissionBitMap);
-        StorageLib.operatorsPermissionBitMap()[characterId][operator] = bitmap;
+        StorageLib.setOperatorsPermissionBitMap(characterId, operator, bitmap);
         emit Events.GrantOperatorPermissions(characterId, operator, bitmap);
     }
 
@@ -50,7 +51,7 @@ library OperatorLib {
             characterId,
             noteId
         );
-        // clear all iterms in blocklist and allowlist first
+        // clear all items in blocklist and allowlist first
         _clearOperators4Note(operators4Note);
 
         // update blocklist and allowlist

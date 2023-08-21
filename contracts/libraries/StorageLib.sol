@@ -66,13 +66,17 @@ library StorageLib {
         }
     }
 
-    function operatorsPermissionBitMap()
-        internal
-        pure
-        returns (mapping(uint256 => mapping(address => uint256)) storage _operatorsPermissionBitMap)
-    {
+    function setOperatorsPermissionBitMap(
+        uint256 characterId,
+        address operator,
+        uint256 permissionBitMap
+    ) internal {
         assembly {
-            _operatorsPermissionBitMap.slot := OPERATORS_PERMISSION_BIT_MAP_MAPPING_SLOT
+            mstore(0, characterId)
+            mstore(32, OPERATORS_PERMISSION_BIT_MAP_MAPPING_SLOT)
+            mstore(32, keccak256(0, 64))
+            mstore(0, operator)
+            sstore(keccak256(0, 64), permissionBitMap)
         }
     }
 

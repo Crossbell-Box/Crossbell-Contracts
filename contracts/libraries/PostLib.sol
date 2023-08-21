@@ -16,13 +16,12 @@ library PostLib {
 
     function postNoteWithLink(
         DataTypes.PostNoteData calldata vars,
-        uint256 noteId,
+        uint256 toNoteId,
         bytes32 linkItemType,
         bytes32 linkKey,
         bytes calldata data
     ) external {
-        uint256 characterId = vars.characterId;
-        DataTypes.Note storage _note = StorageLib.getNote(characterId, noteId);
+        DataTypes.Note storage _note = StorageLib.getNote(vars.characterId, toNoteId);
 
         // save note
         _note.contentUri = vars.contentUri;
@@ -32,12 +31,24 @@ library PostLib {
         }
 
         // init link module
-        _setLinkModule4Note(characterId, noteId, vars.linkModule, vars.linkModuleInitData, _note);
+        _setLinkModule4Note(
+            vars.characterId,
+            toNoteId,
+            vars.linkModule,
+            vars.linkModuleInitData,
+            _note
+        );
 
         // init mint module
-        _setMintModule4Note(characterId, noteId, vars.mintModule, vars.mintModuleInitData, _note);
+        _setMintModule4Note(
+            vars.characterId,
+            toNoteId,
+            vars.mintModule,
+            vars.mintModuleInitData,
+            _note
+        );
 
-        emit Events.PostNote(characterId, noteId, linkKey, linkItemType, data);
+        emit Events.PostNote(vars.characterId, toNoteId, linkKey, linkItemType, data);
     }
 
     function mintNote(
@@ -45,20 +56,19 @@ library PostLib {
         uint256 noteId,
         address to,
         bytes calldata mintModuleData,
-        address mintNFTImpl,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+        address mintNFTImpl
     ) external returns (uint256 tokenId) {
-        DataTypes.Note storage note = _noteByIdByCharacter[characterId][noteId];
-        address mintNFT = note.mintNFT;
+        DataTypes.Note storage _note = StorageLib.getNote(characterId, noteId);
+        address mintNFT = _note.mintNFT;
         if (mintNFT == address(0)) {
             mintNFT = _deployMintNFT(characterId, noteId, mintNFTImpl);
-            note.mintNFT = mintNFT;
+            _note.mintNFT = mintNFT;
         }
 
         // mint nft
         tokenId = IMintNFT(mintNFT).mint(to);
 
-        address mintModule = note.mintModule;
+        address mintModule = _note.mintModule;
         if (mintModule != address(0)) {
             IMintModule4Note(mintModule).processMint(to, characterId, noteId, mintModuleData);
         }
@@ -66,13 +76,9 @@ library PostLib {
         emit Events.MintNote(to, characterId, noteId, mintNFT, tokenId);
     }
 
-    function setNoteUri(
-        uint256 characterId,
-        uint256 noteId,
-        string calldata newUri,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
-    ) external {
-        _noteByIdByCharacter[characterId][noteId].contentUri = newUri;
+    function setNoteUri(uint256 characterId, uint256 noteId, string calldata newUri) external {
+        DataTypes.Note storage _note = StorageLib.getNote(characterId, noteId);
+        _note.contentUri = newUri;
 
         emit Events.SetNoteUri(characterId, noteId, newUri);
     }
