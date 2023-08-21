@@ -423,7 +423,9 @@ contract Linklist is
     // slither-disable-end naming-convention
 
     /// @inheritdoc ILinklist
-    function characterOwnerOf(uint256 tokenId) external view override returns (uint256) {
+    function characterOwnerOf(
+        uint256 tokenId
+    ) external view override onlyExistingToken(tokenId) returns (uint256) {
         return _linklistOwners[tokenId];
     }
 
@@ -442,7 +444,9 @@ contract Linklist is
     }
 
     /// @inheritdoc ERC721
-    function ownerOf(uint256 tokenId) public view override(ERC721) returns (address) {
+    function ownerOf(
+        uint256 tokenId
+    ) public view override(ERC721) onlyExistingToken(tokenId) returns (address) {
         uint256 characterId = _linklistOwners[tokenId];
         address owner = IERC721(Web3Entry).ownerOf(characterId);
         return owner;

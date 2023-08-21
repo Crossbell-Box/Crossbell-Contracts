@@ -2,6 +2,7 @@
 pragma solidity 0.8.18;
 
 import {CommonTest} from "./helpers/CommonTest.sol";
+import {ErrTokenNotExists} from "../contracts/libraries/Error.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {
@@ -27,5 +28,22 @@ contract CharacterSettingsTest is CommonTest {
         assertTrue(web3Entry.supportsInterface(type(IERC721Enumerable).interfaceId));
         assertTrue(web3Entry.supportsInterface(type(IERC721Metadata).interfaceId));
         assertTrue(web3Entry.supportsInterface(type(IERC165).interfaceId));
+    }
+
+    function testQueryWithTokenNotExists() public {
+        // token not exist
+        uint256 tokenId = 2;
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        web3Entry.tokenURI(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        web3Entry.getHandle(tokenId);
+
+        vm.expectRevert("ERC721: owner query for nonexistent token");
+        web3Entry.ownerOf(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        web3Entry.getCharacter(tokenId);
     }
 }

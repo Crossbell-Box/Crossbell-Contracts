@@ -195,6 +195,12 @@ contract LinklistTest is CommonTest {
 
         vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
         linklist.Uri(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.characterOwnerOf(tokenId);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        linklist.ownerOf(tokenId);
     }
 
     function testMintFuzz(uint256 amount) public {
