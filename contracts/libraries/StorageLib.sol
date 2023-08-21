@@ -10,6 +10,7 @@ library StorageLib {
 
     uint256 public constant CHARACTERS_MAPPING_SLOT = 10;
     uint256 public constant CHARACTER_ID_BY_HANDLE_HASH_MAPPING_SLOT = 11;
+    uint256 public constant ATTACHED_LINK_LISTS_MAPPING_SLOT = 13;
     uint256 public constant NOTES_MAPPING_SLOT = 14;
     uint256 public constant OPERATORS_BY_CHARACTER_MAPPING_SLOT = 24;
     uint256 public constant OPERATORS_PERMISSION_BIT_MAP_MAPPING_SLOT = 25;
@@ -85,6 +86,33 @@ library StorageLib {
             mstore(32, keccak256(0, 64))
             mstore(0, noteId)
             _operators4Note.slot := keccak256(0, 64)
+        }
+    }
+
+    function getAttachedLinklistId(
+        uint256 characterId,
+        bytes32 linkType
+    ) internal view returns (uint256 _linklistId) {
+        assembly {
+            mstore(0, characterId)
+            mstore(32, ATTACHED_LINK_LISTS_MAPPING_SLOT)
+            mstore(32, keccak256(0, 64))
+            mstore(0, linkType)
+            _linklistId := sload(keccak256(0, 64))
+        }
+    }
+
+    function setAttachedLinklistId(
+        uint256 characterId,
+        bytes32 linkType,
+        uint256 linklistId
+    ) internal {
+        assembly {
+            mstore(0, characterId)
+            mstore(32, ATTACHED_LINK_LISTS_MAPPING_SLOT)
+            mstore(32, keccak256(0, 64))
+            mstore(0, linkType)
+            sstore(keccak256(0, 64), linklistId)
         }
     }
 }

@@ -178,8 +178,7 @@ contract Web3EntryBase is
             vars.linkType,
             vars.data,
             _linklist,
-            _characterById[vars.toCharacterId].linkModule,
-            _attachedLinklists
+            _characterById[vars.toCharacterId].linkModule
         );
     }
 
@@ -187,13 +186,7 @@ contract Web3EntryBase is
     function unlinkCharacter(DataTypes.unlinkCharacterData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
 
-        LinkLib.unlinkCharacter(
-            vars.fromCharacterId,
-            vars.toCharacterId,
-            vars.linkType,
-            _linklist,
-            _attachedLinklists[vars.fromCharacterId][vars.linkType]
-        );
+        LinkLib.unlinkCharacter(vars.fromCharacterId, vars.toCharacterId, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -221,8 +214,7 @@ contract Web3EntryBase is
             vars.linkType,
             "",
             _linklist,
-            address(0),
-            _attachedLinklists
+            address(0)
         );
     }
 
@@ -238,8 +230,7 @@ contract Web3EntryBase is
             vars.linkType,
             vars.data,
             _linklist,
-            _noteByIdByCharacter[vars.toCharacterId][vars.toNoteId].linkModule,
-            _attachedLinklists
+            _noteByIdByCharacter[vars.toCharacterId][vars.toNoteId].linkModule
         );
     }
 
@@ -252,8 +243,7 @@ contract Web3EntryBase is
             vars.toCharacterId,
             vars.toNoteId,
             vars.linkType,
-            _linklist,
-            _attachedLinklists
+            _linklist
         );
     }
 
@@ -266,8 +256,7 @@ contract Web3EntryBase is
             vars.tokenAddress,
             vars.tokenId,
             vars.linkType,
-            _linklist,
-            _attachedLinklists
+            _linklist
         );
     }
 
@@ -289,78 +278,42 @@ contract Web3EntryBase is
     function linkAddress(DataTypes.linkAddressData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ADDRESS);
 
-        LinkLib.linkAddress(
-            vars.fromCharacterId,
-            vars.ethAddress,
-            vars.linkType,
-            _linklist,
-            _attachedLinklists
-        );
+        LinkLib.linkAddress(vars.fromCharacterId, vars.ethAddress, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
     function unlinkAddress(DataTypes.unlinkAddressData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ADDRESS);
 
-        LinkLib.unlinkAddress(
-            vars.fromCharacterId,
-            vars.ethAddress,
-            vars.linkType,
-            _linklist,
-            _attachedLinklists[vars.fromCharacterId][vars.linkType]
-        );
+        LinkLib.unlinkAddress(vars.fromCharacterId, vars.ethAddress, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
     function linkAnyUri(DataTypes.linkAnyUriData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_ANYURI);
 
-        LinkLib.linkAnyUri(
-            vars.fromCharacterId,
-            vars.toUri,
-            vars.linkType,
-            _linklist,
-            _attachedLinklists
-        );
+        LinkLib.linkAnyUri(vars.fromCharacterId, vars.toUri, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
     function unlinkAnyUri(DataTypes.unlinkAnyUriData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_ANYURI);
 
-        LinkLib.unlinkAnyUri(
-            vars.fromCharacterId,
-            vars.toUri,
-            vars.linkType,
-            _linklist,
-            _attachedLinklists[vars.fromCharacterId][vars.linkType]
-        );
+        LinkLib.unlinkAnyUri(vars.fromCharacterId, vars.toUri, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
     function linkLinklist(DataTypes.linkLinklistData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_LINKLIST);
 
-        LinkLib.linkLinklist(
-            vars.fromCharacterId,
-            vars.toLinkListId,
-            vars.linkType,
-            _linklist,
-            _attachedLinklists
-        );
+        LinkLib.linkLinklist(vars.fromCharacterId, vars.toLinkListId, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
     function unlinkLinklist(DataTypes.unlinkLinklistData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.UNLINK_LINKLIST);
 
-        LinkLib.unlinkLinklist(
-            vars.fromCharacterId,
-            vars.toLinkListId,
-            vars.linkType,
-            _linklist,
-            _attachedLinklists[vars.fromCharacterId][vars.linkType]
-        );
+        LinkLib.unlinkLinklist(vars.fromCharacterId, vars.toLinkListId, vars.linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
