@@ -145,7 +145,7 @@ contract Web3EntryBase is
 
     /// @inheritdoc IWeb3Entry
     function setPrimaryCharacterId(uint256 characterId) external override {
-        _validateCallerIsCharacterOwner(characterId);
+        if (!_callerIsCharacterOwner(characterId)) revert ErrNotCharacterOwner();
 
         // `tx.origin` is used here because the caller may be the periphery contract
         uint256 oldCharacterId = _primaryCharacterByAddress[tx.origin];
@@ -344,8 +344,6 @@ contract Web3EntryBase is
     function setLinkModule4Note(
         DataTypes.setLinkModule4NoteData calldata vars
     ) external override validateCallerPermission(vars.characterId, OP.SET_LINK_MODULE_FOR_NOTE) {
-        _validateCallerPermission4Note(vars.characterId, vars.noteId);
-
         PostLib.setLinkModule4Note(
             vars.characterId,
             vars.noteId,
@@ -799,23 +797,6 @@ contract Web3EntryBase is
     // check if the handle exists
     function _checkHandleExists(bytes32 handleHash) internal view {
         if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
-    }
-
-    function _validateCallerIsCharacterOwner(uint256 characterId) internal view {
-        address owner = ownerOf(characterId);
-
-        // tx.origin is character owner, and msg.sender is periphery
-        // solhint-disable-next-line avoid-tx-origin
-        if (msg.sender == _periphery && tx.origin == owner) {
-            return;
-        }
-
-        // msg.sender is character owner
-        if (msg.sender == owner) {
-            return;
-        }
-
-        revert ErrNotCharacterOwner();
     }
 
     function _validateCallerPermission(uint256 characterId, uint256 permissionId) internal view {
