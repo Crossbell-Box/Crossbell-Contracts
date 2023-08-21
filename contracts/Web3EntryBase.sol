@@ -122,7 +122,7 @@ contract Web3EntryBase is
         _validateCallerPermission(characterId, OP.SET_HANDLE);
 
         // check if the handle exists
-        _checkHandleExists(keccak256(bytes(newHandle)));
+        _checkHandleExists(_handleHash(newHandle));
 
         // check if the handle is valid
         _validateHandle(newHandle);
@@ -581,8 +581,7 @@ contract Web3EntryBase is
     function getCharacterByHandle(
         string calldata handle
     ) external view override returns (DataTypes.Character memory) {
-        bytes32 handleHash = keccak256(bytes(handle));
-        uint256 characterId = _characterIdByHandleHash[handleHash];
+        uint256 characterId = _characterIdByHandleHash[_handleHash(handle)];
         return _characterById[characterId];
     }
 
@@ -648,7 +647,7 @@ contract Web3EntryBase is
      */
     function burn(uint256 tokenId) public virtual override {
         // clear handle
-        bytes32 handleHash = keccak256(bytes(_characterById[tokenId].handle));
+        bytes32 handleHash = _handleHash(_characterById[tokenId].handle);
         _characterIdByHandleHash[handleHash] = 0;
 
         // clear character
@@ -672,7 +671,7 @@ contract Web3EntryBase is
         bool validateHandle
     ) internal returns (uint256 characterId) {
         // check if the handle exists
-        _checkHandleExists(keccak256(bytes(vars.handle)));
+        _checkHandleExists(_handleHash(vars.handle));
 
         // check if the handle is valid
         if (validateHandle) {
@@ -931,5 +930,9 @@ contract Web3EntryBase is
             }
         }
         return string(buffer);
+    }
+
+    function _handleHash(string memory handle) internal pure returns (bytes32) {
+        return keccak256(bytes(handle));
     }
 }

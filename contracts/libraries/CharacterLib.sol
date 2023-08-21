@@ -93,14 +93,18 @@ library CharacterLib {
     function setHandle(uint256 characterId, string calldata newHandle) external {
         // remove old handle
         string memory oldHandle = StorageLib.getCharacter(characterId).handle;
-        bytes32 oldHandleHash = keccak256(bytes(oldHandle));
+        bytes32 oldHandleHash = _handleHash(oldHandle);
         delete StorageLib.characterIdByHandleHash()[oldHandleHash];
 
         // set new handle
-        bytes32 handleHash = keccak256(bytes(newHandle));
+        bytes32 handleHash = _handleHash(newHandle);
         StorageLib.characterIdByHandleHash()[handleHash] = characterId;
         StorageLib.getCharacter(characterId).handle = newHandle;
 
         emit Events.SetHandle(msg.sender, characterId, newHandle);
+    }
+
+    function _handleHash(string memory handle) internal pure returns (bytes32) {
+        return keccak256(bytes(handle));
     }
 }
