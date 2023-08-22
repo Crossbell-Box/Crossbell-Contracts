@@ -15,29 +15,19 @@ import {PostLib} from "./libraries/PostLib.sol";
 import {OperatorLib} from "./libraries/OperatorLib.sol";
 import {LinkLib} from "./libraries/LinkLib.sol";
 import {MetaTxLib} from "./libraries/MetaTxLib.sol";
-import {StorageLib} from "./libraries/StorageLib.sol";
 import {ValidationLib} from "./libraries/ValidationLib.sol";
 import {OP} from "./libraries/OP.sol";
 import {
     ErrSocialTokenExists,
-    ErrHandleExists,
     ErrNotCharacterOwner,
     ErrNotEnoughPermission,
     ErrNotEnoughPermissionForThisNote,
     ErrCharacterNotExists,
-    ErrNoteIsDeleted,
-    ErrNoteNotExists,
-    ErrNoteLocked,
-    ErrHandleLengthInvalid,
-    ErrHandleContainsInvalidCharacters,
-    ErrSignatureExpired,
-    ErrSignatureInvalid,
     ErrTokenNotExists
 } from "./libraries/Error.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Multicall} from "@openzeppelin/contracts/utils/Multicall.sol";
-import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract Web3EntryBase is
     IWeb3Entry,

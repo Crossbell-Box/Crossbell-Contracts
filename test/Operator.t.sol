@@ -5,7 +5,6 @@ pragma solidity 0.8.18;
 import {CommonTest} from "./helpers/CommonTest.sol";
 import {OP} from "../contracts/libraries/OP.sol";
 import {Events} from "../contracts/libraries/Events.sol";
-import {Constants} from "../contracts/libraries/Constants.sol";
 import {DataTypes} from "../contracts/libraries/DataTypes.sol";
 import {
     ErrNotCharacterOwner,
@@ -15,6 +14,7 @@ import {
     ErrSignatureExpired,
     ErrSignatureInvalid
 } from "../contracts/libraries/Error.sol";
+import {ERC1271WalletMock, ERC1271MaliciousMock} from "../contracts/mocks/ERC1271WalletMock.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract OperatorTest is CommonTest {
@@ -23,14 +23,20 @@ contract OperatorTest is CommonTest {
 
     address public constant migrateOwner = 0xda2423ceA4f1047556e7a142F81a7ED50e93e160;
 
+    ERC1271WalletMock public erc1271wallet;
+    ERC1271MaliciousMock public erc1271Malicious;
+
     // solhint-disable-next-line private-vars-leading-underscore, var-name-mixedcase
-    bytes32 internal constant GRANT_OPERATOR_PERMISSIONS_WITH_SIG_TYPEHASH =
+    bytes32 internal constant TYPEHASH =
         keccak256( // solhint-disable-next-line max-line-length
             "grantOperatorPermissions(uint256 characterId,address operator,uint256 permissionBitMap,uint256 nonce,uint256 deadline)"
         );
 
     function setUp() public {
         _setUp();
+
+        erc1271wallet = new ERC1271WalletMock(alice);
+        erc1271Malicious = new ERC1271MaliciousMock();
 
         // create character
         _createCharacter(CHARACTER_HANDLE, alice);
@@ -80,14 +86,7 @@ contract OperatorTest is CommonTest {
         uint256 nonce = web3Entry.nonces(alice);
 
         bytes32 hashedMessage = keccak256(
-            abi.encode(
-                GRANT_OPERATOR_PERMISSIONS_WITH_SIG_TYPEHASH,
-                characterId,
-                operator,
-                permissionBitMap,
-                nonce,
-                deadline
-            )
+            abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline)
         );
         DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
         sig.deadline = deadline;
@@ -107,6 +106,34 @@ contract OperatorTest is CommonTest {
         assertEq(web3Entry.nonces(alice), 1);
     }
 
+    function testGrantOperatorPermissionsWithSigWithERC1271Wallet() public {
+        uint256 characterId = FIRST_CHARACTER_ID;
+        address operator = bob;
+        uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
+        uint256 deadline = block.timestamp + 10;
+        address signer = address(erc1271wallet);
+        uint256 nonce = web3Entry.nonces(signer);
+
+        // transfer character to erc1271wallet
+        vm.prank(alice);
+        web3Entry.safeTransferFrom(alice, signer, characterId);
+
+        // generate signature
+        bytes32 hashedMessage = keccak256(
+            abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline)
+        );
+        DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
+        sig.deadline = deadline;
+        sig.signer = signer;
+
+        // call grantOperatorPermissionsWithSig
+        web3Entry.grantOperatorPermissionsWithSig(characterId, bob, permissionBitMap, sig);
+
+        // check operator permission
+        assertEq(web3Entry.getOperatorPermissions(characterId, bob), permissionBitMap);
+        assertEq(web3Entry.nonces(signer), 1);
+    }
+
     function testGrantOperatorPermissionsWithSigFailSignatureExpired() public {
         uint256 characterId = FIRST_CHARACTER_ID;
         address operator = bob;
@@ -115,14 +142,7 @@ contract OperatorTest is CommonTest {
         uint256 nonce = web3Entry.nonces(alice);
 
         bytes32 hashedMessage = keccak256(
-            abi.encode(
-                GRANT_OPERATOR_PERMISSIONS_WITH_SIG_TYPEHASH,
-                characterId,
-                operator,
-                permissionBitMap,
-                nonce,
-                deadline
-            )
+            abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline)
         );
         DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
         sig.deadline = block.timestamp - 1;
@@ -132,7 +152,7 @@ contract OperatorTest is CommonTest {
         web3Entry.grantOperatorPermissionsWithSig(characterId, operator, permissionBitMap, sig);
 
         // check operator permission
-        assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob), 0);
+        assertEq(web3Entry.getOperatorPermissions(characterId, bob), 0);
     }
 
     function testGrantOperatorPermissionsWithSigFailSignatureInvalid() public {
@@ -143,14 +163,7 @@ contract OperatorTest is CommonTest {
         uint256 nonce = web3Entry.nonces(alice);
 
         bytes32 hashedMessage = keccak256(
-            abi.encode(
-                GRANT_OPERATOR_PERMISSIONS_WITH_SIG_TYPEHASH,
-                characterId,
-                operator,
-                permissionBitMap,
-                nonce,
-                deadline
-            )
+            abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline)
         );
         DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
         sig.deadline = deadline;
@@ -161,7 +174,7 @@ contract OperatorTest is CommonTest {
         web3Entry.grantOperatorPermissionsWithSig(characterId, operator, permissionBitMap, sig);
 
         // check operator permission
-        assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob), 0);
+        assertEq(web3Entry.getOperatorPermissions(characterId, bob), 0);
     }
 
     function testGrantOperatorPermissionsWithSigFailSignatureInvalid2() public {
@@ -172,14 +185,7 @@ contract OperatorTest is CommonTest {
         uint256 nonce = web3Entry.nonces(alice);
 
         bytes32 hashedMessage = keccak256(
-            abi.encode(
-                GRANT_OPERATOR_PERMISSIONS_WITH_SIG_TYPEHASH,
-                characterId,
-                operator,
-                permissionBitMap,
-                nonce,
-                deadline
-            )
+            abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline)
         );
         DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
         sig.deadline = deadline;
@@ -188,6 +194,29 @@ contract OperatorTest is CommonTest {
         // case 3: signature invalid(invalid nonce)
         vm.expectRevert(abi.encodeWithSelector(ErrSignatureInvalid.selector));
         web3Entry.grantOperatorPermissionsWithSig(characterId, operator, permissionBitMap, sig);
+    }
+
+    function testGrantOperatorPermissionsWithSigFailWithMaliciousERC1271Wallet() public {
+        uint256 characterId = FIRST_CHARACTER_ID;
+        uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
+        uint256 deadline = block.timestamp + 10;
+        address signer = address(erc1271Malicious);
+
+        // transfer character to erc1271Malicious
+        vm.prank(alice);
+        web3Entry.safeTransferFrom(alice, signer, characterId);
+
+        // generate signature
+        DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, bytes32Zero);
+        sig.deadline = deadline;
+        sig.signer = signer;
+
+        // call grantOperatorPermissionsWithSig
+        vm.expectRevert(abi.encodeWithSelector(ErrSignatureInvalid.selector));
+        web3Entry.grantOperatorPermissionsWithSig(characterId, bob, permissionBitMap, sig);
+
+        // check operator permission
+        assertEq(web3Entry.getOperatorPermissions(characterId, bob), 0);
     }
 
     function testGrantOperators4Note() public {
@@ -353,72 +382,48 @@ contract OperatorTest is CommonTest {
 
     // solhint-disable-next-line function-max-lines
     function testOperatorCan() public {
+        uint256 characterId = FIRST_CHARACTER_ID;
+
+        // case 1: post note
         // alice grant bob as OP.POST_NOTE_PERMISSION_BITMAP permission
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.POST_NOTE_PERMISSION_BITMAP);
-
+        web3Entry.grantOperatorPermissions(characterId, bob, OP.POST_NOTE_PERMISSION_BITMAP);
         vm.prank(bob);
-        // operatorSync can post note(id = 236)
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+        // bob can post note
+        web3Entry.postNote(makePostNoteData(characterId));
 
+        // case 2 : default permission
         // alice grant bob as OP.DEFAULT_PERMISSION_BITMAP permission
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
-
+        web3Entry.grantOperatorPermissions(characterId, bob, OP.DEFAULT_PERMISSION_BITMAP);
         vm.startPrank(bob);
         // bob can postNote
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+        web3Entry.postNote(makePostNoteData(characterId));
         // bob can setCharacterUri
-        web3Entry.setCharacterUri(FIRST_CHARACTER_ID, "https://example.com/character");
+        web3Entry.setCharacterUri(characterId, "https://example.com/character");
         // bob can linkCharacter
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                LikeLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkCharacterData(characterId, SECOND_CHARACTER_ID, LikeLinkType, "")
         );
         web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, LikeLinkType)
+            DataTypes.unlinkCharacterData(characterId, SECOND_CHARACTER_ID, LikeLinkType)
         );
         web3Entry.createThenLinkCharacter(
-            DataTypes.createThenLinkCharacterData(
-                FIRST_CHARACTER_ID,
-                MOCK_TO_ADDRESS,
-                Constants.LINK_ITEM_TYPE_CHARACTER
-            )
+            DataTypes.createThenLinkCharacterData(characterId, address(0x199), FollowLinkType)
         );
-        // bob can setlinklisturi
+        // bob can set linklist uri
         web3Entry.setLinklistUri(1, MOCK_URI);
         web3Entry.linkNote(
-            DataTypes.linkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkNoteData(characterId, characterId, FIRST_NOTE_ID, FollowLinkType, "")
         );
         // unlinkNote
         web3Entry.unlinkNote(
-            DataTypes.unlinkNoteData(
-                FIRST_CHARACTER_ID,
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                FollowLinkType
-            )
+            DataTypes.unlinkNoteData(characterId, characterId, FIRST_NOTE_ID, FollowLinkType)
         );
         // linkERC721
         nft.mint(bob);
         web3Entry.linkERC721(
-            DataTypes.linkERC721Data(
-                FIRST_CHARACTER_ID,
-                address(nft),
-                1,
-                LikeLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkERC721Data(characterId, address(nft), 1, LikeLinkType, "")
         );
         // unlinkERC721
         web3Entry.unlinkERC721(
@@ -426,84 +431,65 @@ contract OperatorTest is CommonTest {
         );
         // linkAddress
         web3Entry.linkAddress(
-            DataTypes.linkAddressData(
-                FIRST_CHARACTER_ID,
-                address(0x1232414),
-                LikeLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkAddressData(characterId, address(0x1232414), LikeLinkType, "")
         );
         // unlinkAddress
         web3Entry.unlinkAddress(
-            DataTypes.unlinkAddressData(FIRST_CHARACTER_ID, address(0x1232414), LikeLinkType)
+            DataTypes.unlinkAddressData(characterId, address(0x1232414), LikeLinkType)
         );
         // linkAnyUri
         web3Entry.linkAnyUri(
-            DataTypes.linkAnyUriData(
-                FIRST_CHARACTER_ID,
-                "ipfs://anyURI",
-                LikeLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkAnyUriData(characterId, "ipfs://anyURI", LikeLinkType, new bytes(0))
         );
         // unlinkAnyUri
         web3Entry.unlinkAnyUri(
-            DataTypes.unlinkAnyUriData(FIRST_CHARACTER_ID, "ipfs://anyURI", LikeLinkType)
+            DataTypes.unlinkAnyUriData(characterId, "ipfs://anyURI", LikeLinkType)
         );
         // linkLinklist
-        web3Entry.linkLinklist(
-            DataTypes.linkLinklistData(FIRST_CHARACTER_ID, 1, LikeLinkType, new bytes(0))
-        );
+        web3Entry.linkLinklist(DataTypes.linkLinklistData(characterId, 1, LikeLinkType, ""));
         // unlinkLinklist
-        web3Entry.unlinkLinklist(DataTypes.unlinkLinklistData(FIRST_CHARACTER_ID, 1, LikeLinkType));
+        web3Entry.unlinkLinklist(DataTypes.unlinkLinklistData(characterId, 1, LikeLinkType));
 
         // setLinkModule4Character
         web3Entry.setLinkModule4Character(
             DataTypes.setLinkModule4CharacterData(
-                FIRST_CHARACTER_ID,
+                characterId,
                 address(approvalLinkModule4Character),
-                new bytes(0)
+                ""
             )
         );
 
         // postNote4Character
-        web3Entry.postNote4Character(makePostNoteData(FIRST_CHARACTER_ID), FIRST_CHARACTER_ID);
+        web3Entry.postNote4Character(makePostNoteData(characterId), FIRST_CHARACTER_ID);
         // postNote4Address
-        web3Entry.postNote4Address(makePostNoteData(FIRST_CHARACTER_ID), address(0x328));
+        web3Entry.postNote4Address(makePostNoteData(characterId), address(0x328));
         // postNote4Linklist
-        web3Entry.postNote4Linklist(makePostNoteData(FIRST_CHARACTER_ID), FIRST_LINKLIST_ID);
+        web3Entry.postNote4Linklist(makePostNoteData(characterId), FIRST_LINKLIST_ID);
         // postNote4Note
         web3Entry.postNote4Note(
-            makePostNoteData(FIRST_CHARACTER_ID),
-            DataTypes.NoteStruct(FIRST_CHARACTER_ID, FIRST_NOTE_ID)
+            makePostNoteData(characterId),
+            DataTypes.NoteStruct(characterId, FIRST_NOTE_ID)
         );
         // postNote4ERC721
         nft.mint(bob);
         web3Entry.postNote4ERC721(
-            makePostNoteData(FIRST_CHARACTER_ID),
+            makePostNoteData(characterId),
             DataTypes.ERC721Struct(address(nft), 1)
         );
         // postNote4AnyUri
-        web3Entry.postNote4AnyUri(makePostNoteData(FIRST_CHARACTER_ID), "ipfs://anyURI");
+        web3Entry.postNote4AnyUri(makePostNoteData(characterId), "ipfs://anyURI");
         vm.stopPrank();
 
+        // case 3: owner permission
         // operator with owner permissions can:
         // alice grant bob all permissions including owner permissions
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            FIRST_CHARACTER_ID,
-            bob,
-            OP.ALLOWED_PERMISSION_BITMAP_MASK
-        );
+        web3Entry.grantOperatorPermissions(characterId, bob, OP.ALLOWED_PERMISSION_BITMAP_MASK);
         vm.startPrank(bob);
-        web3Entry.setHandle(FIRST_CHARACTER_ID, "mynewhandle");
-        web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(0x1234567));
-        web3Entry.grantOperatorPermissions(
-            FIRST_CHARACTER_ID,
-            carol,
-            OP.ALLOWED_PERMISSION_BITMAP_MASK
-        );
-        web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, allowlist);
+        web3Entry.setHandle(characterId, "mynewhandle");
+        web3Entry.setSocialToken(characterId, address(0x1234567));
+        web3Entry.grantOperatorPermissions(characterId, carol, OP.ALLOWED_PERMISSION_BITMAP_MASK);
+        web3Entry.grantOperators4Note(characterId, FIRST_NOTE_ID, blocklist, allowlist);
         vm.stopPrank();
     }
 
