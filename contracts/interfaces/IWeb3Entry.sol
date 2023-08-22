@@ -424,6 +424,7 @@ interface IWeb3Entry {
 
     /**
      * @notice Burns a linklist NFT.
+     * @dev It will burn the linklist NFT and remove the links from a character.
      * @param linklistId The linklist ID to burn.
      */
     function burnLinklist(uint256 linklistId) external;
