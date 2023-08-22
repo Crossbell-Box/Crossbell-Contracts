@@ -54,7 +54,7 @@ contract Web3EntryBase is
     uint256 internal constant REVISION = 4;
 
     modifier validateCallerPermission(uint256 characterId, uint256 permissionId) {
-        _(characterId, permissionId);
+        _validateCallerPermission(characterId, permissionId);
         _;
     }
     
