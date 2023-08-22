@@ -87,7 +87,7 @@ contract Web3EntryBase is
         address operator,
         uint256 permissionBitMap
     ) external override validateCallerPermission(characterId, OP.GRANT_OPERATOR_PERMISSIONS) {
-        _grantOperatorPermissions(characterId, operator, permissionBitMap);
+        OperatorLib.grantOperatorPermissions(characterId, operator, permissionBitMap);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -105,8 +105,7 @@ contract Web3EntryBase is
             operator,
             permissionBitMap
         );
-
-        _grantOperatorPermissions(characterId, operator, permissionBitMap);
+        OperatorLib.grantOperatorPermissions(characterId, operator, permissionBitMap);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -590,8 +589,11 @@ contract Web3EntryBase is
         uint256 characterId,
         uint256 noteId
     ) external view override returns (address[] memory blocklist, address[] memory allowlist) {
-        blocklist = _operators4Note[characterId][noteId].blocklist.values();
-        allowlist = _operators4Note[characterId][noteId].allowlist.values();
+        DataTypes.Operators4Note storage operators4Note = _operators4Note[characterId][noteId];
+        (blocklist, allowlist) = (
+            operators4Note.blocklist.values(),
+            operators4Note.allowlist.values()
+        );
     }
 
     /// @inheritdoc IWeb3Entry
@@ -774,14 +776,6 @@ contract Web3EntryBase is
 
     function _nextNoteId(uint256 characterId) internal returns (uint256) {
         return ++_characterById[characterId].noteCount;
-    }
-
-    function _grantOperatorPermissions(
-        uint256 characterId,
-        address operator,
-        uint256 permissionBitMap
-    ) internal {
-        OperatorLib.grantOperatorPermissions(characterId, operator, permissionBitMap);
     }
 
     /**
