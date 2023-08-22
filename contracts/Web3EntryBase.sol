@@ -57,7 +57,7 @@ contract Web3EntryBase is
         _validateCallerPermission(characterId, permissionId);
         _;
     }
-    
+
     modifier onlyExistingToken(uint256 tokenId) {
         if (!_exists(tokenId)) revert ErrTokenNotExists();
         _;
@@ -132,9 +132,6 @@ contract Web3EntryBase is
         uint256 characterId,
         string calldata newHandle
     ) external override validateCallerPermission(characterId, OP.SET_HANDLE) {
-        // check if the handle exists
-        _checkHandleExists(_handleHash(newHandle));
-
         CharacterLib.setHandle(characterId, newHandle);
     }
 
@@ -182,7 +179,7 @@ contract Web3EntryBase is
     function linkCharacter(
         DataTypes.linkCharacterData calldata vars
     ) external override validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER) {
-        _validateCharacterExists(vars.toCharacterId);
+        if (!_exists(vars.toCharacterId)) revert ErrCharacterNotExists(vars.toCharacterId);
 
         LinkLib.linkCharacter(
             vars.fromCharacterId,
@@ -721,9 +718,6 @@ contract Web3EntryBase is
         DataTypes.CreateCharacterData memory vars,
         bool validateHandle
     ) internal returns (uint256 characterId) {
-        // check if the handle exists
-        _checkHandleExists(_handleHash(vars.handle));
-
         characterId = ++_characterCounter;
         // mint character nft
         _safeMint(vars.to, characterId);
@@ -754,11 +748,7 @@ contract Web3EntryBase is
         //  clear operators if character is transferred from non-newbieVilla contract
         if (from != _newbieVilla) {
             // clear operators
-            uint256 len = _operatorsByCharacter[tokenId].length();
-            address[] memory operators = _operatorsByCharacter[tokenId].values();
-            for (uint256 i = 0; i < len; i++) {
-                _clearOperator(tokenId, operators[i]);
-            }
+            OperatorLib.clearOperators(tokenId);
 
             // reset if `tokenId` is primary character of `from` account
             if (_primaryCharacterByAddress[from] == tokenId) {
@@ -784,12 +774,6 @@ contract Web3EntryBase is
 
     function _nextNoteId(uint256 characterId) internal returns (uint256) {
         return ++_characterById[characterId].noteCount;
-    }
-
-    function _clearOperator(uint256 tokenId, address operator) internal {
-        delete _operatorsPermissionBitMap[tokenId][operator];
-        // slither-disable-next-line unused-return
-        _operatorsByCharacter[tokenId].remove(operator);
     }
 
     function _grantOperatorPermissions(
@@ -820,11 +804,6 @@ contract Web3EntryBase is
         }
         // check character operator permission
         return _checkBit(_operatorsPermissionBitMap[characterId][operator], OP.SET_NOTE_URI);
-    }
-
-    // check if the handle exists
-    function _checkHandleExists(bytes32 handleHash) internal view {
-        if (_characterIdByHandleHash[handleHash] != 0) revert ErrHandleExists();
     }
 
     function _validateCallerPermission(uint256 characterId, uint256 permissionId) internal view {
@@ -872,10 +851,6 @@ contract Web3EntryBase is
         }
 
         revert ErrNotEnoughPermissionForThisNote();
-    }
-
-    function _validateCharacterExists(uint256 characterId) internal view {
-        if (!_exists(characterId)) revert ErrCharacterNotExists(characterId);
     }
 
     /**

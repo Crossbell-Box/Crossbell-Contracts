@@ -34,8 +34,9 @@ library CharacterLib {
         if (validateHandle) {
             ValidationLib.validateHandle(handle);
         }
-
         bytes32 handleHash = keccak256(bytes(handle));
+        // check if the handle exists
+        ValidationLib.validateHandleNotExists(handleHash);
         StorageLib.characterIdByHandleHash()[handleHash] = characterId;
 
         // save character
@@ -98,6 +99,7 @@ library CharacterLib {
      * @param   newHandle  New handle to set.
      */
     function setHandle(uint256 characterId, string calldata newHandle) external {
+        ValidationLib.validateHandleNotExists(_handleHash(newHandle));
         ValidationLib.validateHandle(newHandle);
 
         // remove old handle

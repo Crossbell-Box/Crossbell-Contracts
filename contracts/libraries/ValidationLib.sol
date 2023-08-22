@@ -31,6 +31,10 @@ library ValidationLib {
         if (StorageLib.getNote(characterId, noteId).locked) revert ErrNoteLocked();
     }
 
+    function validateHandleNotExists(bytes32 handleHash) internal view {
+        if (StorageLib.characterIdByHandleHash()[handleHash] != 0) revert ErrHandleExists();
+    }
+
     function validateHandle(string memory handle) internal pure {
         bytes memory byteHandle = bytes(handle);
         uint256 len = byteHandle.length;

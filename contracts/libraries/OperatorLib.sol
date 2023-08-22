@@ -60,6 +60,20 @@ library OperatorLib {
         emit Events.GrantOperators4Note(characterId, noteId, blocklist, allowlist);
     }
 
+    function clearOperators(uint256 characterId) external {
+        EnumerableSet.AddressSet storage _operators = StorageLib.operatorsByCharacter()[
+            characterId
+        ];
+
+        // clear operators
+        uint256 len = _operators.length();
+        address[] memory values = _operators.values();
+        for (uint256 i = 0; i < len; i++) {
+            StorageLib.setOperatorsPermissionBitMap(characterId, values[i], 0);
+            _operators.remove(values[i]);
+        }
+    }
+
     function _clearOperators4Note(DataTypes.Operators4Note storage operators4Note) internal {
         uint256 blocklistLength = operators4Note.blocklist.length();
         for (uint256 i = blocklistLength; i > 0; ) {
