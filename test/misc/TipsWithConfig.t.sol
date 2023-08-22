@@ -122,15 +122,15 @@ contract TipsWithConfigTest is CommonTest {
     }
 
     function testGetFeeFraction(uint256 fraction, uint256 characterId) public {
-        vm.assume(fraction <= 10000);
+        vm.assume(fraction > 1 && fraction <= 10000);
         vm.assume(characterId < 10 && characterId > 0);
 
         vm.startPrank(alice);
         _tips.setDefaultFeeFraction(alice, fraction);
         assertEq(_tips.getFeeFraction(alice, characterId), fraction);
 
-        _tips.setFeeFraction4Character(alice, characterId, fraction + 2);
-        assertEq(_tips.getFeeFraction(alice, characterId), fraction + 2);
+        _tips.setFeeFraction4Character(alice, characterId, fraction / 2);
+        assertEq(_tips.getFeeFraction(alice, characterId), fraction / 2);
         vm.stopPrank();
     }
 

@@ -79,3 +79,6 @@ error ErrSignatureInvalid();
 
 /// @dev Caller not owner
 error ErrNotOwner();
+
+/// @dev Token not exists
+error ErrTokenNotExists();

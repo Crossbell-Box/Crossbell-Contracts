@@ -170,4 +170,9 @@ contract CreateCharacterTest is CommonTest {
         assertEq(web3Entry.tokenByIndex(1), SECOND_CHARACTER_ID);
         assertEq(web3Entry.tokenByIndex(2), 4);
     }
+
+    function testBurnFailWithTokenNotExists() public {
+        vm.expectRevert("ERC721: operator query for nonexistent token");
+        web3Entry.burn(3);
+    }
 }

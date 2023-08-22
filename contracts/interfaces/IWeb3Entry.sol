@@ -429,6 +429,12 @@ interface IWeb3Entry {
     ) external returns (uint256 noteId);
 
     /**
+     * @notice Burns a linklist NFT.
+     * @param linklistId The linklist ID to burn.
+     */
+    function burnLinklist(uint256 linklistId) external;
+
+    /**
      * @notice Get operator list of a character. This operator list has only a sole purpose, which is
      * keeping records of keys of `operatorsPermissionBitMap`. Thus, addresses queried by this function
      * not always have operator permissions. Keep in mind don't use this function to check
