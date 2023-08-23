@@ -14,6 +14,7 @@ import {CharacterLogic} from "./libraries/CharacterLogic.sol";
 import {PostLogic} from "./libraries/PostLogic.sol";
 import {OperatorLogic} from "./libraries/OperatorLogic.sol";
 import {LinkLogic} from "./libraries/LinkLogic.sol";
+import {LinklistLogic} from "./libraries/LinklistLogic.sol";
 import {OP} from "./libraries/OP.sol";
 import {
     ErrSocialTokenExists,
@@ -193,7 +194,13 @@ contract Web3EntryBase is
         uint256 characterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
         _validateCallerPermission(characterId, OP.SET_LINKLIST_TYPE);
 
-        LinkLogic.setLinklistType(characterId, linklistId, linkType, _linklist, _attachedLinklists);
+        LinklistLogic.setLinklistType(
+            characterId,
+            linklistId,
+            linkType,
+            _linklist,
+            _attachedLinklists
+        );
     }
 
     /// @inheritdoc IWeb3Entry
@@ -642,14 +649,9 @@ contract Web3EntryBase is
     function burnLinklist(uint256 linklistId) external override {
         // only the owner of the character can burn the linklist through web3Entry contract
         uint256 characterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
-        if (msg.sender != ownerOf(characterId)) revert ErrNotCharacterOwner();
+        _validateCallerIsCharacterOwner(characterId);
 
-        // delete _attachedLinklist
-        bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
-        delete _attachedLinklists[characterId][linkType];
-
-        // burn linklist
-        ILinklist(_linklist).burn(linklistId);
+        LinklistLogic.burnLinklist(characterId, linklistId, _linklist, _attachedLinklists);
     }
 
     /// @inheritdoc IWeb3Entry
