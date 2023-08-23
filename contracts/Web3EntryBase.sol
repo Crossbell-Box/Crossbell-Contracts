@@ -189,6 +189,14 @@ contract Web3EntryBase is
     }
 
     /// @inheritdoc IWeb3Entry
+    function setLinklistType(uint256 linklistId, bytes32 linkType) external override {
+        uint256 characterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
+        _validateCallerPermission(characterId, OP.SET_LINKLIST_URI);
+
+        LinkLogic.setLinklistType(characterId, linklistId, linkType, _linklist, _attachedLinklists);
+    }
+
+    /// @inheritdoc IWeb3Entry
     function linkCharacter(DataTypes.linkCharacterData calldata vars) external override {
         _validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER);
         _validateCharacterExists(vars.toCharacterId);

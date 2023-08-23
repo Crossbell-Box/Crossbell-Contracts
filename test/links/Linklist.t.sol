@@ -7,8 +7,11 @@ import {
     ErrCallerNotWeb3EntryOrNotOwner,
     ErrCallerNotWeb3Entry,
     ErrTokenNotExists,
-    ErrNotCharacterOwner
+    ErrNotCharacterOwner,
+    ErrLinkTypeExists
 } from "../../contracts/libraries/Error.sol";
+import {OP} from "../../contracts/libraries/OP.sol";
+import {Events} from "../../contracts/libraries/Events.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -19,8 +22,9 @@ import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 
 contract LinklistTest is CommonTest {
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
-    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
     event Burn(uint256 indexed from, uint256 indexed tokenId);
+    event UriSet(uint256 indexed tokenId, string newUri);
+    event LinkTypeSet(uint256 indexed tokenId, bytes32 indexed newlinkType);
 
     /* solhint-disable comprehensive-interface */
     function setUp() public {
@@ -92,43 +96,32 @@ contract LinklistTest is CommonTest {
 
     function testSetUri() public {
         // link character
-        vm.startPrank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
-        );
-        // case 1: set linklist uri by alice
-        linklist.setUri(1, TOKEN_URI);
-        // check linklist uri
-        assertEq(linklist.Uri(1), TOKEN_URI);
-        vm.stopPrank();
+        vm.prank(alice);
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
+
+        // case 1: set linklist uri by linklist owner
+        string memory tokenUri = TOKEN_URI;
+        expectEmit(CheckAll);
+        emit UriSet(1, tokenUri);
+        vm.prank(alice);
+        linklist.setUri(1, tokenUri);
+        // check uri
+        assertEq(linklist.Uri(1), tokenUri);
 
         // case 2: set linklist uri by web3Entry
+        string memory newUri = NEW_TOKEN_URI;
+        expectEmit(CheckAll);
+        emit UriSet(1, newUri);
         vm.prank(address(web3Entry));
-        linklist.setUri(1, NEW_TOKEN_URI);
-        // check linklist uri
-        assertEq(linklist.Uri(1), NEW_TOKEN_URI);
-
-        // check state
-        string memory uri = linklist.Uri(1);
-        assertEq(uri, NEW_TOKEN_URI);
+        linklist.setUri(1, newUri);
+        // check uri
+        assertEq(linklist.Uri(1), newUri);
     }
 
     function testSetUriFail() public {
         // link character
         vm.prank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
 
         // case 1: caller not web3Entry or not owner
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3EntryOrNotOwner.selector));
@@ -139,6 +132,78 @@ contract LinklistTest is CommonTest {
         vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
         vm.prank(address(web3Entry));
         linklist.setUri(2, TOKEN_URI);
+    }
+
+    function testSetLinkType() public {
+        // link character
+        vm.prank(alice);
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
+
+        // set linklist type
+        bytes32 linkType = WatchLinkType;
+        expectEmit(CheckAll);
+        emit LinkTypeSet(1, linkType);
+        vm.prank(address(web3Entry));
+        linklist.setLinkType(1, linkType);
+        // check link type
+        assertEq(linklist.getLinkType(1), linkType);
+    }
+
+    function testSetLinkTypeFail() public {
+        // case 1: caller is not web3Entry
+        vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
+        linklist.setLinkType(1, FollowLinkType);
+
+        // case 2: token not exist
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        vm.prank(address(web3Entry));
+        linklist.setLinkType(2, FollowLinkType);
+    }
+
+    // set linklist type through web3Entry
+    function testSetLinkListType() public {
+        // link character
+        vm.prank(alice);
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
+
+        // set linklist type
+        expectEmit(CheckAll);
+        emit Events.DetachLinklist(1, 1, FollowLinkType);
+        expectEmit(CheckAll);
+        emit Events.AttachLinklist(1, 1, WatchLinkType);
+        expectEmit(CheckAll);
+        emit LinkTypeSet(1, WatchLinkType);
+        vm.prank(alice);
+        web3Entry.setLinklistType(1, WatchLinkType);
+        // check link type
+        assertEq(linklist.getLinkType(1), WatchLinkType);
+    }
+
+    function testSetLinkListTypeFail() public {
+        // link character
+        vm.prank(alice);
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
+
+        // set linklist type
+        // case 1: call has no permission
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        web3Entry.setLinklistType(1, WatchLinkType);
+    }
+
+    function testSetLinkListTypeFailWithLinkTypeExist() public {
+        // link character
+        vm.startPrank(alice);
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, LikeLinkType, ""));
+
+        // set linklist type
+        vm.expectRevert(abi.encodeWithSelector(ErrLinkTypeExists.selector, 1, LikeLinkType));
+        web3Entry.setLinklistType(1, LikeLinkType);
+
+        // set linkType for linklist with the same linkType
+        vm.expectRevert(abi.encodeWithSelector(ErrLinkTypeExists.selector, 1, LikeLinkType));
+        web3Entry.setLinklistType(2, LikeLinkType);
+        vm.stopPrank();
     }
 
     function testUriFail() public {
@@ -333,5 +398,54 @@ contract LinklistTest is CommonTest {
         // case 2: linklist not exist
         vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
         web3Entry.burnLinklist(100);
+    }
+
+    function testSetLinklistUri() public {
+        // link character
+        vm.prank(alice);
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
+
+        string memory newUri = MOCK_URI;
+        expectEmit(CheckAll);
+        emit UriSet(1, newUri);
+        // set uri
+        vm.prank(alice);
+        web3Entry.setLinklistUri(1, newUri);
+        // check uri
+        assertEq(web3Entry.getLinklistUri(1), newUri);
+        assertEq(linklist.Uri(1), newUri);
+    }
+
+    function testSetLinklistUriWithOperator() public {
+        // link character
+        vm.prank(alice);
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
+
+        // grant operator permission to bob
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(1, bob, 1 << OP.SET_LINKLIST_URI);
+
+        string memory newUri = MOCK_URI;
+        // set uri
+        vm.prank(bob);
+        web3Entry.setLinklistUri(1, newUri);
+        // check uri
+        assertEq(web3Entry.getLinklistUri(1), newUri);
+        assertEq(linklist.Uri(1), newUri);
+    }
+
+    function testSetLinklistUriFail() public {
+        vm.prank(alice);
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
+
+        //  case 1: caller has no permission
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
+        web3Entry.setLinklistUri(1, MOCK_URI);
+
+        // case 2: linklist not exist
+        vm.expectRevert(abi.encodeWithSelector(ErrTokenNotExists.selector));
+        vm.prank(alice);
+        web3Entry.setLinklistUri(2, MOCK_URI);
     }
 }

@@ -42,6 +42,13 @@ interface ILinklist {
      */
     function setUri(uint256 tokenId, string memory newUri) external;
 
+    /**
+     * @notice Sets the link type of the linklist NFT.
+     * @param tokenId The token ID of linklist to set.
+     * @param linkType The link type to set.
+     */
+    function setLinkType(uint256 tokenId, bytes32 linkType) external;
+
     /////////////////////////////////
     // linking Character
     /////////////////////////////////

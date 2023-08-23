@@ -34,6 +34,8 @@ contract Linklist is
 
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
     event Burn(uint256 indexed from, uint256 indexed tokenId);
+    event UriSet(uint256 indexed tokenId, string newUri);
+    event LinkTypeSet(uint256 indexed tokenId, bytes32 indexed newlinkType);
 
     modifier onlyWeb3Entry() {
         if (msg.sender != Web3Entry) revert ErrCallerNotWeb3Entry();
@@ -102,6 +104,18 @@ contract Linklist is
             revert ErrCallerNotWeb3EntryOrNotOwner();
 
         _uris[tokenId] = newUri;
+
+        emit UriSet(tokenId, newUri);
+    }
+
+    /// @inheritdoc ILinklist
+    function setLinkType(
+        uint256 tokenId,
+        bytes32 linkType
+    ) external override onlyWeb3Entry onlyExistingToken(tokenId) {
+        _linkTypes[tokenId] = linkType;
+
+        emit LinkTypeSet(tokenId, linkType);
     }
 
     /////////////////////////////////

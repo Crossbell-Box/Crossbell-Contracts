@@ -6,6 +6,7 @@ import {Events} from "./Events.sol";
 import {ILinklist} from "../interfaces/ILinklist.sol";
 import {ILinkModule4Character} from "../interfaces/ILinkModule4Character.sol";
 import {ILinkModule4Note} from "../interfaces/ILinkModule4Note.sol";
+import {ErrLinkTypeExists} from "./Error.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
@@ -305,6 +306,29 @@ library LinkLogic {
         ILinklist(linklist).removeLinkingAnyUri(linklistId, toUri);
 
         emit Events.UnlinkAnyUri(fromCharacterId, toUri, linkType);
+    }
+
+    function setLinklistType(
+        uint256 characterId,
+        uint256 linklistId,
+        bytes32 linkType,
+        address linklist,
+        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+    ) external {
+        // check linklist exists
+        if (0 != _attachedLinklists[characterId][linkType])
+            revert ErrLinkTypeExists(characterId, linkType);
+
+        // detach linklist
+        bytes32 oldLinkType = ILinklist(linklist).getLinkType(linklistId);
+        emit Events.DetachLinklist(linklistId, characterId, oldLinkType);
+
+        // attach linklist
+        _attachedLinklists[characterId][linkType] = linklistId;
+        emit Events.AttachLinklist(linklistId, characterId, linkType);
+
+        // set linklist type
+        ILinklist(linklist).setLinkType(linklistId, linkType);
     }
 
     /**
