@@ -7,6 +7,10 @@ import {ILinklist} from "../interfaces/ILinklist.sol";
 import {ErrLinkTypeExists} from "./Error.sol";
 
 library LinklistLogic {
+    function setLinklistUri(uint256 linklistId, string calldata uri, address linklist) external {
+        ILinklist(linklist).setUri(linklistId, uri);
+    }
+
     function setLinklistType(
         uint256 characterId,
         uint256 linklistId,

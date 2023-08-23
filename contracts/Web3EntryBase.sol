@@ -183,10 +183,10 @@ contract Web3EntryBase is
 
     /// @inheritdoc IWeb3Entry
     function setLinklistUri(uint256 linklistId, string calldata uri) external override {
-        uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
-        _validateCallerPermission(ownerCharacterId, OP.SET_LINKLIST_URI);
+        uint256 characterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
+        _validateCallerPermission(characterId, OP.SET_LINKLIST_URI);
 
-        ILinklist(_linklist).setUri(linklistId, uri);
+        LinklistLogic.setLinklistUri(linklistId, uri, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
