@@ -13,6 +13,14 @@ contract PrimaryCharacterTest is CommonTest {
         _setUp();
     }
 
+    function testPrimaryCharacterByDefault() public {
+        uint256 characterId = _createCharacter(CHARACTER_HANDLE, alice);
+
+        // check states
+        assertEq(web3Entry.getPrimaryCharacterId(alice), characterId);
+        assertEq(web3Entry.isPrimaryCharacter(characterId), true);
+    }
+
     function testSetPrimaryCharacter() public {
         _createCharacter(CHARACTER_HANDLE, alice);
         _createCharacter(CHARACTER_HANDLE2, alice);
@@ -64,147 +72,128 @@ contract PrimaryCharacterTest is CommonTest {
 
     function testTransferPrimaryCharacter() public {
         // case: transfer primary character to `bob` account, who has no primary character
-        _createCharacter(CHARACTER_HANDLE, alice);
-        // check states
-        assertEq(web3Entry.getPrimaryCharacterId(alice), FIRST_CHARACTER_ID);
-        assertEq(web3Entry.isPrimaryCharacter(FIRST_CHARACTER_ID), true);
+        uint256 characterId = _createCharacter(CHARACTER_HANDLE, alice);
 
         // alice transfers primary character to bob
         vm.prank(alice);
-        web3Entry.transferFrom(alice, bob, FIRST_CHARACTER_ID);
+        web3Entry.transferFrom(alice, bob, characterId);
 
         // check states
         // alice has no primary character
         assertEq(web3Entry.getPrimaryCharacterId(alice), 0);
         // bob's primary character is FIRST_CHARACTER_ID
-        assertEq(web3Entry.getPrimaryCharacterId(bob), FIRST_CHARACTER_ID);
-        assertEq(web3Entry.isPrimaryCharacter(FIRST_CHARACTER_ID), true);
+        assertEq(web3Entry.getPrimaryCharacterId(bob), characterId);
+        assertEq(web3Entry.isPrimaryCharacter(characterId), true);
     }
 
     function testTransferPrimaryCharacter2() public {
         // case: transfer primary character to `bob` account, who already has primary character
         // create characters
-        _createCharacter(CHARACTER_HANDLE, alice);
-        _createCharacter(CHARACTER_HANDLE2, bob);
+        uint256 firstCharacter = _createCharacter(CHARACTER_HANDLE, alice);
+        uint256 secondCharacter = _createCharacter(CHARACTER_HANDLE2, bob);
 
         // check states
-        assertEq(web3Entry.isPrimaryCharacter(FIRST_CHARACTER_ID), true);
-        assertEq(web3Entry.isPrimaryCharacter(SECOND_CHARACTER_ID), true);
+        assertEq(web3Entry.isPrimaryCharacter(firstCharacter), true);
+        assertEq(web3Entry.isPrimaryCharacter(secondCharacter), true);
 
         // alice transfers primary character to bob
         vm.prank(alice);
-        web3Entry.transferFrom(alice, bob, FIRST_CHARACTER_ID);
+        web3Entry.transferFrom(alice, bob, firstCharacter);
 
         // check states
         // alice has no primary character
         assertEq(web3Entry.getPrimaryCharacterId(alice), 0);
-        assertEq(web3Entry.isPrimaryCharacter(FIRST_CHARACTER_ID), false);
+        assertEq(web3Entry.isPrimaryCharacter(firstCharacter), false);
         // bob's primary character is SECOND_CHARACTER_ID
-        assertEq(web3Entry.getPrimaryCharacterId(bob), SECOND_CHARACTER_ID);
-        assertEq(web3Entry.isPrimaryCharacter(SECOND_CHARACTER_ID), true);
+        assertEq(web3Entry.getPrimaryCharacterId(bob), secondCharacter);
+        assertEq(web3Entry.isPrimaryCharacter(secondCharacter), true);
     }
 
-    function testPrimaryCharacter() public {
-        _createCharacter(CHARACTER_HANDLE, alice);
-        assertEq(web3Entry.getPrimaryCharacterId(alice), FIRST_CHARACTER_ID);
+    function testSetPrimaryCharacterMultiply() public {
+        uint256 firstCharacter = _createCharacter(CHARACTER_HANDLE, alice);
+        assertEq(web3Entry.getPrimaryCharacterId(alice), firstCharacter);
+        assertEq(web3Entry.isPrimaryCharacter(firstCharacter), true);
 
         // User should set the new primary character
-        _createCharacter(CHARACTER_HANDLE2, alice);
+        uint256 secondCharacter = _createCharacter(CHARACTER_HANDLE2, alice);
         vm.prank(alice, alice);
-        web3Entry.setPrimaryCharacterId(2);
+        web3Entry.setPrimaryCharacterId(secondCharacter);
         // check primary character
-        assertEq(web3Entry.isPrimaryCharacter(1), false);
-        assertEq(web3Entry.isPrimaryCharacter(2), true);
-        assertEq(web3Entry.getPrimaryCharacterId(alice), 2);
+        assertEq(web3Entry.isPrimaryCharacter(firstCharacter), false);
+        assertEq(web3Entry.isPrimaryCharacter(secondCharacter), true);
+        assertEq(web3Entry.getPrimaryCharacterId(alice), secondCharacter);
 
         // User should set the primary character
         vm.prank(alice, alice);
-        web3Entry.setPrimaryCharacterId(1);
+        web3Entry.setPrimaryCharacterId(firstCharacter);
         // check primary character
-        assertEq(web3Entry.isPrimaryCharacter(1), true);
-        assertEq(web3Entry.isPrimaryCharacter(2), false);
-        assertEq(web3Entry.getPrimaryCharacterId(alice), 1);
-
-        // transfer character
-        vm.prank(alice);
-        web3Entry.transferFrom(alice, bob, FIRST_CHARACTER_ID);
-        // check primary character
-        assertEq(web3Entry.isPrimaryCharacter(1), true);
-        assertEq(web3Entry.getPrimaryCharacterId(bob), 1);
-        assertEq(web3Entry.getPrimaryCharacterId(alice), 0);
+        assertEq(web3Entry.isPrimaryCharacter(firstCharacter), true);
+        assertEq(web3Entry.isPrimaryCharacter(secondCharacter), false);
+        assertEq(web3Entry.getPrimaryCharacterId(alice), firstCharacter);
     }
 
     function testTransferNonPrimaryCharacter() public {
         // create characters
-        _createCharacter(CHARACTER_HANDLE, alice);
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE2, alice));
-
-        // check states
-        assertEq(web3Entry.isPrimaryCharacter(SECOND_CHARACTER_ID), false);
+        uint256 firstCharacter = _createCharacter(CHARACTER_HANDLE, alice);
+        uint256 secondCharacter = _createCharacter(CHARACTER_HANDLE2, alice);
 
         // alice transfers non primary character to bob
         vm.prank(alice);
-        web3Entry.transferFrom(alice, bob, SECOND_CHARACTER_ID);
+        web3Entry.transferFrom(alice, bob, secondCharacter);
 
         // check states
-        // alice's primary character is FIRST_CHARACTER_ID
-        assertEq(web3Entry.getPrimaryCharacterId(alice), FIRST_CHARACTER_ID);
-        assertEq(web3Entry.isPrimaryCharacter(FIRST_CHARACTER_ID), true);
-        // bob's primary character is SECOND_CHARACTER_ID
-        assertEq(web3Entry.getPrimaryCharacterId(bob), SECOND_CHARACTER_ID);
-        assertEq(web3Entry.isPrimaryCharacter(SECOND_CHARACTER_ID), true);
+        // alice's primary character is firstCharacter
+        assertEq(web3Entry.getPrimaryCharacterId(alice), firstCharacter);
+        assertEq(web3Entry.isPrimaryCharacter(firstCharacter), true);
+        // bob's primary character is secondCharacter
+        assertEq(web3Entry.getPrimaryCharacterId(bob), secondCharacter);
+        assertEq(web3Entry.isPrimaryCharacter(secondCharacter), true);
     }
 
     function testTransferLinkedCharacter() public {
         // User should transfer the primary character, and the linklist
         vm.startPrank(bob);
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, bob));
-        _createCharacter(CHARACTER_HANDLE2, bob);
+        uint256 firstCharacter = _createCharacter(CHARACTER_HANDLE, bob);
+        uint256 secondCharacter = _createCharacter(CHARACTER_HANDLE2, bob);
         // link character
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
         );
-        // transfer character 1 to alice
-        web3Entry.transferFrom(bob, alice, FIRST_LINKLIST_ID);
-
-        // transfer character 2 to carol
+        // transfer firstCharacter to alice
+        web3Entry.transferFrom(bob, alice, firstCharacter);
+        // transfer secondCharacter to carol
         web3Entry.transferFrom(bob, carol, SECOND_CHARACTER_ID);
         vm.stopPrank();
 
         // check state
-        assertEq(web3Entry.ownerOf(FIRST_CHARACTER_ID), alice);
-        assertEq(web3Entry.ownerOf(SECOND_CHARACTER_ID), carol);
-        assertEq(linklist.ownerOf(FIRST_LINKLIST_ID), alice);
-        assertEq(web3Entry.getLinklistId(1, FollowLinkType), FIRST_LINKLIST_ID);
-        assertEq(web3Entry.getPrimaryCharacterId(alice), FIRST_CHARACTER_ID);
-        assertEq(web3Entry.getPrimaryCharacterId(carol), SECOND_CHARACTER_ID);
+        assertEq(web3Entry.ownerOf(firstCharacter), alice);
+        assertEq(web3Entry.ownerOf(secondCharacter), carol);
+        assertEq(web3Entry.getPrimaryCharacterId(alice), firstCharacter);
+        assertEq(web3Entry.getPrimaryCharacterId(carol), secondCharacter);
         assertEq(web3Entry.getPrimaryCharacterId(bob), 0);
+        // check linklist
+        assertEq(linklist.ownerOf(1), alice);
+        assertEq(web3Entry.getLinklistId(1, FollowLinkType), 1);
     }
 
     function testTransferCharacterWithOperators() public {
         vm.startPrank(alice);
-        _createCharacter(CHARACTER_HANDLE, alice);
-        web3Entry.grantOperatorPermissions(
-            FIRST_CHARACTER_ID,
-            carol,
-            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
-        );
+        uint256 characterId = _createCharacter(CHARACTER_HANDLE, alice);
+        web3Entry.grantOperatorPermissions(characterId, carol, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(characterId, dick, OP.DEFAULT_PERMISSION_BITMAP);
 
         // alice transfers primary character to bob
-        web3Entry.transferFrom(alice, bob, FIRST_CHARACTER_ID);
+        web3Entry.transferFrom(alice, bob, characterId);
 
         // check states
         // alice has no primary character
         assertEq(web3Entry.getPrimaryCharacterId(alice), 0);
         // bob's primary character is FIRST_CHARACTER_ID
-        assertEq(web3Entry.getPrimaryCharacterId(bob), FIRST_CHARACTER_ID);
-        assertEq(web3Entry.isPrimaryCharacter(FIRST_CHARACTER_ID), true);
+        assertEq(web3Entry.getPrimaryCharacterId(bob), characterId);
+        assertEq(web3Entry.isPrimaryCharacter(characterId), true);
         // check operators
-        assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, carol), 0);
+        assertEq(web3Entry.getOperators(characterId).length, 0);
+        assertEq(web3Entry.getOperatorPermissions(characterId, carol), 0);
+        assertEq(web3Entry.getOperatorPermissions(characterId, dick), 0);
     }
 }

@@ -286,17 +286,20 @@ contract OperatorTest is CommonTest {
         );
     }
 
-    function testOperatorsWithTransfer() public {
-        // case 1: alice transfer its character
+    function testOperatorsWithTransferCharacter() public {
+        uint256 characterId = FIRST_CHARACTER_ID;
+
+        // case 1: alice sets operators and then transfers its character
         vm.startPrank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
-        web3Entry.safeTransferFrom(alice, carol, FIRST_CHARACTER_ID);
+        web3Entry.grantOperatorPermissions(characterId, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(characterId, carol, OP.POST_NOTE_PERMISSION_BITMAP);
+        web3Entry.safeTransferFrom(alice, dick, characterId);
         vm.stopPrank();
 
         // check operator permission
-        assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob), 0);
-        address[] memory operators = web3Entry.getOperators(FIRST_CHARACTER_ID);
-        assertEq(operators.length, 0);
+        assertEq(web3Entry.getOperatorPermissions(characterId, bob), 0);
+        assertEq(web3Entry.getOperatorPermissions(characterId, carol), 0);
+        assertEq(web3Entry.getOperators(characterId).length, 0);
     }
 
     function testOperatorsWithTransferFromNewbieVilla() public {
