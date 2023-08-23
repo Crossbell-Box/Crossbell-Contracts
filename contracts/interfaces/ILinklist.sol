@@ -38,9 +38,9 @@ interface ILinklist {
      * is undetermined and expandable. One scenario that comes to mind is setting a cover for your liked notes
      * or following list in your bookmarks.
      * @param tokenId The token ID to set URI.
-     * @param newUri The new URI to set.
+     * @param uri The new URI to set.
      */
-    function setUri(uint256 tokenId, string memory newUri) external;
+    function setUri(uint256 tokenId, string memory uri) external;
 
     /**
      * @notice Sets the link type of the linklist NFT.

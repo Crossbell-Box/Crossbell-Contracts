@@ -34,7 +34,7 @@ contract Linklist is
 
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
     event Burn(uint256 indexed from, uint256 indexed tokenId);
-    event UriSet(uint256 indexed tokenId, string newUri);
+    event UriSet(uint256 indexed tokenId, string uri);
     event LinkTypeSet(uint256 indexed tokenId, bytes32 indexed newlinkType);
 
     modifier onlyWeb3Entry() {
@@ -97,15 +97,15 @@ contract Linklist is
     /// @inheritdoc ILinklist
     function setUri(
         uint256 tokenId,
-        string memory newUri
+        string memory uri
     ) external override onlyExistingToken(tokenId) {
         // caller must be web3Entry or owner
         if (msg.sender != Web3Entry && msg.sender != ownerOf(tokenId))
             revert ErrCallerNotWeb3EntryOrNotOwner();
 
-        _uris[tokenId] = newUri;
+        _uris[tokenId] = uri;
 
-        emit UriSet(tokenId, newUri);
+        emit UriSet(tokenId, uri);
     }
 
     /// @inheritdoc ILinklist
