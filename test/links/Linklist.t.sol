@@ -179,6 +179,22 @@ contract LinklistTest is CommonTest {
         assertEq(linklist.getLinkType(1), WatchLinkType);
     }
 
+    function testSetLinkListTypeWithOperator() public {
+        // link character
+        vm.prank(alice);
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
+
+        // grant operator permission to bob
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(1, bob, 1 << OP.SET_LINKLIST_TYPE);
+
+        // set linklist type
+        vm.prank(bob);
+        web3Entry.setLinklistType(1, WatchLinkType);
+        // check link type
+        assertEq(linklist.getLinkType(1), WatchLinkType);
+    }
+
     function testSetLinkListTypeFail() public {
         // link character
         vm.prank(alice);
@@ -187,6 +203,17 @@ contract LinklistTest is CommonTest {
         // set linklist type
         // case 1: call has no permission
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        web3Entry.setLinklistType(1, WatchLinkType);
+
+        // case 2: operator has no permission
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            1,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP ^ (1 << OP.SET_LINKLIST_TYPE)
+        );
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
         web3Entry.setLinklistType(1, WatchLinkType);
     }
 
