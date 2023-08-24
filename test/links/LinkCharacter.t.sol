@@ -12,134 +12,100 @@ import {CommonTest} from "../helpers/CommonTest.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract LinkCharacterTest is CommonTest {
+    uint256 public firstCharacter;
+    uint256 public secondCharacter;
+
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
 
         // create character
-        _createCharacter(CHARACTER_HANDLE, alice);
-        _createCharacter(CHARACTER_HANDLE2, bob);
+        firstCharacter = _createCharacter(CHARACTER_HANDLE, alice);
+        secondCharacter = _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
     function testLinkCharacter() public {
-        vm.startPrank(alice);
         expectEmit(CheckAll);
-        emit Events.LinkCharacter(
-            alice,
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
-            FollowLinkType,
-            1
-        );
+        emit Events.LinkCharacter(alice, firstCharacter, secondCharacter, FollowLinkType, 1);
+        vm.prank(alice);
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
         );
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
+        assertEq(linklist.getOwnerCharacterId(1), firstCharacter);
         assertEq(web3Entry.getLinklistType(1), FollowLinkType);
-        vm.stopPrank();
+        assertEq(linklist.getLinkingCharacterIds(1).length, 1);
+        assertEq(linklist.getLinkingCharacterIds(1)[0], secondCharacter);
+        assertEq(linklist.getLinkingCharacterListLength(1), 1);
+    }
 
-        // periphery can link
-        // the first input is msg.sender and the second input is tx.origin
+    function testLinkCharacterWithPeriphery() public {
+        expectEmit(CheckAll);
+        emit Events.LinkCharacter(alice, firstCharacter, secondCharacter, FollowLinkType, 1);
         vm.prank(address(periphery), alice);
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
         );
 
-        // check state
-        assertEq(linklist.getOwnerCharacterId(1), FIRST_CHARACTER_ID);
+        // check linklist
+        assertEq(linklist.ownerOf(1), alice);
+        assertEq(linklist.getOwnerCharacterId(1), firstCharacter);
+        assertEq(web3Entry.getLinklistType(1), FollowLinkType);
         assertEq(linklist.getLinkingCharacterIds(1).length, 1);
-        assertEq(linklist.getLinkingCharacterIds(1)[0], 2);
+        assertEq(linklist.getLinkingCharacterIds(1)[0], secondCharacter);
         assertEq(linklist.getLinkingCharacterListLength(1), 1);
     }
 
     function testLinkCharacterFail() public {
         // case 1: NotEnoughPermission
-        vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
         );
 
-        // case 2: CharacterNotExists
+        // case 2: link a non-existing character
+        vm.expectRevert(abi.encodeWithSelector(ErrCharacterNotExists.selector, 3));
         vm.prank(alice);
-        vm.expectRevert(abi.encodeWithSelector(ErrCharacterNotExists.selector, THIRD_CHARACTER_ID));
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                THIRD_CHARACTER_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, 3, FollowLinkType, ""));
 
         // case 3: link a burned character
         vm.prank(bob);
-        web3Entry.burn(SECOND_CHARACTER_ID);
-        vm.expectRevert(
-            abi.encodeWithSelector(ErrCharacterNotExists.selector, SECOND_CHARACTER_ID)
-        );
+        web3Entry.burn(secondCharacter);
+        vm.expectRevert(abi.encodeWithSelector(ErrCharacterNotExists.selector, secondCharacter));
         vm.prank(alice);
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
         );
     }
 
     function testUnlinkCharacter() public {
         vm.startPrank(alice);
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
         );
 
         // unlink
         expectEmit(CheckAll);
-        emit Events.UnlinkCharacter(alice, FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FollowLinkType);
+        emit Events.UnlinkCharacter(alice, firstCharacter, secondCharacter, FollowLinkType);
         web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FollowLinkType)
+            DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType)
         );
 
         // unlink twice
         web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FollowLinkType)
+            DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType)
         );
 
         // unlink a non-existing character
-        web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(FIRST_CHARACTER_ID, 99999, FollowLinkType)
-        );
+        web3Entry.unlinkCharacter(DataTypes.unlinkCharacterData(firstCharacter, 9, FollowLinkType));
         vm.stopPrank();
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
-
         // check state
-        assertEq(linklist.getOwnerCharacterId(1), FIRST_CHARACTER_ID);
+        assertEq(linklist.getOwnerCharacterId(1), firstCharacter);
         assertEq(linklist.getLinkingCharacterIds(1).length, 0);
         assertEq(linklist.getLinkingCharacterListLength(1), 0);
     }
@@ -147,31 +113,21 @@ contract LinkCharacterTest is CommonTest {
     function testUnlinkCharacterFail() public {
         vm.prank(alice);
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
         );
 
         // unlink
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FollowLinkType)
+            DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType)
         );
     }
 
     function testLinklistTotalSupply() public {
         vm.startPrank(alice);
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                FollowLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
         );
 
         // check linklist
@@ -180,12 +136,7 @@ contract LinkCharacterTest is CommonTest {
         assertEq(linklist.totalSupply(), 1);
 
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                LikeLinkType,
-                new bytes(0)
-            )
+            DataTypes.linkCharacterData(firstCharacter, secondCharacter, LikeLinkType, "")
         );
 
         // check linklist
@@ -194,12 +145,7 @@ contract LinkCharacterTest is CommonTest {
         assertEq(linklist.totalSupply(), 2);
 
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                FIRST_CHARACTER_ID,
-                SECOND_CHARACTER_ID,
-                bytes32("LinkTypeAB"),
-                new bytes(0)
-            )
+            DataTypes.linkCharacterData(firstCharacter, secondCharacter, bytes32("LinkTypeAB"), "")
         );
 
         // check linklist

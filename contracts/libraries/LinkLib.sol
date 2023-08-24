@@ -20,15 +20,13 @@ library LinkLib {
      * @param   linkType  linkType, like “follow”.
      * @param   data  The data to pass to the link module, if any.
      * @param   linklist  The linklist contract address.
-     * @param   linkModule  The linkModule address of the character to link.
      */
     function linkCharacter(
         uint256 fromCharacterId,
         uint256 toCharacterId,
         bytes32 linkType,
         bytes memory data,
-        address linklist,
-        address linkModule
+        address linklist
     ) external {
         address linker = IERC721(address(this)).ownerOf(fromCharacterId);
         uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist);
@@ -37,6 +35,7 @@ library LinkLib {
         ILinklist(linklist).addLinkingCharacterId(linklistId, toCharacterId);
 
         // process link module
+        address linkModule = StorageLib.getCharacter(toCharacterId).linkModule;
         if (linkModule != address(0)) {
             try
                 ILinkModule4Character(linkModule).processLink(linker, toCharacterId, data)

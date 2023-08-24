@@ -49,7 +49,7 @@ contract Web3EntryBase is
     }
 
     modifier onlyExistingToken(uint256 tokenId) {
-        if (!_exists(tokenId)) revert ErrTokenNotExists();
+        if (!_exists(tokenId)) revert ErrCharacterNotExists(tokenId);
         _;
     }
 
@@ -167,16 +167,18 @@ contract Web3EntryBase is
     /// @inheritdoc IWeb3Entry
     function linkCharacter(
         DataTypes.linkCharacterData calldata vars
-    ) external override validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER) {
-        if (!_exists(vars.toCharacterId)) revert ErrCharacterNotExists(vars.toCharacterId);
-
+    )
+        external
+        override
+        onlyExistingToken(vars.toCharacterId)
+        validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER)
+    {
         LinkLib.linkCharacter(
             vars.fromCharacterId,
             vars.toCharacterId,
             vars.linkType,
             vars.data,
-            _linklist,
-            _characterById[vars.toCharacterId].linkModule
+            _linklist
         );
     }
 
@@ -209,14 +211,7 @@ contract Web3EntryBase is
         );
 
         // link character
-        LinkLib.linkCharacter(
-            vars.fromCharacterId,
-            characterId,
-            vars.linkType,
-            "",
-            _linklist,
-            address(0)
-        );
+        LinkLib.linkCharacter(vars.fromCharacterId, characterId, vars.linkType, "", _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
