@@ -82,3 +82,6 @@ error ErrNotOwner();
 
 /// @dev Token not exists
 error ErrTokenNotExists();
+
+/// @dev LinkType already exists
+error ErrLinkTypeExists(uint256 characterId, bytes32 linkType);

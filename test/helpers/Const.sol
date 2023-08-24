@@ -50,4 +50,5 @@ contract Const {
     // constants for linkType
     bytes32 public constant FollowLinkType = "follow";
     bytes32 public constant LikeLinkType = "like";
+    bytes32 public constant WatchLinkType = "watch";
 }

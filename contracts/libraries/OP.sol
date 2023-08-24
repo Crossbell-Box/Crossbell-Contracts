@@ -77,12 +77,15 @@ library OP {
     uint8 internal constant SET_NOTE_URI = 195;
     uint8 internal constant LOCK_NOTE = 196;
     uint8 internal constant DELETE_NOTE = 197;
+    // post note
     uint8 internal constant POST_NOTE_FOR_CHARACTER = 198;
     uint8 internal constant POST_NOTE_FOR_ADDRESS = 199;
     uint8 internal constant POST_NOTE_FOR_LINKLIST = 200;
     uint8 internal constant POST_NOTE_FOR_NOTE = 201;
     uint8 internal constant POST_NOTE_FOR_ERC721 = 202;
     uint8 internal constant POST_NOTE_FOR_ANYURI = 203;
+    // set linklist type
+    uint8 internal constant SET_LINKLIST_TYPE = 204;
     // set [176,204] bit index
 
     // [236, 255] for operator sync permissions
@@ -96,7 +99,7 @@ library OP {
 
     // DEFAULT_PERMISSION_BITMAP has operator sign permissions and operator sync permissions
     uint256 internal constant DEFAULT_PERMISSION_BITMAP =
-        ((UINT256_MAX << 176) & ~(UINT256_MAX << 204)) | POST_NOTE_PERMISSION_BITMAP;
+        ((UINT256_MAX << 176) & ~(UINT256_MAX << 205)) | POST_NOTE_PERMISSION_BITMAP;
 
     // bitmap mask with all current-in-use methods to 1
     uint256 internal constant ALLOWED_PERMISSION_BITMAP_MASK =
