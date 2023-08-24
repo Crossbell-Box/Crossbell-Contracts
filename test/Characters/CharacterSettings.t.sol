@@ -14,109 +14,110 @@ import {
 import {CommonTest} from "../helpers/CommonTest.sol";
 
 contract CharacterSettingsTest is CommonTest {
+    uint256 public firstCharacter;
+
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, alice));
+
+        firstCharacter = _createCharacter(CHARACTER_HANDLE, alice);
     }
 
     /// Character Setting 1: Set Handle
     function testSetHandleByOwner() public {
         // owner can set character uri
-        vm.prank(alice);
         expectEmit(CheckAll);
-        emit Events.SetHandle(address(alice), FIRST_CHARACTER_ID, CHARACTER_HANDLE2);
-        web3Entry.setHandle(FIRST_CHARACTER_ID, CHARACTER_HANDLE2);
+        emit Events.SetHandle(alice, firstCharacter, CHARACTER_HANDLE2);
+        vm.prank(alice);
+        web3Entry.setHandle(firstCharacter, CHARACTER_HANDLE2);
 
         // check alice's handle
-        _checkHandle(FIRST_CHARACTER_ID, CHARACTER_HANDLE2);
+        _checkHandle(firstCharacter, CHARACTER_HANDLE2);
         // check old handle is removed
-        _checkHandle(0, CHARACTER_HANDLE);
+        assertEq(web3Entry.getCharacterByHandle(CHARACTER_HANDLE).characterId, 0);
     }
 
     function testSetHandleByOwnerBehindPeriphery() public {
         // owner behind periphery can set handle
         vm.prank(address(periphery), alice);
-        web3Entry.setHandle(FIRST_CHARACTER_ID, CHARACTER_HANDLE2);
+        web3Entry.setHandle(firstCharacter, CHARACTER_HANDLE2);
 
         // check alice's handle
-        _checkHandle(FIRST_CHARACTER_ID, CHARACTER_HANDLE2);
+        _checkHandle(firstCharacter, CHARACTER_HANDLE2);
         // check old handle is removed
-        _checkHandle(0, CHARACTER_HANDLE);
+        assertEq(web3Entry.getCharacterByHandle(CHARACTER_HANDLE).characterId, 0);
     }
 
     function testSetHandleByOperator() public {
         // alice grant bob DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_NOTE_ID, bob, OP.OWNER_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.SET_HANDLE);
         // bob can set alice's handle
         vm.prank(bob);
-        web3Entry.setHandle(FIRST_CHARACTER_ID, CHARACTER_HANDLE2);
+        web3Entry.setHandle(firstCharacter, CHARACTER_HANDLE2);
 
         // check alice's handle
-        _checkHandle(FIRST_CHARACTER_ID, CHARACTER_HANDLE2);
+        _checkHandle(firstCharacter, CHARACTER_HANDLE2);
         // check old handle is removed
-        _checkHandle(0, CHARACTER_HANDLE);
+        assertEq(web3Entry.getCharacterByHandle(CHARACTER_HANDLE).characterId, 0);
     }
 
     function testSetHandleByOperatorBehindPeriphery() public {
         // alice grant bob DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_NOTE_ID, bob, OP.OWNER_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.SET_HANDLE);
         // bob can set alice's handle
         vm.prank(address(periphery), bob);
-        web3Entry.setHandle(FIRST_CHARACTER_ID, CHARACTER_HANDLE2);
+        web3Entry.setHandle(firstCharacter, CHARACTER_HANDLE2);
 
         // check alice's handle
-        _checkHandle(FIRST_CHARACTER_ID, CHARACTER_HANDLE2);
+        _checkHandle(firstCharacter, CHARACTER_HANDLE2);
         // check old handle is removed
-        _checkHandle(0, CHARACTER_HANDLE);
+        assertEq(web3Entry.getCharacterByHandle(CHARACTER_HANDLE).characterId, 0);
     }
 
-    // solhint-disable-next-line function-max-lines
     function testSetHandleFail() public {
-        // not owner can't set handle
-        vm.prank(bob);
+        // case 1: not owner can't set handle
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setHandle(FIRST_CHARACTER_ID, CHARACTER_HANDLE2);
+        vm.prank(bob);
+        web3Entry.setHandle(firstCharacter, CHARACTER_HANDLE2);
 
-        // operator without enough permission can't set handle
+        // case 2: operator without enough permission can't set handle
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            FIRST_CHARACTER_ID,
-            bob,
-            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
-        );
-        vm.prank(bob);
-        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setHandle(FIRST_CHARACTER_ID, CHARACTER_HANDLE2);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.SET_SOCIAL_TOKEN);
 
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
+        web3Entry.setHandle(firstCharacter, CHARACTER_HANDLE2);
+
+        // case 3: operator behind periphery without enough permission can't set handle
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(address(periphery), bob);
-        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setHandle(FIRST_CHARACTER_ID, CHARACTER_HANDLE2);
+        web3Entry.setHandle(firstCharacter, CHARACTER_HANDLE2);
 
-        // handle exists
-        vm.prank(alice);
+        // case 4: handle exists
         vm.expectRevert(abi.encodeWithSelector(ErrHandleExists.selector));
-        web3Entry.setHandle(FIRST_CHARACTER_ID, CHARACTER_HANDLE);
+        vm.prank(alice);
+        web3Entry.setHandle(firstCharacter, CHARACTER_HANDLE);
 
-        // handle length > 31
+        // case 5: handle length > 31
         vm.startPrank(alice);
         vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
-        web3Entry.setHandle(FIRST_CHARACTER_ID, "da2423cea4f1047556e7a142f81a7eda");
+        web3Entry.setHandle(firstCharacter, "da2423cea4f1047556e7a142f81a7eda");
 
-        // empty handle
+        // cast 6: empty handle
         vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
-        web3Entry.setHandle(FIRST_CHARACTER_ID, "");
+        web3Entry.setHandle(firstCharacter, "");
 
-        // handle length < 3
+        // case 7: handle length < 3
         vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
-        web3Entry.setHandle(FIRST_CHARACTER_ID, "a");
+        web3Entry.setHandle(firstCharacter, "a");
         vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
-        web3Entry.setHandle(FIRST_CHARACTER_ID, "ab");
+        web3Entry.setHandle(firstCharacter, "ab");
+    }
 
-        // invalid character handle
-        // string memory s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()+|[]:,";
+    function testSetHandleFailWithInvalidChar() public {
+        // cast 8: invalid character handle
         string[42] memory handles = [
             "abA",
             "abB",
@@ -165,183 +166,162 @@ contract CharacterSettingsTest is CommonTest {
         for (uint256 i = 0; i < handles.length; i++) {
             // set handle fail
             vm.expectRevert(abi.encodeWithSelector(ErrHandleContainsInvalidCharacters.selector));
-            web3Entry.setHandle(FIRST_CHARACTER_ID, handles[i]);
+            vm.prank(alice);
+            web3Entry.setHandle(firstCharacter, handles[i]);
         }
     }
 
     /// setSocialToken
     function testSetSocialTokenByOwner() public {
         // owner can set social token
-        vm.prank(alice);
         expectEmit(CheckAll);
-        emit Events.SetSocialToken(address(alice), FIRST_CHARACTER_ID, address(token));
-        web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
+        emit Events.SetSocialToken(alice, firstCharacter, address(token));
+        vm.prank(alice);
+        web3Entry.setSocialToken(firstCharacter, address(token));
 
-        _checkSocialToken(CHARACTER_HANDLE, address(token));
+        _checkSocialToken(firstCharacter, address(token));
     }
 
     function testSetSocialTokenByOwnerBehindPeriphery() public {
         // users behind periphery can set social token
         vm.prank(address(periphery), alice);
-        web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
+        web3Entry.setSocialToken(firstCharacter, address(token));
 
-        _checkSocialToken(CHARACTER_HANDLE, address(token));
+        _checkSocialToken(firstCharacter, address(token));
     }
 
     function testSetSocialTokenByOperator() public {
         // operator can set social token
         // alice grant bob DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.OWNER_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.SET_SOCIAL_TOKEN);
         // bob can set alice's social token
         vm.prank(bob);
-        web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
+        web3Entry.setSocialToken(firstCharacter, address(token));
 
-        _checkSocialToken(CHARACTER_HANDLE, address(token));
+        _checkSocialToken(firstCharacter, address(token));
     }
 
     function testSetSocialTokenByOperatorBehindPeriphery() public {
         // operator can set social token
         // alice grant bob DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.OWNER_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.SET_SOCIAL_TOKEN);
         // operator behind periphery can set social token
         vm.prank(address(periphery), bob);
-        web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
+        web3Entry.setSocialToken(firstCharacter, address(token));
 
-        _checkSocialToken(CHARACTER_HANDLE, address(token));
+        _checkSocialToken(firstCharacter, address(token));
     }
 
     function testSetSocialTokenFailWithoutPermission() public {
         // case 1: not owner can't set social token
-        vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
+        vm.prank(bob);
+        web3Entry.setSocialToken(firstCharacter, address(token));
 
         // case 2: operator without enough permission can't set social token
         // alice grant bob POST_NOTE_DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
-            FIRST_CHARACTER_ID,
+            firstCharacter,
             bob,
             OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
         );
-        vm.prank(bob);
+
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
+        vm.prank(bob);
+        web3Entry.setSocialToken(firstCharacter, address(token));
 
         //  case 3: operator behind periphery without enough permission can't set social token
-        vm.prank(address(periphery), bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
+        vm.prank(address(periphery), bob);
+        web3Entry.setSocialToken(firstCharacter, address(token));
     }
 
     function testSetSocialTokenFailAlreadySet() public {
         vm.startPrank(alice);
-        web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
+        web3Entry.setSocialToken(firstCharacter, address(token));
+
         // set social token again
         vm.expectRevert(abi.encodePacked(ErrSocialTokenExists.selector));
-        web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(token));
+        web3Entry.setSocialToken(firstCharacter, address(token));
         vm.stopPrank();
     }
 
     // Character Setting 2: Set uri
     function testSetCharacterUriByOwner() public {
         expectEmit(CheckAll);
-        emit Events.SetCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
+        emit Events.SetCharacterUri(firstCharacter, CHARACTER_URI);
         vm.prank(alice);
-        web3Entry.setCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
-        _checkCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
+        web3Entry.setCharacterUri(firstCharacter, CHARACTER_URI);
+
+        _checkCharacterUri(firstCharacter, CHARACTER_URI);
     }
 
     function testSetCharacterUriByOwnerBehindPeriphery() public {
         vm.prank(address(periphery), alice);
-        web3Entry.setCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
-        _checkCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
+        web3Entry.setCharacterUri(firstCharacter, CHARACTER_URI);
+
+        _checkCharacterUri(firstCharacter, CHARACTER_URI);
     }
 
     function testSetCharacterUriByOperator() public {
         // alice grant bob DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_NOTE_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP);
+
         // bob can set alice's handle
         vm.prank(bob);
-        web3Entry.setCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
-        _checkCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
+        web3Entry.setCharacterUri(firstCharacter, CHARACTER_URI);
+
+        _checkCharacterUri(firstCharacter, CHARACTER_URI);
     }
 
     function testSetCharacterUriByOperatorBehindPeriphery() public {
         // alice grant bob DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_NOTE_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.SET_CHARACTER_URI);
+
         // bob can set alice's handle
         vm.prank(address(periphery), bob);
-        web3Entry.setCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
-        _checkCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
+        web3Entry.setCharacterUri(firstCharacter, CHARACTER_URI);
+
+        _checkCharacterUri(firstCharacter, CHARACTER_URI);
     }
 
     function testSetCharacterUriFail() public {
-        // not owner can't set character uri
-        vm.prank(bob);
+        // case 1: not owner can't set character uri
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
+        vm.prank(bob);
+        web3Entry.setCharacterUri(firstCharacter, CHARACTER_URI);
 
-        // operator without enough permission can't set character uri
+        // case 2: operator without enough permission can't set character uri
         // alice grant bob POST_NOTE_DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            FIRST_CHARACTER_ID,
-            bob,
-            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
-        );
-        vm.prank(bob);
-        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.SET_LINKLIST_URI);
 
-        //  operator behind periphery without enough permission can't set character uri
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
+        web3Entry.setCharacterUri(firstCharacter, CHARACTER_URI);
+
+        //  case 3: operator behind periphery without enough permission can't set character uri
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(address(periphery), bob);
-        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setCharacterUri(FIRST_CHARACTER_ID, CHARACTER_URI);
-    }
-
-    function testTransferCharacterWithApproval() public {
-        // alice approve bob to transfer NFT to bob
-        vm.prank(alice);
-        web3Entry.approve(bob, FIRST_CHARACTER_ID);
-        assertEq(web3Entry.getApproved(FIRST_CHARACTER_ID), bob);
-        vm.prank(bob);
-        web3Entry.transferFrom(alice, bob, FIRST_CHARACTER_ID);
-        assertEq(web3Entry.ownerOf(FIRST_CHARACTER_ID), bob);
-        assertEq(web3Entry.getApproved(FIRST_CHARACTER_ID), address(0));
-
-        // bob approve alice to transfer NFT to carol
-        vm.prank(bob);
-        web3Entry.setApprovalForAll(alice, true);
-        assertEq(web3Entry.isApprovedForAll(bob, alice), true);
-        vm.prank(alice);
-        web3Entry.transferFrom(bob, carol, FIRST_CHARACTER_ID);
-        assertEq(web3Entry.ownerOf(FIRST_CHARACTER_ID), carol);
-        assertEq(web3Entry.getApproved(FIRST_CHARACTER_ID), address(0));
+        web3Entry.setCharacterUri(firstCharacter, CHARACTER_URI);
     }
 
     function _checkHandle(uint256 characterId, string memory handle) internal {
-        // query character by handle
-        DataTypes.Character memory character = web3Entry.getCharacterByHandle(handle);
-        assertEq(character.characterId, characterId);
-
-        // query handle by characterId
-        if (characterId != 0) {
-            assertEq(handle, web3Entry.getHandle(characterId));
-        }
+        assertEq(web3Entry.getCharacterByHandle(handle).characterId, characterId);
+        assertEq(web3Entry.getHandle(characterId), handle);
     }
 
     function _checkCharacterUri(uint256 characterId, string memory characterUri) internal {
         assertEq(web3Entry.getCharacterUri(characterId), characterUri);
-        assertEq(web3Entry.tokenURI(FIRST_CHARACTER_ID), CHARACTER_URI);
+        assertEq(web3Entry.tokenURI(characterId), characterUri);
     }
 
-    function _checkSocialToken(string memory handle, address socialToken) internal {
-        DataTypes.Character memory character = web3Entry.getCharacterByHandle(handle);
-        assertEq(character.socialToken, socialToken);
+    function _checkSocialToken(uint256 characterId, address socialToken) internal {
+        assertEq(web3Entry.getCharacter(characterId).socialToken, socialToken);
     }
 }

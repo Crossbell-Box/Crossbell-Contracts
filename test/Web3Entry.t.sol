@@ -30,6 +30,40 @@ contract CharacterSettingsTest is CommonTest {
         assertTrue(web3Entry.supportsInterface(type(IERC165).interfaceId));
     }
 
+    function testTransferCharacter() public {
+        uint256 characterId = _createCharacter(CHARACTER_HANDLE, alice);
+        vm.prank(alice);
+        web3Entry.transferFrom(alice, bob, characterId);
+
+        assertEq(web3Entry.ownerOf(characterId), bob);
+    }
+
+    function testTransferCharacterWithApproval() public {
+        uint256 characterId = _createCharacter(CHARACTER_HANDLE, alice);
+
+        // alice approves bob
+        vm.prank(alice);
+        web3Entry.approve(bob, characterId);
+        assertEq(web3Entry.getApproved(characterId), bob);
+
+        // case 1: bob transfers character from alice to carol
+        vm.prank(bob);
+        web3Entry.transferFrom(alice, carol, characterId);
+        assertEq(web3Entry.ownerOf(characterId), carol);
+        assertEq(web3Entry.getApproved(characterId), address(0));
+
+        // case 2: carol approve alice to transfer NFT to bob
+        vm.prank(carol);
+        web3Entry.setApprovalForAll(alice, true);
+        assertEq(web3Entry.isApprovedForAll(carol, alice), true);
+        // alice transfers character from carol to bob
+        vm.prank(alice);
+        web3Entry.transferFrom(carol, bob, characterId);
+        assertEq(web3Entry.ownerOf(characterId), bob);
+        assertEq(web3Entry.getApproved(characterId), address(0));
+        assertEq(web3Entry.isApprovedForAll(carol, alice), true);
+    }
+
     function testQueryWithTokenNotExists() public {
         // token not exist
         uint256 tokenId = 2;

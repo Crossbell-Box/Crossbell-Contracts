@@ -17,12 +17,12 @@ library PostLib {
 
     function postNoteWithLink(
         DataTypes.PostNoteData calldata vars,
-        uint256 toNoteId,
+        uint256 noteId,
         bytes32 linkItemType,
         bytes32 linkKey,
         bytes calldata data
     ) external {
-        DataTypes.Note storage _note = StorageLib.getNote(vars.characterId, toNoteId);
+        DataTypes.Note storage _note = StorageLib.getNote(vars.characterId, noteId);
 
         // save note
         _note.contentUri = vars.contentUri;
@@ -34,7 +34,7 @@ library PostLib {
         // init link module
         _setLinkModule4Note(
             vars.characterId,
-            toNoteId,
+            noteId,
             vars.linkModule,
             vars.linkModuleInitData,
             _note
@@ -43,13 +43,13 @@ library PostLib {
         // init mint module
         _setMintModule4Note(
             vars.characterId,
-            toNoteId,
+            noteId,
             vars.mintModule,
             vars.mintModuleInitData,
             _note
         );
 
-        emit Events.PostNote(vars.characterId, toNoteId, linkKey, linkItemType, data);
+        emit Events.PostNote(vars.characterId, noteId, linkKey, linkItemType, data);
     }
 
     function mintNote(
