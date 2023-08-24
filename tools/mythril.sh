@@ -16,7 +16,5 @@ echo "Tips: "
 myth analyze contracts/misc/Tips.sol --solc-json mythril.config.json --solv 0.8.18 --max-depth 10 --execution-timeout 900  --solver-timeout 900 &&
 echo "TipsWithFee: "
 myth analyze contracts/misc/TipsWithFee.sol --solc-json mythril.config.json --solv 0.8.18 --max-depth 10 --execution-timeout 900  --solver-timeout 900 &&
-echo "TipsWithConfig: "
-myth analyze contracts/misc/TipsWithConfig.sol --solc-json mythril.config.json --solv 0.8.18 --max-depth 10 --execution-timeout 900  --solver-timeout 900 &&
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" ' |
 docker run --rm -v "$PWD":/project -i --workdir=/project --entrypoint=sh mythril/myth

@@ -87,7 +87,7 @@ contract Web3EntryBase is
         uint256 permissionBitMap,
         DataTypes.EIP712Signature calldata signature
     ) external override {
-        if (signature.signer != ownerOf(characterId)) revert ErrNotCharacterOwner();
+        if (!_callerIsCharacterOwner(signature.signer, characterId)) revert ErrNotCharacterOwner();
 
         MetaTxLib.validateGrantOperatorPermissionsSignature(
             signature,
@@ -137,7 +137,7 @@ contract Web3EntryBase is
 
     /// @inheritdoc IWeb3Entry
     function setPrimaryCharacterId(uint256 characterId) external override {
-        if (!_callerIsCharacterOwner(characterId)) revert ErrNotCharacterOwner();
+        if (!_callerIsCharacterOwner(msg.sender, characterId)) revert ErrNotCharacterOwner();
 
         // `tx.origin` is used here because the caller may be the periphery contract
         uint256 oldCharacterId = _primaryCharacterByAddress[tx.origin];
@@ -226,8 +226,7 @@ contract Web3EntryBase is
             vars.toNoteId,
             vars.linkType,
             vars.data,
-            _linklist,
-            _noteByIdByCharacter[vars.toCharacterId][vars.toNoteId].linkModule
+            _linklist
         );
     }
 
@@ -546,7 +545,7 @@ contract Web3EntryBase is
     function burnLinklist(uint256 linklistId) external override {
         // only the owner of the character can burn the linklist through web3Entry contract
         uint256 characterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
-        if (msg.sender != ownerOf(characterId)) revert ErrNotCharacterOwner();
+        if (!_callerIsCharacterOwner(msg.sender, characterId)) revert ErrNotCharacterOwner();
 
         // delete _attachedLinklist
         bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
@@ -787,7 +786,7 @@ contract Web3EntryBase is
 
     function _validateCallerPermission(uint256 characterId, uint256 permissionId) internal view {
         // check character owner
-        if (_callerIsCharacterOwner(characterId)) {
+        if (_callerIsCharacterOwner(msg.sender, characterId)) {
             return;
         }
 
@@ -800,16 +799,19 @@ contract Web3EntryBase is
         revert ErrNotEnoughPermission();
     }
 
-    function _callerIsCharacterOwner(uint256 characterId) internal view returns (bool) {
+    function _callerIsCharacterOwner(
+        address caller,
+        uint256 characterId
+    ) internal view returns (bool) {
         address owner = ownerOf(characterId);
 
-        if (msg.sender == owner) {
+        if (caller == owner) {
             // caller is character owner
             return true;
         }
 
         // solhint-disable-next-line avoid-tx-origin
-        if (msg.sender == _periphery && tx.origin == owner) {
+        if (caller == _periphery && tx.origin == owner) {
             // caller is periphery, and tx.origin is character owner
             return true;
         }
@@ -819,7 +821,7 @@ contract Web3EntryBase is
 
     function _validateCallerPermission4Note(uint256 characterId, uint256 noteId) internal view {
         // check character owner
-        if (_callerIsCharacterOwner(characterId)) {
+        if (_callerIsCharacterOwner(msg.sender, characterId)) {
             return;
         }
 

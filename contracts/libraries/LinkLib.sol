@@ -28,7 +28,7 @@ library LinkLib {
         bytes memory data,
         address linklist
     ) external {
-        address linker = IERC721(address(this)).ownerOf(fromCharacterId);
+        address linker = _ownerOf(fromCharacterId);
         uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist);
 
         // add to link list
@@ -58,11 +58,11 @@ library LinkLib {
         bytes32 linkType,
         address linklist
     ) external {
+        address linker = _ownerOf(fromCharacterId);
         uint256 linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
         // remove from link list
         ILinklist(linklist).removeLinkingCharacterId(linklistId, toCharacterId);
 
-        address linker = IERC721(address(this)).ownerOf(fromCharacterId);
         emit Events.UnlinkCharacter(linker, fromCharacterId, toCharacterId, linkType);
     }
 
@@ -74,7 +74,6 @@ library LinkLib {
      * @param   linkType  The linkType, like “follow”.
      * @param   data  The data to pass to the link module, if any.
      * @param   linklist  The linklist contract address.
-     * @param   linkModule  The linkModule address of the note to link
      */
     function linkNote(
         uint256 fromCharacterId,
@@ -82,16 +81,16 @@ library LinkLib {
         uint256 toNoteId,
         bytes32 linkType,
         bytes calldata data,
-        address linklist,
-        address linkModule
+        address linklist
     ) external {
-        address linker = IERC721(address(this)).ownerOf(fromCharacterId);
+        address linker = _ownerOf(fromCharacterId);
         uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist);
 
         // add to link list
         ILinklist(linklist).addLinkingNote(linklistId, toCharacterId, toNoteId);
 
         // process link
+        address linkModule = StorageLib.getNote(toCharacterId, toNoteId).linkModule;
         if (linkModule != address(0)) {
             try
                 ILinkModule4Note(linkModule).processLink(linker, toCharacterId, toNoteId, data)
@@ -312,5 +311,9 @@ library LinkLib {
             StorageLib.setAttachedLinklistId(fromCharacterId, linkType, linklistId);
             emit Events.AttachLinklist(linklistId, fromCharacterId, linkType);
         }
+    }
+
+    function _ownerOf(uint256 characterId) internal view returns (address) {
+        return IERC721(address(this)).ownerOf(characterId);
     }
 }

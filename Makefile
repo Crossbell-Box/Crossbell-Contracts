@@ -31,7 +31,7 @@ solhint :; solhint -f table "{contracts,test,scripts}/**/*.sol"
 
 # slither
 # to install slither, visit [https://github.com/crytic/slither]
-slither :; slither . --fail-low --triage-mode
+slither :; slither . --fail-low #--triage-mode
 
 # mythril
 mythril :
