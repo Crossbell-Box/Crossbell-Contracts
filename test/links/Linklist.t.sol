@@ -175,8 +175,10 @@ contract LinklistTest is CommonTest {
         emit LinkTypeSet(1, WatchLinkType);
         vm.prank(alice);
         web3Entry.setLinklistType(1, WatchLinkType);
+
         // check link type
         assertEq(linklist.getLinkType(1), WatchLinkType);
+        assertEq(web3Entry.getLinklistId(1, WatchLinkType), 1);
         // check old link type
         assertEq(web3Entry.getLinklistId(1, FollowLinkType), 0);
     }
