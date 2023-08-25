@@ -158,10 +158,24 @@ contract Web3EntryBase is
 
     /// @inheritdoc IWeb3Entry
     function setLinklistUri(uint256 linklistId, string calldata uri) external override {
-        uint256 ownerCharacterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
-        _validateCallerPermission(ownerCharacterId, OP.SET_LINKLIST_URI);
+        uint256 characterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
+        _validateCallerPermission(characterId, OP.SET_LINKLIST_URI);
 
-        ILinklist(_linklist).setUri(linklistId, uri);
+        LinklistLogic.setLinklistUri(linklistId, uri, _linklist);
+    }
+
+    /// @inheritdoc IWeb3Entry
+    function setLinklistType(uint256 linklistId, bytes32 linkType) external override {
+        uint256 characterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
+        _validateCallerPermission(characterId, OP.SET_LINKLIST_TYPE);
+
+        LinklistLogic.setLinklistType(
+            characterId,
+            linklistId,
+            linkType,
+            _linklist,
+            _attachedLinklists
+        );
     }
 
     /// @inheritdoc IWeb3Entry
@@ -545,14 +559,9 @@ contract Web3EntryBase is
     function burnLinklist(uint256 linklistId) external override {
         // only the owner of the character can burn the linklist through web3Entry contract
         uint256 characterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
-        if (!_callerIsCharacterOwner(msg.sender, characterId)) revert ErrNotCharacterOwner();
+        _validateCallerIsCharacterOwner(characterId);
 
-        // delete _attachedLinklist
-        bytes32 linkType = ILinklist(_linklist).getLinkType(linklistId);
-        delete _attachedLinklists[characterId][linkType];
-
-        // burn linklist
-        ILinklist(_linklist).burn(linklistId);
+        LinklistLogic.burnLinklist(characterId, linklistId, _linklist, _attachedLinklists);
     }
 
     /// @inheritdoc IWeb3Entry

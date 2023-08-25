@@ -118,6 +118,16 @@ interface IWeb3Entry {
     function setLinklistUri(uint256 linkListId, string calldata uri) external;
 
     /**
+     * @notice Sets a link type for a given linklist.
+     * @dev Linklist is the group of all linking objects with the same link type, like "like".
+     * Each character can only have one linklist for each link type.
+     * It will fail if you try to set a link type which is already set for some linklist owned by the same character.
+     * @param linkListId The linklist ID to set for.
+     * @param linkType The link type to set.
+     */
+    function setLinklistType(uint256 linkListId, bytes32 linkType) external;
+
+    /**
      * @notice Links an address with the given parameters.
      * @param vars The linkAddressData struct containing the linking parameters:<br>
      * `fromCharacterId`: The character ID to sponsor a link action.<br>
@@ -430,6 +440,7 @@ interface IWeb3Entry {
 
     /**
      * @notice Burns a linklist NFT.
+     * @dev It will burn the linklist NFT and remove the links from a character.
      * @param linklistId The linklist ID to burn.
      */
     function burnLinklist(uint256 linklistId) external;

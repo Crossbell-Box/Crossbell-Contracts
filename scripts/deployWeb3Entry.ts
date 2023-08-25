@@ -21,9 +21,6 @@ async function main() {
 
     // We get the contract to deploy
 
-    const LinkModuleLogic = await ethers.getContractFactory("LinkModuleLogic");
-    const linkModuleLogic = await LinkModuleLogic.deploy();
-
     const CharacterLogic = await ethers.getContractFactory("CharacterLogic");
     const characterLogic = await CharacterLogic.deploy();
 
@@ -33,15 +30,18 @@ async function main() {
     const LinkLogic = await ethers.getContractFactory("LinkLogic");
     const linkLogic = await LinkLogic.deploy();
 
+    const LinklistLogic = await ethers.getContractFactory("LinklistLogic");
+    const linklistLogic = await LinklistLogic.deploy();
+
     const OperatorLogic = await ethers.getContractFactory("OperatorLogic");
     const operatorLogic = await OperatorLogic.deploy();
 
     const Web3Entry = await ethers.getContractFactory("Web3Entry", {
         libraries: {
-            LinkModuleLogic: linkModuleLogic.address,
             CharacterLogic: characterLogic.address,
             PostLogic: postLogic.address,
             LinkLogic: linkLogic.address,
+            LinklistLogic: linklistLogic.address,
             OperatorLogic: operatorLogic.address,
         },
     });
@@ -56,11 +56,11 @@ async function main() {
         newbieVilla,
     );
 
-    console.log("LinkModuleLogic deployed to:", linkModuleLogic.address);
     console.log("CharacterLib.sol deployed to:", characterLogic.address);
     console.log("PostLib.sol deployed to:", postLogic.address);
     console.log("LinkLib.sol deployed to:", linkLogic.address);
     console.log("OperatorLib.sol deployed to:", operatorLogic.address);
+   
     console.log("Web3Entry deployed to:", web3Entry.address);
 }
 
