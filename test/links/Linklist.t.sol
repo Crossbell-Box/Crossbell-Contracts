@@ -177,6 +177,27 @@ contract LinklistTest is CommonTest {
         web3Entry.setLinklistType(1, WatchLinkType);
         // check link type
         assertEq(linklist.getLinkType(1), WatchLinkType);
+        // check old link type
+        assertEq(web3Entry.getLinklistId(1, FollowLinkType), 0);
+    }
+
+    function testSetLinkListTypeMultiply() public {
+        // link character
+        vm.startPrank(alice);
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));
+
+        // set linklist type
+        web3Entry.setLinklistType(1, WatchLinkType);
+        web3Entry.setLinklistType(1, LikeLinkType);
+        web3Entry.setLinklistType(1, FollowLinkType);
+        vm.stopPrank();
+
+        // check link type
+        assertEq(linklist.getLinkType(1), FollowLinkType);
+        assertEq(web3Entry.getLinklistId(1, FollowLinkType), 1);
+        // check old link type
+        assertEq(web3Entry.getLinklistId(1, LikeLinkType), 0);
+        assertEq(web3Entry.getLinklistId(1, WatchLinkType), 0);
     }
 
     function testSetLinkListTypeWithOperator() public {

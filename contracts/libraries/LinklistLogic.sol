@@ -24,6 +24,7 @@ library LinklistLogic {
 
         // detach linklist
         bytes32 oldLinkType = ILinklist(linklist).getLinkType(linklistId);
+        delete _attachedLinklists[characterId][oldLinkType];
         emit Events.DetachLinklist(linklistId, characterId, oldLinkType);
 
         // attach linklist
