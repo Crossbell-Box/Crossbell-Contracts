@@ -10,11 +10,22 @@ library StorageLib {
 
     uint256 public constant CHARACTERS_MAPPING_SLOT = 10;
     uint256 public constant CHARACTER_ID_BY_HANDLE_HASH_MAPPING_SLOT = 11;
+    uint256 public constant PRIMARY_CHARACTER_BY_ADDRESS_MAPPING_SLOT = 12;
     uint256 public constant ATTACHED_LINK_LISTS_MAPPING_SLOT = 13;
     uint256 public constant NOTES_MAPPING_SLOT = 14;
+    uint256 public constant LINK_MODULE_4_LINKLIST_MAPPING_SLOT = 15;
+    uint256 public constant LINK_MODULE_4_ERC721_MAPPING_SLOT = 16;
+    uint256 public constant LINK_MODULE_4_ADDRESS_MAPPING_SLOT = 17;
+    uint256 public constant CHARACTER_COUNTER_SLOG = 18;
+    uint256 public constant LINKLIST_SLOT = 19;
+    uint256 public constant MINT_NFT_IMPL_SLOT = 20;
+    uint256 public constant PERIPHERY_SLOT = 21;
+    // Slot 22 is deprecated
+    // Slot 23 is deprecated
     uint256 public constant OPERATORS_BY_CHARACTER_MAPPING_SLOT = 24;
     uint256 public constant OPERATORS_PERMISSION_BIT_MAP_MAPPING_SLOT = 25;
     uint256 public constant OPERATOR_FOR_NOTE_MAPPING_SLOT = 26;
+    uint256 public constant NEWBIE_VILLA_SLOT = 27;
     uint256 public constant SIG_NONCES_MAPPING_SLOT = 28;
 
     function setOperatorsPermissionBitMap(
@@ -42,6 +53,16 @@ library StorageLib {
             mstore(32, keccak256(0, 64))
             mstore(0, linkType)
             sstore(keccak256(0, 64), linklistId)
+        }
+    }
+
+    function deleteAttachedLinklistId(uint256 characterId, bytes32 linkType) internal {
+        assembly {
+            mstore(0, characterId)
+            mstore(32, ATTACHED_LINK_LISTS_MAPPING_SLOT)
+            mstore(32, keccak256(0, 64))
+            mstore(0, linkType)
+            sstore(keccak256(0, 64), 0)
         }
     }
 

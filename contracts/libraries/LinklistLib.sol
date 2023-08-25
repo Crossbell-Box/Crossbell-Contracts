@@ -24,8 +24,7 @@ library LinklistLib {
 
         // detach linklist
         bytes32 oldLinkType = ILinklist(linklist).getLinkType(linklistId);
-        // set linklistId to 0
-        StorageLib.setAttachedLinklistId(characterId, oldLinkType, 0);
+        StorageLib.deleteAttachedLinklistId(characterId, oldLinkType);
         emit Events.DetachLinklist(linklistId, characterId, oldLinkType);
 
         // attach linklist
@@ -38,8 +37,8 @@ library LinklistLib {
 
     function burnLinklist(uint256 characterId, uint256 linklistId, address linklist) external {
         bytes32 linkType = ILinklist(linklist).getLinkType(linklistId);
-        // delete _attachedLinklist (set linklistId to 0)
-        StorageLib.setAttachedLinklistId(characterId, linkType, 0);
+        // detach linklist
+        StorageLib.deleteAttachedLinklistId(characterId, linkType);
 
         // burn linklist
         ILinklist(linklist).burn(linklistId);

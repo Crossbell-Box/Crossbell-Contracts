@@ -577,11 +577,8 @@ contract Web3EntryBase is
         uint256 characterId,
         uint256 noteId
     ) external view override returns (address[] memory blocklist, address[] memory allowlist) {
-        DataTypes.Operators4Note storage operators4Note = _operators4Note[characterId][noteId];
-        (blocklist, allowlist) = (
-            operators4Note.blocklist.values(),
-            operators4Note.allowlist.values()
-        );
+        DataTypes.Operators4Note storage operators = _operators4Note[characterId][noteId];
+        (blocklist, allowlist) = (operators.blocklist.values(), operators.allowlist.values());
     }
 
     /// @inheritdoc IWeb3Entry
