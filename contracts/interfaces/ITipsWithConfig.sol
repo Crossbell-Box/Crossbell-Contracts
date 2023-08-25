@@ -87,8 +87,9 @@ interface ITipsWithConfig {
      * Emits a {CollectTips4Character} event if collects successfully.
      * @dev It will transfer all unredeemed token from the `fromCharacter` to the `toCharacter`.
      * @param tipConfigId The tip config ID.
+     * @return collectedAmount The amount of token collected.
      */
-    function collectTips4Character(uint256 tipConfigId) external;
+    function collectTips4Character(uint256 tipConfigId) external returns (uint256 collectedAmount);
 
     /**
      * @notice Returns the fee percentage of specific <receiver, note>.

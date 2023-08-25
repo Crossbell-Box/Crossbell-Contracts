@@ -594,10 +594,10 @@ contract TipsWithConfigTest is CommonTest {
     ) public {
         vm.assume(amount > 0 && amount < initialBalance / 10000);
         vm.assume(interval > 0 && interval < 100 days);
-        vm.assume(num > 0 && num < 500);
+        vm.assume(num > 1 && num < 500);
 
         uint256 startTime = block.timestamp;
-        uint256 endTime = startTime + interval * num;
+        uint256 endTime = startTime + interval * num - 1;
 
         // set fee
         uint256 feeFraction = 1000;
@@ -651,6 +651,10 @@ contract TipsWithConfigTest is CommonTest {
 
             skip(interval);
         }
+
+        // collect already ended
+        skip(interval);
+        assertEq(_tips.collectTips4Character(1), 0);
     }
 
     function _checkConfig(

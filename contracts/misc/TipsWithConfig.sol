@@ -206,9 +206,11 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     }
 
     /// @inheritdoc ITipsWithConfig
-    function collectTips4Character(uint256 tipConfigId) external override nonReentrant {
+    function collectTips4Character(
+        uint256 tipConfigId
+    ) external override nonReentrant returns (uint256 collectedAmount) {
         // collect tips
-        _collectTips4Character(tipConfigId);
+        collectedAmount = _collectTips4Character(tipConfigId);
     }
 
     /// @inheritdoc ITipsWithConfig
@@ -248,17 +250,17 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         return _web3Entry;
     }
 
-    function _collectTips4Character(uint256 tipConfigId) internal {
+    function _collectTips4Character(uint256 tipConfigId) internal returns (uint256) {
         TipsConfig storage config = _tipsConfigs[tipConfigId];
 
         // not started
         if (config.startTime > block.timestamp) {
-            return;
+            return 0;
         }
 
         // already ended
         if (config.currentRound >= config.totalRound) {
-            return;
+            return 0;
         }
 
         (uint256 currentRound, uint256 availableAmount) = _getAvailableRoundAndAmount(config);
@@ -294,6 +296,8 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
                 currentRound
             );
         }
+
+        return availableAmount;
     }
 
     function _getTipsConfigId(
