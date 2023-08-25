@@ -45,6 +45,19 @@ library StorageLib {
         }
     }
 
+    function getAttachedLinklistId(
+        uint256 characterId,
+        bytes32 linkType
+    ) internal view returns (uint256 _linklistId) {
+        assembly {
+            mstore(0, characterId)
+            mstore(32, ATTACHED_LINK_LISTS_MAPPING_SLOT)
+            mstore(32, keccak256(0, 64))
+            mstore(0, linkType)
+            _linklistId := sload(keccak256(0, 64))
+        }
+    }
+
     function nonces() internal pure returns (mapping(address => uint256) storage _nonces) {
         assembly {
             _nonces.slot := SIG_NONCES_MAPPING_SLOT
@@ -104,19 +117,6 @@ library StorageLib {
             mstore(32, keccak256(0, 64))
             mstore(0, noteId)
             _operators4Note.slot := keccak256(0, 64)
-        }
-    }
-
-    function getAttachedLinklistId(
-        uint256 characterId,
-        bytes32 linkType
-    ) internal view returns (uint256 _linklistId) {
-        assembly {
-            mstore(0, characterId)
-            mstore(32, ATTACHED_LINK_LISTS_MAPPING_SLOT)
-            mstore(32, keccak256(0, 64))
-            mstore(0, linkType)
-            _linklistId := sload(keccak256(0, 64))
         }
     }
 }

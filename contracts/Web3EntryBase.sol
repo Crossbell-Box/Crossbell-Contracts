@@ -23,8 +23,7 @@ import {
     ErrNotCharacterOwner,
     ErrNotEnoughPermission,
     ErrNotEnoughPermissionForThisNote,
-    ErrCharacterNotExists,
-    ErrTokenNotExists
+    ErrCharacterNotExists
 } from "./libraries/Error.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
@@ -141,8 +140,9 @@ contract Web3EntryBase is
         if (!_callerIsCharacterOwner(msg.sender, characterId)) revert ErrNotCharacterOwner();
 
         // `tx.origin` is used here because the caller may be the periphery contract
-        uint256 oldCharacterId = _primaryCharacterByAddress[tx.origin];
-        _primaryCharacterByAddress[tx.origin] = characterId;
+        address owner = tx.origin; // solhint-disable-line avoid-tx-origin
+        uint256 oldCharacterId = _primaryCharacterByAddress[owner];
+        _primaryCharacterByAddress[owner] = characterId;
 
         emit Events.SetPrimaryCharacterId(msg.sender, characterId, oldCharacterId);
     }
@@ -795,7 +795,7 @@ contract Web3EntryBase is
         }
 
         // check operator permission for caller
-        address caller = (msg.sender == _periphery) ? tx.origin : msg.sender;
+        address caller = (msg.sender == _periphery) ? tx.origin : msg.sender; // solhint-disable-line avoid-tx-origin
         if (_checkBit(_operatorsPermissionBitMap[characterId][caller], permissionId)) {
             return;
         }
@@ -830,7 +830,7 @@ contract Web3EntryBase is
         }
 
         // check note permission for caller
-        address caller = (msg.sender == _periphery) ? tx.origin : msg.sender;
+        address caller = (msg.sender == _periphery) ? tx.origin : msg.sender; // solhint-disable-line avoid-tx-origin
         if (_isOperatorAllowedForNote(characterId, noteId, caller)) {
             return;
         }

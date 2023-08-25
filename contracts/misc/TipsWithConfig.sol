@@ -125,6 +125,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     }
 
     /// @inheritdoc ITipsWithConfig
+    // solhint-disable-next-line function-max-lines
     function setTipsConfig4Character(
         uint256 fromCharacterId,
         uint256 toCharacterId,

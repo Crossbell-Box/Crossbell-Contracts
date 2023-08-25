@@ -444,6 +444,11 @@ contract Linklist is
     }
 
     /// @inheritdoc ILinklist
+    function totalSupply() external view override returns (uint256) {
+        return _totalSupply;
+    }
+
+    /// @inheritdoc ILinklist
     function balanceOf(uint256 characterId) public view override returns (uint256) {
         return _linklistBalances[characterId];
     }
@@ -464,11 +469,6 @@ contract Linklist is
         uint256 characterId = _linklistOwners[tokenId];
         address owner = IERC721(Web3Entry).ownerOf(characterId);
         return owner;
-    }
-
-    /// @inheritdoc ILinklist
-    function totalSupply() external view override returns (uint256) {
-        return _totalSupply;
     }
 
     function _safeTransfer(

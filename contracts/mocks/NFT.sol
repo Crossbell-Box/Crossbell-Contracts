@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// solhint-disable comprehensive-interface
+// solhint-disable comprehensive-interface,one-contract-per-file
 pragma solidity 0.8.18;
 
 import {NFTBase} from "../base/NFTBase.sol";
