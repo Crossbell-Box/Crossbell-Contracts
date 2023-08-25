@@ -194,7 +194,7 @@ contract Web3EntryBase is
     /// @inheritdoc IWeb3Entry
     function unlinkCharacter(
         DataTypes.unlinkCharacterData calldata vars
-    ) external override validateCallerPermission(vars.fromCharacterId, OP.LINK_CHARACTER) {
+    ) external override validateCallerPermission(vars.fromCharacterId, OP.UNLINK_CHARACTER) {
         LinkLib.unlinkCharacter(vars.fromCharacterId, vars.toCharacterId, vars.linkType, _linklist);
     }
 

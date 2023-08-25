@@ -18,13 +18,13 @@ import {ERC1271WalletMock, ERC1271MaliciousMock} from "../contracts/mocks/ERC127
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract OperatorTest is CommonTest {
-    address[] public blocklist = [bob];
-    address[] public allowlist = [carol, dick];
-
     address public constant migrateOwner = 0xda2423ceA4f1047556e7a142F81a7ED50e93e160;
 
     ERC1271WalletMock public erc1271wallet;
     ERC1271MaliciousMock public erc1271Malicious;
+
+    uint256 public firstCharacter;
+    uint256 public secondCharacter;
 
     // solhint-disable-next-line private-vars-leading-underscore, var-name-mixedcase
     bytes32 internal constant TYPEHASH =
@@ -39,47 +39,53 @@ contract OperatorTest is CommonTest {
         erc1271Malicious = new ERC1271MaliciousMock();
 
         // create character
-        _createCharacter(CHARACTER_HANDLE, alice);
-        _createCharacter(CHARACTER_HANDLE2, bob);
+        firstCharacter = _createCharacter(CHARACTER_HANDLE, alice);
+        secondCharacter = _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
     function testGrantOperatorPermissions() public {
         expectEmit(CheckAll);
-        emit Events.GrantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
-
-        // alice set bob as her operator with OP.DEFAULT_PERMISSION_BITMAP
+        emit Events.GrantOperatorPermissions(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        // case 1: alice set bob as her operator with OP.DEFAULT_PERMISSION_BITMAP
         vm.startPrank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP);
         assertEq(
-            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob),
+            web3Entry.getOperatorPermissions(firstCharacter, bob),
             OP.DEFAULT_PERMISSION_BITMAP
         );
 
-        // grant operator sync permission
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.POST_NOTE_PERMISSION_BITMAP);
+        // case 2: grant operator sync permission
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.POST_NOTE_PERMISSION_BITMAP);
         assertEq(
-            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob),
+            web3Entry.getOperatorPermissions(firstCharacter, bob),
             OP.POST_NOTE_PERMISSION_BITMAP
         );
 
-        // test bitmap is correctly filtered
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, UINT256_MAX);
+        // case 3: test bitmap is correctly filtered
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, UINT256_MAX);
         assertEq(
-            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob),
+            web3Entry.getOperatorPermissions(firstCharacter, bob),
             OP.ALLOWED_PERMISSION_BITMAP_MASK
         );
         vm.stopPrank();
     }
 
     function testGrantOperatorPermissionsFail() public {
-        // bob is not the owner of FIRST_CHARACTER_ID, he can't grant
+        // bob is not the owner of firstCharacter, he can't grant
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            firstCharacter,
+            bob,
+            OP.ALLOWED_PERMISSION_BITMAP_MASK ^ (1 << OP.GRANT_OPERATOR_PERMISSIONS)
+        );
+
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, carol, OP.DEFAULT_PERMISSION_BITMAP);
     }
 
     function testGrantOperatorPermissionsWithSig() public {
-        uint256 characterId = FIRST_CHARACTER_ID;
+        uint256 characterId = firstCharacter;
         address operator = bob;
         uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
         uint256 deadline = block.timestamp + 10;
@@ -92,7 +98,7 @@ contract OperatorTest is CommonTest {
         sig.deadline = deadline;
 
         web3Entry.grantOperatorPermissionsWithSig(
-            FIRST_CHARACTER_ID,
+            firstCharacter,
             bob,
             OP.DEFAULT_PERMISSION_BITMAP,
             sig
@@ -100,14 +106,14 @@ contract OperatorTest is CommonTest {
 
         // check operator permission
         assertEq(
-            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob),
+            web3Entry.getOperatorPermissions(firstCharacter, bob),
             OP.DEFAULT_PERMISSION_BITMAP
         );
         assertEq(web3Entry.nonces(alice), 1);
     }
 
     function testGrantOperatorPermissionsWithSigWithERC1271Wallet() public {
-        uint256 characterId = FIRST_CHARACTER_ID;
+        uint256 characterId = firstCharacter;
         address operator = bob;
         uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
         uint256 deadline = block.timestamp + 10;
@@ -135,7 +141,7 @@ contract OperatorTest is CommonTest {
     }
 
     function testGrantOperatorPermissionsWithSigFailSignatureExpired() public {
-        uint256 characterId = FIRST_CHARACTER_ID;
+        uint256 characterId = firstCharacter;
         address operator = bob;
         uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
         uint256 deadline = block.timestamp + 10;
@@ -156,7 +162,7 @@ contract OperatorTest is CommonTest {
     }
 
     function testGrantOperatorPermissionsWithSigFailSignatureInvalid() public {
-        uint256 characterId = FIRST_CHARACTER_ID;
+        uint256 characterId = firstCharacter;
         address operator = bob;
         uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
         uint256 deadline = block.timestamp + 10;
@@ -178,7 +184,7 @@ contract OperatorTest is CommonTest {
     }
 
     function testGrantOperatorPermissionsWithSigFailSignatureInvalid2() public {
-        uint256 characterId = FIRST_CHARACTER_ID;
+        uint256 characterId = firstCharacter;
         address operator = bob;
         uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
         uint256 deadline = block.timestamp + 10;
@@ -197,7 +203,7 @@ contract OperatorTest is CommonTest {
     }
 
     function testGrantOperatorPermissionsWithSigFailWithMaliciousERC1271Wallet() public {
-        uint256 characterId = FIRST_CHARACTER_ID;
+        uint256 characterId = firstCharacter;
         uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
         uint256 deadline = block.timestamp + 10;
         address signer = address(erc1271Malicious);
@@ -221,73 +227,90 @@ contract OperatorTest is CommonTest {
 
     function testGrantOperators4Note() public {
         vm.startPrank(alice);
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+        uint256 noteId = web3Entry.postNote(makePostNoteData(firstCharacter));
 
+        address[] memory blocklist = array(bob);
+        address[] memory allowlist = array(carol, dick);
+        // grant operators for note 1
         expectEmit(CheckAll);
-        emit Events.GrantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, allowlist);
+        emit Events.GrantOperators4Note(firstCharacter, noteId, blocklist, allowlist);
+        web3Entry.grantOperators4Note(firstCharacter, noteId, blocklist, allowlist);
+        // check state
+        _checkOperators4Note(firstCharacter, noteId, blocklist, allowlist);
 
-        web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, allowlist);
-
-        (address[] memory blocklist_, address[] memory allowlist_) = web3Entry.getOperators4Note(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID
-        );
-
-        assertEq(blocklist_, blocklist);
-        assertEq(allowlist_, allowlist);
-
+        // grant new operators for note 1
         // blocklist and allowlist are overwritten correctly
-        // i swap blocklist and allowlist here for convenience.
-        web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, allowlist, blocklist);
-        (blocklist_, allowlist_) = web3Entry.getOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-
-        assertEq(blocklist_, allowlist);
-        assertEq(allowlist_, blocklist);
-        // check operator note permission
-        for (uint256 i = 0; i < allowlist_.length; i++) {
-            assertTrue(
-                web3Entry.isOperatorAllowedForNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID, allowlist_[i])
-            );
-        }
-        for (uint256 i = 0; i < blocklist_.length; i++) {
-            assertFalse(
-                web3Entry.isOperatorAllowedForNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist_[i])
-            );
-        }
+        blocklist = array(bob, carol);
+        allowlist = array(erik, dick);
+        web3Entry.grantOperators4Note(firstCharacter, noteId, blocklist, allowlist);
+        // check state
+        _checkOperators4Note(firstCharacter, noteId, blocklist, allowlist);
     }
 
     function testGrantOperators4NoteFail() public {
-        // bob is not owner of FIRST_CHARACTER_ID, can't grant
+        address[] memory blocklist = array(bob);
+        address[] memory allowlist = array(carol, dick);
+
+        // bob is not owner of firstCharacter, can't grant
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, allowlist);
+        web3Entry.grantOperators4Note(firstCharacter, 1, blocklist, allowlist);
 
         // note doesn't exist
         vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
         vm.prank(alice);
-        web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, SECOND_NOTE_ID, blocklist, allowlist);
+        web3Entry.grantOperators4Note(firstCharacter, 9, blocklist, allowlist);
     }
 
-    function testGetOperatorPermissions() public {
-        // alice grant bob OP.DEFAULT_PERMISSION_BITMAP permission
-        vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
-        assertEq(
-            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob),
-            OP.DEFAULT_PERMISSION_BITMAP
-        );
+    function testGetOperators() public {
+        vm.startPrank(alice);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.POST_NOTE);
+        web3Entry.grantOperatorPermissions(firstCharacter, carol, OP.POST_NOTE_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, carol, 0);
+        web3Entry.grantOperatorPermissions(firstCharacter, dick, OP.POST_NOTE);
+        web3Entry.grantOperatorPermissions(firstCharacter, dick, 0);
+        web3Entry.grantOperatorPermissions(firstCharacter, dick, UINT256_MAX);
+        web3Entry.grantOperatorPermissions(firstCharacter, erik, UINT256_MAX);
+        vm.stopPrank();
 
-        // alice grant bob OP.POST_NOTE_PERMISSION_BITMAP permission
-        vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.POST_NOTE_PERMISSION_BITMAP);
-        assertEq(
-            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob),
-            OP.POST_NOTE_PERMISSION_BITMAP
-        );
+        assertEq(web3Entry.getOperators(firstCharacter), array(bob, dick, erik));
+    }
+
+    function testGetOperators2() public {
+        address[4] memory accounts = [bob, carol, dick, erik];
+
+        vm.startPrank(alice);
+        for (uint256 i = 0; i < accounts.length; i++) {
+            web3Entry.grantOperatorPermissions(
+                firstCharacter,
+                accounts[i],
+                OP.DEFAULT_PERMISSION_BITMAP
+            );
+        }
+        // check operators
+        address[] memory operators = web3Entry.getOperators(firstCharacter);
+        for (uint256 i = 0; i < operators.length; i++) {
+            assertEq(operators[i], accounts[i]);
+            // check Operator permission
+            assertEq(
+                web3Entry.getOperatorPermissions(firstCharacter, accounts[i]),
+                OP.DEFAULT_PERMISSION_BITMAP
+            );
+        }
+
+        // remove all operators
+        for (uint256 i = 0; i < accounts.length; i++) {
+            web3Entry.grantOperatorPermissions(firstCharacter, accounts[i], 0);
+            assertEq(web3Entry.getOperatorPermissions(firstCharacter, accounts[i]), 0);
+        }
+        assertEq(web3Entry.getOperators(firstCharacter).length, 0);
+
+        vm.stopPrank();
     }
 
     function testOperatorsWithTransferCharacter() public {
-        uint256 characterId = FIRST_CHARACTER_ID;
+        uint256 characterId = firstCharacter;
 
         // case 1: alice sets operators and then transfers its character
         vm.startPrank(alice);
@@ -304,12 +327,13 @@ contract OperatorTest is CommonTest {
 
     function testOperatorsWithTransferFromNewbieVilla() public {
         // case 2: alice withdraw its character from newbieVilla contract
-        uint256 characterId;
         uint256 nonce = 1;
         uint256 expires = block.timestamp + 10 minutes;
 
         // create and transfer web3Entry nft to newbieVilla
-        characterId = web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE3, newbieAdmin));
+        uint256 characterId = web3Entry.createCharacter(
+            makeCharacterData(CHARACTER_HANDLE3, newbieAdmin)
+        );
         vm.prank(newbieAdmin);
         web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), characterId);
         // generate proof for withdrawal
@@ -333,59 +357,63 @@ contract OperatorTest is CommonTest {
             web3Entry.getOperatorPermissions(characterId, newbieAdmin),
             OP.DEFAULT_PERMISSION_BITMAP
         );
-        address[] memory operators = web3Entry.getOperators(characterId);
-        assertEq(operators.length, 2);
+        assertEq(web3Entry.getOperators(characterId).length, 2);
     }
 
     // solhint-disable-next-line function-max-lines
     function testEdgeCases() public {
+        address[] memory blocklist = array(bob, erik);
+        address[] memory allowlist = array(carol, dick);
+
         // make sure that note permissions always go before operator permissions
         // case 1. grant operator permissions first, then grant note permissions
         // grant operator permission first
         vm.startPrank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.postNote(makePostNoteData(firstCharacter));
+        web3Entry.postNote(makePostNoteData(firstCharacter));
+        web3Entry.postNote(makePostNoteData(firstCharacter));
         vm.stopPrank();
 
         // now bob has permissions for all notes
         vm.prank(bob);
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
+        web3Entry.setNoteUri(firstCharacter, FIRST_NOTE_ID, NEW_NOTE_URI);
         vm.prank(bob);
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, NEW_NOTE_URI);
+        web3Entry.setNoteUri(firstCharacter, SECOND_NOTE_ID, NEW_NOTE_URI);
 
         // then put bob into blocklist of note 1
         vm.prank(alice);
-        web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, allowlist);
+        web3Entry.grantOperators4Note(firstCharacter, FIRST_NOTE_ID, blocklist, allowlist);
         vm.startPrank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
+        web3Entry.setNoteUri(firstCharacter, FIRST_NOTE_ID, NEW_NOTE_URI);
         // but bob still can do other things for this note
-        web3Entry.lockNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
+        web3Entry.lockNote(firstCharacter, FIRST_NOTE_ID);
         // and bob still have permissions for note 2
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, NEW_NOTE_URI);
+        web3Entry.setNoteUri(firstCharacter, SECOND_NOTE_ID, NEW_NOTE_URI);
         vm.stopPrank();
 
         // case 2. put carol into allowlist, then disable carol's operator permission
         vm.prank(alice);
-        web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, SECOND_NOTE_ID, blocklist, allowlist);
+        web3Entry.grantOperators4Note(firstCharacter, SECOND_NOTE_ID, blocklist, allowlist);
 
         // now carol is in allowlist for note 2
         vm.prank(carol);
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, NEW_NOTE_URI);
+        web3Entry.setNoteUri(firstCharacter, SECOND_NOTE_ID, NEW_NOTE_URI);
 
         // then disable carol's operator permissions
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, carol, 0);
+        web3Entry.grantOperatorPermissions(firstCharacter, carol, 0);
         // but carol can still edit note 2(cuz note validation goes first)
         vm.prank(carol);
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, NEW_NOTE_URI);
+        web3Entry.setNoteUri(firstCharacter, SECOND_NOTE_ID, NEW_NOTE_URI);
     }
 
     // solhint-disable-next-line function-max-lines
     function testOperatorCan() public {
-        uint256 characterId = FIRST_CHARACTER_ID;
+        uint256 characterId = firstCharacter;
+        address[] memory blocklist = array(bob, erik);
+        address[] memory allowlist = array(carol, dick);
 
         // case 1: post note
         // alice grant bob as OP.POST_NOTE_PERMISSION_BITMAP permission
@@ -430,7 +458,7 @@ contract OperatorTest is CommonTest {
         );
         // unlinkERC721
         web3Entry.unlinkERC721(
-            DataTypes.unlinkERC721Data(FIRST_CHARACTER_ID, address(nft), 1, LikeLinkType)
+            DataTypes.unlinkERC721Data(firstCharacter, address(nft), 1, LikeLinkType)
         );
         // linkAddress
         web3Entry.linkAddress(
@@ -463,7 +491,7 @@ contract OperatorTest is CommonTest {
         );
 
         // postNote4Character
-        web3Entry.postNote4Character(makePostNoteData(characterId), FIRST_CHARACTER_ID);
+        web3Entry.postNote4Character(makePostNoteData(characterId), firstCharacter);
         // postNote4Address
         web3Entry.postNote4Address(makePostNoteData(characterId), address(0x328));
         // postNote4Linklist
@@ -498,186 +526,164 @@ contract OperatorTest is CommonTest {
 
     // solhint-disable-next-line function-max-lines
     function testOperatorFail() public {
+        address[] memory blocklist = array(bob, erik);
+        address[] memory allowlist = array(carol, dick);
+
         // alice set bob as her operator with OP.DEFAULT_PERMISSION_BITMAP (access to all notes
         vm.startPrank(alice);
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.postNote(makePostNoteData(firstCharacter));
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP);
         vm.stopPrank();
 
         // default operator can't setHandle
         vm.startPrank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setHandle(FIRST_CHARACTER_ID, "new-handle");
+        web3Entry.setHandle(firstCharacter, "new-handle");
 
         // can't set primary character id
         // user can only set primary character id to himself
         vm.expectRevert(abi.encodeWithSelector(ErrNotCharacterOwner.selector));
-        web3Entry.setPrimaryCharacterId(FIRST_CHARACTER_ID);
+        web3Entry.setPrimaryCharacterId(firstCharacter);
 
         // can't set social token
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.setSocialToken(FIRST_CHARACTER_ID, address(0x132414));
+        web3Entry.setSocialToken(firstCharacter, address(0x132414));
 
         // can't grant operator
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, carol, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, carol, OP.DEFAULT_PERMISSION_BITMAP);
 
         // can't add operator for note
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, allowlist);
+        web3Entry.grantOperators4Note(firstCharacter, FIRST_NOTE_ID, blocklist, allowlist);
         vm.stopPrank();
 
         // fail after canceling grant
         vm.startPrank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.POST_NOTE_PERMISSION_BITMAP);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, 0);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.POST_NOTE_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, 0);
         vm.stopPrank();
 
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+        web3Entry.postNote(makePostNoteData(firstCharacter));
 
         // operator with sync permission can't sign
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.POST_NOTE_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.POST_NOTE_PERMISSION_BITMAP);
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
+        web3Entry.setNoteUri(firstCharacter, FIRST_NOTE_ID, NEW_NOTE_URI);
     }
 
     function testOperator4NoteCan() public {
+        address[] memory blocklist = array(bob, erik);
+        address[] memory allowlist = array(carol, dick);
+
         // alice grant bob as OP.OPERATOR_SIGN_PERMISSION_BITMAP permission
         vm.startPrank(alice);
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.postNote(makePostNoteData(firstCharacter));
+        web3Entry.postNote(makePostNoteData(firstCharacter));
+        web3Entry.postNote(makePostNoteData(firstCharacter));
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP);
         vm.stopPrank();
 
         vm.startPrank(bob);
         // setNoteUri
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
+        web3Entry.setNoteUri(firstCharacter, FIRST_NOTE_ID, NEW_NOTE_URI);
         // lockNote
-        web3Entry.lockNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
+        web3Entry.lockNote(firstCharacter, FIRST_NOTE_ID);
         // delete note
-        web3Entry.deleteNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
+        web3Entry.deleteNote(firstCharacter, FIRST_NOTE_ID);
         vm.stopPrank();
 
         vm.prank(alice);
         // add carol as allowlist
-        web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, SECOND_NOTE_ID, blocklist, allowlist);
+        web3Entry.grantOperators4Note(firstCharacter, SECOND_NOTE_ID, blocklist, allowlist);
 
         vm.prank(carol);
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, SECOND_NOTE_ID, NEW_NOTE_URI);
+        web3Entry.setNoteUri(firstCharacter, SECOND_NOTE_ID, NEW_NOTE_URI);
     }
 
     function testOperator4NoteFail() public {
+        address[] memory blocklist = array(bob, erik);
+        address[] memory allowlist = array(carol, dick);
+
         vm.prank(alice);
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+        web3Entry.postNote(makePostNoteData(firstCharacter));
 
         // case 1. bob's operator permission is on, but bob is in blocklist
         vm.startPrank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
-        web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, allowlist);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperators4Note(firstCharacter, FIRST_NOTE_ID, blocklist, allowlist);
         vm.stopPrank();
 
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
         vm.prank(bob);
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
+        web3Entry.setNoteUri(firstCharacter, FIRST_NOTE_ID, NEW_NOTE_URI);
 
         // case 2. bob's in blocklist and also allowlist
         vm.prank(alice);
-        web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, blocklist);
+        web3Entry.grantOperators4Note(firstCharacter, FIRST_NOTE_ID, blocklist, blocklist);
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
-    }
-
-    function testGetOperators() public {
-        address[4] memory accounts = [bob, carol, dick, erik];
-
-        vm.startPrank(alice);
-        for (uint256 i = 0; i < accounts.length; i++) {
-            web3Entry.grantOperatorPermissions(
-                FIRST_CHARACTER_ID,
-                accounts[i],
-                OP.DEFAULT_PERMISSION_BITMAP
-            );
-        }
-        _checkOperators(FIRST_CHARACTER_ID, accounts, OP.DEFAULT_PERMISSION_BITMAP);
-
-        // remove all operators
-        for (uint256 i = 0; i < accounts.length; i++) {
-            web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, accounts[i], 0);
-        }
-        address[] memory operators = web3Entry.getOperators(FIRST_CHARACTER_ID);
-        assertEq(operators.length, 0);
-
-        vm.stopPrank();
-    }
-
-    function testGetOperators4Note() public {
-        // alice grant bob OP.DEFAULT_PERMISSION_BITMAP permission
-        vm.startPrank(alice);
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
-
-        web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, blocklist, allowlist);
-        address[] memory blocklist_;
-        address[] memory allowlist_;
-        (blocklist_, allowlist_) = web3Entry.getOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID);
-        assertEq(blocklist_, blocklist);
-        assertEq(allowlist_, allowlist);
+        web3Entry.setNoteUri(firstCharacter, FIRST_NOTE_ID, NEW_NOTE_URI);
     }
 
     function testValidateCallerPermission() public {
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.DEFAULT_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP);
 
         // owner can
         vm.prank(alice);
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+        web3Entry.postNote(makePostNoteData(firstCharacter));
 
         // owner behind periphery can
         vm.prank(address(periphery), alice);
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+        web3Entry.postNote(makePostNoteData(firstCharacter));
 
         // operator behind periphery can
         vm.prank(address(periphery), bob);
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+        web3Entry.postNote(makePostNoteData(firstCharacter));
 
         // bob can
         vm.prank(bob);
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+        web3Entry.postNote(makePostNoteData(firstCharacter));
     }
 
     function testValidateCallerPermissionFail() public {
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(FIRST_CHARACTER_ID, bob, OP.POST_NOTE_PERMISSION_BITMAP);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.POST_NOTE_PERMISSION_BITMAP);
 
         // carol can not
         vm.prank(carol);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
+        web3Entry.postNote(makePostNoteData(firstCharacter));
 
         // bob can not
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
-        web3Entry.setNoteUri(FIRST_CHARACTER_ID, FIRST_NOTE_ID, NEW_NOTE_URI);
+        web3Entry.setNoteUri(firstCharacter, 1, NEW_NOTE_URI);
     }
 
-    function _checkOperators(
+    function _checkOperators4Note(
         uint256 characterId,
-        address[4] memory expectedOperators,
-        uint256 expectedPermission
+        uint256 noteId,
+        address[] memory blocklist,
+        address[] memory allowlist
     ) internal {
-        address[] memory operators = web3Entry.getOperators(characterId);
-        for (uint256 i = 0; i < operators.length; i++) {
-            assertEq(operators[i], expectedOperators[i]);
-            // check Operator permission
-            assertEq(
-                web3Entry.getOperatorPermissions(characterId, expectedOperators[i]),
-                expectedPermission
-            );
+        (address[] memory blocklist_, address[] memory allowlist_) = web3Entry.getOperators4Note(
+            characterId,
+            noteId
+        );
+        assertEq(blocklist_, blocklist);
+        assertEq(allowlist_, allowlist);
+
+        for (uint256 i = 0; i < allowlist_.length; i++) {
+            assertTrue(web3Entry.isOperatorAllowedForNote(firstCharacter, noteId, allowlist_[i]));
+        }
+        for (uint256 i = 0; i < blocklist_.length; i++) {
+            assertFalse(web3Entry.isOperatorAllowedForNote(firstCharacter, noteId, blocklist_[i]));
         }
     }
 

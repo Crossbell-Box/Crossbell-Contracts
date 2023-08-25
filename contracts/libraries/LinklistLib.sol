@@ -24,7 +24,7 @@ library LinklistLib {
 
         // detach linklist
         bytes32 oldLinkType = ILinklist(linklist).getLinkType(linklistId);
-        // delete _attachedLinklist (set linklistId to 0)
+        // set linklistId to 0
         StorageLib.setAttachedLinklistId(characterId, oldLinkType, 0);
         emit Events.DetachLinklist(linklistId, characterId, oldLinkType);
 

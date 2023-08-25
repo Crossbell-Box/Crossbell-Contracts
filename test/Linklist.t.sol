@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.18;
 
-import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
+import {DataTypes} from "../contracts/libraries/DataTypes.sol";
 import {
     ErrNotEnoughPermission,
     ErrCallerNotWeb3EntryOrNotOwner,
@@ -9,10 +9,10 @@ import {
     ErrTokenNotExists,
     ErrNotCharacterOwner,
     ErrLinkTypeExists
-} from "../../contracts/libraries/Error.sol";
-import {OP} from "../../contracts/libraries/OP.sol";
-import {Events} from "../../contracts/libraries/Events.sol";
-import {CommonTest} from "../helpers/CommonTest.sol";
+} from "../contracts/libraries/Error.sol";
+import {OP} from "../contracts/libraries/OP.sol";
+import {Events} from "../contracts/libraries/Events.sol";
+import {CommonTest} from "./helpers/CommonTest.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {
@@ -183,7 +183,7 @@ contract LinklistTest is CommonTest {
         assertEq(web3Entry.getLinklistId(1, FollowLinkType), 0);
     }
 
-    function testSetLinkListTypeMultiply() public {
+    function testSetLinkListTypeMultiple() public {
         // link character
         vm.startPrank(alice);
         web3Entry.linkCharacter(DataTypes.linkCharacterData(1, 2, FollowLinkType, ""));

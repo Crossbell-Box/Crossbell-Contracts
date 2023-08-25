@@ -62,7 +62,7 @@ interface IWeb3Entry {
 
     /**
      * @notice  Sets a given character as primary.
-     * @dev Owner permission only.
+     * @dev Only character owner can call this function.
      * @param   characterId  The character id to to be set.
      */
     function setPrimaryCharacterId(uint256 characterId) external;
