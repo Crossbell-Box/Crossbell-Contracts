@@ -71,6 +71,20 @@ contract TipsWithConfigTest is CommonTest {
     function testSetupState() public {
         // check status after initialization
         assertEq(_tips.getWeb3Entry(), address(web3Entry));
+
+        bytes32 v = vm.load(address(tips), 0);
+        assertEq(uint256(v) & 0x11, uint256(1)); // version
+    }
+
+    function testInitialize() public {
+        TipsWithConfig c = new TipsWithConfig();
+        c.initialize(address(web3Entry));
+
+        // check state
+        assertEq(c.getWeb3Entry(), address(web3Entry));
+
+        bytes32 v = vm.load(address(tips), 0);
+        assertEq(uint256(v) & 0x11, uint256(1)); // version
     }
 
     function testReinitializeFail() public {

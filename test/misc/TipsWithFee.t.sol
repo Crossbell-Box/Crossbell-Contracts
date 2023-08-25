@@ -61,6 +61,21 @@ contract TipsWithFeeTest is CommonTest {
         // check status after initialization
         assertEq(_tips.getWeb3Entry(), address(web3Entry));
         assertEq(_tips.getToken(), address(token));
+
+        bytes32 v = vm.load(address(tips), 0);
+        assertEq(uint256(v) & 0x11, uint256(1)); // version
+    }
+
+    function testInitialize() public {
+        TipsWithFee c = new TipsWithFee();
+        c.initialize(address(web3Entry), address(token));
+
+        // check state
+        assertEq(c.getWeb3Entry(), address(web3Entry));
+        assertEq(c.getToken(), address(token));
+
+        bytes32 v = vm.load(address(tips), 0);
+        assertEq(uint256(v) & 0x11, uint256(1)); // version
     }
 
     function testReinitializeFail() public {
