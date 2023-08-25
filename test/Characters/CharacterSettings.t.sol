@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.18;
 
-import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {OP} from "../../contracts/libraries/OP.sol";
 import {Events} from "../../contracts/libraries/Events.sol";
 import {
@@ -116,6 +115,7 @@ contract CharacterSettingsTest is CommonTest {
         web3Entry.setHandle(firstCharacter, "ab");
     }
 
+    // solhint-disable-next-line function-max-lines
     function testSetHandleFailWithInvalidChar() public {
         // cast 8: invalid character handle
         string[42] memory handles = [

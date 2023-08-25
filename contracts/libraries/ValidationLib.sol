@@ -1,23 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.18;
 
-import {DataTypes} from "./DataTypes.sol";
 import {StorageLib} from "./StorageLib.sol";
 import {Constants} from "./Constants.sol";
 import {
-    ErrSocialTokenExists,
     ErrHandleExists,
-    ErrNotCharacterOwner,
-    ErrNotEnoughPermission,
-    ErrNotEnoughPermissionForThisNote,
-    ErrCharacterNotExists,
     ErrNoteIsDeleted,
     ErrNoteNotExists,
     ErrNoteLocked,
     ErrHandleLengthInvalid,
-    ErrHandleContainsInvalidCharacters,
-    ErrSignatureExpired,
-    ErrSignatureInvalid
+    ErrHandleContainsInvalidCharacters
 } from "./Error.sol";
 
 // solhint-disable-next-line no-empty-blocks

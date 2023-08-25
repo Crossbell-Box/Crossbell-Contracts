@@ -239,6 +239,7 @@ contract LinklistTest is CommonTest {
         linklist.Uri(2);
     }
 
+    // solhint-disable-next-line function-max-lines
     function testQueryWithTokenNotExists() public {
         // token not exist
         uint256 tokenId = 2;

@@ -14,6 +14,7 @@ import {CharacterLib} from "./libraries/CharacterLib.sol";
 import {PostLib} from "./libraries/PostLib.sol";
 import {OperatorLib} from "./libraries/OperatorLib.sol";
 import {LinkLib} from "./libraries/LinkLib.sol";
+import {LinklistLib} from "./libraries/LinklistLib.sol";
 import {MetaTxLib} from "./libraries/MetaTxLib.sol";
 import {ValidationLib} from "./libraries/ValidationLib.sol";
 import {OP} from "./libraries/OP.sol";
@@ -161,7 +162,7 @@ contract Web3EntryBase is
         uint256 characterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
         _validateCallerPermission(characterId, OP.SET_LINKLIST_URI);
 
-        LinklistLogic.setLinklistUri(linklistId, uri, _linklist);
+        LinklistLib.setLinklistUri(linklistId, uri, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -169,13 +170,7 @@ contract Web3EntryBase is
         uint256 characterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
         _validateCallerPermission(characterId, OP.SET_LINKLIST_TYPE);
 
-        LinklistLogic.setLinklistType(
-            characterId,
-            linklistId,
-            linkType,
-            _linklist,
-            _attachedLinklists
-        );
+        LinklistLib.setLinklistType(characterId, linklistId, linkType, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
@@ -559,9 +554,9 @@ contract Web3EntryBase is
     function burnLinklist(uint256 linklistId) external override {
         // only the owner of the character can burn the linklist through web3Entry contract
         uint256 characterId = ILinklist(_linklist).getOwnerCharacterId(linklistId);
-        _validateCallerIsCharacterOwner(characterId);
+        if (!_callerIsCharacterOwner(msg.sender, characterId)) revert ErrNotCharacterOwner();
 
-        LinklistLogic.burnLinklist(characterId, linklistId, _linklist, _attachedLinklists);
+        LinklistLib.burnLinklist(characterId, linklistId, _linklist);
     }
 
     /// @inheritdoc IWeb3Entry
