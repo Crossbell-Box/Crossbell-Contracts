@@ -112,6 +112,40 @@ contract OperatorTest is CommonTest {
         assertEq(web3Entry.nonces(alice), 1);
     }
 
+    function testGrantOperatorPermissionsWithSigMultiple() public {
+        uint256 characterId = firstCharacter;
+        address operator = bob;
+        uint256 permissionBitMap = OP.DEFAULT_PERMISSION_BITMAP;
+        uint256 deadline = block.timestamp + 10;
+
+        DataTypes.EIP712Signature memory sig = _getEIP712Signature(
+            alicePrivateKey,
+            keccak256(abi.encode(TYPEHASH, characterId, operator, permissionBitMap, 0, deadline))
+        );
+        sig.deadline = deadline;
+        web3Entry.grantOperatorPermissionsWithSig(
+            firstCharacter,
+            bob,
+            OP.DEFAULT_PERMISSION_BITMAP,
+            sig
+        );
+
+        // grant again
+        sig = _getEIP712Signature(
+            alicePrivateKey,
+            keccak256(abi.encode(TYPEHASH, characterId, operator, UINT256_MAX, 1, deadline))
+        );
+        sig.deadline = deadline;
+        web3Entry.grantOperatorPermissionsWithSig(firstCharacter, bob, UINT256_MAX, sig);
+
+        // check operator permission
+        assertEq(
+            web3Entry.getOperatorPermissions(firstCharacter, bob),
+            OP.ALLOWED_PERMISSION_BITMAP_MASK
+        );
+        assertEq(web3Entry.nonces(alice), 2);
+    }
+
     function testGrantOperatorPermissionsWithSigWithERC1271Wallet() public {
         uint256 characterId = firstCharacter;
         address operator = bob;

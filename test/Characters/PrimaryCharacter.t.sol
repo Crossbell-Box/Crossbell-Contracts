@@ -109,7 +109,7 @@ contract PrimaryCharacterTest is CommonTest {
         assertEq(web3Entry.isPrimaryCharacter(secondCharacter), true);
     }
 
-    function testSetPrimaryCharacterMultiply() public {
+    function testSetPrimaryCharacterMultiple() public {
         uint256 firstCharacter = _createCharacter(CHARACTER_HANDLE, alice);
         assertEq(web3Entry.getPrimaryCharacterId(alice), firstCharacter);
         assertEq(web3Entry.isPrimaryCharacter(firstCharacter), true);
