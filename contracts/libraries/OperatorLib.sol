@@ -69,6 +69,7 @@ library OperatorLib {
         uint256 len = _operators.length();
         address[] memory values = _operators.values();
         for (uint256 i = 0; i < len; i++) {
+            // clear permission bitmap
             StorageLib.setOperatorsPermissionBitMap(characterId, values[i], 0);
             _operators.remove(values[i]);
         }
