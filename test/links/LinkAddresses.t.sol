@@ -4,6 +4,7 @@ pragma solidity 0.8.18;
 import {Events} from "../../contracts/libraries/Events.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {ErrNotEnoughPermission} from "../../contracts/libraries/Error.sol";
+import {OP} from "../../contracts/libraries/OP.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
 
 contract LinkAddressTest is CommonTest {
@@ -47,9 +48,24 @@ contract LinkAddressTest is CommonTest {
         );
 
         // check state
-        address[] memory linkingAddress = linklist.getLinkingAddresses(1);
-        assertEq(linkingAddress.length, 1);
-        assertEq(linkingAddress[0], ethAddress);
+        assertEq(linklist.getLinkingAddresses(1)[0], ethAddress);
+        assertEq(linklist.getLinkingAddressListLength(1), 1);
+    }
+
+    function testLinkAddressWithOperator() public {
+        address ethAdddress = vm.addr(1);
+
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.LINK_ADDRESS);
+
+        vm.prank(bob);
+        web3Entry.linkAddress(
+            DataTypes.linkAddressData(firstCharacter, ethAdddress, FollowLinkType, "")
+        );
+
+        // check state
+        assertEq(linklist.ownerOf(1), alice);
+        assertEq(linklist.getLinkingAddresses(1)[0], ethAdddress);
         assertEq(linklist.getLinkingAddressListLength(1), 1);
     }
 
@@ -60,12 +76,24 @@ contract LinkAddressTest is CommonTest {
         web3Entry.linkAddress(
             DataTypes.linkAddressData(firstCharacter, vm.addr(1), FollowLinkType, "")
         );
+
+        // case 2: operator has no permission
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            firstCharacter,
+            bob,
+            UINT256_MAX ^ (1 << OP.LINK_ADDRESS)
+        );
+
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
+        web3Entry.linkAddress(
+            DataTypes.linkAddressData(firstCharacter, vm.addr(1), FollowLinkType, "")
+        );
     }
 
     function testUnlinkAddress() public {
         address ethAddress = vm.addr(1);
-
-        nft.mint(bob);
 
         vm.startPrank(alice);
         web3Entry.linkAddress(
@@ -94,19 +122,53 @@ contract LinkAddressTest is CommonTest {
         assertEq(linklist.getLinkingAddressListLength(1), 0);
     }
 
-    function testUnlinkAddressFail() public {
+    function testUnlinkAddressWithOperator() public {
         address ethAddress = vm.addr(1);
 
-        vm.prank(alice);
+        vm.startPrank(alice);
         web3Entry.linkAddress(
             DataTypes.linkAddressData(firstCharacter, ethAddress, FollowLinkType, "")
         );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.UNLINK_ADDRESS);
+        vm.stopPrank();
 
         // unlink
-        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        expectEmit(CheckAll);
+        emit Events.UnlinkAddress(firstCharacter, ethAddress, FollowLinkType);
         vm.prank(bob);
         web3Entry.unlinkAddress(
             DataTypes.unlinkAddressData(firstCharacter, ethAddress, FollowLinkType)
+        );
+
+        // check linklist
+        assertEq(linklist.ownerOf(1), alice);
+
+        // check state
+        assertEq(linklist.getOwnerCharacterId(1), firstCharacter);
+        assertEq(linklist.getLinkingAddresses(1).length, 0);
+        assertEq(linklist.getLinkingAddressListLength(1), 0);
+    }
+
+    function testUnlinkAddressFail() public {
+        // case 1: NotEnoughPermission
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
+        web3Entry.unlinkAddress(
+            DataTypes.unlinkAddressData(firstCharacter, vm.addr(1), FollowLinkType)
+        );
+
+        // case 2: operator has no permission
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            firstCharacter,
+            bob,
+            UINT256_MAX ^ (1 << OP.UNLINK_ADDRESS)
+        );
+
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
+        web3Entry.unlinkAddress(
+            DataTypes.unlinkAddressData(firstCharacter, vm.addr(1), FollowLinkType)
         );
     }
 }
