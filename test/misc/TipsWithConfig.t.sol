@@ -586,6 +586,70 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(token.balanceOf(bob), 0);
     }
 
+    function testCollectTips4CharacterAfterEndTime(
+        uint256 amount,
+        uint256 interval,
+        uint256 num
+    ) public {
+        vm.assume(amount > 0 && amount < initialBalance / 10000);
+        vm.assume(interval > 0 && interval < 100 days);
+        vm.assume(num > 1 && num < 500);
+
+        uint256 startTime = block.timestamp;
+        uint256 endTime = startTime + interval * num - 1;
+
+        // set fee
+        uint256 feeFraction = 1000;
+        address feeReceiver = address(123456);
+        vm.startPrank(feeReceiver);
+        _tips.setDefaultFeeFraction(feeReceiver, feeFraction);
+        vm.stopPrank();
+
+        // set tips config
+        vm.startPrank(alice);
+        token.approve(address(_tips), initialBalance);
+        _tips.setTipsConfig4Character(
+            firstCharacter,
+            secondCharacter,
+            address(token),
+            amount,
+            startTime,
+            endTime,
+            interval,
+            feeReceiver
+        );
+        vm.stopPrank();
+
+        skip(interval * num);
+
+        // collect tips
+        _tips.collectTips4Character(1);
+
+        // check status
+        _checkConfig(
+            _tips.getTipsConfig(1),
+            ITipsWithConfig.TipsConfig({
+                id: 1,
+                fromCharacterId: firstCharacter,
+                toCharacterId: secondCharacter,
+                token: address(token),
+                amount: amount,
+                startTime: startTime,
+                endTime: endTime,
+                interval: interval,
+                feeReceiver: feeReceiver,
+                totalRound: (endTime - startTime) / interval + 1,
+                currentRound: (endTime - startTime) / interval + 1
+            })
+        );
+
+        // check balances
+        uint256 feeAmount = (((amount * feeFraction) * num) / 10000);
+        assertEq(token.balanceOf(alice), initialBalance - amount * num);
+        assertEq(token.balanceOf(bob), amount * num - feeAmount);
+        assertEq(token.balanceOf(feeReceiver), feeAmount);
+    }
+
     // solhint-disable-next-line function-max-lines
     function testCollectTips4CharacterMultiTimes(
         uint256 amount,
