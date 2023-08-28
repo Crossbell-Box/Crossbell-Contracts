@@ -2,10 +2,8 @@
 
 pragma solidity 0.8.18;
 
-import {ERC721} from "./ERC721.sol";
 import {Events} from "../libraries/Events.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 

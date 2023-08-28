@@ -443,119 +443,33 @@ contract OperatorTest is CommonTest {
         web3Entry.setNoteUri(firstCharacter, SECOND_NOTE_ID, NEW_NOTE_URI);
     }
 
-    // solhint-disable-next-line function-max-lines
-    function testOperatorCan() public {
-        uint256 characterId = firstCharacter;
-        address[] memory blocklist = array(bob, erik);
-        address[] memory allowlist = array(carol, dick);
-
-        // case 1: post note
-        // alice grant bob as OP.POST_NOTE_PERMISSION_BITMAP permission
+    function testOperatorWithPostNoteDefaultPermission() public {
+        // grant bob POST_NOTE_DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(characterId, bob, OP.POST_NOTE_PERMISSION_BITMAP);
-        vm.prank(bob);
-        // bob can post note
-        web3Entry.postNote(makePostNoteData(characterId));
+        web3Entry.grantOperatorPermissions(
+            firstCharacter,
+            bob,
+            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
+        );
 
-        // case 2 : default permission
-        // alice grant bob as OP.DEFAULT_PERMISSION_BITMAP permission
+        // bob can action
+        _operatorCanPostNotes(bob, firstCharacter);
+    }
+
+    function testOperatorWithOwnertPermission() public {
+        // grant bob OWNER_PERMISSION_BITMAP
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(characterId, bob, OP.DEFAULT_PERMISSION_BITMAP);
-        vm.startPrank(bob);
-        // bob can postNote
-        web3Entry.postNote(makePostNoteData(characterId));
-        // bob can setCharacterUri
-        web3Entry.setCharacterUri(characterId, "https://example.com/character");
-        // bob can linkCharacter
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(characterId, SECOND_CHARACTER_ID, LikeLinkType, "")
-        );
-        web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(characterId, SECOND_CHARACTER_ID, LikeLinkType)
-        );
-        web3Entry.createThenLinkCharacter(
-            DataTypes.createThenLinkCharacterData(characterId, address(0x199), FollowLinkType)
-        );
-        // bob can set linklist uri
-        web3Entry.setLinklistUri(1, MOCK_URI);
-        web3Entry.linkNote(
-            DataTypes.linkNoteData(characterId, characterId, FIRST_NOTE_ID, FollowLinkType, "")
-        );
-        // unlinkNote
-        web3Entry.unlinkNote(
-            DataTypes.unlinkNoteData(characterId, characterId, FIRST_NOTE_ID, FollowLinkType)
-        );
-        // linkERC721
-        nft.mint(bob);
-        web3Entry.linkERC721(
-            DataTypes.linkERC721Data(characterId, address(nft), 1, LikeLinkType, "")
-        );
-        // unlinkERC721
-        web3Entry.unlinkERC721(
-            DataTypes.unlinkERC721Data(firstCharacter, address(nft), 1, LikeLinkType)
-        );
-        // linkAddress
-        web3Entry.linkAddress(
-            DataTypes.linkAddressData(characterId, address(0x1232414), LikeLinkType, "")
-        );
-        // unlinkAddress
-        web3Entry.unlinkAddress(
-            DataTypes.unlinkAddressData(characterId, address(0x1232414), LikeLinkType)
-        );
-        // linkAnyUri
-        web3Entry.linkAnyUri(
-            DataTypes.linkAnyUriData(characterId, "ipfs://anyURI", LikeLinkType, new bytes(0))
-        );
-        // unlinkAnyUri
-        web3Entry.unlinkAnyUri(
-            DataTypes.unlinkAnyUriData(characterId, "ipfs://anyURI", LikeLinkType)
-        );
-        // linkLinklist
-        web3Entry.linkLinklist(DataTypes.linkLinklistData(characterId, 1, LikeLinkType, ""));
-        // unlinkLinklist
-        web3Entry.unlinkLinklist(DataTypes.unlinkLinklistData(characterId, 1, LikeLinkType));
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.OWNER_PERMISSION_BITMAP);
 
-        // setLinkModule4Character
-        web3Entry.setLinkModule4Character(
-            DataTypes.setLinkModule4CharacterData(
-                characterId,
-                address(approvalLinkModule4Character),
-                ""
-            )
-        );
+        _operatorCanActAsOwnerPermission(bob, firstCharacter);
+    }
 
-        // postNote4Character
-        web3Entry.postNote4Character(makePostNoteData(characterId), firstCharacter);
-        // postNote4Address
-        web3Entry.postNote4Address(makePostNoteData(characterId), address(0x328));
-        // postNote4Linklist
-        web3Entry.postNote4Linklist(makePostNoteData(characterId), FIRST_LINKLIST_ID);
-        // postNote4Note
-        web3Entry.postNote4Note(
-            makePostNoteData(characterId),
-            DataTypes.NoteStruct(characterId, FIRST_NOTE_ID)
-        );
-        // postNote4ERC721
-        nft.mint(bob);
-        web3Entry.postNote4ERC721(
-            makePostNoteData(characterId),
-            DataTypes.ERC721Struct(address(nft), 1)
-        );
-        // postNote4AnyUri
-        web3Entry.postNote4AnyUri(makePostNoteData(characterId), "ipfs://anyURI");
-        vm.stopPrank();
-
-        // case 3: owner permission
-        // operator with owner permissions can:
-        // alice grant bob all permissions including owner permissions
+    function testOperatorWithDefaultPermission() public {
+        // grant bob DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(characterId, bob, OP.ALLOWED_PERMISSION_BITMAP_MASK);
-        vm.startPrank(bob);
-        web3Entry.setHandle(characterId, "mynewhandle");
-        web3Entry.setSocialToken(characterId, address(0x1234567));
-        web3Entry.grantOperatorPermissions(characterId, carol, OP.ALLOWED_PERMISSION_BITMAP_MASK);
-        web3Entry.grantOperators4Note(characterId, FIRST_NOTE_ID, blocklist, allowlist);
-        vm.stopPrank();
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP);
+
+        _operatorCanActAsOpSign(bob, firstCharacter);
     }
 
     // solhint-disable-next-line function-max-lines
@@ -664,40 +578,139 @@ contract OperatorTest is CommonTest {
         web3Entry.setNoteUri(firstCharacter, FIRST_NOTE_ID, NEW_NOTE_URI);
     }
 
-    function testValidateCallerPermission() public {
-        vm.prank(alice);
-        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP);
-
-        // owner can
-        vm.prank(alice);
-        web3Entry.postNote(makePostNoteData(firstCharacter));
-
-        // owner behind periphery can
-        vm.prank(address(periphery), alice);
-        web3Entry.postNote(makePostNoteData(firstCharacter));
-
-        // operator behind periphery can
-        vm.prank(address(periphery), bob);
-        web3Entry.postNote(makePostNoteData(firstCharacter));
-
-        // bob can
-        vm.prank(bob);
-        web3Entry.postNote(makePostNoteData(firstCharacter));
+    function _operatorCanPostNotes(address operator, uint256 characterId) internal {
+        vm.startPrank(operator);
+        // post note
+        web3Entry.postNote(makePostNoteData(characterId));
+        // post note for address
+        web3Entry.postNote4Address(makePostNoteData(characterId), address(0x1234));
+        // post note for character
+        web3Entry.postNote4Character(makePostNoteData(characterId), secondCharacter);
+        // post note for linklist
+        web3Entry.postNote4Linklist(makePostNoteData(characterId), FIRST_LINKLIST_ID);
+        // post note for note
+        web3Entry.postNote4Note(
+            makePostNoteData(characterId),
+            DataTypes.NoteStruct(characterId, FIRST_NOTE_ID)
+        );
+        //post note for erc721
+        web3Entry.postNote4ERC721(
+            makePostNoteData(characterId),
+            DataTypes.ERC721Struct(address(web3Entry), 1)
+        );
+        // post note for any uri
+        web3Entry.postNote4AnyUri(makePostNoteData(characterId), "ipfs://anyURI");
+        vm.stopPrank();
     }
 
-    function testValidateCallerPermissionFail() public {
-        vm.prank(alice);
-        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.POST_NOTE_PERMISSION_BITMAP);
+    function _operatorCanActAsOwnerPermission(address operator, uint256 characterId) internal {
+        vm.prank(web3Entry.ownerOf(characterId));
+        web3Entry.postNote(makePostNoteData(characterId));
 
-        // carol can not
-        vm.prank(carol);
-        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.postNote(makePostNoteData(firstCharacter));
+        vm.startPrank(operator);
+        // set handle
+        web3Entry.setHandle(characterId, "mynewhandle");
+        // set social token
+        web3Entry.setSocialToken(characterId, address(token));
+        // grant operator
+        web3Entry.grantOperatorPermissions(characterId, carol, OP.DEFAULT_PERMISSION_BITMAP);
 
-        // bob can not
-        vm.prank(bob);
-        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermissionForThisNote.selector));
+        // grant operator for note
+        web3Entry.grantOperators4Note(characterId, 1, array(bob), array(carol, dick));
+        vm.stopPrank();
+    }
+
+    // solhint-disable-next-line function-max-lines
+    function _operatorCanActAsOpSign(address operator, uint256 characterId) internal {
+        // operator with DEFAULT_PERMISSION_BITMAP permission can do the following operations
+
+        // post notes
+        _operatorCanPostNotes(operator, characterId);
+
+        vm.startPrank(operator);
+        // set character uri
+        web3Entry.setCharacterUri(characterId, "https://example.com/character");
+        // link character
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(characterId, secondCharacter, LikeLinkType, "")
+        );
+        // unlink character
+        web3Entry.unlinkCharacter(
+            DataTypes.unlinkCharacterData(characterId, secondCharacter, LikeLinkType)
+        );
+        // create then link character
+        web3Entry.createThenLinkCharacter(
+            DataTypes.createThenLinkCharacterData(characterId, vm.addr(10), FollowLinkType)
+        );
+        // link note
+        web3Entry.linkNote(DataTypes.linkNoteData(characterId, characterId, 1, FollowLinkType, ""));
+        // unlink note
+        web3Entry.unlinkNote(DataTypes.unlinkNoteData(characterId, characterId, 1, FollowLinkType));
+        // link erc721
+        web3Entry.linkERC721(
+            DataTypes.linkERC721Data(characterId, address(web3Entry), 1, LikeLinkType, "")
+        );
+        // unlink erc721
+        web3Entry.unlinkERC721(
+            DataTypes.unlinkERC721Data(firstCharacter, address(web3Entry), 1, LikeLinkType)
+        );
+        // link address
+        web3Entry.linkAddress(
+            DataTypes.linkAddressData(characterId, vm.addr(10), LikeLinkType, "")
+        );
+        // unlink address
+        web3Entry.unlinkAddress(
+            DataTypes.unlinkAddressData(characterId, address(0x1232414), LikeLinkType)
+        );
+        // link any uri
+        web3Entry.linkAnyUri(
+            DataTypes.linkAnyUriData(characterId, "ipfs://anyURI", LikeLinkType, "")
+        );
+        // unlink any uri
+        web3Entry.unlinkAnyUri(
+            DataTypes.unlinkAnyUriData(characterId, "ipfs://anyURI", LikeLinkType)
+        );
+        // link linklist
+        web3Entry.linkLinklist(DataTypes.linkLinklistData(characterId, 1, LikeLinkType, ""));
+        // unlink linklist
+        web3Entry.unlinkLinklist(DataTypes.unlinkLinklistData(characterId, 1, LikeLinkType));
+        // set link module for character
+        web3Entry.setLinkModule4Character(
+            DataTypes.setLinkModule4CharacterData(
+                characterId,
+                address(approvalLinkModule4Character),
+                ""
+            )
+        );
+        // set link module for note
+        web3Entry.setLinkModule4Note(
+            DataTypes.setLinkModule4NoteData(
+                characterId,
+                1,
+                address(approvalLinkModule4Note),
+                abi.encode(array(bob, carol))
+            )
+        );
+        // set link module for linklist(setLinkModule4Linklist is not implemented yet)
+        // set mint module for note
+        web3Entry.setMintModule4Note(
+            DataTypes.setMintModule4NoteData(
+                firstCharacter,
+                1,
+                address(approvalMintModule),
+                abi.encode(array(carol, dick), 1)
+            )
+        );
+        // set note uri
         web3Entry.setNoteUri(firstCharacter, 1, NEW_NOTE_URI);
+        // lock note
+        web3Entry.lockNote(firstCharacter, 1);
+        // delete note
+        web3Entry.deleteNote(firstCharacter, FIRST_NOTE_ID);
+        // set linklist uri
+        web3Entry.setLinklistUri(1, MOCK_URI);
+        // set linklist type
+        vm.stopPrank();
     }
 
     function _checkOperators4Note(

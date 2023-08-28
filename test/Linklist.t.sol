@@ -15,19 +15,16 @@ import {Events} from "../contracts/libraries/Events.sol";
 import {CommonTest} from "./helpers/CommonTest.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {
-    IERC721Enumerable
-} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 
 contract LinklistTest is CommonTest {
+    uint256 public firstCharacter;
+    uint256 public secondCharacter;
+
     event Transfer(address indexed from, uint256 indexed characterId, uint256 indexed tokenId);
     event Burn(uint256 indexed from, uint256 indexed tokenId);
     event UriSet(uint256 indexed tokenId, string newUri);
     event LinkTypeSet(uint256 indexed tokenId, bytes32 indexed newlinkType);
-
-    uint256 public firstCharacter;
-    uint256 public secondCharacter;
 
     /* solhint-disable comprehensive-interface */
     function setUp() public {
@@ -43,10 +40,9 @@ contract LinklistTest is CommonTest {
     }
 
     function testSupportsInterface() public {
-        assertTrue(web3Entry.supportsInterface(type(IERC721).interfaceId));
-        assertTrue(web3Entry.supportsInterface(type(IERC721Enumerable).interfaceId));
-        assertTrue(web3Entry.supportsInterface(type(IERC721Metadata).interfaceId));
-        assertTrue(web3Entry.supportsInterface(type(IERC165).interfaceId));
+        assertTrue(linklist.supportsInterface(type(IERC721).interfaceId));
+        assertTrue(linklist.supportsInterface(type(IERC721Metadata).interfaceId));
+        assertTrue(linklist.supportsInterface(type(IERC165).interfaceId));
     }
 
     function testMint() public {
