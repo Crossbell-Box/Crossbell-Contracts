@@ -148,6 +148,30 @@ contract LinkCharacterTest is CommonTest {
         assertEq(linklist.getLinkingCharacterListLength(1), 0);
     }
 
+    function testUnlinkCharacterWithOperator() public {
+        vm.startPrank(alice);
+        web3Entry.linkCharacter(
+            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
+        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.UNLINK_CHARACTER);
+        vm.stopPrank();
+
+        // unlink
+        expectEmit(CheckAll);
+        emit Events.UnlinkCharacter(alice, firstCharacter, secondCharacter, FollowLinkType);
+        vm.prank(bob);
+        web3Entry.unlinkCharacter(
+            DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType)
+        );
+
+        // check linklist
+        assertEq(linklist.ownerOf(1), alice);
+        // check state
+        assertEq(linklist.getOwnerCharacterId(1), firstCharacter);
+        assertEq(linklist.getLinkingCharacterIds(1).length, 0);
+        assertEq(linklist.getLinkingCharacterListLength(1), 0);
+    }
+
     function testUnlinkCharacterFail() public {
         vm.prank(alice);
         web3Entry.linkCharacter(
@@ -237,6 +261,33 @@ contract LinkCharacterTest is CommonTest {
         assertEq(web3Entry.getPrimaryCharacterId(to), newCharacterId);
     }
 
+    function testCreateThenLinkCharacterWithOperator() public {
+        address to = address(0x56789);
+
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.CREATE_THEN_LINK_CHARACTER);
+
+        expectEmit(CheckAll);
+        emit Events.LinkCharacter(alice, firstCharacter, 3, FollowLinkType, 1);
+        vm.prank(bob);
+        uint256 newCharacterId = web3Entry.createThenLinkCharacter(
+            DataTypes.createThenLinkCharacterData(firstCharacter, to, FollowLinkType)
+        );
+
+        // check state
+        // check linklist
+        assertEq(linklist.getOwnerCharacterId(1), firstCharacter);
+        assertEq(linklist.getLinkingCharacterIds(1).length, 1);
+        assertEq(linklist.getLinkingCharacterIds(1)[0], newCharacterId);
+        assertEq(linklist.getLinkingCharacterListLength(1), 1);
+        // check new character
+        DataTypes.Character memory character = web3Entry.getCharacter(newCharacterId);
+        assertEq(character.handle, Strings.toHexString(to));
+        assertEq(character.characterId, newCharacterId);
+        assertEq(web3Entry.getHandle(newCharacterId), Strings.toHexString(to));
+        assertEq(web3Entry.getPrimaryCharacterId(to), newCharacterId);
+    }
+
     function testCreateThenLinkCharacterFail() public {
         vm.startPrank(alice);
         web3Entry.createThenLinkCharacter(
@@ -250,5 +301,20 @@ contract LinkCharacterTest is CommonTest {
         );
 
         vm.stopPrank();
+    }
+
+    function testCreateThenLinkCharacterFailWithOperator() public {
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            firstCharacter,
+            bob,
+            UINT256_MAX ^ (1 << OP.CREATE_THEN_LINK_CHARACTER)
+        );
+
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
+        web3Entry.createThenLinkCharacter(
+            DataTypes.createThenLinkCharacterData(firstCharacter, address(0x56789), FollowLinkType)
+        );
     }
 }
