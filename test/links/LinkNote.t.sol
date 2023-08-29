@@ -8,16 +8,21 @@ import {
     ErrNoteIsDeleted,
     ErrNotEnoughPermission
 } from "../../contracts/libraries/Error.sol";
+import {OP} from "../../contracts/libraries/OP.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
 
 contract LinkNoteTest is CommonTest {
+    uint256 public firstCharacter;
+    uint256 public secondCharacter;
+
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
 
         // create character
-        _createCharacter(CHARACTER_HANDLE, alice);
-        _createCharacter(CHARACTER_HANDLE2, bob);
+        firstCharacter = _createCharacter(CHARACTER_HANDLE, alice);
+        secondCharacter = _createCharacter(CHARACTER_HANDLE2, bob);
+
         vm.prank(alice);
         web3Entry.postNote(makePostNoteData(FIRST_CHARACTER_ID));
     }
@@ -64,6 +69,36 @@ contract LinkNoteTest is CommonTest {
         assertEq(linklist.getLinkingNoteListLength(1), 1);
     }
 
+    function testLinkNoteWithOperator() public {
+        uint256 fromCharacterId = 1;
+        uint256 toCharacterId = 1;
+        uint256 toNoteId = 1;
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(fromCharacterId, bob, 1 << OP.LINK_NOTE);
+
+        expectEmit(CheckAll);
+        emit Events.LinkNote(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, 1);
+        vm.prank(bob);
+        web3Entry.linkNote(
+            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
+        );
+
+        // check linklist
+        assertEq(linklist.ownerOf(1), alice);
+
+        // check state
+        DataTypes.NoteStruct[] memory linkingNotes = linklist.getLinkingNotes(1);
+        assertEq(linkingNotes.length, 1);
+        DataTypes.NoteStruct memory linkingNote = linkingNotes[0];
+        assertEq(linkingNote.characterId, 1);
+        assertEq(linkingNote.noteId, 1);
+        bytes32 linkKey = keccak256(abi.encodePacked("Note", toCharacterId, toNoteId));
+        linkingNote = linklist.getLinkingNote(linkKey);
+        assertEq(linkingNote.characterId, toCharacterId);
+        assertEq(linkingNote.noteId, toNoteId);
+        assertEq(linklist.getLinkingNoteListLength(1), 1);
+    }
+
     function testLinkNoteFail() public {
         uint256 fromCharacterId = 1;
         uint256 toCharacterId = 1;
@@ -91,6 +126,17 @@ contract LinkNoteTest is CommonTest {
         web3Entry.linkNote(
             DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
         );
+    }
+
+    function testLinkNoteFailWithOperator() public {
+        uint256 fromCharacterId = firstCharacter;
+
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(fromCharacterId, bob, UINT256_MAX ^ (1 << OP.LINK_NOTE));
+
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
+        web3Entry.linkNote(DataTypes.linkNoteData(fromCharacterId, 1, 1, FollowLinkType, ""));
     }
 
     // solhint-disable-next-line function-max-lines
@@ -135,21 +181,48 @@ contract LinkNoteTest is CommonTest {
         assertEq(linklist.getLinkingNoteListLength(1), 0);
     }
 
+    function testUnLinkNoteWithOperator() public {
+        uint256 fromCharacterId = firstCharacter;
+
+        vm.startPrank(alice);
+        web3Entry.linkNote(DataTypes.linkNoteData(fromCharacterId, 1, 1, FollowLinkType, ""));
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.UNLINK_NOTE);
+        vm.stopPrank();
+
+        // unlink
+        expectEmit(CheckAll);
+        emit Events.UnlinkNote(fromCharacterId, 1, 1, FollowLinkType, 1);
+        vm.prank(bob);
+        web3Entry.unlinkNote(DataTypes.unlinkNoteData(fromCharacterId, 1, 1, FollowLinkType));
+
+        // check linklist
+        assertEq(linklist.ownerOf(1), alice);
+        // check state
+        DataTypes.NoteStruct[] memory linkingNotes = linklist.getLinkingNotes(1);
+        assertEq(linkingNotes.length, 0);
+        bytes32 linkKey = keccak256(abi.encodePacked("Note", uint256(1), uint256(1)));
+        DataTypes.NoteStruct memory linkingNote = linklist.getLinkingNote(linkKey);
+        assertEq(linkingNote.characterId, 1);
+        assertEq(linkingNote.noteId, 1);
+        assertEq(linklist.getLinkingNoteListLength(1), 0);
+    }
+
     function testUnLinkNoteFail() public {
-        uint256 fromCharacterId = 1;
-        uint256 toCharacterId = 1;
-        uint256 toNoteId = 1;
+        uint256 fromCharacterId = firstCharacter;
 
         vm.prank(alice);
-        web3Entry.linkNote(
-            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
+        web3Entry.linkNote(DataTypes.linkNoteData(fromCharacterId, 1, 1, FollowLinkType, ""));
+
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            firstCharacter,
+            bob,
+            UINT256_MAX ^ (1 << OP.UNLINK_NOTE)
         );
 
         // unlink
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.unlinkNote(
-            DataTypes.unlinkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType)
-        );
+        web3Entry.unlinkNote(DataTypes.unlinkNoteData(fromCharacterId, 1, 1, FollowLinkType));
     }
 }
