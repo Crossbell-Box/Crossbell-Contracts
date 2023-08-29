@@ -95,23 +95,15 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(_tips.getWeb3Entry(), address(web3Entry));
     }
 
-    function testSetDefaultFeeFraction(uint256 fraction) public {
-        vm.assume(fraction <= 10000);
+    function testSetDefaultFeeFractionFail(uint256 fraction) public {
+        vm.assume(fraction > 10000);
 
-        vm.prank(alice);
-        _tips.setDefaultFeeFraction(alice, fraction);
-
-        assertEq(_tips.getFeeFraction(alice, 1), fraction);
-        assertEq(_tips.getFeeAmount(alice, 1, 10000), fraction);
-    }
-
-    function testSetDefaultFeeFractionFail() public {
         vm.expectRevert("TipsWithConfig: caller is not fee receiver");
         _tips.setDefaultFeeFraction(alice, 100);
 
         vm.expectRevert("TipsWithConfig: fraction out of range");
         vm.prank(alice);
-        _tips.setDefaultFeeFraction(alice, 10001);
+        _tips.setDefaultFeeFraction(alice, fraction);
 
         assertEq(_tips.getFeeFraction(alice, firstCharacter), 0);
     }
@@ -127,13 +119,15 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(_tips.getFeeAmount(alice, characterId, 10000), fraction);
     }
 
-    function testSetFeeFraction4CharacterFail() public {
+    function testSetFeeFraction4CharacterFail(uint256 fraction) public {
+        vm.assume(fraction > 10000);
+
         vm.expectRevert("TipsWithConfig: caller is not fee receiver");
         _tips.setFeeFraction4Character(alice, firstCharacter, 100);
 
         vm.expectRevert("TipsWithConfig: fraction out of range");
         vm.prank(alice);
-        _tips.setFeeFraction4Character(alice, firstCharacter, 10001);
+        _tips.setFeeFraction4Character(alice, firstCharacter, fraction);
 
         assertEq(_tips.getFeeFraction(alice, firstCharacter), 0);
     }
