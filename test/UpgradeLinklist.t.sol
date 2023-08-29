@@ -4,6 +4,7 @@ pragma solidity 0.8.18;
 
 import {CommonTest} from "./helpers/CommonTest.sol";
 import {Linklist} from "../contracts/Linklist.sol";
+import {IWeb3Entry} from "../contracts/interfaces/IWeb3Entry.sol";
 import {
     TransparentUpgradeableProxy
 } from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
@@ -32,8 +33,8 @@ contract UpgradeLinklistTest is CommonTest {
             address(newImpl),
             abi.encodeWithSignature(
                 "initialize(string,string,address)",
-                "Linklist",
-                "LIT",
+                "Link List Token",
+                "LLT",
                 _web3Entry
             )
         );
@@ -42,8 +43,8 @@ contract UpgradeLinklistTest is CommonTest {
         assertEq(TransparentUpgradeableProxy(_linklist).implementation(), address(newImpl));
         // check initialize
         assertEq(Linklist(_linklist).Web3Entry(), _web3Entry);
-        assertEq(Linklist(_linklist).name(), "Linklist");
-        assertEq(Linklist(_linklist).symbol(), "LIT");
+        assertEq(Linklist(_linklist).name(), "Link List Token");
+        assertEq(Linklist(_linklist).symbol(), "LLT");
     }
 
     function testInitializeFail() public {
@@ -54,15 +55,15 @@ contract UpgradeLinklistTest is CommonTest {
             address(newImpl),
             abi.encodeWithSignature(
                 "initialize(string,string,address)",
-                "Linklist",
-                "LIT",
+                "Link List Token",
+                "LLT",
                 _web3Entry
             )
         );
 
         // initialize again
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
-        Linklist(address(_linklist)).initialize("Linklist", "LIT", _web3Entry);
+        Linklist(address(_linklist)).initialize("Link List Token", "LLT", _web3Entry);
     }
 
     function testUpgradeLinklistWithBurn() public {
@@ -73,8 +74,8 @@ contract UpgradeLinklistTest is CommonTest {
             address(newImpl),
             abi.encodeWithSignature(
                 "initialize(string,string,address)",
-                "Linklist",
-                "LIT",
+                "Link List Token",
+                "LLT",
                 _web3Entry
             )
         );
@@ -89,5 +90,35 @@ contract UpgradeLinklistTest is CommonTest {
         Linklist(_linklist).burn(tokenId);
         // check totalSupply
         assertEq(totalSupply, Linklist(_linklist).totalSupply());
+    }
+
+    function testUpgradeLinklistWithStorageCheck() public {
+        // create and select a fork from crossbell at block 42914883
+        vm.createSelectFork(vm.envString("CROSSBELL_RPC_URL"), 42914883);
+
+        Linklist newImpl = new Linklist();
+        // upgrade
+        vm.prank(_proxyAdmin);
+        TransparentUpgradeableProxy(_linklist).upgradeTo(address(newImpl));
+
+        // check storage
+        Linklist linklist = Linklist(_linklist);
+        assertEq(linklist.Web3Entry(), _web3Entry);
+        assertEq(linklist.name(), "Link List Token");
+        assertEq(linklist.symbol(), "LLT");
+
+        uint256 followLinklistId = IWeb3Entry(_web3Entry).getLinklistId(4418, FollowLinkType);
+        bytes32 linkType = IWeb3Entry(_web3Entry).getLinklistType(followLinklistId);
+        assertEq(linklist.getLinkType(followLinklistId), linkType);
+        assertEq(linklist.getLinkingCharacterListLength(followLinklistId), 177);
+        assertEq(linklist.characterOwnerOf(followLinklistId), 4418);
+        assertEq(linklist.ownerOf(followLinklistId), 0x3B6D02A24Df681FFdf621D35D70ABa7adaAc07c1);
+        assertEq(linklist.Uri(followLinklistId), "");
+        assertEq(linklist.balanceOf(4418), 2);
+        assertEq(linklist.totalSupply(), 7954);
+        // check linking notes
+        uint256 likeLinklistId = IWeb3Entry(_web3Entry).getLinklistId(4418, LikeLinkType);
+        assertEq(linklist.getLinkingNoteListLength(likeLinklistId), 92);
+        assertEq(linklist.ownerOf(likeLinklistId), 0x3B6D02A24Df681FFdf621D35D70ABa7adaAc07c1);
     }
 }
