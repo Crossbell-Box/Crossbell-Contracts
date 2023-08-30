@@ -3,6 +3,7 @@ pragma solidity 0.8.18;
 
 import {CommonTest} from "./helpers/CommonTest.sol";
 import {ErrCharacterNotExists} from "../contracts/libraries/Error.sol";
+import {Web3Entry} from "../contracts/Web3Entry.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {
@@ -10,7 +11,7 @@ import {
 } from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 
-contract CharacterSettingsTest is CommonTest {
+contract Web3EntryTest is CommonTest {
     /* solhint-disable comprehensive-interface */
     function setUp() public {
         _setUp();
@@ -21,6 +22,9 @@ contract CharacterSettingsTest is CommonTest {
         assertEq(web3Entry.symbol(), WEB3_ENTRY_NFT_SYMBOL);
         assertEq(web3Entry.getRevision(), 4);
         assertEq(web3Entry.getLinklistContract(), address(linklist));
+
+        bytes32 v = vm.load(address(web3Entry), bytes32(uint256(20)));
+        assertEq(uint256(v >> 160), uint256(3)); // initialize version
     }
 
     function testSupportsInterface() public {
@@ -28,6 +32,24 @@ contract CharacterSettingsTest is CommonTest {
         assertTrue(web3Entry.supportsInterface(type(IERC721Enumerable).interfaceId));
         assertTrue(web3Entry.supportsInterface(type(IERC721Metadata).interfaceId));
         assertTrue(web3Entry.supportsInterface(type(IERC165).interfaceId));
+    }
+
+    function testInitialize() public {
+        Web3Entry c = new Web3Entry();
+        c.initialize(
+            "Web3 Entry Character",
+            "WEC",
+            address(linklist),
+            address(mintNFTImpl),
+            address(periphery),
+            address(newbieVilla)
+        );
+
+        // check state
+        assertEq(c.getLinklistContract(), address(linklist));
+
+        bytes32 v = vm.load(address(web3Entry), bytes32(uint256(20)));
+        assertEq(uint256(v >> 160), uint256(3)); // initialize version
     }
 
     function testTransferCharacter() public {
