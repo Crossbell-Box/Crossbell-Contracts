@@ -580,6 +580,7 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(token.balanceOf(bob), 0);
     }
 
+    // solhint-disable-next-line function-max-lines
     function testCollectTips4CharacterAfterEndTime(
         uint256 amount,
         uint256 interval,

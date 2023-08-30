@@ -63,7 +63,7 @@ contract UpgradeLinklistTest is CommonTest {
 
         // initialize again
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
-        Linklist(address(_linklist)).initialize("Link List Token", "LLT", _web3Entry);
+        Linklist(_linklist).initialize("Link List Token", "LLT", _web3Entry);
     }
 
     function testUpgradeLinklistWithBurn() public {
