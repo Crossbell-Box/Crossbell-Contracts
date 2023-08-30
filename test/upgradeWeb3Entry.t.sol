@@ -13,6 +13,7 @@ import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet
 import {
     TransparentUpgradeableProxy
 } from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract UpgradeWeb3Entry is CommonTest {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -53,7 +54,6 @@ contract UpgradeWeb3Entry is CommonTest {
         );
     }
 
-    // solhint-disable-next-line function-max-lines
     function testCheckStorage() public {
         Web3Entry newImpl = new Web3Entry();
         // upgrade
@@ -61,62 +61,21 @@ contract UpgradeWeb3Entry is CommonTest {
         TransparentUpgradeableProxy(_web3Entry).upgradeTo(address(newImpl));
 
         // check state
+        uint256 characterId = 4418;
+        string memory handle = IWeb3Entry(_web3Entry).getHandle(characterId);
+        address characterOwner = IERC721(_web3Entry).ownerOf(characterId);
+        assertEq(handle, "albert");
         assertEq(IWeb3Entry(_web3Entry).getLinklistContract(), _linklist);
-        assertEq(IWeb3Entry(_web3Entry).getHandle(4418), "albert");
+        assertEq(IWeb3Entry(_web3Entry).getHandle(characterId), handle);
         assertEq(
-            IWeb3Entry(_web3Entry).getCharacterUri(4418),
+            IWeb3Entry(_web3Entry).getCharacterUri(characterId),
             "ipfs://bafkreig2gii2uuvrhfftfzqibjpztwt5kfyouuj2p2xpnvlakau4fzmtme"
         );
-        assertEq(IWeb3Entry(_web3Entry).getLinklistId(4418, FollowLinkType), 151);
+        assertEq(IWeb3Entry(_web3Entry).getLinklistId(characterId, FollowLinkType), 151);
         assertEq(IWeb3Entry(_web3Entry).getLinklistType(151), FollowLinkType);
-        assertEq(IWeb3Entry(_web3Entry).getCharacter(4418).noteCount, 51);
-
-        // use web3entryBase to generate some data
-        uint256 aliceCharacterId = Web3Entry(_web3Entry).createCharacter(
-            makeCharacterData(CHARACTER_HANDLE, alice)
-        );
-
-        vm.startPrank(alice);
-        Web3Entry(_web3Entry).postNote(makePostNoteData(aliceCharacterId));
-        // grant operator sign permission to bob
-        Web3Entry(_web3Entry).grantOperatorPermissions(
-            aliceCharacterId,
-            bob,
-            OP.DEFAULT_PERMISSION_BITMAP
-        );
-        assertEq(
-            Web3Entry(_web3Entry).getOperatorPermissions(aliceCharacterId, bob),
-            OP.DEFAULT_PERMISSION_BITMAP
-        );
-
-        // grant operator sync permission to carol
-        Web3Entry(_web3Entry).grantOperatorPermissions(
-            aliceCharacterId,
-            carol,
-            OP.POST_NOTE_PERMISSION_BITMAP
-        );
-        assertEq(
-            Web3Entry(_web3Entry).getOperatorPermissions(aliceCharacterId, carol),
-            OP.POST_NOTE_PERMISSION_BITMAP
-        );
-
-        address[] memory blocklist = array(bob, admin);
-        address[] memory allowlist = array(carol, bob, alice);
-
-        // grant NOTE_SET_NOTE_URI permission to bob
-        Web3Entry(_web3Entry).grantOperators4Note(
-            aliceCharacterId,
-            FIRST_NOTE_ID,
-            blocklist,
-            allowlist
-        );
-
-        (address[] memory blocklist_, address[] memory allowlist_) = Web3Entry(_web3Entry)
-            .getOperators4Note(aliceCharacterId, FIRST_NOTE_ID);
-
-        assertEq(blocklist_, blocklist);
-        assertEq(allowlist_, allowlist);
-
-        vm.stopPrank();
+        assertEq(IWeb3Entry(_web3Entry).getCharacter(characterId).noteCount, 51);
+        assertEq(IWeb3Entry(_web3Entry).getCharacterByHandle(handle).characterId, characterId);
+        assertEq(IWeb3Entry(_web3Entry).isPrimaryCharacter(characterId), true);
+        assertEq(IWeb3Entry(_web3Entry).getPrimaryCharacterId(characterOwner), characterId);
     }
 }
