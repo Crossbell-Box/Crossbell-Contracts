@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT
-// slither-disable-start unused-return
 pragma solidity 0.8.18;
 
 import {ILinklist} from "./interfaces/ILinklist.sol";
 import {LinklistBase} from "./base/LinklistBase.sol";
-import {ERC721} from "./base/ERC721.sol";
 import {Events} from "./libraries/Events.sol";
 import {DataTypes} from "./libraries/DataTypes.sol";
 import {
@@ -100,7 +98,7 @@ contract Linklist is
         string memory uri
     ) external override onlyExistingToken(tokenId) {
         // caller must be web3Entry or owner
-        if (msg.sender != Web3Entry && msg.sender != ownerOf(tokenId))
+        if (msg.sender != Web3Entry && msg.sender != _ownerOf(tokenId))
             revert ErrCallerNotWeb3EntryOrNotOwner();
 
         _uris[tokenId] = uri;
@@ -426,15 +424,14 @@ contract Linklist is
         return _linkTypes[tokenId];
     }
 
-    // slither-disable-start naming-convention
-    // solhint-disable-next-line func-name-mixedcase
+    /// @inheritdoc ILinklist
+    // solhint-disable func-name-mixedcase
+    // slither-disable-next-line naming-convention
     function Uri(
         uint256 tokenId
     ) external view override onlyExistingToken(tokenId) returns (string memory) {
         return _uris[tokenId];
     }
-
-    // slither-disable-end naming-convention
 
     /// @inheritdoc ILinklist
     function characterOwnerOf(
@@ -444,50 +441,33 @@ contract Linklist is
     }
 
     /// @inheritdoc ILinklist
-    function balanceOf(uint256 characterId) public view override returns (uint256) {
-        return _linklistBalances[characterId];
-    }
-
-    // slither-disable-next-line calls-loop
-    function balanceOf(address account) public view override(ERC721) returns (uint256 balance) {
-        uint256 characterCount = IERC721(Web3Entry).balanceOf(account);
-        for (uint256 i = 0; i < characterCount; i++) {
-            uint256 characterId = IERC721Enumerable(Web3Entry).tokenOfOwnerByIndex(account, i);
-            balance += balanceOf(characterId);
-        }
-    }
-
-    /// @inheritdoc ERC721
-    function ownerOf(
-        uint256 tokenId
-    ) public view override(ERC721) onlyExistingToken(tokenId) returns (address) {
-        uint256 characterId = _linklistOwners[tokenId];
-        address owner = IERC721(Web3Entry).ownerOf(characterId);
-        return owner;
-    }
-
-    /// @inheritdoc ILinklist
     function totalSupply() external view override returns (uint256) {
         return _totalSupply;
     }
 
-    function _safeTransfer(
-        address,
-        address,
-        uint256,
-        bytes memory // solhint-disable-next-line no-empty-blocks
-    ) internal pure override {
-        // this function will do nothing, as linklist is a character bounded token
-        // users should never transfer a linklist directly
+    /// @inheritdoc ILinklist
+    function balanceOf(uint256 characterId) external view override returns (uint256) {
+        return _linklistBalances[characterId];
     }
 
-    function _transfer(
-        address,
-        address,
-        uint256 // solhint-disable-next-line no-empty-blocks
-    ) internal pure override {
-        // this function will do nothing, as linklist is a character bounded token
-        // users should never transfer a linklist directly
+    /// @inheritdoc ILinklist
+    function balanceOf(address account) external view override returns (uint256 balance) {
+        uint256 characterCount = IERC721(Web3Entry).balanceOf(account);
+        for (uint256 i = 0; i < characterCount; i++) {
+            uint256 characterId = IERC721Enumerable(Web3Entry).tokenOfOwnerByIndex(account, i);
+            balance += _linklistBalances[characterId];
+        }
+    }
+
+    /// @inheritdoc ILinklist
+    function ownerOf(
+        uint256 tokenId
+    ) external view override onlyExistingToken(tokenId) returns (address) {
+        return _ownerOf(tokenId);
+    }
+
+    function _ownerOf(uint256 tokenId) internal view returns (address) {
+        uint256 characterId = _linklistOwners[tokenId];
+        return IERC721(Web3Entry).ownerOf(characterId);
     }
 }
-// slither-disable-end unused-return

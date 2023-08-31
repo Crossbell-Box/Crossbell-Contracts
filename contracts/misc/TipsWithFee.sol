@@ -313,7 +313,7 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
             amount - feeAmount,
             userData
         );
-        // solhint-disable-next-line check-send-result
+        // solhint-disable-next-line check-send-result,multiple-sends
         IERC777(token).send(feeReceiver, feeAmount, userData);
 
         // emit event

@@ -10,6 +10,7 @@
     "const-name-snakecase": "off",
     "constructor-syntax": "error",
     "contract-name-camelcase": "error",
+    "custom-errors": "off",
     "event-name-camelcase": "error",
     "function-max-lines": ["warn",50],
     "func-name-mixedcase": "error",

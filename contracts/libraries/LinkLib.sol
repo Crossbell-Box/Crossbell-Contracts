@@ -3,13 +3,14 @@
 pragma solidity 0.8.18;
 
 import {Events} from "./Events.sol";
+import {StorageLib} from "./StorageLib.sol";
 import {ILinklist} from "../interfaces/ILinklist.sol";
 import {ILinkModule4Character} from "../interfaces/ILinkModule4Character.sol";
 import {ILinkModule4Note} from "../interfaces/ILinkModule4Note.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-library LinkLogic {
+library LinkLib {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     /**
@@ -19,24 +20,22 @@ library LinkLogic {
      * @param   linkType  linkType, like “follow”.
      * @param   data  The data to pass to the link module, if any.
      * @param   linklist  The linklist contract address.
-     * @param   linkModule  The linkModule address of the character to link.
      */
     function linkCharacter(
         uint256 fromCharacterId,
         uint256 toCharacterId,
         bytes32 linkType,
         bytes memory data,
-        address linklist,
-        address linkModule,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        address linklist
     ) external {
-        address linker = IERC721(address(this)).ownerOf(fromCharacterId);
-        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist, _attachedLinklists);
+        address linker = _ownerOf(fromCharacterId);
+        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist);
 
         // add to link list
         ILinklist(linklist).addLinkingCharacterId(linklistId, toCharacterId);
 
         // process link module
+        address linkModule = StorageLib.getCharacter(toCharacterId).linkModule;
         if (linkModule != address(0)) {
             try
                 ILinkModule4Character(linkModule).processLink(linker, toCharacterId, data)
@@ -52,16 +51,15 @@ library LinkLogic {
      * @param   toCharacterId  The character ID to be unlinked.
      * @param   linkType  linkType, like “follow”.
      * @param   linklist  The linklist contract address.
-     * @param   linklistId  The ID of the linklist to unlink.
      */
     function unlinkCharacter(
         uint256 fromCharacterId,
         uint256 toCharacterId,
         bytes32 linkType,
-        address linklist,
-        uint256 linklistId
+        address linklist
     ) external {
-        address linker = IERC721(address(this)).ownerOf(fromCharacterId);
+        address linker = _ownerOf(fromCharacterId);
+        uint256 linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
         // remove from link list
         ILinklist(linklist).removeLinkingCharacterId(linklistId, toCharacterId);
 
@@ -76,7 +74,6 @@ library LinkLogic {
      * @param   linkType  The linkType, like “follow”.
      * @param   data  The data to pass to the link module, if any.
      * @param   linklist  The linklist contract address.
-     * @param   linkModule  The linkModule address of the note to link
      */
     function linkNote(
         uint256 fromCharacterId,
@@ -84,17 +81,16 @@ library LinkLogic {
         uint256 toNoteId,
         bytes32 linkType,
         bytes calldata data,
-        address linklist,
-        address linkModule,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        address linklist
     ) external {
-        address linker = IERC721(address(this)).ownerOf(fromCharacterId);
-        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist, _attachedLinklists);
+        address linker = _ownerOf(fromCharacterId);
+        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist);
 
         // add to link list
         ILinklist(linklist).addLinkingNote(linklistId, toCharacterId, toNoteId);
 
         // process link
+        address linkModule = StorageLib.getNote(toCharacterId, toNoteId).linkModule;
         if (linkModule != address(0)) {
             try
                 ILinkModule4Note(linkModule).processLink(linker, toCharacterId, toNoteId, data)
@@ -117,14 +113,11 @@ library LinkLogic {
         uint256 toCharacterId,
         uint256 toNoteId,
         bytes32 linkType,
-        address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        address linklist
     ) external {
         // do note check note
         // _validateNoteExists(vars.toCharacterId, vars.toNoteId);
-
-        uint256 linklistId = _attachedLinklists[fromCharacterId][linkType];
-
+        uint256 linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
         // remove from link list
         ILinklist(linklist).removeLinkingNote(linklistId, toCharacterId, toNoteId);
 
@@ -142,10 +135,9 @@ library LinkLogic {
         uint256 fromCharacterId,
         uint256 toLinkListId,
         bytes32 linkType,
-        address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        address linklist
     ) external {
-        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist, _attachedLinklists);
+        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist);
 
         // add to link list
         ILinklist(linklist).addLinkingLinklistId(linklistId, toLinkListId);
@@ -159,16 +151,15 @@ library LinkLogic {
      * @param   toLinkListId  The linklist if to unlink.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
-     * @param   linklistId  The ID of the linklist to unlink.
      */
     function unlinkLinklist(
         uint256 fromCharacterId,
         uint256 toLinkListId,
         bytes32 linkType,
-        address linklist,
-        uint256 linklistId
+        address linklist
     ) external {
-        // add to link list
+        uint256 linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
+        // remove `toLinkListId` from linklist
         ILinklist(linklist).removeLinkingLinklistId(linklistId, toLinkListId);
 
         emit Events.UnlinkLinklist(fromCharacterId, toLinkListId, linkType, linklistId);
@@ -187,10 +178,9 @@ library LinkLogic {
         address tokenAddress,
         uint256 tokenId,
         bytes32 linkType,
-        address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        address linklist
     ) external {
-        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist, _attachedLinklists);
+        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist);
 
         // add to link list
         ILinklist(linklist).addLinkingERC721(linklistId, tokenAddress, tokenId);
@@ -205,17 +195,17 @@ library LinkLogic {
      * @param   tokenId  The token ID of ERC721 to unlink.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
-     * @param   linklistId  The ID of the linklist to unlink.
      */
     function unlinkERC721(
         uint256 fromCharacterId,
         address tokenAddress,
         uint256 tokenId,
         bytes32 linkType,
-        address linklist,
-        uint256 linklistId
+        address linklist
     ) external {
-        // remove from link list
+        uint256 linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
+
+        // remove from linklist
         ILinklist(linklist).removeLinkingERC721(linklistId, tokenAddress, tokenId);
 
         emit Events.UnlinkERC721(fromCharacterId, tokenAddress, tokenId, linkType, linklistId);
@@ -232,10 +222,9 @@ library LinkLogic {
         uint256 fromCharacterId,
         address ethAddress,
         bytes32 linkType,
-        address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        address linklist
     ) external {
-        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist, _attachedLinklists);
+        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist);
 
         // add to link list
         ILinklist(linklist).addLinkingAddress(linklistId, ethAddress);
@@ -249,16 +238,15 @@ library LinkLogic {
      * @param   ethAddress  The address to unlink.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
-     * @param   linklistId  The ID of the linklist to unlink.
      */
     function unlinkAddress(
         uint256 fromCharacterId,
         address ethAddress,
         bytes32 linkType,
-        address linklist,
-        uint256 linklistId
+        address linklist
     ) external {
-        // remove from link list
+        uint256 linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
+        // remove from linklist
         ILinklist(linklist).removeLinkingAddress(linklistId, ethAddress);
 
         emit Events.UnlinkAddress(fromCharacterId, ethAddress, linkType);
@@ -275,10 +263,9 @@ library LinkLogic {
         uint256 fromCharacterId,
         string calldata toUri,
         bytes32 linkType,
-        address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        address linklist
     ) external {
-        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist, _attachedLinklists);
+        uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist);
 
         // add to link list
         ILinklist(linklist).addLinkingAnyUri(linklistId, toUri);
@@ -292,16 +279,15 @@ library LinkLogic {
      * @param   toUri  The uri to unlink.
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
-     * @param   linklistId  The ID of the linklist to unlink.
      */
     function unlinkAnyUri(
         uint256 fromCharacterId,
         string calldata toUri,
         bytes32 linkType,
-        address linklist,
-        uint256 linklistId
+        address linklist
     ) external {
-        // remove from link list
+        uint256 linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
+        // remove from linklist
         ILinklist(linklist).removeLinkingAnyUri(linklistId, toUri);
 
         emit Events.UnlinkAnyUri(fromCharacterId, toUri, linkType);
@@ -314,17 +300,20 @@ library LinkLogic {
     function _mintLinklist(
         uint256 fromCharacterId,
         bytes32 linkType,
-        address linklist,
-        mapping(uint256 => mapping(bytes32 => uint256)) storage _attachedLinklists
+        address linklist
     ) internal returns (uint256 linklistId) {
-        linklistId = _attachedLinklists[fromCharacterId][linkType];
+        linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
         if (linklistId == 0) {
             // mint linkList nft
             linklistId = ILinklist(linklist).mint(fromCharacterId, linkType);
 
             // attach linkList
-            _attachedLinklists[fromCharacterId][linkType] = linklistId;
+            StorageLib.setAttachedLinklistId(fromCharacterId, linkType, linklistId);
             emit Events.AttachLinklist(linklistId, fromCharacterId, linkType);
         }
+    }
+
+    function _ownerOf(uint256 characterId) internal view returns (address) {
+        return IERC721(address(this)).ownerOf(characterId);
     }
 }

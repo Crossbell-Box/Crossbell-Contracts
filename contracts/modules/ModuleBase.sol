@@ -4,6 +4,7 @@ pragma solidity 0.8.18;
 import {ErrCallerNotWeb3Entry, ErrInvalidWeb3Entry} from "../libraries/Error.sol";
 
 abstract contract ModuleBase {
+    // solhint-disable-next-line immutable-vars-naming
     address public immutable web3Entry;
 
     modifier onlyWeb3Entry() {

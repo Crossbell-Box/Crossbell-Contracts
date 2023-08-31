@@ -62,7 +62,7 @@ interface IWeb3Entry {
 
     /**
      * @notice  Sets a given character as primary.
-     * @dev Owner permission only.
+     * @dev Only character owner can call this function.
      * @param   characterId  The character id to to be set.
      */
     function setPrimaryCharacterId(uint256 characterId) external;
@@ -86,14 +86,14 @@ interface IWeb3Entry {
      * @param characterId ID of your character that you want to authorize.
      * @param operator Address to grant operator permissions to.
      * @param permissionBitMap Bitmap used for finer grained operator permissions controls.
-     * @param sig The EIP712Signature struct containing the character owner's signature.
+     * @param signature The EIP712Signature struct containing the character owner's signature.
      * @dev Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol.
      */
     function grantOperatorPermissionsWithSig(
         uint256 characterId,
         address operator,
         uint256 permissionBitMap,
-        DataTypes.EIP712Signature calldata sig
+        DataTypes.EIP712Signature calldata signature
     ) external;
 
     /**
@@ -344,11 +344,12 @@ interface IWeb3Entry {
      * `mintModule`: The address of mint module to set for the new post.<br>
      * `mintModuleInitData`: The data passed to the mint module to init, if any.<br>
      * @param toCharacterId The target character ID.
+     * @return noteId The note ID of the new post.
      */
     function postNote4Character(
         DataTypes.PostNoteData calldata vars,
         uint256 toCharacterId
-    ) external returns (uint256);
+    ) external returns (uint256 noteId);
 
     /**
      * @notice Posts a note for a given address.
@@ -360,11 +361,12 @@ interface IWeb3Entry {
      * `mintModule`: The address of mint module to set for the new post.<br>
      * `mintModuleInitData`: The data passed to the mint module to init, if any.<br>
      * @param ethAddress The target address.
+     * @return noteId The note ID of the new post.
      */
     function postNote4Address(
         DataTypes.PostNoteData calldata vars,
         address ethAddress
-    ) external returns (uint256);
+    ) external returns (uint256 noteId);
 
     /**
      * @notice Posts a note for a given linklist.
@@ -376,11 +378,12 @@ interface IWeb3Entry {
      * `mintModule`: The address of mint module to set for the new post.<br>
      * `mintModuleInitData`: The data passed to the mint module to init, if any.<br>
      * @param toLinklistId The target linklist.
+     * @return noteId The note ID of the new post.
      */
     function postNote4Linklist(
         DataTypes.PostNoteData calldata vars,
         uint256 toLinklistId
-    ) external returns (uint256);
+    ) external returns (uint256 noteId);
 
     /**
      * @notice Posts a note for a given note.
@@ -394,11 +397,12 @@ interface IWeb3Entry {
      * @param note The target note struct containing the parameters:<br>
      * `characterId`: The character ID of target note.<br>
      * `noteId`: The note ID of target note.
+     * @return noteId The note ID of the new post.
      */
     function postNote4Note(
         DataTypes.PostNoteData calldata vars,
         DataTypes.NoteStruct calldata note
-    ) external returns (uint256);
+    ) external returns (uint256 noteId);
 
     /**
      * @notice Posts a note for a given ERC721.
@@ -412,11 +416,12 @@ interface IWeb3Entry {
      * @param erc721 The target ERC721 struct containing the parameters:<br>
      * `tokenAddress`: The token address of target ERC721.<br>
      * `erc721TokenId`: The token ID of target ERC721.
+     * @return noteId The note ID of the new post.
      */
     function postNote4ERC721(
         DataTypes.PostNoteData calldata vars,
         DataTypes.ERC721Struct calldata erc721
-    ) external returns (uint256);
+    ) external returns (uint256 noteId);
 
     /**
      * @notice Posts a note for a given uri.
@@ -428,11 +433,12 @@ interface IWeb3Entry {
      * `mintModule`: The address of mint module to set for the new post.<br>
      * `mintModuleInitData`: The data passed to the mint module to init, if any.<br>
      * @param uri The target uri(could be an url link).
+     * @return noteId The note ID of the new post.
      */
     function postNote4AnyUri(
         DataTypes.PostNoteData calldata vars,
         string calldata uri
-    ) external returns (uint256);
+    ) external returns (uint256 noteId);
 
     /**
      * @notice Burns a linklist NFT.

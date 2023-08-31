@@ -21,28 +21,32 @@ async function main() {
 
     // We get the contract to deploy
 
-    const CharacterLogic = await ethers.getContractFactory("CharacterLogic");
-    const characterLogic = await CharacterLogic.deploy();
+    const CharacterLib = await ethers.getContractFactory("CharacterLib");
+    const characterLib = await CharacterLib.deploy();
 
-    const PostLogic = await ethers.getContractFactory("PostLogic");
-    const postLogic = await PostLogic.deploy();
+    const PostLib = await ethers.getContractFactory("PostLib");
+    const postLib = await PostLib.deploy();
 
-    const LinkLogic = await ethers.getContractFactory("LinkLogic");
-    const linkLogic = await LinkLogic.deploy();
+    const LinkLib = await ethers.getContractFactory("LinkLib");
+    const linkLib = await LinkLib.deploy();
 
-    const LinklistLogic = await ethers.getContractFactory("LinklistLogic");
-    const linklistLogic = await LinklistLogic.deploy();
+    const LinklistLib = await ethers.getContractFactory("LinklistLib");
+    const linklistLib = await LinklistLib.deploy();
 
-    const OperatorLogic = await ethers.getContractFactory("OperatorLogic");
-    const operatorLogic = await OperatorLogic.deploy();
+    const OperatorLib = await ethers.getContractFactory("OperatorLib");
+    const operatorLib = await OperatorLib.deploy();
+
+    const MetaTxLib = await ethers.getContractFactory("MetaTxLib");
+    const metaTxLib = await MetaTxLib.deploy();
 
     const Web3Entry = await ethers.getContractFactory("Web3Entry", {
         libraries: {
-            CharacterLogic: characterLogic.address,
-            PostLogic: postLogic.address,
-            LinkLogic: linkLogic.address,
-            LinklistLogic: linklistLogic.address,
-            OperatorLogic: operatorLogic.address,
+            CharacterLib: characterLib.address,
+            PostLib: postLib.address,
+            LinkLib: linkLib.address,
+            LinklistLib: linklistLib.address,
+            OperatorLib: operatorLib.address,
+            MetaTxLib: metaTxLib.address,
         },
     });
     const web3Entry = await Web3Entry.deploy();
@@ -56,11 +60,10 @@ async function main() {
         newbieVilla,
     );
 
-    console.log("CharacterLogic deployed to:", characterLogic.address);
-    console.log("PostLogic deployed to:", postLogic.address);
-    console.log("LinkLogic deployed to:", linkLogic.address);
-    console.log("LinklistLogic deployed to:", linklistLogic.address);
-    console.log("OperatorLogic deployed to:", operatorLogic.address);
+    console.log("CharacterLib.sol deployed to:", characterLib.address);
+    console.log("PostLib.sol deployed to:", postLib.address);
+    console.log("LinkLib.sol deployed to:", linkLib.address);
+    console.log("OperatorLib.sol deployed to:", operatorLib.address);
     console.log("Web3Entry deployed to:", web3Entry.address);
 }
 

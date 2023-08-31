@@ -10,6 +10,9 @@ import {ITipsWithConfig} from "../../contracts/interfaces/ITipsWithConfig.sol";
 contract TipsWithConfigTest is CommonTest {
     uint256 public constant initialBalance = 10000 ether;
 
+    uint256 public firstCharacter;
+    uint256 public secondCharacter;
+
     TipsWithConfig internal _tips;
 
     event SetTipsConfig4Character(
@@ -61,13 +64,27 @@ contract TipsWithConfigTest is CommonTest {
         _tips.initialize(address(web3Entry));
 
         // create characters
-        _createCharacter(CHARACTER_HANDLE, alice);
-        _createCharacter(CHARACTER_HANDLE2, bob);
+        firstCharacter = _createCharacter(CHARACTER_HANDLE, alice);
+        secondCharacter = _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
     function testSetupState() public {
         // check status after initialization
         assertEq(_tips.getWeb3Entry(), address(web3Entry));
+
+        bytes32 v = vm.load(address(tips), 0);
+        assertEq(uint256(v) & 0x11, uint256(1)); // version
+    }
+
+    function testInitialize() public {
+        TipsWithConfig c = new TipsWithConfig();
+        c.initialize(address(web3Entry));
+
+        // check state
+        assertEq(c.getWeb3Entry(), address(web3Entry));
+
+        bytes32 v = vm.load(address(tips), 0);
+        assertEq(uint256(v) & 0x11, uint256(1)); // version
     }
 
     function testReinitializeFail() public {
@@ -78,25 +95,17 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(_tips.getWeb3Entry(), address(web3Entry));
     }
 
-    function testSetDefaultFeeFraction(uint256 fraction) public {
-        vm.assume(fraction <= 10000);
+    function testSetDefaultFeeFractionFail(uint256 fraction) public {
+        vm.assume(fraction > 10000);
 
-        vm.prank(alice);
-        _tips.setDefaultFeeFraction(alice, fraction);
-
-        assertEq(_tips.getFeeFraction(alice, 1), fraction);
-        assertEq(_tips.getFeeAmount(alice, 1, 10000), fraction);
-    }
-
-    function testSetDefaultFeeFractionFail() public {
         vm.expectRevert("TipsWithConfig: caller is not fee receiver");
         _tips.setDefaultFeeFraction(alice, 100);
 
         vm.expectRevert("TipsWithConfig: fraction out of range");
         vm.prank(alice);
-        _tips.setDefaultFeeFraction(alice, 10001);
+        _tips.setDefaultFeeFraction(alice, fraction);
 
-        assertEq(_tips.getFeeFraction(alice, 1), 0);
+        assertEq(_tips.getFeeFraction(alice, firstCharacter), 0);
     }
 
     function testSetFeeFraction4Character(uint256 fraction, uint256 characterId) public {
@@ -110,15 +119,17 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(_tips.getFeeAmount(alice, characterId, 10000), fraction);
     }
 
-    function testSetFeeFraction4CharacterFail() public {
+    function testSetFeeFraction4CharacterFail(uint256 fraction) public {
+        vm.assume(fraction > 10000);
+
         vm.expectRevert("TipsWithConfig: caller is not fee receiver");
-        _tips.setFeeFraction4Character(alice, 1, 100);
+        _tips.setFeeFraction4Character(alice, firstCharacter, 100);
 
         vm.expectRevert("TipsWithConfig: fraction out of range");
         vm.prank(alice);
-        _tips.setFeeFraction4Character(alice, 1, 10001);
+        _tips.setFeeFraction4Character(alice, firstCharacter, fraction);
 
-        assertEq(_tips.getFeeFraction(alice, 1), 0);
+        assertEq(_tips.getFeeFraction(alice, firstCharacter), 0);
     }
 
     function testGetFeeFraction(uint256 fraction, uint256 characterId) public {
@@ -144,8 +155,8 @@ contract TipsWithConfigTest is CommonTest {
         expectEmit(CheckAll);
         emit SetTipsConfig4Character(
             1,
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
+            firstCharacter,
+            secondCharacter,
             address(token),
             amount,
             startTime,
@@ -156,8 +167,8 @@ contract TipsWithConfigTest is CommonTest {
         );
         vm.prank(alice);
         _tips.setTipsConfig4Character(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
+            firstCharacter,
+            secondCharacter,
             address(token),
             amount,
             startTime,
@@ -167,13 +178,13 @@ contract TipsWithConfigTest is CommonTest {
         );
 
         // check status
-        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 1);
+        assertEq(_tips.getTipsConfigId(firstCharacter, secondCharacter), 1);
         _checkConfig(
             _tips.getTipsConfig(1),
             ITipsWithConfig.TipsConfig({
                 id: 1,
-                fromCharacterId: FIRST_CHARACTER_ID,
-                toCharacterId: SECOND_CHARACTER_ID,
+                fromCharacterId: firstCharacter,
+                toCharacterId: secondCharacter,
                 token: address(token),
                 amount: amount,
                 startTime: startTime,
@@ -186,6 +197,7 @@ contract TipsWithConfigTest is CommonTest {
         );
     }
 
+    // solhint-disable-next-line function-max-lines
     function testSetTipsConfig4CharacterWithUpdateConfig() public {
         uint256 amount = 1 ether;
         uint256 interval = 10 days;
@@ -195,8 +207,8 @@ contract TipsWithConfigTest is CommonTest {
         vm.startPrank(alice);
         token.approve(address(_tips), 1 ether);
         _tips.setTipsConfig4Character(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
+            firstCharacter,
+            secondCharacter,
             address(token),
             amount,
             startTime,
@@ -206,13 +218,13 @@ contract TipsWithConfigTest is CommonTest {
         );
 
         // check status
-        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 1);
+        assertEq(_tips.getTipsConfigId(firstCharacter, secondCharacter), 1);
         _checkConfig(
             _tips.getTipsConfig(1),
             ITipsWithConfig.TipsConfig({
                 id: 1,
-                fromCharacterId: FIRST_CHARACTER_ID,
-                toCharacterId: SECOND_CHARACTER_ID,
+                fromCharacterId: firstCharacter,
+                toCharacterId: secondCharacter,
                 token: address(token),
                 amount: amount,
                 startTime: startTime,
@@ -232,8 +244,8 @@ contract TipsWithConfigTest is CommonTest {
         endTime = startTime + interval;
 
         _tips.setTipsConfig4Character(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
+            firstCharacter,
+            secondCharacter,
             address(token),
             amount,
             startTime,
@@ -244,13 +256,13 @@ contract TipsWithConfigTest is CommonTest {
         vm.stopPrank();
 
         // check status
-        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 1);
+        assertEq(_tips.getTipsConfigId(firstCharacter, secondCharacter), 1);
         _checkConfig(
             _tips.getTipsConfig(1),
             ITipsWithConfig.TipsConfig({
                 id: 1,
-                fromCharacterId: FIRST_CHARACTER_ID,
-                toCharacterId: SECOND_CHARACTER_ID,
+                fromCharacterId: firstCharacter,
+                toCharacterId: secondCharacter,
                 token: address(token),
                 amount: amount,
                 startTime: startTime,
@@ -266,6 +278,7 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(token.balanceOf(bob), 1 ether);
     }
 
+    // solhint-disable-next-line function-max-lines
     function testSetTipsConfig4CharacterFail(uint256 interval) public {
         vm.assume(interval > 0 && interval < 10 days);
 
@@ -329,8 +342,8 @@ contract TipsWithConfigTest is CommonTest {
         // set config
         vm.prank(alice);
         _tips.setTipsConfig4Character(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
+            firstCharacter,
+            secondCharacter,
             address(token),
             1 ether,
             block.timestamp + 10,
@@ -346,7 +359,7 @@ contract TipsWithConfigTest is CommonTest {
         _tips.cancelTips4Character(1);
 
         // check status
-        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 0);
+        assertEq(_tips.getTipsConfigId(firstCharacter, secondCharacter), 0);
         _checkConfig(
             _tips.getTipsConfig(1),
             ITipsWithConfig.TipsConfig({
@@ -369,8 +382,8 @@ contract TipsWithConfigTest is CommonTest {
         // set config
         vm.prank(alice);
         _tips.setTipsConfig4Character(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
+            firstCharacter,
+            secondCharacter,
             address(token),
             1 ether,
             block.timestamp + 10,
@@ -389,6 +402,7 @@ contract TipsWithConfigTest is CommonTest {
         _tips.cancelTips4Character(2);
     }
 
+    // solhint-disable-next-line function-max-lines
     function testCollectTips4Character(uint256 amount, uint256 interval) public {
         vm.assume(amount > 0 && amount < initialBalance);
         vm.assume(interval > 0 && interval < 100 days);
@@ -399,8 +413,8 @@ contract TipsWithConfigTest is CommonTest {
         vm.startPrank(alice);
         token.approve(address(_tips), amount);
         _tips.setTipsConfig4Character(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
+            firstCharacter,
+            secondCharacter,
             address(token),
             amount,
             startTime,
@@ -422,8 +436,8 @@ contract TipsWithConfigTest is CommonTest {
         expectEmit(CheckAll);
         emit CollectTips4Character(
             1,
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
+            firstCharacter,
+            secondCharacter,
             address(token),
             amount,
             0,
@@ -433,13 +447,13 @@ contract TipsWithConfigTest is CommonTest {
         _tips.collectTips4Character(1);
 
         // check status
-        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 1);
+        assertEq(_tips.getTipsConfigId(firstCharacter, secondCharacter), 1);
         _checkConfig(
             _tips.getTipsConfig(1),
             ITipsWithConfig.TipsConfig({
                 id: 1,
-                fromCharacterId: FIRST_CHARACTER_ID,
-                toCharacterId: SECOND_CHARACTER_ID,
+                fromCharacterId: firstCharacter,
+                toCharacterId: secondCharacter,
                 token: address(token),
                 amount: amount,
                 startTime: startTime,
@@ -455,6 +469,7 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(token.balanceOf(bob), amount);
     }
 
+    // solhint-disable-next-line function-max-lines
     function testCollectTips4CharacterWithFee(
         uint256 amount,
         uint256 interval,
@@ -471,15 +486,15 @@ contract TipsWithConfigTest is CommonTest {
         address feeReceiver = address(123456);
         vm.startPrank(feeReceiver);
         _tips.setDefaultFeeFraction(feeReceiver, fraction / 2);
-        _tips.setFeeFraction4Character(feeReceiver, SECOND_CHARACTER_ID, fraction);
+        _tips.setFeeFraction4Character(feeReceiver, secondCharacter, fraction);
         vm.stopPrank();
 
         // set tips config
         vm.startPrank(alice);
         token.approve(address(_tips), initialBalance);
         _tips.setTipsConfig4Character(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
+            firstCharacter,
+            secondCharacter,
             address(token),
             amount,
             startTime,
@@ -496,13 +511,13 @@ contract TipsWithConfigTest is CommonTest {
         _tips.collectTips4Character(1);
 
         // check status
-        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 1);
+        assertEq(_tips.getTipsConfigId(firstCharacter, secondCharacter), 1);
         _checkConfig(
             _tips.getTipsConfig(1),
             ITipsWithConfig.TipsConfig({
                 id: 1,
-                fromCharacterId: FIRST_CHARACTER_ID,
-                toCharacterId: SECOND_CHARACTER_ID,
+                fromCharacterId: firstCharacter,
+                toCharacterId: secondCharacter,
                 token: address(token),
                 amount: amount,
                 startTime: startTime,
@@ -529,8 +544,8 @@ contract TipsWithConfigTest is CommonTest {
 
         vm.prank(alice);
         _tips.setTipsConfig4Character(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
+            firstCharacter,
+            secondCharacter,
             address(token),
             amount,
             startTime,
@@ -543,13 +558,13 @@ contract TipsWithConfigTest is CommonTest {
         _tips.collectTips4Character(1);
 
         // check status
-        assertEq(_tips.getTipsConfigId(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), 1);
+        assertEq(_tips.getTipsConfigId(firstCharacter, secondCharacter), 1);
         _checkConfig(
             _tips.getTipsConfig(1),
             ITipsWithConfig.TipsConfig({
                 id: 1,
-                fromCharacterId: FIRST_CHARACTER_ID,
-                toCharacterId: SECOND_CHARACTER_ID,
+                fromCharacterId: firstCharacter,
+                toCharacterId: secondCharacter,
                 token: address(token),
                 amount: amount,
                 startTime: startTime,
@@ -565,17 +580,18 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(token.balanceOf(bob), 0);
     }
 
-    function testCollectTips4CharacterMultiTimes(
+    // solhint-disable-next-line function-max-lines
+    function testCollectTips4CharacterAfterEndTime(
         uint256 amount,
         uint256 interval,
         uint256 num
     ) public {
         vm.assume(amount > 0 && amount < initialBalance / 10000);
         vm.assume(interval > 0 && interval < 100 days);
-        vm.assume(num > 0 && num < 500);
+        vm.assume(num > 1 && num < 500);
 
         uint256 startTime = block.timestamp;
-        uint256 endTime = startTime + interval * num;
+        uint256 endTime = startTime + interval * num - 1;
 
         // set fee
         uint256 feeFraction = 1000;
@@ -588,8 +604,73 @@ contract TipsWithConfigTest is CommonTest {
         vm.startPrank(alice);
         token.approve(address(_tips), initialBalance);
         _tips.setTipsConfig4Character(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
+            firstCharacter,
+            secondCharacter,
+            address(token),
+            amount,
+            startTime,
+            endTime,
+            interval,
+            feeReceiver
+        );
+        vm.stopPrank();
+
+        skip(interval * num);
+
+        // collect tips
+        _tips.collectTips4Character(1);
+
+        // check status
+        _checkConfig(
+            _tips.getTipsConfig(1),
+            ITipsWithConfig.TipsConfig({
+                id: 1,
+                fromCharacterId: firstCharacter,
+                toCharacterId: secondCharacter,
+                token: address(token),
+                amount: amount,
+                startTime: startTime,
+                endTime: endTime,
+                interval: interval,
+                feeReceiver: feeReceiver,
+                totalRound: (endTime - startTime) / interval + 1,
+                currentRound: (endTime - startTime) / interval + 1
+            })
+        );
+
+        // check balances
+        uint256 feeAmount = (((amount * feeFraction) * num) / 10000);
+        assertEq(token.balanceOf(alice), initialBalance - amount * num);
+        assertEq(token.balanceOf(bob), amount * num - feeAmount);
+        assertEq(token.balanceOf(feeReceiver), feeAmount);
+    }
+
+    // solhint-disable-next-line function-max-lines
+    function testCollectTips4CharacterMultiTimes(
+        uint256 amount,
+        uint256 interval,
+        uint256 num
+    ) public {
+        vm.assume(amount > 0 && amount < initialBalance / 10000);
+        vm.assume(interval > 0 && interval < 100 days);
+        vm.assume(num > 1 && num < 500);
+
+        uint256 startTime = block.timestamp;
+        uint256 endTime = startTime + interval * num - 1;
+
+        // set fee
+        uint256 feeFraction = 1000;
+        address feeReceiver = address(123456);
+        vm.startPrank(feeReceiver);
+        _tips.setDefaultFeeFraction(feeReceiver, feeFraction);
+        vm.stopPrank();
+
+        // set tips config
+        vm.startPrank(alice);
+        token.approve(address(_tips), initialBalance);
+        _tips.setTipsConfig4Character(
+            firstCharacter,
+            secondCharacter,
             address(token),
             amount,
             startTime,
@@ -608,8 +689,8 @@ contract TipsWithConfigTest is CommonTest {
                 _tips.getTipsConfig(1),
                 ITipsWithConfig.TipsConfig({
                     id: 1,
-                    fromCharacterId: FIRST_CHARACTER_ID,
-                    toCharacterId: SECOND_CHARACTER_ID,
+                    fromCharacterId: firstCharacter,
+                    toCharacterId: secondCharacter,
                     token: address(token),
                     amount: amount,
                     startTime: startTime,
@@ -629,6 +710,10 @@ contract TipsWithConfigTest is CommonTest {
 
             skip(interval);
         }
+
+        // collect already ended
+        skip(interval);
+        assertEq(_tips.collectTips4Character(1), 0);
     }
 
     function _checkConfig(

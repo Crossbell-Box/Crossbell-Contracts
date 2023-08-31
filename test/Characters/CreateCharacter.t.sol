@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.18;
 
-import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {Events} from "../../contracts/libraries/Events.sol";
 import {
     ErrHandleLengthInvalid,
@@ -16,36 +15,29 @@ contract CreateCharacterTest is CommonTest {
     }
 
     function testCreateCharacter() public {
-        DataTypes.CreateCharacterData memory characterData = makeCharacterData(
-            CHARACTER_HANDLE,
-            bob
-        );
-
         expectEmit(CheckAll);
-        // The event we expect
         emit Events.CharacterCreated(1, bob, bob, CHARACTER_HANDLE, block.timestamp);
-        // The event we get
         vm.prank(bob);
-        web3Entry.createCharacter(characterData);
+        uint256 characterId = web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, bob));
 
         // check state
-        assertEq(web3Entry.ownerOf(FIRST_CHARACTER_ID), bob);
+        assertEq(web3Entry.ownerOf(characterId), bob);
         assertEq(web3Entry.totalSupply(), 1);
         // check character
         _matchCharacter(
             web3Entry.getCharacterByHandle(CHARACTER_HANDLE),
-            FIRST_CHARACTER_ID,
+            characterId,
             CHARACTER_HANDLE,
             CHARACTER_URI,
             0,
             address(0),
             address(0)
         );
-        assertEq(web3Entry.getHandle(FIRST_CHARACTER_ID), CHARACTER_HANDLE);
+        assertEq(web3Entry.getHandle(characterId), CHARACTER_HANDLE);
         // get character by calling `getCharacter`
         _matchCharacter(
             web3Entry.getCharacter(FIRST_CHARACTER_ID),
-            FIRST_CHARACTER_ID,
+            characterId,
             CHARACTER_HANDLE,
             CHARACTER_URI,
             0,
@@ -67,6 +59,7 @@ contract CreateCharacterTest is CommonTest {
         // case 3: handle length < 3
         vm.expectRevert(abi.encodeWithSelector(ErrHandleLengthInvalid.selector));
         web3Entry.createCharacter(makeCharacterData("ab", bob));
+        vm.stopPrank();
     }
 
     // solhint-disable-next-line function-max-lines
@@ -125,50 +118,51 @@ contract CreateCharacterTest is CommonTest {
             web3Entry.createCharacter(makeCharacterData(handles[i], bob));
 
             // set handle fail
-            vm.prank(bob);
             vm.expectRevert(abi.encodeWithSelector(ErrHandleContainsInvalidCharacters.selector));
+            vm.prank(bob);
             web3Entry.setHandle(1, handles[i]);
         }
     }
 
     function testCreateCharacterWithBurnedHandle() public {
-        _createCharacter(CHARACTER_HANDLE, alice);
+        uint256 characterId = _createCharacter(CHARACTER_HANDLE, alice);
 
         // burn character
         vm.prank(alice);
-        web3Entry.burn(FIRST_CHARACTER_ID);
+        web3Entry.burn(characterId);
 
         // create character with a burned handle
-        uint256 characterId = _createCharacter(CHARACTER_HANDLE, bob);
+        characterId = _createCharacter(CHARACTER_HANDLE, bob);
         // check handle
         assertEq(CHARACTER_HANDLE, web3Entry.getHandle(characterId));
+        assertEq(web3Entry.getCharacterByHandle(CHARACTER_HANDLE).characterId, characterId);
     }
 
     // test for ERC721Enumerable
     function testCreateCharactersWithBurn() public {
-        _createCharacter("alice", alice);
-        _createCharacter("bob", alice);
-        _createCharacter("carol", alice);
-        _createCharacter("dick", alice);
+        uint256 firstCharacter = _createCharacter("alice", alice);
+        uint256 secondCharacter = _createCharacter("bob", alice);
+        uint256 thirdCharacter = _createCharacter("carol", alice);
+        uint256 fourthCharacter = _createCharacter("dick", alice);
 
         // burn tokenId 3
         vm.prank(alice);
-        web3Entry.burn(3);
+        web3Entry.burn(thirdCharacter);
 
         // check owner
-        assertEq(web3Entry.ownerOf(1), alice);
-        assertEq(web3Entry.ownerOf(2), alice);
-        assertEq(web3Entry.ownerOf(4), alice);
+        assertEq(web3Entry.ownerOf(firstCharacter), alice);
+        assertEq(web3Entry.ownerOf(secondCharacter), alice);
+        assertEq(web3Entry.ownerOf(fourthCharacter), alice);
         // check total supply
         assertEq(web3Entry.totalSupply(), 3);
         // check tokenOfOwnerByIndex
-        assertEq(web3Entry.tokenOfOwnerByIndex(alice, 0), FIRST_CHARACTER_ID);
-        assertEq(web3Entry.tokenOfOwnerByIndex(alice, 1), SECOND_CHARACTER_ID);
-        assertEq(web3Entry.tokenOfOwnerByIndex(alice, 2), 4);
+        assertEq(web3Entry.tokenOfOwnerByIndex(alice, 0), firstCharacter);
+        assertEq(web3Entry.tokenOfOwnerByIndex(alice, 1), secondCharacter);
+        assertEq(web3Entry.tokenOfOwnerByIndex(alice, 2), fourthCharacter);
         // check tokenByIndex
-        assertEq(web3Entry.tokenByIndex(0), FIRST_CHARACTER_ID);
-        assertEq(web3Entry.tokenByIndex(1), SECOND_CHARACTER_ID);
-        assertEq(web3Entry.tokenByIndex(2), 4);
+        assertEq(web3Entry.tokenByIndex(0), firstCharacter);
+        assertEq(web3Entry.tokenByIndex(1), secondCharacter);
+        assertEq(web3Entry.tokenByIndex(2), fourthCharacter);
     }
 
     function testBurnFailWithTokenNotExists() public {

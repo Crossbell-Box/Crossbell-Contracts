@@ -29,28 +29,32 @@ async function main() {
     const Periphery = await ethers.getContractFactory("Periphery");
     const periphery = await Periphery.deploy();
 
-    const LinkModuleLogic = await ethers.getContractFactory("LinkModuleLogic");
-    const linkModuleLogic = await LinkModuleLogic.deploy();
+    const CharacterLib = await ethers.getContractFactory("CharacterLib");
+    const characterLib = await CharacterLib.deploy();
 
-    const CharacterLogic = await ethers.getContractFactory("CharacterLogic");
-    const characterLogic = await CharacterLogic.deploy();
+    const OperatorLib = await ethers.getContractFactory("OperatorLib");
+    const operatorLib = await OperatorLib.deploy();
 
-    const OperatorLogic = await ethers.getContractFactory("OperatorLogic");
-    const operatorLogic = await OperatorLogic.deploy();
+    const PostLib = await ethers.getContractFactory("PostLib");
+    const postLib = await PostLib.deploy();
 
-    const PostLogic = await ethers.getContractFactory("PostLogic");
-    const postLogic = await PostLogic.deploy();
+    const LinkLib = await ethers.getContractFactory("LinkLib");
+    const linkLib = await LinkLib.deploy();
 
-    const LinkLogic = await ethers.getContractFactory("LinkLogic");
-    const linkLogic = await LinkLogic.deploy();
+    const LinklistLib = await ethers.getContractFactory("LinklistLib");
+    const linklistLib = await LinklistLib.deploy();
+
+    const MetaTxLib = await ethers.getContractFactory("MetaTxLib");
+    const metaTxLib = await MetaTxLib.deploy();
 
     const Web3Entry = await ethers.getContractFactory("Web3Entry", {
         libraries: {
-            LinkModuleLogic: linkModuleLogic.address,
-            CharacterLogic: characterLogic.address,
-            OperatorLogic: operatorLogic.address,
-            PostLogic: postLogic.address,
-            LinkLogic: linkLogic.address,
+            CharacterLib: characterLib.address,
+            OperatorLib: operatorLib.address,
+            PostLib: postLib.address,
+            LinkLib: linkLib.address,
+            LinklistLib: linklistLib.address,
+            MetaTxLib: metaTxLib.address,
         },
     });
     const web3Entry = await Web3Entry.deploy();
@@ -89,10 +93,11 @@ async function main() {
         .connect(addr1)
         .initialize(proxyWeb3Entry.address, proxyLinklist.address);
 
-    console.log("LinkModuleLogic deployed to:", linkModuleLogic.address);
-    console.log("CharacterLogic deployed to:", characterLogic.address);
-    console.log("PostLogic deployed to:", postLogic.address);
-    console.log("LinkLogic deployed to:", linkLogic.address);
+    console.log("CharacterLib.sol deployed to:", characterLib.address);
+    console.log("PostLib.sol deployed to:", postLib.address);
+    console.log("LinkLib.sol deployed to:", linkLib.address);
+    console.log("LinklistLib.sol deployed to:", linklistLib.address);
+    console.log("MetaTxLib.sol deployed to:", metaTxLib.address);
     console.log("Web3Entry deployed to:", web3Entry.address);
     console.log("periphery deployed to:", periphery.address);
     console.log("Linklist deployed to:", linkList.address);

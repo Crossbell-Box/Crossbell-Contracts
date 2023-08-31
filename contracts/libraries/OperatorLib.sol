@@ -5,9 +5,10 @@ pragma solidity 0.8.18;
 import {Events} from "./Events.sol";
 import {DataTypes} from "./DataTypes.sol";
 import {OP} from "./OP.sol";
+import {StorageLib} from "./StorageLib.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-library OperatorLogic {
+library OperatorLib {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /**
@@ -19,18 +20,17 @@ library OperatorLogic {
     function grantOperatorPermissions(
         uint256 characterId,
         address operator,
-        uint256 permissionBitMap,
-        mapping(uint256 => EnumerableSet.AddressSet) storage _operatorsByCharacter,
-        mapping(uint256 => mapping(address => uint256)) storage _operatorsPermissionBitMap
+        uint256 permissionBitMap
     ) external {
+        EnumerableSet.AddressSet storage operators = StorageLib.operatorsByCharacter()[characterId];
         if (permissionBitMap == 0) {
-            _operatorsByCharacter[characterId].remove(operator);
+            operators.remove(operator);
         } else {
-            _operatorsByCharacter[characterId].add(operator);
+            operators.add(operator);
         }
 
         uint256 bitmap = _bitmapFilter(permissionBitMap);
-        _operatorsPermissionBitMap[characterId][operator] = bitmap;
+        StorageLib.setOperatorsPermissionBitMap(characterId, operator, bitmap);
         emit Events.GrantOperatorPermissions(characterId, operator, bitmap);
     }
 
@@ -45,17 +45,34 @@ library OperatorLogic {
         uint256 characterId,
         uint256 noteId,
         address[] calldata blocklist,
-        address[] calldata allowlist,
-        mapping(uint256 => mapping(uint256 => DataTypes.Operators4Note)) storage _operators4Note
+        address[] calldata allowlist
     ) external {
-        DataTypes.Operators4Note storage operators4Note = _operators4Note[characterId][noteId];
-        // clear all iterms in blocklist and allowlist first
+        DataTypes.Operators4Note storage operators4Note = StorageLib.getOperators4Note(
+            characterId,
+            noteId
+        );
+        // clear all items in blocklist and allowlist first
         _clearOperators4Note(operators4Note);
 
         // update blocklist and allowlist
         _updateOperators4Note(operators4Note, blocklist, allowlist);
 
         emit Events.GrantOperators4Note(characterId, noteId, blocklist, allowlist);
+    }
+
+    function clearOperators(uint256 characterId) external {
+        EnumerableSet.AddressSet storage _operators = StorageLib.operatorsByCharacter()[
+            characterId
+        ];
+
+        // clear operators
+        uint256 len = _operators.length();
+        address[] memory values = _operators.values();
+        for (uint256 i = 0; i < len; i++) {
+            // clear permission bitmap
+            StorageLib.setOperatorsPermissionBitMap(characterId, values[i], 0);
+            _operators.remove(values[i]);
+        }
     }
 
     function _clearOperators4Note(DataTypes.Operators4Note storage operators4Note) internal {

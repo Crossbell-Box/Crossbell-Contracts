@@ -312,7 +312,6 @@ interface ILinklist {
      * @param tokenId The token ID of linklist to check.
      * @return The URI of the linklist NFT.
      */
-    // slither-disable-next-line naming-convention
     function Uri(uint256 tokenId) external view returns (string memory); // solhint-disable func-name-mixedcase
 
     /**
@@ -323,15 +322,29 @@ interface ILinklist {
     function characterOwnerOf(uint256 tokenId) external view returns (uint256);
 
     /**
-     * @notice Returns the balance of the character.
-     * @param characterId The character ID to check.
-     * @return The balance of the character.
-     */
-    function balanceOf(uint256 characterId) external view returns (uint256);
-
-    /**
      * @notice Returns the total supply of the Linklist NFTs.
      * @return The total supply of the Linklist NFTs.
      */
     function totalSupply() external view returns (uint256);
+
+    /**
+     * @notice Returns the balance of the character.
+     * @param characterId The character ID to check.
+     * @return uint256 The balance of the character.
+     */
+    function balanceOf(uint256 characterId) external view returns (uint256);
+
+    /**
+     * @notice Returns the balance of the address.
+     * @param account The address to check.
+     * @return balance The balance of the address.
+     */
+    function balanceOf(address account) external view returns (uint256 balance);
+
+    /**
+     * @notice Returns the owner of the `tokenId` token.
+     * @param tokenId The token ID to check.
+     * @return The owner of the `tokenId` token.
+     */
+    function ownerOf(uint256 tokenId) external view returns (address);
 }

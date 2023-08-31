@@ -2,7 +2,9 @@
 pragma solidity 0.8.18;
 
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
+import {OP} from "../../contracts/libraries/OP.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
+import {ErrNotEnoughPermission} from "../../contracts/libraries/Error.sol";
 
 contract LinkModuleTest is CommonTest {
     /* solhint-disable comprehensive-interface */
@@ -22,8 +24,68 @@ contract LinkModuleTest is CommonTest {
         );
 
         // check linkModule
-        DataTypes.Character memory character = web3Entry.getCharacter(characterId);
-        assertEq(character.linkModule, address(approvalLinkModule4Character), "linkModule not set");
+        assertEq(
+            web3Entry.getCharacter(characterId).linkModule,
+            address(approvalLinkModule4Character),
+            "linkModule not set"
+        );
+    }
+
+    function testSetLinkModule4CharacterWithOperator() public {
+        uint256 characterId = _createCharacter("alice", alice);
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(characterId, bob, 1 << OP.SET_LINK_MODULE_FOR_CHARACTER);
+
+        vm.prank(bob);
+        web3Entry.setLinkModule4Character(
+            DataTypes.setLinkModule4CharacterData(
+                characterId,
+                address(approvalLinkModule4Character),
+                abi.encode(array(bob, carol))
+            )
+        );
+
+        // check linkModule
+        assertEq(
+            web3Entry.getCharacter(characterId).linkModule,
+            address(approvalLinkModule4Character),
+            "linkModule not set"
+        );
+    }
+
+    function testSetLinkModule4CharacterFail() public {
+        uint256 characterId = _createCharacter("alice", alice);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
+        web3Entry.setLinkModule4Character(
+            DataTypes.setLinkModule4CharacterData(
+                characterId,
+                address(approvalLinkModule4Character),
+                abi.encode(array(bob, carol))
+            )
+        );
+    }
+
+    function testSetLinkModule4CharacterFailWithOperator() public {
+        uint256 characterId = _createCharacter("alice", alice);
+
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            characterId,
+            bob,
+            UINT256_MAX ^ (1 << OP.SET_LINK_MODULE_FOR_CHARACTER)
+        );
+
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
+        web3Entry.setLinkModule4Character(
+            DataTypes.setLinkModule4CharacterData(
+                characterId,
+                address(approvalLinkModule4Character),
+                abi.encode(array(bob, carol))
+            )
+        );
     }
 
     function testSetLinkModule4Note() public {
@@ -42,24 +104,97 @@ contract LinkModuleTest is CommonTest {
             )
         );
         // check linkModule
-        DataTypes.Note memory note = web3Entry.getNote(characterId, 1);
-        assertEq(note.linkModule, address(approvalLinkModule4Note), "linkModule not set");
+        assertEq(
+            web3Entry.getNote(characterId, 1).linkModule,
+            address(approvalLinkModule4Note),
+            "linkModule not set"
+        );
 
         // case 2: set linkModule by setLinkModule4Note
-        _postNote(characterId, NOTE_URI);
+        uint256 noteId = _postNote(characterId, NOTE_URI);
         // set linkModule for note
         web3Entry.setLinkModule4Note(
             DataTypes.setLinkModule4NoteData(
                 characterId,
-                2,
+                noteId,
                 address(approvalLinkModule4Note),
                 abi.encode(array(bob, carol))
             )
         );
         // check linkModule
-        note = web3Entry.getNote(characterId, 2);
-        assertEq(note.linkModule, address(approvalLinkModule4Note), "linkModule not set");
+        assertEq(
+            web3Entry.getNote(characterId, noteId).linkModule,
+            address(approvalLinkModule4Note),
+            "linkModule not set"
+        );
         vm.stopPrank();
+    }
+
+    function testSetLinkModule4NoteWithOperator() public {
+        uint256 characterId = _createCharacter("alice", alice);
+        vm.prank(alice);
+        uint256 noteId = _postNote(characterId, NOTE_URI);
+
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(characterId, bob, 1 << OP.SET_LINK_MODULE_FOR_NOTE);
+
+        // set linkModule for note
+        vm.prank(bob);
+        web3Entry.setLinkModule4Note(
+            DataTypes.setLinkModule4NoteData(
+                characterId,
+                noteId,
+                address(approvalLinkModule4Note),
+                abi.encode(array(bob, carol))
+            )
+        );
+        // check linkModule
+        assertEq(
+            web3Entry.getNote(characterId, noteId).linkModule,
+            address(approvalLinkModule4Note),
+            "linkModule not set"
+        );
+    }
+
+    function testSetLinkModule4NoteFail() public {
+        uint256 characterId = _createCharacter("alice", alice);
+        vm.prank(alice);
+        uint256 noteId = _postNote(characterId, NOTE_URI);
+
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
+        web3Entry.setLinkModule4Note(
+            DataTypes.setLinkModule4NoteData(
+                characterId,
+                noteId,
+                address(approvalLinkModule4Note),
+                abi.encode(array(bob, carol))
+            )
+        );
+    }
+
+    function testSetLinkModule4NoteFailWithOperator() public {
+        uint256 characterId = _createCharacter("alice", alice);
+        vm.prank(alice);
+        uint256 noteId = _postNote(characterId, NOTE_URI);
+
+        vm.prank(alice);
+        web3Entry.grantOperatorPermissions(
+            characterId,
+            bob,
+            UINT256_MAX ^ (1 << OP.SET_LINK_MODULE_FOR_NOTE)
+        );
+
+        vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
+        vm.prank(bob);
+        web3Entry.setLinkModule4Note(
+            DataTypes.setLinkModule4NoteData(
+                characterId,
+                noteId,
+                address(approvalLinkModule4Note),
+                abi.encode(array(bob, carol))
+            )
+        );
     }
 
     function testLinkCharacterWithLinkModule() public {
@@ -79,24 +214,14 @@ contract LinkModuleTest is CommonTest {
         uint256 bobCharacterId = _createCharacter("bob", bob);
         vm.prank(bob);
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                bobCharacterId,
-                aliceCharacterId,
-                LikeLinkType,
-                new bytes(1)
-            )
+            DataTypes.linkCharacterData(bobCharacterId, aliceCharacterId, LikeLinkType, "")
         );
 
         // User not in approval list should not fail to linkModule a character
         uint256 dickCharacterId = _createCharacter("dick", dick);
         vm.prank(dick);
         web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(
-                dickCharacterId,
-                aliceCharacterId,
-                LikeLinkType,
-                new bytes(1)
-            )
+            DataTypes.linkCharacterData(dickCharacterId, aliceCharacterId, LikeLinkType, "")
         );
     }
 
@@ -104,16 +229,11 @@ contract LinkModuleTest is CommonTest {
         uint256 aliceCharacterId = _createCharacter("alice", alice);
         // alice posts a note
         vm.prank(alice);
-        web3Entry.postNote(
-            DataTypes.PostNoteData(
-                aliceCharacterId,
-                NOTE_URI,
-                address(approvalLinkModule4Note),
-                abi.encode(array(bob, carol)),
-                address(0),
-                "",
-                false
-            )
+        _postNoteWithLinkModule(
+            aliceCharacterId,
+            NOTE_URI,
+            address(approvalLinkModule4Note),
+            abi.encode(array(bob, carol))
         );
 
         // User in approval list linkModule a note
