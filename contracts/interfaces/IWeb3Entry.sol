@@ -111,16 +111,18 @@ interface IWeb3Entry {
     ) external;
 
     /**
-     * @notice  Sets a new metadataURI for a given link list.
-     * @param   linkListId  The linklist id to set for.
-     * @param   uri  The metadata uri to set.
+     * @notice Sets a new metadataURI for a given link list.
+     * @param linkListId The linklist id to set for.
+     * @param uri The metadata uri to set.
      */
     function setLinklistUri(uint256 linkListId, string calldata uri) external;
 
     /**
      * @notice Sets a link type for a given linklist.
-     * @dev Linklist is the group of all linking objects with the same link type, like "like".
-     * Each character can only have one linklist for each link type.
+     * @dev Emits a {DetachLinklist} event and a {AttachLinklist} event from web3Entry contract..<br>
+     * Emits a {LinkTypeSet} event from linklist contract.<br>
+     * Linklist is the group of all linking objects with the same link type, like "like".<br>
+     * Each character can only have one linklist for each link type.<br>
      * It will fail if you try to set a link type which is already set for some linklist owned by the same character.
      * @param linkListId The linklist ID to set for.
      * @param linkType The link type to set.
