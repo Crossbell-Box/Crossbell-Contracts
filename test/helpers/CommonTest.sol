@@ -168,18 +168,39 @@ contract CommonTest is Utils {
         web3Entry.mintNote(DataTypes.MintNoteData(characterId, noteId, to, data));
     }
 
-    function _postNote(uint256 characterId, string memory noteUri) internal {
-        web3Entry.postNote(
-            DataTypes.PostNoteData(
-                characterId,
-                noteUri,
-                address(0x0),
-                new bytes(0),
-                address(0),
-                "",
-                false
-            )
-        );
+    function _postNote(uint256 characterId, string memory noteUri) internal returns (uint256) {
+        return
+            web3Entry.postNote(
+                DataTypes.PostNoteData(
+                    characterId,
+                    noteUri,
+                    address(0x0),
+                    new bytes(0),
+                    address(0),
+                    "",
+                    false
+                )
+            );
+    }
+
+    function _postNoteWithLinkModule(
+        uint256 characterId,
+        string memory noteUri,
+        address linkModule,
+        bytes memory linkModuleInitData
+    ) internal returns (uint256) {
+        return
+            web3Entry.postNote(
+                DataTypes.PostNoteData(
+                    characterId,
+                    noteUri,
+                    linkModule,
+                    linkModuleInitData,
+                    address(0),
+                    "",
+                    false
+                )
+            );
     }
 
     function _postNoteWithMintModule(
@@ -193,7 +214,7 @@ contract CommonTest is Utils {
                 characterId,
                 noteUri,
                 address(0x0),
-                new bytes(0),
+                "",
                 mintModule,
                 initData,
                 false

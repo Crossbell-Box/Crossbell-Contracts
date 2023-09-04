@@ -2,15 +2,17 @@
 // solhint-disable private-vars-leading-underscore
 pragma solidity 0.8.18;
 
-import {DataTypes} from "./DataTypes.sol";
-import {Events} from "./Events.sol";
 import {ILinkModule4Note} from "../interfaces/ILinkModule4Note.sol";
 import {IMintModule4Note} from "../interfaces/IMintModule4Note.sol";
 import {IMintNFT} from "../interfaces/IMintNFT.sol";
+import {StorageLib} from "./StorageLib.sol";
+import {ValidationLib} from "./ValidationLib.sol";
+import {DataTypes} from "./DataTypes.sol";
+import {Events} from "./Events.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-library PostLogic {
+library PostLib {
     using Strings for uint256;
 
     function postNoteWithLink(
@@ -18,38 +20,36 @@ library PostLogic {
         uint256 noteId,
         bytes32 linkItemType,
         bytes32 linkKey,
-        bytes calldata data,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+        bytes calldata data
     ) external {
-        uint256 characterId = vars.characterId;
-        DataTypes.Note storage note = _noteByIdByCharacter[characterId][noteId];
+        DataTypes.Note storage _note = StorageLib.getNote(vars.characterId, noteId);
 
         // save note
-        note.contentUri = vars.contentUri;
+        _note.contentUri = vars.contentUri;
         if (linkItemType != bytes32(0)) {
-            note.linkItemType = linkItemType;
-            note.linkKey = linkKey;
+            _note.linkItemType = linkItemType;
+            _note.linkKey = linkKey;
         }
 
         // init link module
         _setLinkModule4Note(
-            characterId,
+            vars.characterId,
             noteId,
             vars.linkModule,
             vars.linkModuleInitData,
-            _noteByIdByCharacter
+            _note
         );
 
         // init mint module
         _setMintModule4Note(
-            characterId,
+            vars.characterId,
             noteId,
             vars.mintModule,
             vars.mintModuleInitData,
-            _noteByIdByCharacter
+            _note
         );
 
-        emit Events.PostNote(characterId, noteId, linkKey, linkItemType, data);
+        emit Events.PostNote(vars.characterId, noteId, linkKey, linkItemType, data);
     }
 
     function mintNote(
@@ -57,20 +57,19 @@ library PostLogic {
         uint256 noteId,
         address to,
         bytes calldata mintModuleData,
-        address mintNFTImpl,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+        address mintNFTImpl
     ) external returns (uint256 tokenId) {
-        DataTypes.Note storage note = _noteByIdByCharacter[characterId][noteId];
-        address mintNFT = note.mintNFT;
+        DataTypes.Note storage _note = StorageLib.getNote(characterId, noteId);
+        address mintNFT = _note.mintNFT;
         if (mintNFT == address(0)) {
             mintNFT = _deployMintNFT(characterId, noteId, mintNFTImpl);
-            note.mintNFT = mintNFT;
+            _note.mintNFT = mintNFT;
         }
 
         // mint nft
         tokenId = IMintNFT(mintNFT).mint(to);
 
-        address mintModule = note.mintModule;
+        address mintModule = _note.mintModule;
         if (mintModule != address(0)) {
             IMintModule4Note(mintModule).processMint(to, characterId, noteId, mintModuleData);
         }
@@ -78,15 +77,27 @@ library PostLogic {
         emit Events.MintNote(to, characterId, noteId, mintNFT, tokenId);
     }
 
-    function setNoteUri(
-        uint256 characterId,
-        uint256 noteId,
-        string calldata newUri,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
-    ) external {
-        _noteByIdByCharacter[characterId][noteId].contentUri = newUri;
+    function setNoteUri(uint256 characterId, uint256 noteId, string calldata newUri) external {
+        DataTypes.Note storage _note = StorageLib.getNote(characterId, noteId);
+        _note.contentUri = newUri;
 
         emit Events.SetNoteUri(characterId, noteId, newUri);
+    }
+
+    function lockNote(uint256 characterId, uint256 noteId) external {
+        ValidationLib.validateNoteExists(characterId, noteId);
+
+        StorageLib.getNote(characterId, noteId).locked = true;
+
+        emit Events.LockNote(characterId, noteId);
+    }
+
+    function deleteNote(uint256 characterId, uint256 noteId) external {
+        ValidationLib.validateNoteExists(characterId, noteId);
+
+        StorageLib.getNote(characterId, noteId).deleted = true;
+
+        emit Events.DeleteNote(characterId, noteId);
     }
 
     /**
@@ -100,15 +111,17 @@ library PostLogic {
         uint256 characterId,
         uint256 noteId,
         address linkModule,
-        bytes calldata linkModuleInitData,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+        bytes calldata linkModuleInitData
     ) external {
+        ValidationLib.validateNoteExists(characterId, noteId);
+        ValidationLib.validateNoteNotLocked(characterId, noteId);
+
         _setLinkModule4Note(
             characterId,
             noteId,
             linkModule,
             linkModuleInitData,
-            _noteByIdByCharacter
+            StorageLib.getNote(characterId, noteId)
         );
     }
 
@@ -123,15 +136,14 @@ library PostLogic {
         uint256 characterId,
         uint256 noteId,
         address mintModule,
-        bytes calldata mintModuleInitData,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+        bytes calldata mintModuleInitData
     ) external {
         _setMintModule4Note(
             characterId,
             noteId,
             mintModule,
             mintModuleInitData,
-            _noteByIdByCharacter
+            StorageLib.getNote(characterId, noteId)
         );
     }
 
@@ -158,10 +170,10 @@ library PostLogic {
         uint256 noteId,
         address linkModule,
         bytes calldata linkModuleInitData,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+        DataTypes.Note storage _note
     ) internal {
         if (linkModule != address(0)) {
-            _noteByIdByCharacter[characterId][noteId].linkModule = linkModule;
+            _note.linkModule = linkModule;
 
             bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
                 characterId,
@@ -184,10 +196,10 @@ library PostLogic {
         uint256 noteId,
         address mintModule,
         bytes calldata mintModuleInitData,
-        mapping(uint256 => mapping(uint256 => DataTypes.Note)) storage _noteByIdByCharacter
+        DataTypes.Note storage _note
     ) internal {
         if (mintModule != address(0)) {
-            _noteByIdByCharacter[characterId][noteId].mintModule = mintModule;
+            _note.mintModule = mintModule;
 
             bytes memory returnData = IMintModule4Note(mintModule).initializeMintModule(
                 characterId,

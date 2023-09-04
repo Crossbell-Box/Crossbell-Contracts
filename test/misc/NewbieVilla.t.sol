@@ -6,6 +6,7 @@ import {stdError} from "forge-std/Test.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
 import {NFT} from "../../contracts/mocks/NFT.sol";
 import {OP} from "../../contracts/libraries/OP.sol";
+import {NewbieVilla} from "../../contracts/misc/NewbieVilla.sol";
 
 contract NewbieVillaTest is CommonTest {
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
@@ -28,6 +29,28 @@ contract NewbieVillaTest is CommonTest {
         // check status after initialization
         assertEq(newbieVilla.web3Entry(), address(web3Entry));
         assertEq(newbieVilla.getToken(), address(token));
+        assertEq(vm.load(address(newbieVilla), 0), bytes32(uint256(3))); // version
+    }
+
+    function testInitialize() public {
+        NewbieVilla c = new NewbieVilla();
+        c.initialize(
+            address(web3Entry),
+            xsyncOperator,
+            address(token),
+            address(newbieAdmin),
+            address(tips)
+        );
+
+        // check state
+        assertEq(vm.load(address(c), 0), bytes32(uint256(3))); // version
+        assertEq(c.web3Entry(), address(web3Entry));
+        assertEq(c.xsyncOperator(), xsyncOperator);
+        assertEq(c.getToken(), address(token));
+        assertEq(
+            vm.load(address(c), bytes32(uint256(7))),
+            bytes32(uint256(uint160(address(tips))))
+        );
     }
 
     function testNewbieInitializeFail() public {
