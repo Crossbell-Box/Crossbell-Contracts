@@ -2,8 +2,8 @@
 // solhint-disable private-vars-leading-underscore,no-console,no-empty-blocks,ordering,quotes
 pragma solidity 0.8.18;
 
-import {Executables} from "./Executables.sol";
-import {Chains} from "./Chains.sol";
+import {Executables} from "./lib/Executables.sol";
+import {Chains} from "./lib/Chains.sol";
 import {Script} from "forge-std/Script.sol";
 import {stdJson} from "forge-std/StdJson.sol";
 import {console2 as console} from "forge-std/console2.sol";
@@ -297,7 +297,7 @@ abstract contract Deployer is Script {
     /// @notice Returns the contract name from a deploy transaction.
     function _getContractNameFromDeployTransaction(
         string memory _deployTx
-    ) internal returns (string memory) {
+    ) internal pure returns (string memory) {
         return stdJson.readString(_deployTx, ".contractName");
     }
 
