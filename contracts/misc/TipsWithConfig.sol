@@ -24,7 +24,6 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
 contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    // slither-disable-start naming-convention
     // address of web3Entry contract
     address internal _web3Entry;
 
@@ -35,7 +34,6 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     mapping(address feeReceiver => uint256 fraction) internal _feeFractions;
     mapping(address feeReceiver => mapping(uint256 characterId => uint256 fraction))
         internal _feeFractions4Character;
-    // slither-disable-end naming-convention
 
     // events
     /**

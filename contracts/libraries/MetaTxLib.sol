@@ -77,7 +77,6 @@ library MetaTxLib {
         bytes32 digest,
         DataTypes.EIP712Signature calldata signature
     ) internal view {
-        // slither-disable-next-line timestamp
         if (signature.deadline < block.timestamp) revert ErrSignatureExpired();
 
         if (signature.signer.code.length != 0) {

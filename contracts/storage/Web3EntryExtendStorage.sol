@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-// slither-disable-start naming-convention
 pragma solidity 0.8.18;
 
 import {DataTypes} from "../libraries/DataTypes.sol";
@@ -7,7 +6,6 @@ import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet
 
 contract Web3EntryExtendStorage {
     address internal _periphery; // slot 21
-    // slither-disable-next-line unused-state
     mapping(uint256 => address) internal _operatorByCharacter; // unused slot 22
     // slither-disable-next-line constable-states
     address public resolver; // unused slot 23
@@ -22,4 +20,3 @@ contract Web3EntryExtendStorage {
 
     mapping(address => uint256) internal _sigNonces; // for replay protection // slot 28
 }
-// slither-disable-end naming-convention
