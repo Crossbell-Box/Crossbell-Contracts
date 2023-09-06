@@ -499,9 +499,9 @@ abstract contract Deployer is Script {
         }
 
         uint256 chainid = vm.envOr("CHAIN_ID", block.chainid);
-        if (chainid == Chains.Crossbell) {
+        if (chainid == Chains.crossbell) {
             return "crossbell";
-        } else if (chainid == Chains.LocalDevnet || chainid == Chains.GethDevnet) {
+        } else if (chainid == Chains.localDevNet) {
             return "devnet";
         } else {
             return vm.toString(chainid);

@@ -5,10 +5,11 @@
 echo "Running lint"
 yarn lint
 
+# solhint
+echo "Running solhint"
+yarn solhint
+
 # unit test
 echo "Running test"
 yarn test
 
-# solhint
-echo "Running solhint"
-yarn solhint
