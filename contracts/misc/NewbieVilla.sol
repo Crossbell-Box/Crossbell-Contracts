@@ -28,12 +28,9 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
 
     address public web3Entry;
     address public xsyncOperator;
-    // slither-disable-next-line naming-convention
     address internal _token; // mira token, erc777 standard
     // characterId => balance
-    // slither-disable-next-line naming-convention
     mapping(uint256 => uint256) internal _balances;
-    // slither-disable-next-line naming-convention
     address internal _tips; // tips contract
 
     // events

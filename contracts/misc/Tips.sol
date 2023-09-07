@@ -17,11 +17,9 @@ contract Tips is Initializable, IERC777Recipient {
         IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
     bytes32 public constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
 
-    // slither-disable-start naming-convention
     // address of web3Entry
     address internal _web3Entry;
     address internal _token; // mira token, erc777 standard
-    // slither-disable-end naming-convention
 
     // events
     /**
@@ -93,17 +91,14 @@ contract Tips is Initializable, IERC777Recipient {
         require(address(this) == to, "Tips: invalid receiver");
 
         bytes memory data = userData.length > 0 ? userData : operatorData;
-        // slither-disable-start uninitialized-local
         // abi encoded bytes of (fromCharacterId, toCharacter)
         if (data.length == 64) {
             // tip character
-            // slither-disable-next-line variable-scope
             (uint256 fromCharacterId, uint256 toCharacterId) = abi.decode(data, (uint256, uint256));
             _tipCharacter(from, fromCharacterId, toCharacterId, _token, amount);
             // abi encoded bytes of (fromCharacterId, toCharacter, noteId)
         } else if (data.length == 96) {
             // tip character for note
-            // slither-disable-next-line variable-scope
             (uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId) = abi.decode(
                 data,
                 (uint256, uint256, uint256)
@@ -112,7 +107,6 @@ contract Tips is Initializable, IERC777Recipient {
         } else {
             revert("Tips: unknown receiving");
         }
-        //slither-disable-end uninitialized-local
     }
 
     /**

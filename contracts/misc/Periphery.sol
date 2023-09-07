@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable comprehensive-interface
-// slither-disable-start calls-loop
 pragma solidity 0.8.18;
 
 import {IWeb3Entry} from "../interfaces/IWeb3Entry.sol";
@@ -185,7 +184,6 @@ contract Periphery is Initializable {
         uint256 fromCharacterId = IWeb3Entry(web3Entry).getPrimaryCharacterId(account);
         if (fromCharacterId == 0) {
             // create character first
-            // slither-disable-next-line unused-return
             IWeb3Entry(web3Entry).createCharacter(
                 DataTypes.CreateCharacterData({
                     to: account,
@@ -231,5 +229,4 @@ contract Periphery is Initializable {
     function _exists(uint256 characterId) internal view returns (bool) {
         return IWeb3Entry(web3Entry).getCharacter(characterId).characterId != 0;
     }
-    // slither-disable-end calls-loop
 }

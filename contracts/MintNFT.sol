@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-// slither-disable-start naming-convention
 pragma solidity 0.8.18;
 
 import {NFTBase} from "./base/NFTBase.sol";
@@ -116,4 +115,3 @@ contract MintNFT is NFTBase, IMintNFT, ERC2981, Initializable {
         }
     }
 }
-// slither-disable-end naming-convention

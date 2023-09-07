@@ -425,8 +425,7 @@ contract Linklist is
     }
 
     /// @inheritdoc ILinklist
-    // solhint-disable func-name-mixedcase
-    // slither-disable-next-line naming-convention
+    // solhint-disable-next-line func-name-mixedcase
     function Uri(
         uint256 tokenId
     ) external view override onlyExistingToken(tokenId) returns (string memory) {
