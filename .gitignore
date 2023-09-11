@@ -1,8 +1,6 @@
 # Hardhat dependencies
 node_modules
 # Foundry dependencies
-lib 
-.env
 coverage
 coverage.json
 typechain

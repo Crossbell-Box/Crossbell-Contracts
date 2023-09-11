@@ -1,0 +1,11 @@
+{
+  "chainID": 3737,
+  "proxyAdminOwner": "0x5f603895B48F0C451af39bc7e0c587aE15718e4d",
+  "web3EntryTokenName": "Web3 Entry Character",
+  "web3EntryTokenSymbol": "WEC",
+  "linklistTokenName": "Link List Token",
+  "linklistTokenSymbol": "LLT",
+  "xsyncOperator": "0x0F588318A494e4508A121a32B6670b5494Ca3357",
+  "miraToken": "0xAfB95CC0BD320648B3E8Df6223d9CDD05EbeDC64",
+  "newbieVillaAdmin": "0x5f603895B48F0C451af39bc7e0c587aE15718e4d"
+}

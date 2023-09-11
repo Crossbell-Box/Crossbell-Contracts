@@ -737,7 +737,7 @@ contract OperatorTest is CommonTest {
     function _getEIP712Signature(
         uint256 privateKey,
         bytes32 hashedMessage
-    ) internal returns (DataTypes.EIP712Signature memory sig) {
+    ) internal view returns (DataTypes.EIP712Signature memory sig) {
         bytes32 domainSeparator = web3Entry.getDomainSeparator();
         bytes32 typedDataHash = ECDSA.toTypedDataHash(domainSeparator, hashedMessage);
 
