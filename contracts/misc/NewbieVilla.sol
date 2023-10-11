@@ -33,6 +33,8 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
     mapping(uint256 => uint256) internal _balances;
     address internal _tips; // tips contract
 
+    mapping(uint256 characterId => address keeper) private _keepers;
+
     // events
     /**
      * @dev Emitted when the web3Entry character nft is withdrawn.
@@ -192,8 +194,11 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
         bytes32 signedData = ECDSA.toEthSignedMessageHash(
             keccak256(abi.encodePacked(address(this), characterId, nonce, expires))
         );
+
+        address signer = ECDSA.recover(signedData, proof);
+        address keeper = _keepers[characterId];
         require(
-            hasRole(ADMIN_ROLE, ECDSA.recover(signedData, proof)),
+            (keeper == signer) || (keeper == address(0) && hasRole(ADMIN_ROLE, signer)),
             "NewbieVilla: unauthorized withdraw"
         );
 
@@ -230,9 +235,11 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
     ) external override returns (bytes4) {
         // Only character nft could be received, other nft, e.g. mint nft would be reverted
         require(msg.sender == web3Entry, "NewbieVilla: receive unknown token");
-        // Only admin role could send character to this contract
-        require(hasRole(ADMIN_ROLE, operator), "NewbieVilla: receive unknown character");
 
+        // set keeper for tokenId
+        _keepers[tokenId] = operator;
+
+        // grant operator permissions
         if (data.length == 0) {
             IWeb3Entry(web3Entry).grantOperatorPermissions(
                 tokenId,
@@ -293,6 +300,15 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      */
     function balanceOf(uint256 characterId) external view returns (uint256) {
         return _balances[characterId];
+    }
+
+    /**
+     * @notice Returns the address of keeper by `characterId`.
+     * @param characterId The character ID to query.
+     * @return address The address of the keeper.
+     */
+    function getKeeper(uint256 characterId) external view returns (address) {
+        return _keepers[characterId];
     }
 
     /**
