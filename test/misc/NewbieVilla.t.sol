@@ -439,7 +439,7 @@ contract NewbieVillaTest is CommonTest {
         uint256 nonce = 1;
         uint256 expires = block.timestamp + 10 minutes;
 
-        uint256 keeperPrivateKey = 1;
+        uint256 keeperPrivateKey = newbieAdminPrivateKey + 1;
         address keeper = vm.addr(keeperPrivateKey);
 
         // 1.  create and transfer web3Entry nft to newbieVilla
@@ -462,7 +462,7 @@ contract NewbieVillaTest is CommonTest {
         );
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(newbieAdminPrivateKey, digest);
         // withdraw
-        //        vm.expectRevert("NewbieVilla: unauthorized withdraw");
+        vm.expectRevert("NewbieVilla: unauthorized withdraw");
         vm.prank(to);
         newbieVilla.withdraw(to, characterId, nonce, expires, abi.encodePacked(r, s, v));
     }
