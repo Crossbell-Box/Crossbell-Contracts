@@ -14,7 +14,7 @@ import {IERC777} from "@openzeppelin/contracts/token/ERC777/IERC777.sol";
 import {IERC1820Registry} from "@openzeppelin/contracts/utils/introspection/IERC1820Registry.sol";
 
 /**
- * @dev Implementation of a contract to keep characters for others. The address with
+ * @dev Implementation of a contract to keep characters for others. The keepers and addresses with
  * the ADMIN_ROLE are expected to issue the proof to users. Then users could use the
  * proof to withdraw the corresponding character.
  */
@@ -160,7 +160,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
     /**
      * @notice  Withdraw character#`characterId` to `to` using the nonce, expires and the proof. <br>
      * Emits the `Withdraw` event. <br>
-     * @dev Proof is the signature from someone with the ADMIN_ROLE. The message to sign is
+     * @dev Proof is the signature from character keepers or someone with the ADMIN_ROLE. The message to sign is
      * the packed data of this contract's address, `characterId`, `nonce` and `expires`. <br>
      *
      * Here's an example to generate a proof: <br>
@@ -195,6 +195,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
             keccak256(abi.encodePacked(address(this), characterId, nonce, expires))
         );
 
+        // check proof
         address signer = ECDSA.recover(signedData, proof);
         address keeper = _keepers[characterId];
         require(
@@ -202,8 +203,12 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
             "NewbieVilla: unauthorized withdraw"
         );
 
+        // update balance
         uint256 amount = _balances[characterId];
         _balances[characterId] = 0;
+        // update keeper
+        delete _keepers[characterId];
+
         // send token
         IERC777(_token).send(to, amount, ""); // solhint-disable-line check-send-result
 

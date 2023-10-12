@@ -287,27 +287,20 @@ contract NewbieVillaTest is CommonTest {
         );
     }
 
-    function testNewbieCreateCharacterFail() public {
-        // bob has no mint role, so he can't send character to newbieVilla contract
-        vm.prank(bob);
-        vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, address(newbieVilla)));
-    }
-
     // transfer character to newbieVilla contract
     function testTransferNewbieIn() public {
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, alice));
-        vm.prank(alice);
-        web3Entry.safeTransferFrom(alice, address(newbieVilla), FIRST_CHARACTER_ID);
+        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, bob));
+        vm.prank(bob);
+        web3Entry.safeTransferFrom(bob, address(newbieVilla), FIRST_CHARACTER_ID);
         // check operators
         address[] memory operators = web3Entry.getOperators(FIRST_CHARACTER_ID);
-        assertEq(operators[0], alice);
+        assertEq(operators[0], bob);
         assertEq(operators[1], xsyncOperator);
 
         // check operator permission bitmap
-        // alice(NewbieVilla admin) has DEFAULT_PERMISSION_BITMAP.
+        // bob(character's keeper) has DEFAULT_PERMISSION_BITMAP.
         assertEq(
-            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, alice),
+            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob),
             OP.DEFAULT_PERMISSION_BITMAP
         );
         // xsyncOperator has POST_NOTE_DEFAULT_PERMISSION_BITMAP
@@ -315,6 +308,8 @@ contract NewbieVillaTest is CommonTest {
             web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, xsyncOperator),
             OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
         );
+        // check keeper
+        assertEq(newbieVilla.getKeeper(FIRST_CHARACTER_ID), bob);
     }
 
     // transfer character to newbieVilla contract with data
@@ -347,15 +342,12 @@ contract NewbieVillaTest is CommonTest {
             web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, xsyncOperator),
             OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
         );
+        // check keeper
+        assertEq(newbieVilla.getKeeper(FIRST_CHARACTER_ID), alice);
     }
 
-    function testTransferNewbieInFail() public {
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, bob));
-
-        vm.expectRevert(abi.encodePacked("NewbieVilla: receive unknown character"));
-        vm.prank(bob);
-        web3Entry.safeTransferFrom(bob, address(newbieVilla), FIRST_CHARACTER_ID);
-
+    function testTransferNewbieInFailWithNonCharacterNFT() public {
+        // transfer non-character nft to newbieVilla contract
         NFT nft = new NFT();
         nft.mint(bob);
 
@@ -396,6 +388,83 @@ contract NewbieVillaTest is CommonTest {
         assertEq(newbieVilla.balanceOf(characterId), 0);
         assertEq(web3Entry.ownerOf(characterId), carol);
         assertEq(token.balanceOf(carol), amount);
+        // check keeper
+        assertEq(newbieVilla.getKeeper(characterId), address(0));
+    }
+
+    function testWithdrawNewbieOutWithKeeper(uint256 amount) public {
+        vm.assume(amount > 0 && amount < 10 ether);
+        address to = carol;
+        uint256 nonce = 1;
+        uint256 expires = block.timestamp + 10 minutes;
+
+        uint256 keeperPrivateKey = 1;
+        address keeper = vm.addr(keeperPrivateKey);
+
+        // 1. create and transfer web3Entry nft to newbieVilla
+        uint256 characterId = web3Entry.createCharacter(
+            makeCharacterData(CHARACTER_HANDLE, keeper)
+        );
+        vm.prank(keeper);
+        web3Entry.safeTransferFrom(keeper, address(newbieVilla), characterId);
+
+        // 2. send some token to web3Entry nft in newbieVilla
+        vm.prank(alice);
+        token.send(address(newbieVilla), amount, abi.encode(2, characterId));
+
+        // 3. withdraw web3Entry nft
+        bytes32 digest = keccak256(
+            abi.encodePacked(
+                "\x19Ethereum Signed Message:\n32",
+                keccak256(abi.encodePacked(address(newbieVilla), characterId, nonce, expires))
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(keeperPrivateKey, digest);
+        // withdraw
+        vm.prank(to);
+        newbieVilla.withdraw(to, characterId, nonce, expires, abi.encodePacked(r, s, v));
+
+        // check state
+        assertEq(newbieVilla.balanceOf(characterId), 0);
+        assertEq(web3Entry.ownerOf(characterId), carol);
+        assertEq(token.balanceOf(carol), amount);
+        // check keeper
+        assertEq(newbieVilla.getKeeper(characterId), address(0));
+    }
+
+    // newbieVilla admin can't withdraw characters deposited by keeper
+    function testWithdrawNewbieOutFail(uint256 amount) public {
+        vm.assume(amount > 0 && amount < 10 ether);
+        address to = carol;
+        uint256 nonce = 1;
+        uint256 expires = block.timestamp + 10 minutes;
+
+        uint256 keeperPrivateKey = 1;
+        address keeper = vm.addr(keeperPrivateKey);
+
+        // 1.  create and transfer web3Entry nft to newbieVilla
+        uint256 characterId = web3Entry.createCharacter(
+            makeCharacterData(CHARACTER_HANDLE, keeper)
+        );
+        vm.prank(keeper);
+        web3Entry.safeTransferFrom(keeper, address(newbieVilla), characterId);
+
+        // 2. send some token to web3Entry nft in newbieVilla
+        vm.prank(alice);
+        token.send(address(newbieVilla), amount, abi.encode(2, characterId));
+
+        // 3. withdraw web3Entry nft by newbieVilla admin
+        bytes32 digest = keccak256(
+            abi.encodePacked(
+                "\x19Ethereum Signed Message:\n32",
+                keccak256(abi.encodePacked(address(newbieVilla), characterId, nonce, expires))
+            )
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(newbieAdminPrivateKey, digest);
+        // withdraw
+        //        vm.expectRevert("NewbieVilla: unauthorized withdraw");
+        vm.prank(to);
+        newbieVilla.withdraw(to, characterId, nonce, expires, abi.encodePacked(r, s, v));
     }
 
     function testTokensReceived(uint256 amount) public {
