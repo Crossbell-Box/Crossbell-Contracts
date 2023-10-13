@@ -176,7 +176,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      *
      * <b> Requirements: </b>:
      * - `expires` is greater than the current timestamp
-     * - `proof` is signed by the one with the ADMIN_ROLE
+     * - `proof` is signed by the keeper or address with the ADMIN_ROLE
      *
      * @param   to  Receiver of the withdrawn character.
      * @param   characterId  The token id of the character to withdraw.
@@ -227,7 +227,6 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * <b> Requirements: </b>:
      *
      * - `msg.sender` must be address of Web3Entry.
-     * - `operator` must has ADMIN_ROLE.
      *
      * @param data bytes encoded from the operator address to set for the incoming character.
      *
