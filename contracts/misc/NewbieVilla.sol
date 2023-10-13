@@ -84,7 +84,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
 
     /**
      * @notice Tips a character by transferring `amount` tokens
-     * from account with `ADMIN_ROLE` to `Tips` contract. <br>
+     * from account with required permission to `Tips` contract. <br>
      *
      * Admin will call `send` erc777 token to the Tips contract, with `fromCharacterId`
      * and `toCharacterId` encoded in the `data`. <br>
@@ -95,14 +95,17 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * [AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode).<br>
      *
      * <b> Requirements: </b>
-     * - The `msg.sender` must have `ADMIN_ROLE`.
+     * - The `msg.sender` must be character's keeper or have `ADMIN_ROLE` but not character's keeper.
      * @param fromCharacterId The token ID of character that calls this contract.
      * @param toCharacterId The token ID of character that will receive the token.
      * @param amount Amount of token.
      */
     function tipCharacter(uint256 fromCharacterId, uint256 toCharacterId, uint256 amount) external {
-        // check admin role
-        require(hasRole(ADMIN_ROLE, msg.sender), "NewbieVilla: unauthorized role for tipCharacter");
+        // check permission
+        require(
+            _hasPermission(msg.sender, fromCharacterId),
+            "NewbieVilla: unauthorized role for tipCharacter"
+        );
 
         // newbievilla's balance - tip amount
         // will fail if balance is insufficient
@@ -117,7 +120,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
 
     /**
      * @notice Tips a character's note by transferring `amount` tokens
-     * from account with `ADMIN_ROLE` to `Tips` contract. <br>
+     * from account with required permission to `Tips` contract. <br>
      *
      * Admin will call `send` erc777 token to the Tips contract, with `fromCharacterId`,
      * `toCharacterId` and `toNoteId` encoded in the `data`. <br>
@@ -128,7 +131,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * [AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode).<br>
      *
      * <b> Requirements: </b>
-     * - The `msg.sender` must have `ADMIN_ROLE`.
+     * - The `msg.sender` must be character's keeper or have `ADMIN_ROLE` but not character's keeper.
      * @param fromCharacterId The token ID of character that calls this contract.
      * @param toCharacterId The token ID of character that will receive the token.
      * @param toNoteId The note ID.
@@ -140,9 +143,9 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
         uint256 toNoteId,
         uint256 amount
     ) external {
-        // check admin role
+        // check permission
         require(
-            hasRole(ADMIN_ROLE, msg.sender),
+            _hasPermission(msg.sender, fromCharacterId),
             "NewbieVilla: unauthorized role for tipCharacterForNote"
         );
 
@@ -197,11 +200,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
 
         // check proof
         address signer = ECDSA.recover(signedData, proof);
-        address keeper = _keepers[characterId];
-        require(
-            (keeper == signer) || (keeper == address(0) && hasRole(ADMIN_ROLE, signer)),
-            "NewbieVilla: unauthorized withdraw"
-        );
+        require(_hasPermission(signer, characterId), "NewbieVilla: unauthorized withdraw");
 
         // update balance
         uint256 amount = _balances[characterId];
@@ -321,5 +320,11 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      */
     function getToken() external view returns (address) {
         return _token;
+    }
+
+    /// @dev It will return true if `account` is character's keeper or has `ADMIN_ROLE` but not character's keeper.
+    function _hasPermission(address account, uint256 characterId) internal view returns (bool) {
+        address keeper = _keepers[characterId];
+        return (keeper == account) || (keeper == address(0) && hasRole(ADMIN_ROLE, account));
     }
 }

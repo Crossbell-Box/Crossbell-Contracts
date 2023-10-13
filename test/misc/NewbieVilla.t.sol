@@ -67,31 +67,30 @@ contract NewbieVillaTest is CommonTest {
     function testNewbieTipCharacter(uint256 amount) public {
         vm.assume(amount > 0 && amount < 10 ether);
 
-        // 1. admin create and transfer web3Entry nft to newbieVilla
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, newbieAdmin));
-        vm.prank(newbieAdmin);
-        web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), FIRST_CHARACTER_ID);
-
-        // 2. user create web3Entity nft
-        vm.prank(bob);
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE2, bob));
-
-        // 3. send some token to web3Entry nft in newbieVilla
+        // 1. create and transfer character to newbieVilla
+        uint256 newbieCharacterId = _createCharacter(CHARACTER_HANDLE, alice);
         vm.prank(alice);
-        token.send(address(newbieVilla), amount, abi.encode(2, FIRST_CHARACTER_ID));
+        web3Entry.safeTransferFrom(alice, address(newbieVilla), newbieCharacterId);
+
+        // 2.create character for bob
+        uint256 bobCharacterId = _createCharacter(CHARACTER_HANDLE2, bob);
+
+        // 3. send some token to newbieVilla for newbieCharacter
+        vm.prank(alice);
+        token.send(address(newbieVilla), amount, abi.encode(2, newbieCharacterId));
 
         // 4. check balance and state before tip
         assertEq(token.balanceOf(alice), initialBalance - amount);
-        assertEq(newbieVilla.balanceOf(FIRST_CHARACTER_ID), amount);
+        assertEq(newbieVilla.balanceOf(newbieCharacterId), amount);
         assertEq(token.balanceOf(bob), initialBalance);
 
         // 5. tip another character for certain amount
         vm.prank(alice);
-        newbieVilla.tipCharacter(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, amount);
+        newbieVilla.tipCharacter(newbieCharacterId, bobCharacterId, amount);
 
         // 6. check balance and state after tip
         assertEq(token.balanceOf(alice), initialBalance - amount);
-        assertEq(newbieVilla.balanceOf(FIRST_CHARACTER_ID), 0);
+        assertEq(newbieVilla.balanceOf(newbieCharacterId), 0);
         assertEq(token.balanceOf(bob), initialBalance + amount);
     }
 
@@ -130,10 +129,10 @@ contract NewbieVillaTest is CommonTest {
     function testNewbieTipCharacterInsufficientBalanceFail(uint256 amount) public {
         vm.assume(amount > 0 && amount < 10 ether);
 
-        // 1. admin create and transfer web3Entry nft to newbieVilla
-        uint256 newbieCharacterId = _createCharacter(CHARACTER_HANDLE, newbieAdmin);
-        vm.prank(newbieAdmin);
-        web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), newbieCharacterId);
+        // 1. create and transfer web3Entry nft to newbieVilla
+        uint256 newbieCharacterId = _createCharacter(CHARACTER_HANDLE, alice);
+        vm.prank(alice);
+        web3Entry.safeTransferFrom(alice, address(newbieVilla), newbieCharacterId);
 
         // 3. send some token to newbieCharacter in newbieVilla contract
         vm.prank(alice);
@@ -146,7 +145,6 @@ contract NewbieVillaTest is CommonTest {
         // 5. tip another character for certain amount
         uint256 bobCharacterId = _createCharacter(CHARACTER_HANDLE2, bob);
         vm.expectRevert(stdError.arithmeticError);
-        // alice has no permission to tip newbieCharacter
         // newbieCharacter only has `amount` token in newbieVilla , so it will overflow
         vm.prank(alice);
         newbieVilla.tipCharacter(newbieCharacterId, bobCharacterId, amount + 1);
@@ -159,110 +157,92 @@ contract NewbieVillaTest is CommonTest {
     function testNewbieTipCharacterForNote(uint256 amount) public {
         vm.assume(amount > 0 && amount < 10 ether);
 
-        // 1. admin create and transfer web3Entry nft to newbieVilla
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, newbieAdmin));
-        vm.prank(newbieAdmin);
-        web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), FIRST_CHARACTER_ID);
-
-        // 2. user create web3Entity nft
-        vm.prank(bob);
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE2, bob));
-
-        // 3. send some token to web3Entry nft in newbieVilla
+        // 1. create and transfer web3Entry nft to newbieVilla
+        uint256 newbieCharacterId = _createCharacter(CHARACTER_HANDLE, alice);
         vm.prank(alice);
-        token.send(address(newbieVilla), amount, abi.encode(2, FIRST_CHARACTER_ID));
+        web3Entry.safeTransferFrom(alice, address(newbieVilla), newbieCharacterId);
+
+        // 2. create character for bob
+        uint256 bobCharacterId = _createCharacter(CHARACTER_HANDLE2, bob);
+
+        // 3. send some token to newbieVilla for newbieCharacter
+        vm.prank(alice);
+        token.send(address(newbieVilla), amount, abi.encode(2, newbieCharacterId));
 
         // 4. check balance and state before tip
         assertEq(token.balanceOf(alice), initialBalance - amount);
-        assertEq(newbieVilla.balanceOf(FIRST_CHARACTER_ID), amount);
+        assertEq(newbieVilla.balanceOf(newbieCharacterId), amount);
         assertEq(token.balanceOf(bob), initialBalance);
 
         // 5. tip another character's note for certain amount
         vm.prank(alice);
-        newbieVilla.tipCharacterForNote(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            amount
-        );
+        newbieVilla.tipCharacterForNote(newbieCharacterId, bobCharacterId, FIRST_NOTE_ID, amount);
 
         // 6. check balance and state after tip
         assertEq(token.balanceOf(alice), initialBalance - amount);
-        assertEq(newbieVilla.balanceOf(FIRST_CHARACTER_ID), 0);
+        assertEq(newbieVilla.balanceOf(newbieCharacterId), 0);
         assertEq(token.balanceOf(bob), initialBalance + amount);
     }
 
     function testNewbieTipCharacterForNoteNotAuthorizedFail(uint256 amount) public {
         vm.assume(amount > 0 && amount < 10 ether);
 
-        // 1. admin create and transfer web3Entry nft to newbieVilla
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, newbieAdmin));
-        vm.prank(newbieAdmin);
-        web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), FIRST_CHARACTER_ID);
+        // 1. create characters
+        uint256 newbieCharacterId = _createCharacter(CHARACTER_HANDLE, alice);
+        uint256 bobCharacterId = _createCharacter(CHARACTER_HANDLE2, bob);
 
-        // 2. user create web3Entity nft
-        vm.prank(bob);
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE2, bob));
-
-        // 3. send some token to web3Entry nft in newbieVilla
+        // 2. alice sends character to newbieVilla
         vm.prank(alice);
-        token.send(address(newbieVilla), amount, abi.encode(2, FIRST_CHARACTER_ID));
+        web3Entry.safeTransferFrom(alice, address(newbieVilla), newbieCharacterId);
 
-        // 4. check balance and state before tip
-        assertEq(token.balanceOf(alice), initialBalance - amount);
-        assertEq(newbieVilla.balanceOf(FIRST_CHARACTER_ID), amount);
-        assertEq(token.balanceOf(bob), initialBalance);
+        // 3. send some token to newbieVilla for newbieCharacter
+        vm.prank(alice);
+        token.send(address(newbieVilla), amount, abi.encode(2, newbieCharacterId));
 
-        // 5. tip another character's note for certain amount
-        vm.prank(bob);
+        // case 1: expect revert with no permission
         vm.expectRevert(abi.encodePacked("NewbieVilla: unauthorized role for tipCharacterForNote"));
-        newbieVilla.tipCharacterForNote(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            amount
-        );
+        vm.prank(bob);
+        newbieVilla.tipCharacterForNote(newbieCharacterId, bobCharacterId, 1, amount);
 
-        // 6. check balance and state after tip
-        assertEq(token.balanceOf(alice), initialBalance - amount);
-        assertEq(newbieVilla.balanceOf(FIRST_CHARACTER_ID), amount);
-        assertEq(token.balanceOf(bob), initialBalance);
+        // case 2: expect revert with no permission
+        vm.expectRevert(abi.encodePacked("NewbieVilla: unauthorized role for tipCharacterForNote"));
+        vm.prank(newbieAdmin);
+        newbieVilla.tipCharacterForNote(newbieCharacterId, bobCharacterId, 1, amount);
     }
 
     function testNewbieTipCharacterForNoteInsufficientBalanceFail(uint256 amount) public {
         vm.assume(amount > 0 && amount < 10 ether);
 
-        // 1. admin create and transfer web3Entry nft to newbieVilla
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, newbieAdmin));
-        vm.prank(newbieAdmin);
-        web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), FIRST_CHARACTER_ID);
-
-        // 2. user create web3Entity nft
-        vm.prank(bob);
-        web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE2, bob));
-
-        // 3. send some token to web3Entry nft in newbieVilla
+        // 1. create and transfer web3Entry nft to newbieVilla
+        uint256 newbieCharacterId = _createCharacter(CHARACTER_HANDLE, alice);
         vm.prank(alice);
-        token.send(address(newbieVilla), amount, abi.encode(2, FIRST_CHARACTER_ID));
+        web3Entry.safeTransferFrom(alice, address(newbieVilla), newbieCharacterId);
+
+        // 2. create character for bob
+        uint256 bobCharacterId = _createCharacter(CHARACTER_HANDLE2, bob);
+
+        // 3. send some token to newbieVilla for newbieCharacter
+        vm.prank(alice);
+        token.send(address(newbieVilla), amount, abi.encode(2, newbieCharacterId));
 
         // 4. check balance and state before tip
         assertEq(token.balanceOf(alice), initialBalance - amount);
-        assertEq(newbieVilla.balanceOf(FIRST_CHARACTER_ID), amount);
+        assertEq(newbieVilla.balanceOf(newbieCharacterId), amount);
         assertEq(token.balanceOf(bob), initialBalance);
 
         // 5. tip another character's note for certain amount
         vm.prank(alice);
         vm.expectRevert(stdError.arithmeticError);
         newbieVilla.tipCharacterForNote(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
+            newbieCharacterId,
+            bobCharacterId,
             FIRST_NOTE_ID,
             amount + 1
         );
 
         // 6. check balance and state after tip
         assertEq(token.balanceOf(alice), initialBalance - amount);
-        assertEq(newbieVilla.balanceOf(FIRST_CHARACTER_ID), amount);
+        assertEq(newbieVilla.balanceOf(newbieCharacterId), amount);
         assertEq(token.balanceOf(bob), initialBalance);
     }
 
