@@ -14,7 +14,7 @@ import {IERC777} from "@openzeppelin/contracts/token/ERC777/IERC777.sol";
 import {IERC1820Registry} from "@openzeppelin/contracts/utils/introspection/IERC1820Registry.sol";
 
 /**
- * @dev Implementation of a contract to keep characters for others. The address with
+ * @dev Implementation of a contract to keep characters for others. The keepers and addresses with
  * the ADMIN_ROLE are expected to issue the proof to users. Then users could use the
  * proof to withdraw the corresponding character.
  */
@@ -32,6 +32,8 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
     // characterId => balance
     mapping(uint256 => uint256) internal _balances;
     address internal _tips; // tips contract
+
+    mapping(uint256 characterId => address keeper) private _keepers;
 
     // events
     /**
@@ -82,7 +84,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
 
     /**
      * @notice Tips a character by transferring `amount` tokens
-     * from account with `ADMIN_ROLE` to `Tips` contract. <br>
+     * from account with required permission to `Tips` contract. <br>
      *
      * Admin will call `send` erc777 token to the Tips contract, with `fromCharacterId`
      * and `toCharacterId` encoded in the `data`. <br>
@@ -93,14 +95,17 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * [AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode).<br>
      *
      * <b> Requirements: </b>
-     * - The `msg.sender` must have `ADMIN_ROLE`.
+     * - The `msg.sender` must be character's keeper or have `ADMIN_ROLE` but not character's keeper.
      * @param fromCharacterId The token ID of character that calls this contract.
      * @param toCharacterId The token ID of character that will receive the token.
      * @param amount Amount of token.
      */
     function tipCharacter(uint256 fromCharacterId, uint256 toCharacterId, uint256 amount) external {
-        // check admin role
-        require(hasRole(ADMIN_ROLE, msg.sender), "NewbieVilla: unauthorized role for tipCharacter");
+        // check permission
+        require(
+            _hasPermission(msg.sender, fromCharacterId),
+            "NewbieVilla: unauthorized role for tipCharacter"
+        );
 
         // newbievilla's balance - tip amount
         // will fail if balance is insufficient
@@ -115,7 +120,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
 
     /**
      * @notice Tips a character's note by transferring `amount` tokens
-     * from account with `ADMIN_ROLE` to `Tips` contract. <br>
+     * from account with required permission to `Tips` contract. <br>
      *
      * Admin will call `send` erc777 token to the Tips contract, with `fromCharacterId`,
      * `toCharacterId` and `toNoteId` encoded in the `data`. <br>
@@ -126,7 +131,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * [AbiCoder-encode](https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder-encode).<br>
      *
      * <b> Requirements: </b>
-     * - The `msg.sender` must have `ADMIN_ROLE`.
+     * - The `msg.sender` must be character's keeper or have `ADMIN_ROLE` but not character's keeper.
      * @param fromCharacterId The token ID of character that calls this contract.
      * @param toCharacterId The token ID of character that will receive the token.
      * @param toNoteId The note ID.
@@ -138,9 +143,9 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
         uint256 toNoteId,
         uint256 amount
     ) external {
-        // check admin role
+        // check permission
         require(
-            hasRole(ADMIN_ROLE, msg.sender),
+            _hasPermission(msg.sender, fromCharacterId),
             "NewbieVilla: unauthorized role for tipCharacterForNote"
         );
 
@@ -158,7 +163,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
     /**
      * @notice  Withdraw character#`characterId` to `to` using the nonce, expires and the proof. <br>
      * Emits the `Withdraw` event. <br>
-     * @dev Proof is the signature from someone with the ADMIN_ROLE. The message to sign is
+     * @dev Proof is the signature from character keepers or someone with the ADMIN_ROLE. The message to sign is
      * the packed data of this contract's address, `characterId`, `nonce` and `expires`. <br>
      *
      * Here's an example to generate a proof: <br>
@@ -174,7 +179,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      *
      * <b> Requirements: </b>:
      * - `expires` is greater than the current timestamp
-     * - `proof` is signed by the one with the ADMIN_ROLE
+     * - `proof` is signed by the keeper or address with the ADMIN_ROLE
      *
      * @param   to  Receiver of the withdrawn character.
      * @param   characterId  The token id of the character to withdraw.
@@ -192,13 +197,17 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
         bytes32 signedData = ECDSA.toEthSignedMessageHash(
             keccak256(abi.encodePacked(address(this), characterId, nonce, expires))
         );
-        require(
-            hasRole(ADMIN_ROLE, ECDSA.recover(signedData, proof)),
-            "NewbieVilla: unauthorized withdraw"
-        );
 
+        // check proof
+        address signer = ECDSA.recover(signedData, proof);
+        require(_hasPermission(signer, characterId), "NewbieVilla: unauthorized withdraw");
+
+        // update balance
         uint256 amount = _balances[characterId];
         _balances[characterId] = 0;
+        // update keeper
+        delete _keepers[characterId];
+
         // send token
         IERC777(_token).send(to, amount, ""); // solhint-disable-line check-send-result
 
@@ -217,7 +226,6 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * <b> Requirements: </b>:
      *
      * - `msg.sender` must be address of Web3Entry.
-     * - `operator` must has ADMIN_ROLE.
      *
      * @param data bytes encoded from the operator address to set for the incoming character.
      *
@@ -230,9 +238,11 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
     ) external override returns (bytes4) {
         // Only character nft could be received, other nft, e.g. mint nft would be reverted
         require(msg.sender == web3Entry, "NewbieVilla: receive unknown token");
-        // Only admin role could send character to this contract
-        require(hasRole(ADMIN_ROLE, operator), "NewbieVilla: receive unknown character");
 
+        // set keeper for tokenId
+        _keepers[tokenId] = operator;
+
+        // grant operator permissions
         if (data.length == 0) {
             IWeb3Entry(web3Entry).grantOperatorPermissions(
                 tokenId,
@@ -296,10 +306,25 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
     }
 
     /**
+     * @notice Returns the address of keeper by `characterId`.
+     * @param characterId The character ID to query.
+     * @return address The address of the keeper.
+     */
+    function getKeeper(uint256 characterId) external view returns (address) {
+        return _keepers[characterId];
+    }
+
+    /**
      * @notice Returns the address of mira token contract.
      * @return The address of mira token contract.
      */
     function getToken() external view returns (address) {
         return _token;
+    }
+
+    /// @dev It will return true if `account` is character's keeper or has `ADMIN_ROLE` but not character's keeper.
+    function _hasPermission(address account, uint256 characterId) internal view returns (bool) {
+        address keeper = _keepers[characterId];
+        return (keeper == account) || (keeper == address(0) && hasRole(ADMIN_ROLE, account));
     }
 }

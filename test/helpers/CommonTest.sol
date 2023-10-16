@@ -44,7 +44,7 @@ contract CommonTest is Utils {
     address public constant admin = address(0x999999999999999999999999999999);
 
     address public constant xsyncOperator = address(0xffff4444);
-    uint256 public constant newbieAdminPrivateKey = 1;
+    uint256 public constant newbieAdminPrivateKey = 1234567;
     address public newbieAdmin = vm.addr(newbieAdminPrivateKey);
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 

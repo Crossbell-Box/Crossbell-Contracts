@@ -334,7 +334,7 @@ abstract contract Deployer is Script {
         return string(res);
     }
 
-    /// @notice Returns the constructor arguent of a deployment transaction given a transaction json.
+    /// @notice Returns the constructor arguments of a deployment transaction given a transaction json.
     function getDeployTransactionConstructorArguments(
         string memory _transaction
     ) internal returns (string[] memory) {

@@ -9,3 +9,5 @@
 | _token        | address                                             | 5    | 0      | 20    | contracts/misc/NewbieVilla.sol:NewbieVilla |
 | _balances     | mapping(uint256 => uint256)                         | 6    | 0      | 32    | contracts/misc/NewbieVilla.sol:NewbieVilla |
 | _tips         | address                                             | 7    | 0      | 20    | contracts/misc/NewbieVilla.sol:NewbieVilla |
+| _keepers      | mapping(uint256 => address)                         | 8    | 0      | 32    | contracts/misc/NewbieVilla.sol:NewbieVilla |
+
