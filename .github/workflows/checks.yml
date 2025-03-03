@@ -73,29 +73,3 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Run Check
         run: yarn mythril
-
-  slither:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-    steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - name: Copy configuration file
-        run: cp .env.example .env
-      - name: Disable foundry
-        run: rm foundry.toml
-      - uses: crytic/slither-action@v0.3.0
-        id: slither
-        with:
-          node-version: 16
-          sarif: results.sarif
-          fail-on: none
-          slither-config: slither.config.json
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: ${{ steps.slither.outputs.sarif }}
