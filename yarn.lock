@@ -6985,9 +6985,9 @@ prettier@^2.8.3:
   integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
 
 prettier@^3.0.0-alpha.5:
-  version "3.0.0-alpha.9-for-vscode"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.0.0-alpha.9-for-vscode.tgz#163beaa27b76178a3a66dbca2087d0f464204f94"
-  integrity sha512-1PRIN3j5DKFi/BGBYB6aErxkq76ml2n1AHPmwrqh/bCiBkmXio5eFTrNMpDls/529r+8TSzVLQMhDFzrwMA2ag==
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.5.3.tgz#4fc2ce0d657e7a02e602549f053b239cb7dfe1b5"
+  integrity sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==
 
 private@^0.1.6, private@^0.1.8:
   version "0.1.8"
