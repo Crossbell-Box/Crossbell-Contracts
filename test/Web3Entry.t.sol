@@ -6,9 +6,7 @@ import {ErrCharacterNotExists} from "../contracts/libraries/Error.sol";
 import {Web3Entry} from "../contracts/Web3Entry.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {
-    IERC721Enumerable
-} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 
 contract Web3EntryTest is CommonTest {

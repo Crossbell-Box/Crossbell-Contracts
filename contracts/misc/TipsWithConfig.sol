@@ -29,11 +29,9 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
 
     uint256 internal _tipsConfigIndex;
     mapping(uint256 tipsConfigId => TipsConfig) internal _tipsConfigs;
-    mapping(uint256 fromCharacterId => mapping(uint256 toCharacterId => uint256 tipsConfigId))
-        internal _tipsConfigIds;
+    mapping(uint256 fromCharacterId => mapping(uint256 toCharacterId => uint256 tipsConfigId)) internal _tipsConfigIds;
     mapping(address feeReceiver => uint256 fraction) internal _feeFractions;
-    mapping(address feeReceiver => mapping(uint256 characterId => uint256 fraction))
-        internal _feeFractions4Character;
+    mapping(address feeReceiver => mapping(uint256 characterId => uint256 fraction)) internal _feeFractions4Character;
 
     // events
     /**
@@ -106,19 +104,22 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     }
 
     /// @inheritdoc ITipsWithConfig
-    function setDefaultFeeFraction(
-        address feeReceiver,
-        uint256 fraction
-    ) external override onlyFeeReceiver(feeReceiver) validateFraction(fraction) {
+    function setDefaultFeeFraction(address feeReceiver, uint256 fraction)
+        external
+        override
+        onlyFeeReceiver(feeReceiver)
+        validateFraction(fraction)
+    {
         _feeFractions[feeReceiver] = fraction;
     }
 
     /// @inheritdoc ITipsWithConfig
-    function setFeeFraction4Character(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 fraction
-    ) external override onlyFeeReceiver(feeReceiver) validateFraction(fraction) {
+    function setFeeFraction4Character(address feeReceiver, uint256 characterId, uint256 fraction)
+        external
+        override
+        onlyFeeReceiver(feeReceiver)
+        validateFraction(fraction)
+    {
         _feeFractions4Character[feeReceiver][characterId] = fraction;
     }
 
@@ -134,10 +135,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         uint256 interval,
         address feeReceiver
     ) external override {
-        require(
-            msg.sender == IERC721(_web3Entry).ownerOf(fromCharacterId),
-            "TipsWithConfig: not character owner"
-        );
+        require(msg.sender == IERC721(_web3Entry).ownerOf(fromCharacterId), "TipsWithConfig: not character owner");
         require(interval > 0, "TipsWithConfig: interval must be greater than 0");
         require(amount > 0, "TipsWithConfig: amount must be greater than 0");
         require(endTime >= startTime + interval, "TipsWithConfig: invalid endTime");
@@ -188,8 +186,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         TipsConfig storage config = _tipsConfigs[tipConfigId];
         require(config.id > 0, "TipsWithConfig: invalid tipConfigId");
         require(
-            msg.sender == IERC721(_web3Entry).ownerOf(config.fromCharacterId),
-            "TipsWithConfig: not character owner"
+            msg.sender == IERC721(_web3Entry).ownerOf(config.fromCharacterId), "TipsWithConfig: not character owner"
         );
 
         // try to collect tips first
@@ -204,42 +201,38 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
     }
 
     /// @inheritdoc ITipsWithConfig
-    function collectTips4Character(
-        uint256 tipConfigId
-    ) external override nonReentrant returns (uint256 collectedAmount) {
+    function collectTips4Character(uint256 tipConfigId)
+        external
+        override
+        nonReentrant
+        returns (uint256 collectedAmount)
+    {
         // collect tips
         collectedAmount = _collectTips4Character(tipConfigId);
     }
 
     /// @inheritdoc ITipsWithConfig
-    function getFeeFraction(
-        address feeReceiver,
-        uint256 characterId
-    ) external view override returns (uint256) {
+    function getFeeFraction(address feeReceiver, uint256 characterId) external view override returns (uint256) {
         return _getFeeFraction(feeReceiver, characterId);
     }
 
     /// @inheritdoc ITipsWithConfig
-    function getFeeAmount(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 tipAmount
-    ) external view override returns (uint256) {
+    function getFeeAmount(address feeReceiver, uint256 characterId, uint256 tipAmount)
+        external
+        view
+        override
+        returns (uint256)
+    {
         return _getFeeAmount(feeReceiver, characterId, tipAmount);
     }
 
     /// @inheritdoc ITipsWithConfig
-    function getTipsConfigId(
-        uint256 fromCharacterId,
-        uint256 toCharacterId
-    ) external view returns (uint256) {
+    function getTipsConfigId(uint256 fromCharacterId, uint256 toCharacterId) external view returns (uint256) {
         return _getTipsConfigId(fromCharacterId, toCharacterId);
     }
 
     /// @inheritdoc ITipsWithConfig
-    function getTipsConfig(
-        uint256 tipConfigId
-    ) external view override returns (TipsConfig memory config) {
+    function getTipsConfig(uint256 tipConfigId) external view override returns (TipsConfig memory config) {
         return _tipsConfigs[tipConfigId];
     }
 
@@ -270,11 +263,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
             address from = IERC721(_web3Entry).ownerOf(config.fromCharacterId);
             address to = IERC721(_web3Entry).ownerOf(config.toCharacterId);
             // fee
-            uint256 feeAmount = _getFeeAmount(
-                config.feeReceiver,
-                config.toCharacterId,
-                availableAmount
-            );
+            uint256 feeAmount = _getFeeAmount(config.feeReceiver, config.toCharacterId, availableAmount);
             // slither-disable-next-line arbitrary-send-erc20
             IERC20(config.token).safeTransferFrom(from, to, availableAmount - feeAmount);
             if (feeAmount > 0) {
@@ -298,16 +287,11 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         return availableAmount;
     }
 
-    function _getTipsConfigId(
-        uint256 fromCharacterId,
-        uint256 toCharacterId
-    ) internal view returns (uint256) {
+    function _getTipsConfigId(uint256 fromCharacterId, uint256 toCharacterId) internal view returns (uint256) {
         return _tipsConfigIds[fromCharacterId][toCharacterId];
     }
 
-    function _getAvailableRoundAndAmount(
-        TipsConfig memory config
-    ) internal view returns (uint256, uint256) {
+    function _getAvailableRoundAndAmount(TipsConfig memory config) internal view returns (uint256, uint256) {
         uint256 currentRound = _getTipRound(config.startTime, block.timestamp, config.interval);
 
         if (currentRound > config.totalRound) {
@@ -317,10 +301,7 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         return (currentRound, (currentRound - config.currentRound) * config.amount);
     }
 
-    function _getFeeFraction(
-        address feeReceiver,
-        uint256 characterId
-    ) internal view returns (uint256) {
+    function _getFeeFraction(address feeReceiver, uint256 characterId) internal view returns (uint256) {
         // get character fraction
         uint256 fraction = _feeFractions4Character[feeReceiver][characterId];
         if (fraction > 0) return fraction;
@@ -328,20 +309,16 @@ contract TipsWithConfig is ITipsWithConfig, Initializable, ReentrancyGuard {
         return _feeFractions[feeReceiver];
     }
 
-    function _getFeeAmount(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 tipAmount
-    ) internal view returns (uint256) {
+    function _getFeeAmount(address feeReceiver, uint256 characterId, uint256 tipAmount)
+        internal
+        view
+        returns (uint256)
+    {
         uint256 fraction = _getFeeFraction(feeReceiver, characterId);
         return (tipAmount * fraction) / _feeDenominator();
     }
 
-    function _getTipRound(
-        uint256 startTime,
-        uint256 endTime,
-        uint256 interval
-    ) internal pure returns (uint256) {
+    function _getTipRound(uint256 startTime, uint256 endTime, uint256 interval) internal pure returns (uint256) {
         // why +1? because the first round is 1
         return (endTime - startTime) / interval + 1;
     }

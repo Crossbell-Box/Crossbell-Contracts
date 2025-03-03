@@ -5,9 +5,7 @@ import {CommonTest} from "../helpers/CommonTest.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import {
-    IERC1155MetadataURI
-} from "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
+import {IERC1155MetadataURI} from "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 
 contract CbtTest is CommonTest {
     uint256 public amount = 1;
@@ -98,14 +96,8 @@ contract CbtTest is CommonTest {
         cbt.burn(FIRST_CHARACTER_ID, SECOND_CBT_ID, amount);
 
         // check balance
-        assertEq(
-            cbt.balanceOf(alice, FIRST_CBT_ID),
-            cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID)
-        );
-        assertEq(
-            cbt.balanceOf(alice, SECOND_CBT_ID),
-            cbt.balanceOf(FIRST_CHARACTER_ID, SECOND_CBT_ID)
-        );
+        assertEq(cbt.balanceOf(alice, FIRST_CBT_ID), cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID));
+        assertEq(cbt.balanceOf(alice, SECOND_CBT_ID), cbt.balanceOf(FIRST_CHARACTER_ID, SECOND_CBT_ID));
         assertEq(cbt.balanceOf(alice, FIRST_CBT_ID), 0);
         assertEq(cbt.balanceOf(alice, SECOND_CBT_ID), 0);
     }
@@ -208,18 +200,14 @@ contract CbtTest is CommonTest {
         // balance of alice should be the sum of balance of character1 and character3
         assertEq(
             cbt.balanceOf(alice, FIRST_CBT_ID),
-            cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID) +
-                cbt.balanceOf(THIRD_CHARACTER_ID, FIRST_CBT_ID)
+            cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID) + cbt.balanceOf(THIRD_CHARACTER_ID, FIRST_CBT_ID)
         );
 
         // transfer character 3 to bob
         vm.prank(alice);
         web3Entry.safeTransferFrom(alice, bob, THIRD_CHARACTER_ID);
         // check balance
-        assertEq(
-            cbt.balanceOf(alice, FIRST_CBT_ID),
-            cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID)
-        );
+        assertEq(cbt.balanceOf(alice, FIRST_CBT_ID), cbt.balanceOf(FIRST_CHARACTER_ID, FIRST_CBT_ID));
         assertEq(cbt.balanceOf(bob, FIRST_CBT_ID), cbt.balanceOf(THIRD_CHARACTER_ID, FIRST_CBT_ID));
     }
 

@@ -197,14 +197,7 @@ contract TipsWithFeeTest is CommonTest {
         expectEmit(CheckAll);
         emit Transfer(address(_tips), carol, feeAmount);
         expectEmit(CheckAll);
-        emit TipCharacter(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
-            address(token),
-            amount,
-            feeAmount,
-            carol
-        );
+        emit TipCharacter(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, address(token), amount, feeAmount, carol);
         vm.prank(alice);
         token.send(address(_tips), amount, data);
 
@@ -220,20 +213,12 @@ contract TipsWithFeeTest is CommonTest {
         // case 1: caller is not character owner
         vm.expectRevert("TipsWithFee: caller is not character owner");
         vm.prank(alice);
-        token.send(
-            address(_tips),
-            amount,
-            abi.encode(SECOND_CHARACTER_ID, FIRST_CHARACTER_ID, FIRST_NOTE_ID, carol)
-        );
+        token.send(address(_tips), amount, abi.encode(SECOND_CHARACTER_ID, FIRST_CHARACTER_ID, FIRST_NOTE_ID, carol));
 
         // case 2: character does not exist
         vm.expectRevert("ERC721: owner query for nonexistent token");
         vm.prank(alice);
-        token.send(
-            address(_tips),
-            amount,
-            abi.encode(3, SECOND_CHARACTER_ID, FIRST_NOTE_ID, carol)
-        );
+        token.send(address(_tips), amount, abi.encode(3, SECOND_CHARACTER_ID, FIRST_NOTE_ID, carol));
 
         // case 3: target character does not exist
         vm.expectRevert("ERC721: owner query for nonexistent token");
@@ -258,12 +243,7 @@ contract TipsWithFeeTest is CommonTest {
         vm.prank(carol);
         _tips.setFeeFraction4Note(carol, SECOND_CHARACTER_ID, FIRST_NOTE_ID, fraction);
 
-        bytes memory data = abi.encode(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            carol
-        );
+        bytes memory data = abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FIRST_NOTE_ID, carol);
         uint256 feeAmount = _tips.getFeeAmount(carol, SECOND_CHARACTER_ID, FIRST_NOTE_ID, amount);
 
         // expect events
@@ -281,13 +261,7 @@ contract TipsWithFeeTest is CommonTest {
         emit Transfer(address(_tips), carol, feeAmount);
         expectEmit(CheckAll);
         emit TipCharacterForNote(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            address(token),
-            amount,
-            feeAmount,
-            carol
+            FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FIRST_NOTE_ID, address(token), amount, feeAmount, carol
         );
         vm.prank(alice);
         token.send(address(_tips), amount, data);
@@ -304,20 +278,12 @@ contract TipsWithFeeTest is CommonTest {
         // case 1: caller is not character owner
         vm.expectRevert("TipsWithFee: caller is not character owner");
         vm.prank(alice);
-        token.send(
-            address(_tips),
-            amount,
-            abi.encode(SECOND_CHARACTER_ID, SECOND_CHARACTER_ID, FIRST_NOTE_ID, carol)
-        );
+        token.send(address(_tips), amount, abi.encode(SECOND_CHARACTER_ID, SECOND_CHARACTER_ID, FIRST_NOTE_ID, carol));
 
         // case 2: character does not exist
         vm.expectRevert("ERC721: owner query for nonexistent token");
         vm.prank(alice);
-        token.send(
-            address(_tips),
-            amount,
-            abi.encode(3, SECOND_CHARACTER_ID, FIRST_NOTE_ID, carol)
-        );
+        token.send(address(_tips), amount, abi.encode(3, SECOND_CHARACTER_ID, FIRST_NOTE_ID, carol));
 
         vm.expectRevert("ERC721: owner query for nonexistent token");
         vm.prank(alice);

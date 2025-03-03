@@ -5,22 +5,17 @@ pragma solidity 0.8.18;
 import {CommonTest} from "./helpers/CommonTest.sol";
 import {Web3Entry} from "../contracts/Web3Entry.sol";
 import {IWeb3Entry} from "../contracts/interfaces/IWeb3Entry.sol";
-import {
-    TransparentUpgradeableProxy
-} from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
+import {TransparentUpgradeableProxy} from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import {OP} from "../contracts/libraries/OP.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {
-    TransparentUpgradeableProxy
-} from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
+import {TransparentUpgradeableProxy} from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract UpgradeWeb3Entry is CommonTest {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     // test upgradeability of web3Entry from crossbell fork
-    address payable internal _web3Entry =
-        payable(address(0xa6f969045641Cf486a747A2688F3a5A6d43cd0D8));
+    address payable internal _web3Entry = payable(address(0xa6f969045641Cf486a747A2688F3a5A6d43cd0D8));
     address internal _linklist = address(0xFc8C75bD5c26F50798758f387B698f207a016b6A);
     address internal _proxyAdmin = address(0x5f603895B48F0C451af39bc7e0c587aE15718e4d);
 
@@ -45,12 +40,7 @@ contract UpgradeWeb3Entry is CommonTest {
         // initialize
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
         IWeb3Entry(_web3Entry).initialize(
-            "Web3 Entry Character",
-            "WEC",
-            _linklist,
-            address(mintNFTImpl),
-            address(periphery),
-            address(newbieVilla)
+            "Web3 Entry Character", "WEC", _linklist, address(mintNFTImpl), address(periphery), address(newbieVilla)
         );
     }
 

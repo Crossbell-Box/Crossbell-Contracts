@@ -34,33 +34,20 @@ contract NewbieVillaTest is CommonTest {
 
     function testInitialize() public {
         NewbieVilla c = new NewbieVilla();
-        c.initialize(
-            address(web3Entry),
-            xsyncOperator,
-            address(token),
-            address(newbieAdmin),
-            address(tips)
-        );
+        c.initialize(address(web3Entry), xsyncOperator, address(token), address(newbieAdmin), address(tips));
 
         // check state
         assertEq(vm.load(address(c), 0), bytes32(uint256(3))); // version
         assertEq(c.web3Entry(), address(web3Entry));
         assertEq(c.xsyncOperator(), xsyncOperator);
         assertEq(c.getToken(), address(token));
-        assertEq(
-            vm.load(address(c), bytes32(uint256(7))),
-            bytes32(uint256(uint160(address(tips))))
-        );
+        assertEq(vm.load(address(c), bytes32(uint256(7))), bytes32(uint256(uint160(address(tips)))));
     }
 
     function testNewbieInitializeFail() public {
         vm.expectRevert(abi.encodePacked("Initializable: contract is already initialized"));
         newbieVilla.initialize(
-            address(web3Entry),
-            xsyncOperator,
-            address(0x000001),
-            address(0x000001),
-            address(0x000001)
+            address(web3Entry), xsyncOperator, address(0x000001), address(0x000001), address(0x000001)
         );
     }
 
@@ -233,12 +220,7 @@ contract NewbieVillaTest is CommonTest {
         // 5. tip another character's note for certain amount
         vm.prank(alice);
         vm.expectRevert(stdError.arithmeticError);
-        newbieVilla.tipCharacterForNote(
-            newbieCharacterId,
-            bobCharacterId,
-            FIRST_NOTE_ID,
-            amount + 1
-        );
+        newbieVilla.tipCharacterForNote(newbieCharacterId, bobCharacterId, FIRST_NOTE_ID, amount + 1);
 
         // 6. check balance and state after tip
         assertEq(token.balanceOf(alice), initialBalance - amount);
@@ -257,13 +239,9 @@ contract NewbieVillaTest is CommonTest {
         assertEq(operators.length, 2);
 
         // check operator permission bitmap
+        assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, alice), OP.DEFAULT_PERMISSION_BITMAP);
         assertEq(
-            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, alice),
-            OP.DEFAULT_PERMISSION_BITMAP
-        );
-        assertEq(
-            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, xsyncOperator),
-            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
+            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, xsyncOperator), OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
         );
     }
 
@@ -279,14 +257,10 @@ contract NewbieVillaTest is CommonTest {
 
         // check operator permission bitmap
         // bob(character's keeper) has DEFAULT_PERMISSION_BITMAP.
-        assertEq(
-            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob),
-            OP.DEFAULT_PERMISSION_BITMAP
-        );
+        assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, bob), OP.DEFAULT_PERMISSION_BITMAP);
         // xsyncOperator has POST_NOTE_DEFAULT_PERMISSION_BITMAP
         assertEq(
-            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, xsyncOperator),
-            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
+            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, xsyncOperator), OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
         );
         // check keeper
         assertEq(newbieVilla.getKeeper(FIRST_CHARACTER_ID), bob);
@@ -299,12 +273,7 @@ contract NewbieVillaTest is CommonTest {
         _createCharacter(CHARACTER_HANDLE, alice);
 
         vm.prank(alice);
-        web3Entry.safeTransferFrom(
-            alice,
-            address(newbieVilla),
-            FIRST_CHARACTER_ID,
-            abi.encode(selectedOperator)
-        );
+        web3Entry.safeTransferFrom(alice, address(newbieVilla), FIRST_CHARACTER_ID, abi.encode(selectedOperator));
 
         // check operators
         address[] memory operators = web3Entry.getOperators(FIRST_CHARACTER_ID);
@@ -313,14 +282,10 @@ contract NewbieVillaTest is CommonTest {
 
         // check operator permission bitmap
         // selectedOperator has DEFAULT_PERMISSION_BITMAP.
-        assertEq(
-            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, selectedOperator),
-            OP.DEFAULT_PERMISSION_BITMAP
-        );
+        assertEq(web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, selectedOperator), OP.DEFAULT_PERMISSION_BITMAP);
         // xsyncOperator has POST_NOTE_DEFAULT_PERMISSION_BITMAP
         assertEq(
-            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, xsyncOperator),
-            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
+            web3Entry.getOperatorPermissions(FIRST_CHARACTER_ID, xsyncOperator), OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
         );
         // check keeper
         assertEq(newbieVilla.getKeeper(FIRST_CHARACTER_ID), alice);
@@ -382,9 +347,7 @@ contract NewbieVillaTest is CommonTest {
         address keeper = vm.addr(keeperPrivateKey);
 
         // 1. create and transfer web3Entry nft to newbieVilla
-        uint256 characterId = web3Entry.createCharacter(
-            makeCharacterData(CHARACTER_HANDLE, keeper)
-        );
+        uint256 characterId = web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, keeper));
         vm.prank(keeper);
         web3Entry.safeTransferFrom(keeper, address(newbieVilla), characterId);
 
@@ -423,9 +386,7 @@ contract NewbieVillaTest is CommonTest {
         address keeper = vm.addr(keeperPrivateKey);
 
         // 1.  create and transfer web3Entry nft to newbieVilla
-        uint256 characterId = web3Entry.createCharacter(
-            makeCharacterData(CHARACTER_HANDLE, keeper)
-        );
+        uint256 characterId = web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE, keeper));
         vm.prank(keeper);
         web3Entry.safeTransferFrom(keeper, address(newbieVilla), characterId);
 
@@ -451,11 +412,7 @@ contract NewbieVillaTest is CommonTest {
         vm.assume(amount > 0 && amount < 10 ether);
 
         vm.prank(alice);
-        token.send(
-            address(newbieVilla),
-            amount,
-            abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID)
-        );
+        token.send(address(newbieVilla), amount, abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID));
 
         // check balance
         assertEq(newbieVilla.balanceOf(SECOND_CHARACTER_ID), amount);
@@ -475,12 +432,7 @@ contract NewbieVillaTest is CommonTest {
         // case 3: invalid token
         vm.expectRevert("NewbieVilla: invalid token");
         newbieVilla.tokensReceived(
-            address(this),
-            alice,
-            address(newbieVilla),
-            1 ether,
-            abi.encode(uint256(1), uint256(2)),
-            ""
+            address(this), alice, address(newbieVilla), 1 ether, abi.encode(uint256(1), uint256(2)), ""
         );
 
         // check balance

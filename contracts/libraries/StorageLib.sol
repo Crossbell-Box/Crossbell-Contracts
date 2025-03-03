@@ -28,11 +28,7 @@ library StorageLib {
     uint256 public constant NEWBIE_VILLA_SLOT = 27;
     uint256 public constant SIG_NONCES_MAPPING_SLOT = 28;
 
-    function setOperatorsPermissionBitMap(
-        uint256 characterId,
-        address operator,
-        uint256 permissionBitMap
-    ) internal {
+    function setOperatorsPermissionBitMap(uint256 characterId, address operator, uint256 permissionBitMap) internal {
         assembly {
             mstore(0, characterId)
             mstore(32, OPERATORS_PERMISSION_BIT_MAP_MAPPING_SLOT)
@@ -42,11 +38,7 @@ library StorageLib {
         }
     }
 
-    function setAttachedLinklistId(
-        uint256 characterId,
-        bytes32 linkType,
-        uint256 linklistId
-    ) internal {
+    function setAttachedLinklistId(uint256 characterId, bytes32 linkType, uint256 linklistId) internal {
         assembly {
             mstore(0, characterId)
             mstore(32, ATTACHED_LINK_LISTS_MAPPING_SLOT)
@@ -66,10 +58,7 @@ library StorageLib {
         }
     }
 
-    function getAttachedLinklistId(
-        uint256 characterId,
-        bytes32 linkType
-    ) internal view returns (uint256 _linklistId) {
+    function getAttachedLinklistId(uint256 characterId, bytes32 linkType) internal view returns (uint256 _linklistId) {
         assembly {
             mstore(0, characterId)
             mstore(32, ATTACHED_LINK_LISTS_MAPPING_SLOT)
@@ -85,9 +74,7 @@ library StorageLib {
         }
     }
 
-    function getCharacter(
-        uint256 characterId
-    ) internal pure returns (DataTypes.Character storage _character) {
+    function getCharacter(uint256 characterId) internal pure returns (DataTypes.Character storage _character) {
         assembly {
             mstore(0, characterId)
             mstore(32, CHARACTERS_MAPPING_SLOT)
@@ -95,10 +82,7 @@ library StorageLib {
         }
     }
 
-    function getNote(
-        uint256 characterId,
-        uint256 noteId
-    ) internal pure returns (DataTypes.Note storage _note) {
+    function getNote(uint256 characterId, uint256 noteId) internal pure returns (DataTypes.Note storage _note) {
         assembly {
             mstore(0, characterId)
             mstore(32, NOTES_MAPPING_SLOT)
@@ -128,10 +112,11 @@ library StorageLib {
         }
     }
 
-    function getOperators4Note(
-        uint256 characterId,
-        uint256 noteId
-    ) internal pure returns (DataTypes.Operators4Note storage _operators4Note) {
+    function getOperators4Note(uint256 characterId, uint256 noteId)
+        internal
+        pure
+        returns (DataTypes.Operators4Note storage _operators4Note)
+    {
         assembly {
             mstore(0, characterId)
             mstore(32, OPERATOR_FOR_NOTE_MAPPING_SLOT)

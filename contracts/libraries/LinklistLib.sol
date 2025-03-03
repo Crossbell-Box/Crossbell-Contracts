@@ -12,15 +12,11 @@ library LinklistLib {
         ILinklist(linklist).setUri(linklistId, uri);
     }
 
-    function setLinklistType(
-        uint256 characterId,
-        uint256 linklistId,
-        bytes32 linkType,
-        address linklist
-    ) external {
+    function setLinklistType(uint256 characterId, uint256 linklistId, bytes32 linkType, address linklist) external {
         // check linklist exists
-        if (0 != StorageLib.getAttachedLinklistId(characterId, linkType))
+        if (0 != StorageLib.getAttachedLinklistId(characterId, linkType)) {
             revert ErrLinkTypeExists(characterId, linkType);
+        }
 
         // detach linklist
         bytes32 oldLinkType = ILinklist(linklist).getLinkType(linklistId);

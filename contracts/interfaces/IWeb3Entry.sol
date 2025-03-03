@@ -33,9 +33,7 @@ interface IWeb3Entry {
      * `linkModule`: The link module to use, can be the zero address.<br>
      * `linkModuleInitData`: The link module initialization data, if any.<br>
      */
-    function createCharacter(
-        DataTypes.CreateCharacterData calldata vars
-    ) external returns (uint256 characterId);
+    function createCharacter(DataTypes.CreateCharacterData calldata vars) external returns (uint256 characterId);
 
     /**
      * @notice  Sets new handle for a given character.
@@ -74,11 +72,7 @@ interface IWeb3Entry {
      * @param permissionBitMap Bitmap used for finer grained operator permissions controls.
      * @dev Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol.
      */
-    function grantOperatorPermissions(
-        uint256 characterId,
-        address operator,
-        uint256 permissionBitMap
-    ) external;
+    function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) external;
 
     /**
      * @notice Grant an address as an operator and authorize it with custom permissions via signature.
@@ -174,9 +168,9 @@ interface IWeb3Entry {
      * `to`: The address to receive the new character nft.<br>
      * `linkType`: The link type, like "follow", which is a bytes32 format.<br>
      */
-    function createThenLinkCharacter(
-        DataTypes.createThenLinkCharacterData calldata vars
-    ) external returns (uint256 characterId);
+    function createThenLinkCharacter(DataTypes.createThenLinkCharacterData calldata vars)
+        external
+        returns (uint256 characterId);
 
     /**
      * @notice Links a note with the given parameters.
@@ -318,8 +312,8 @@ interface IWeb3Entry {
     function setNoteUri(uint256 characterId, uint256 noteId, string calldata newUri) external;
 
     /**
-     * @notice  Lock a note and put it into a immutable state where no modifications are 
-     allowed. Locked notes are usually assumed as final versions.
+     * @notice  Lock a note and put it into a immutable state where no modifications are
+     *  allowed. Locked notes are usually assumed as final versions.
      * @param   characterId  The character ID of the note owner.
      * @param   noteId  The ID of the note to lock.
      */
@@ -346,10 +340,9 @@ interface IWeb3Entry {
      * @param toCharacterId The target character ID.
      * @return noteId The note ID of the new post.
      */
-    function postNote4Character(
-        DataTypes.PostNoteData calldata vars,
-        uint256 toCharacterId
-    ) external returns (uint256 noteId);
+    function postNote4Character(DataTypes.PostNoteData calldata vars, uint256 toCharacterId)
+        external
+        returns (uint256 noteId);
 
     /**
      * @notice Posts a note for a given address.
@@ -363,10 +356,9 @@ interface IWeb3Entry {
      * @param ethAddress The target address.
      * @return noteId The note ID of the new post.
      */
-    function postNote4Address(
-        DataTypes.PostNoteData calldata vars,
-        address ethAddress
-    ) external returns (uint256 noteId);
+    function postNote4Address(DataTypes.PostNoteData calldata vars, address ethAddress)
+        external
+        returns (uint256 noteId);
 
     /**
      * @notice Posts a note for a given linklist.
@@ -380,10 +372,9 @@ interface IWeb3Entry {
      * @param toLinklistId The target linklist.
      * @return noteId The note ID of the new post.
      */
-    function postNote4Linklist(
-        DataTypes.PostNoteData calldata vars,
-        uint256 toLinklistId
-    ) external returns (uint256 noteId);
+    function postNote4Linklist(DataTypes.PostNoteData calldata vars, uint256 toLinklistId)
+        external
+        returns (uint256 noteId);
 
     /**
      * @notice Posts a note for a given note.
@@ -399,10 +390,9 @@ interface IWeb3Entry {
      * `noteId`: The note ID of target note.
      * @return noteId The note ID of the new post.
      */
-    function postNote4Note(
-        DataTypes.PostNoteData calldata vars,
-        DataTypes.NoteStruct calldata note
-    ) external returns (uint256 noteId);
+    function postNote4Note(DataTypes.PostNoteData calldata vars, DataTypes.NoteStruct calldata note)
+        external
+        returns (uint256 noteId);
 
     /**
      * @notice Posts a note for a given ERC721.
@@ -418,10 +408,9 @@ interface IWeb3Entry {
      * `erc721TokenId`: The token ID of target ERC721.
      * @return noteId The note ID of the new post.
      */
-    function postNote4ERC721(
-        DataTypes.PostNoteData calldata vars,
-        DataTypes.ERC721Struct calldata erc721
-    ) external returns (uint256 noteId);
+    function postNote4ERC721(DataTypes.PostNoteData calldata vars, DataTypes.ERC721Struct calldata erc721)
+        external
+        returns (uint256 noteId);
 
     /**
      * @notice Posts a note for a given uri.
@@ -435,10 +424,9 @@ interface IWeb3Entry {
      * @param uri The target uri(could be an url link).
      * @return noteId The note ID of the new post.
      */
-    function postNote4AnyUri(
-        DataTypes.PostNoteData calldata vars,
-        string calldata uri
-    ) external returns (uint256 noteId);
+    function postNote4AnyUri(DataTypes.PostNoteData calldata vars, string calldata uri)
+        external
+        returns (uint256 noteId);
 
     /**
      * @notice Burns a linklist NFT.
@@ -463,20 +451,17 @@ interface IWeb3Entry {
      * @param operator Address to grant operator permissions to.
      * @return Permission bitmap of this operator.
      */
-    function getOperatorPermissions(
-        uint256 characterId,
-        address operator
-    ) external view returns (uint256);
+    function getOperatorPermissions(uint256 characterId, address operator) external view returns (uint256);
 
     /**
      * @notice Get operators blocklist and allowlist for a note.
      * @param characterId ID of character to query.
      * @param noteId ID of note to query.
      */
-    function getOperators4Note(
-        uint256 characterId,
-        uint256 noteId
-    ) external view returns (address[] memory blocklist, address[] memory allowlist);
+    function getOperators4Note(uint256 characterId, uint256 noteId)
+        external
+        view
+        returns (address[] memory blocklist, address[] memory allowlist);
 
     /**
      * @notice Query if a operator has permission for a note.
@@ -485,11 +470,10 @@ interface IWeb3Entry {
      * @param operator Address to query.
      * @return true if Operator has permission for a note, otherwise false.
      */
-    function isOperatorAllowedForNote(
-        uint256 characterId,
-        uint256 noteId,
-        address operator
-    ) external view returns (bool);
+    function isOperatorAllowedForNote(uint256 characterId, uint256 noteId, address operator)
+        external
+        view
+        returns (bool);
 
     /**
      * @notice Returns primary character for a given account.
@@ -517,9 +501,7 @@ interface IWeb3Entry {
      * @param handle The handle of the character to query.
      * @return The full character struct of given character.
      */
-    function getCharacterByHandle(
-        string calldata handle
-    ) external view returns (DataTypes.Character memory);
+    function getCharacterByHandle(string calldata handle) external view returns (DataTypes.Character memory);
 
     /**
      * @notice Returns the handle of character with a given character.
@@ -541,10 +523,7 @@ interface IWeb3Entry {
      * @param noteId The token ID of the note to query.
      * @return The full note struct of given note.
      */
-    function getNote(
-        uint256 characterId,
-        uint256 noteId
-    ) external view returns (DataTypes.Note memory);
+    function getNote(uint256 characterId, uint256 noteId) external view returns (DataTypes.Note memory);
 
     /**
      * @notice Returns the uri of linklist with a given linklist.

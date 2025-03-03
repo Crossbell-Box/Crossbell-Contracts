@@ -6,7 +6,6 @@ pragma solidity 0.8.18;
  * @title ITipsWithFee
  * @notice This is the interface for the TipsWithFee contract.
  */
-
 interface ITipsWithFee {
     /**
      * @notice Initializes the TipsWithFee.
@@ -30,11 +29,7 @@ interface ITipsWithFee {
      * @param characterId The character ID.
      * @param fraction The percentage measured in basis points. Each basis point represents 0.01%.
      */
-    function setFeeFraction4Character(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 fraction
-    ) external;
+    function setFeeFraction4Character(address feeReceiver, uint256 characterId, uint256 fraction) external;
 
     /**
      * @notice Changes the fee percentage of specific <receiver, note>.
@@ -44,12 +39,7 @@ interface ITipsWithFee {
      * @param noteId The note ID .
      * @param fraction The percentage measured in basis points. Each basis point represents 0.01%.
      */
-    function setFeeFraction4Note(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 noteId,
-        uint256 fraction
-    ) external;
+    function setFeeFraction4Note(address feeReceiver, uint256 characterId, uint256 noteId, uint256 fraction) external;
 
     /**
      * @notice Returns the fee percentage of specific <receiver, note>.
@@ -60,11 +50,7 @@ interface ITipsWithFee {
      * @param noteId The note ID .
      * @return fraction The percentage measured in basis points. Each basis point represents 0.01%.
      */
-    function getFeeFraction(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 noteId
-    ) external view returns (uint256);
+    function getFeeFraction(address feeReceiver, uint256 characterId, uint256 noteId) external view returns (uint256);
 
     /**
      * @notice Returns how much the fee is owed by <feeFraction, tipAmount>.
@@ -73,12 +59,10 @@ interface ITipsWithFee {
      * @param noteId The note ID .
      * @return The fee amount.
      */
-    function getFeeAmount(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 noteId,
-        uint256 tipAmount
-    ) external view returns (uint256);
+    function getFeeAmount(address feeReceiver, uint256 characterId, uint256 noteId, uint256 tipAmount)
+        external
+        view
+        returns (uint256);
 
     /**
      * @notice Returns the address of web3Entry contract.

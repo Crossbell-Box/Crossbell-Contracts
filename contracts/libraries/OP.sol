@@ -3,42 +3,39 @@
 pragma solidity 0.8.18;
 
 /**
-* In Crossbell's operator system, every uint8 stands for a single method in Web3Entry.sol. <br>
-* For most cases, we recommend simply granting operators the `OPERATOR_SIGN_PERMISSION_BITMAP`,
-* which gives operator full permissions aside from owner permissions and future permissions, but for
-* those who're more aware of access control, the custom permission bitmap is all yours,
-* and you can find every customizable methods below. <br>
-
-* `OPERATOR_SIGN_PERMISSION_BITMAP` have access to all methods in `OPERATOR_SYNC_PERMISSION_BITMAP`
-* plus more permissions for signing. <br>
-
-* Permissions are laid out in a increasing order of power.
-* so the bitmap looks like this:
-
-<table>
-    <colgroup>
-        <col style="width: 25%">
-        <col style="width: 25%">
-        <col style="width: 25%">
-        <col style="width: 25%">
-    </colgroup>
-    <tr>
-        <td>operator sync</td>
-        <td>operator sign</td>
-        <td>future reserved</td>
-        <td>owner</td>
-    <tr>
-    <tr>
-        <td>[255 - 236]</td>
-        <td>[235 - 176]</td>
-        <td>[175 - 21]</td>
-        <td>[20 - 0]</td>
-    <tr>
-</table>
-
-
-*/
-
+ * In Crossbell's operator system, every uint8 stands for a single method in Web3Entry.sol. <br>
+ * For most cases, we recommend simply granting operators the `OPERATOR_SIGN_PERMISSION_BITMAP`,
+ * which gives operator full permissions aside from owner permissions and future permissions, but for
+ * those who're more aware of access control, the custom permission bitmap is all yours,
+ * and you can find every customizable methods below. <br>
+ *
+ * `OPERATOR_SIGN_PERMISSION_BITMAP` have access to all methods in `OPERATOR_SYNC_PERMISSION_BITMAP`
+ * plus more permissions for signing. <br>
+ *
+ * Permissions are laid out in a increasing order of power.
+ * so the bitmap looks like this:
+ *
+ * <table>
+ *     <colgroup>
+ *         <col style="width: 25%">
+ *         <col style="width: 25%">
+ *         <col style="width: 25%">
+ *         <col style="width: 25%">
+ *     </colgroup>
+ *     <tr>
+ *         <td>operator sync</td>
+ *         <td>operator sign</td>
+ *         <td>future reserved</td>
+ *         <td>owner</td>
+ *     <tr>
+ *     <tr>
+ *         <td>[255 - 236]</td>
+ *         <td>[235 - 176]</td>
+ *         <td>[175 - 21]</td>
+ *         <td>[20 - 0]</td>
+ *     <tr>
+ * </table>
+ */
 library OP {
     uint256 internal constant UINT256_MAX = ~uint256(0);
 
@@ -101,6 +98,5 @@ library OP {
         ((UINT256_MAX << 176) & ~(UINT256_MAX << 205)) | POST_NOTE_PERMISSION_BITMAP;
 
     // bitmap mask with all current-in-use methods to 1
-    uint256 internal constant ALLOWED_PERMISSION_BITMAP_MASK =
-        OWNER_PERMISSION_BITMAP | DEFAULT_PERMISSION_BITMAP;
+    uint256 internal constant ALLOWED_PERMISSION_BITMAP_MASK = OWNER_PERMISSION_BITMAP | DEFAULT_PERMISSION_BITMAP;
 }

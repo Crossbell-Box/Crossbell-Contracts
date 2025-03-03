@@ -17,17 +17,13 @@ contract LinkModuleTest is CommonTest {
         vm.prank(alice);
         web3Entry.setLinkModule4Character(
             DataTypes.setLinkModule4CharacterData(
-                characterId,
-                address(approvalLinkModule4Character),
-                abi.encode(array(bob, carol))
+                characterId, address(approvalLinkModule4Character), abi.encode(array(bob, carol))
             )
         );
 
         // check linkModule
         assertEq(
-            web3Entry.getCharacter(characterId).linkModule,
-            address(approvalLinkModule4Character),
-            "linkModule not set"
+            web3Entry.getCharacter(characterId).linkModule, address(approvalLinkModule4Character), "linkModule not set"
         );
     }
 
@@ -39,17 +35,13 @@ contract LinkModuleTest is CommonTest {
         vm.prank(bob);
         web3Entry.setLinkModule4Character(
             DataTypes.setLinkModule4CharacterData(
-                characterId,
-                address(approvalLinkModule4Character),
-                abi.encode(array(bob, carol))
+                characterId, address(approvalLinkModule4Character), abi.encode(array(bob, carol))
             )
         );
 
         // check linkModule
         assertEq(
-            web3Entry.getCharacter(characterId).linkModule,
-            address(approvalLinkModule4Character),
-            "linkModule not set"
+            web3Entry.getCharacter(characterId).linkModule, address(approvalLinkModule4Character), "linkModule not set"
         );
     }
 
@@ -60,9 +52,7 @@ contract LinkModuleTest is CommonTest {
         vm.prank(bob);
         web3Entry.setLinkModule4Character(
             DataTypes.setLinkModule4CharacterData(
-                characterId,
-                address(approvalLinkModule4Character),
-                abi.encode(array(bob, carol))
+                characterId, address(approvalLinkModule4Character), abi.encode(array(bob, carol))
             )
         );
     }
@@ -71,19 +61,13 @@ contract LinkModuleTest is CommonTest {
         uint256 characterId = _createCharacter("alice", alice);
 
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            characterId,
-            bob,
-            UINT256_MAX ^ (1 << OP.SET_LINK_MODULE_FOR_CHARACTER)
-        );
+        web3Entry.grantOperatorPermissions(characterId, bob, UINT256_MAX ^ (1 << OP.SET_LINK_MODULE_FOR_CHARACTER));
 
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.setLinkModule4Character(
             DataTypes.setLinkModule4CharacterData(
-                characterId,
-                address(approvalLinkModule4Character),
-                abi.encode(array(bob, carol))
+                characterId, address(approvalLinkModule4Character), abi.encode(array(bob, carol))
             )
         );
     }
@@ -104,28 +88,19 @@ contract LinkModuleTest is CommonTest {
             )
         );
         // check linkModule
-        assertEq(
-            web3Entry.getNote(characterId, 1).linkModule,
-            address(approvalLinkModule4Note),
-            "linkModule not set"
-        );
+        assertEq(web3Entry.getNote(characterId, 1).linkModule, address(approvalLinkModule4Note), "linkModule not set");
 
         // case 2: set linkModule by setLinkModule4Note
         uint256 noteId = _postNote(characterId, NOTE_URI);
         // set linkModule for note
         web3Entry.setLinkModule4Note(
             DataTypes.setLinkModule4NoteData(
-                characterId,
-                noteId,
-                address(approvalLinkModule4Note),
-                abi.encode(array(bob, carol))
+                characterId, noteId, address(approvalLinkModule4Note), abi.encode(array(bob, carol))
             )
         );
         // check linkModule
         assertEq(
-            web3Entry.getNote(characterId, noteId).linkModule,
-            address(approvalLinkModule4Note),
-            "linkModule not set"
+            web3Entry.getNote(characterId, noteId).linkModule, address(approvalLinkModule4Note), "linkModule not set"
         );
         vm.stopPrank();
     }
@@ -142,17 +117,12 @@ contract LinkModuleTest is CommonTest {
         vm.prank(bob);
         web3Entry.setLinkModule4Note(
             DataTypes.setLinkModule4NoteData(
-                characterId,
-                noteId,
-                address(approvalLinkModule4Note),
-                abi.encode(array(bob, carol))
+                characterId, noteId, address(approvalLinkModule4Note), abi.encode(array(bob, carol))
             )
         );
         // check linkModule
         assertEq(
-            web3Entry.getNote(characterId, noteId).linkModule,
-            address(approvalLinkModule4Note),
-            "linkModule not set"
+            web3Entry.getNote(characterId, noteId).linkModule, address(approvalLinkModule4Note), "linkModule not set"
         );
     }
 
@@ -165,10 +135,7 @@ contract LinkModuleTest is CommonTest {
         vm.prank(bob);
         web3Entry.setLinkModule4Note(
             DataTypes.setLinkModule4NoteData(
-                characterId,
-                noteId,
-                address(approvalLinkModule4Note),
-                abi.encode(array(bob, carol))
+                characterId, noteId, address(approvalLinkModule4Note), abi.encode(array(bob, carol))
             )
         );
     }
@@ -179,20 +146,13 @@ contract LinkModuleTest is CommonTest {
         uint256 noteId = _postNote(characterId, NOTE_URI);
 
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            characterId,
-            bob,
-            UINT256_MAX ^ (1 << OP.SET_LINK_MODULE_FOR_NOTE)
-        );
+        web3Entry.grantOperatorPermissions(characterId, bob, UINT256_MAX ^ (1 << OP.SET_LINK_MODULE_FOR_NOTE));
 
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
         web3Entry.setLinkModule4Note(
             DataTypes.setLinkModule4NoteData(
-                characterId,
-                noteId,
-                address(approvalLinkModule4Note),
-                abi.encode(array(bob, carol))
+                characterId, noteId, address(approvalLinkModule4Note), abi.encode(array(bob, carol))
             )
         );
     }
@@ -202,27 +162,19 @@ contract LinkModuleTest is CommonTest {
         // create character with linkModule module
         uint256 aliceCharacterId = web3Entry.createCharacter(
             DataTypes.CreateCharacterData(
-                alice,
-                CHARACTER_HANDLE2,
-                CHARACTER_URI,
-                address(approvalLinkModule4Character),
-                abi.encode(allowlist)
+                alice, CHARACTER_HANDLE2, CHARACTER_URI, address(approvalLinkModule4Character), abi.encode(allowlist)
             )
         );
 
         // User in approval list linkModule a character
         uint256 bobCharacterId = _createCharacter("bob", bob);
         vm.prank(bob);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(bobCharacterId, aliceCharacterId, LikeLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(bobCharacterId, aliceCharacterId, LikeLinkType, ""));
 
         // User not in approval list should not fail to linkModule a character
         uint256 dickCharacterId = _createCharacter("dick", dick);
         vm.prank(dick);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(dickCharacterId, aliceCharacterId, LikeLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(dickCharacterId, aliceCharacterId, LikeLinkType, ""));
     }
 
     function testLinkNoteWithLinkModule() public {
@@ -230,24 +182,17 @@ contract LinkModuleTest is CommonTest {
         // alice posts a note
         vm.prank(alice);
         _postNoteWithLinkModule(
-            aliceCharacterId,
-            NOTE_URI,
-            address(approvalLinkModule4Note),
-            abi.encode(array(bob, carol))
+            aliceCharacterId, NOTE_URI, address(approvalLinkModule4Note), abi.encode(array(bob, carol))
         );
 
         // User in approval list linkModule a note
         uint256 bobCharacterId = _createCharacter("bob", bob);
         vm.prank(bob);
-        web3Entry.linkNote(
-            DataTypes.linkNoteData(bobCharacterId, aliceCharacterId, 1, LikeLinkType, new bytes(1))
-        );
+        web3Entry.linkNote(DataTypes.linkNoteData(bobCharacterId, aliceCharacterId, 1, LikeLinkType, new bytes(1)));
 
         // User not in approval list should not fail to linkModule a note
         uint256 dickCharacterId = _createCharacter("dick", dick);
         vm.prank(dick);
-        web3Entry.linkNote(
-            DataTypes.linkNoteData(dickCharacterId, aliceCharacterId, 1, LikeLinkType, new bytes(1))
-        );
+        web3Entry.linkNote(DataTypes.linkNoteData(dickCharacterId, aliceCharacterId, 1, LikeLinkType, new bytes(1)));
     }
 }

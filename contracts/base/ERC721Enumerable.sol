@@ -2,9 +2,7 @@
 
 pragma solidity 0.8.18;
 
-import {
-    IERC721Enumerable
-} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import {ERC721} from "./ERC721.sol";
 import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 
@@ -24,21 +22,14 @@ abstract contract ERC721Enumerable is ERC721, IERC721Enumerable {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(IERC165, ERC721) returns (bool) {
-        return
-            interfaceId == type(IERC721Enumerable).interfaceId ||
-            super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, ERC721) returns (bool) {
+        return interfaceId == type(IERC721Enumerable).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /**
      * @dev See {IERC721Enumerable-tokenOfOwnerByIndex}.
      */
-    function tokenOfOwnerByIndex(
-        address owner,
-        uint256 index
-    ) public view virtual override returns (uint256) {
+    function tokenOfOwnerByIndex(address owner, uint256 index) public view virtual override returns (uint256) {
         require(index < ERC721.balanceOf(owner), "ERC721Enumerable: owner index out of bounds");
         return _ownedTokens[owner][index];
     }
@@ -54,10 +45,7 @@ abstract contract ERC721Enumerable is ERC721, IERC721Enumerable {
      * @dev See {IERC721Enumerable-tokenByIndex}.
      */
     function tokenByIndex(uint256 index) public view virtual override returns (uint256) {
-        require(
-            index < ERC721Enumerable.totalSupply(),
-            "ERC721Enumerable: global index out of bounds"
-        );
+        require(index < ERC721Enumerable.totalSupply(), "ERC721Enumerable: global index out of bounds");
         return _allTokens[index];
     }
 
@@ -76,11 +64,7 @@ abstract contract ERC721Enumerable is ERC721, IERC721Enumerable {
      *
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual override {
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override {
         super._beforeTokenTransfer(from, to, tokenId);
 
         if (from == address(0)) {

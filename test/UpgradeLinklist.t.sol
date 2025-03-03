@@ -5,15 +5,12 @@ pragma solidity 0.8.18;
 import {CommonTest} from "./helpers/CommonTest.sol";
 import {Linklist} from "../contracts/Linklist.sol";
 import {IWeb3Entry} from "../contracts/interfaces/IWeb3Entry.sol";
-import {
-    TransparentUpgradeableProxy
-} from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
+import {TransparentUpgradeableProxy} from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 
 contract UpgradeLinklistTest is CommonTest {
     // test upgradeability of Linklist from crossbell fork
     address internal _web3Entry = address(0xa6f969045641Cf486a747A2688F3a5A6d43cd0D8);
-    address payable internal _linklist =
-        payable(address(0xFc8C75bD5c26F50798758f387B698f207a016b6A));
+    address payable internal _linklist = payable(address(0xFc8C75bD5c26F50798758f387B698f207a016b6A));
     address internal _proxyAdmin = address(0x5f603895B48F0C451af39bc7e0c587aE15718e4d);
 
     function setUp() public {
@@ -31,12 +28,7 @@ contract UpgradeLinklistTest is CommonTest {
         vm.prank(_proxyAdmin);
         TransparentUpgradeableProxy(_linklist).upgradeToAndCall(
             address(newImpl),
-            abi.encodeWithSignature(
-                "initialize(string,string,address)",
-                "Link List Token",
-                "LLT",
-                _web3Entry
-            )
+            abi.encodeWithSignature("initialize(string,string,address)", "Link List Token", "LLT", _web3Entry)
         );
         // check newImpl
         vm.prank(_proxyAdmin);
@@ -53,12 +45,7 @@ contract UpgradeLinklistTest is CommonTest {
         vm.prank(_proxyAdmin);
         TransparentUpgradeableProxy(_linklist).upgradeToAndCall(
             address(newImpl),
-            abi.encodeWithSignature(
-                "initialize(string,string,address)",
-                "Link List Token",
-                "LLT",
-                _web3Entry
-            )
+            abi.encodeWithSignature("initialize(string,string,address)", "Link List Token", "LLT", _web3Entry)
         );
 
         // initialize again
@@ -72,12 +59,7 @@ contract UpgradeLinklistTest is CommonTest {
         vm.prank(_proxyAdmin);
         TransparentUpgradeableProxy(_linklist).upgradeToAndCall(
             address(newImpl),
-            abi.encodeWithSignature(
-                "initialize(string,string,address)",
-                "Link List Token",
-                "LLT",
-                _web3Entry
-            )
+            abi.encodeWithSignature("initialize(string,string,address)", "Link List Token", "LLT", _web3Entry)
         );
 
         uint256 totalSupply = Linklist(_linklist).totalSupply();

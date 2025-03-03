@@ -13,9 +13,7 @@ import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 import {ERC2981} from "@openzeppelin/contracts/token/common/ERC2981.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import {
-    IERC721Enumerable
-} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 contract MintNFT is NFTBase, IMintNFT, ERC2981, Initializable {
     uint256 internal _characterId;
@@ -60,11 +58,7 @@ contract MintNFT is NFTBase, IMintNFT, ERC2981, Initializable {
     }
 
     /// @inheritdoc IMintNFT
-    function setTokenRoyalty(
-        uint256 tokenId,
-        address recipient,
-        uint96 fraction
-    ) external override onlyOwner {
+    function setTokenRoyalty(uint256 tokenId, address recipient, uint96 fraction) external override onlyOwner {
         _setTokenRoyalty(tokenId, recipient, fraction);
     }
 
@@ -84,23 +78,20 @@ contract MintNFT is NFTBase, IMintNFT, ERC2981, Initializable {
     }
 
     /// @inheritdoc IMintNFT
-    function getSourceNotePointer()
-        external
-        view
-        override
-        returns (uint256 characterId, uint256 noteId)
-    {
+    function getSourceNotePointer() external view override returns (uint256 characterId, uint256 noteId) {
         return (_characterId, _noteId);
     }
 
     /// @inheritdoc IERC165
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(ERC2981, ERC721Enumerable) returns (bool) {
-        return
-            interfaceId == type(IERC721Enumerable).interfaceId ||
-            interfaceId == type(IERC2981).interfaceId ||
-            super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC2981, ERC721Enumerable)
+        returns (bool)
+    {
+        return interfaceId == type(IERC721Enumerable).interfaceId || interfaceId == type(IERC2981).interfaceId
+            || super.supportsInterface(interfaceId);
     }
 
     /// @inheritdoc IERC721Enumerable

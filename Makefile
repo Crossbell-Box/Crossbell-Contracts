@@ -57,7 +57,7 @@ storage-layout:
 	./tools/checkStorageLayout.sh
 
 # Lints
-lint :; npx prettier --write "{contracts,test,scripts}/**/*.{sol,ts}"
+lint :; forge fmt && npx prettier --write "test/**/*.ts"
 
 # Generate Gas Snapshots
 snapshot :; forge clean && forge snapshot

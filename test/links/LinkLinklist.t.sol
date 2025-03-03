@@ -70,11 +70,7 @@ contract LinkLinklistTest is CommonTest {
 
     function testLinkLinklistFailWithOperator() public {
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            UINT256_MAX ^ (1 << OP.LINK_LINKLIST)
-        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, UINT256_MAX ^ (1 << OP.LINK_LINKLIST));
 
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
@@ -142,11 +138,7 @@ contract LinkLinklistTest is CommonTest {
         web3Entry.linkLinklist(DataTypes.linkLinklistData(firstCharacter, 1, FollowLinkType, ""));
 
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            UINT256_MAX ^ (1 << OP.UNLINK_LINKLIST)
-        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, UINT256_MAX ^ (1 << OP.UNLINK_LINKLIST));
 
         // unlink
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));

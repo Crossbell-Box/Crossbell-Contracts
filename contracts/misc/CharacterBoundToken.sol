@@ -4,23 +4,13 @@ pragma solidity 0.8.18;
 
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
-import {
-    IERC721Enumerable
-} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import {
-    IERC1155MetadataURI
-} from "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
+import {IERC1155MetadataURI} from "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {AccessControlEnumerable} from "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
-contract CharacterBoundToken is
-    Context,
-    ERC165,
-    IERC1155,
-    IERC1155MetadataURI,
-    AccessControlEnumerable
-{
+contract CharacterBoundToken is Context, ERC165, IERC1155, IERC1155MetadataURI, AccessControlEnumerable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     // Mapping from token ID to character balances
@@ -61,8 +51,7 @@ contract CharacterBoundToken is
     function burn(uint256 characterId, uint256 tokenId, uint256 amount) external {
         address account = IERC721Enumerable(web3Entry).ownerOf(characterId);
         require(
-            account == _msgSender() || isApprovedForAll(account, _msgSender()),
-            "caller is not token owner nor approved"
+            account == _msgSender() || isApprovedForAll(account, _msgSender()), "caller is not token owner nor approved"
         );
 
         uint256 fromBalance = balanceOf(characterId, tokenId);
@@ -78,26 +67,18 @@ contract CharacterBoundToken is
     /**
      * @dev See {IERC1155-safeTransferFrom}.
      */
-    function safeTransferFrom(
-        address,
-        address,
-        uint256,
-        uint256,
-        bytes memory
-    ) external virtual override {
+    function safeTransferFrom(address, address, uint256, uint256, bytes memory) external virtual override {
         revert("non-transferable");
     }
 
     /**
      * @dev See {IERC1155-safeBatchTransferFrom}.
      */
-    function safeBatchTransferFrom(
-        address,
-        address,
-        uint256[] memory,
-        uint256[] memory,
-        bytes memory
-    ) external virtual override {
+    function safeBatchTransferFrom(address, address, uint256[] memory, uint256[] memory, bytes memory)
+        external
+        virtual
+        override
+    {
         revert("non-transferable");
     }
 
@@ -108,10 +89,13 @@ contract CharacterBoundToken is
         _setApprovalForAll(_msgSender(), operator, approved);
     }
 
-    function balanceOfBatch(
-        address[] memory accounts,
-        uint256[] memory tokenIds
-    ) external view virtual override returns (uint256[] memory) {
+    function balanceOfBatch(address[] memory accounts, uint256[] memory tokenIds)
+        external
+        view
+        virtual
+        override
+        returns (uint256[] memory)
+    {
         require(accounts.length == tokenIds.length, "accounts and ids length mismatch");
 
         uint256[] memory batchBalances = new uint256[](accounts.length);
@@ -126,19 +110,18 @@ contract CharacterBoundToken is
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(AccessControlEnumerable, ERC165, IERC165) returns (bool) {
-        return
-            interfaceId == type(IERC1155).interfaceId ||
-            interfaceId == type(IERC1155MetadataURI).interfaceId ||
-            super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(AccessControlEnumerable, ERC165, IERC165)
+        returns (bool)
+    {
+        return interfaceId == type(IERC1155).interfaceId || interfaceId == type(IERC1155MetadataURI).interfaceId
+            || super.supportsInterface(interfaceId);
     }
 
-    function balanceOf(
-        address account,
-        uint256 tokenId
-    ) public view virtual override returns (uint256 balance) {
+    function balanceOf(address account, uint256 tokenId) public view virtual override returns (uint256 balance) {
         // slither-disable-start calls-loop
         uint256 characterCount = IERC721Enumerable(web3Entry).balanceOf(account);
         for (uint256 i = 0; i < characterCount; i++) {
@@ -160,10 +143,7 @@ contract CharacterBoundToken is
     /**
      * @dev See {IERC1155-isApprovedForAll}.
      */
-    function isApprovedForAll(
-        address account,
-        address operator
-    ) public view virtual override returns (bool) {
+    function isApprovedForAll(address account, address operator) public view virtual override returns (bool) {
         return _operatorApprovals[account][operator];
     }
 

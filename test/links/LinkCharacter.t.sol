@@ -3,11 +3,7 @@ pragma solidity 0.8.18;
 
 import {Events} from "../../contracts/libraries/Events.sol";
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
-import {
-    ErrNotEnoughPermission,
-    ErrCharacterNotExists,
-    ErrHandleExists
-} from "../../contracts/libraries/Error.sol";
+import {ErrNotEnoughPermission, ErrCharacterNotExists, ErrHandleExists} from "../../contracts/libraries/Error.sol";
 import {OP} from "../../contracts/libraries/OP.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
@@ -29,9 +25,7 @@ contract LinkCharacterTest is CommonTest {
         expectEmit(CheckAll);
         emit Events.LinkCharacter(alice, firstCharacter, secondCharacter, FollowLinkType, 1);
         vm.prank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, ""));
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
@@ -46,9 +40,7 @@ contract LinkCharacterTest is CommonTest {
         expectEmit(CheckAll);
         emit Events.LinkCharacter(alice, firstCharacter, secondCharacter, FollowLinkType, 1);
         vm.prank(address(periphery), alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, ""));
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
@@ -66,9 +58,7 @@ contract LinkCharacterTest is CommonTest {
         expectEmit(CheckAll);
         emit Events.LinkCharacter(alice, firstCharacter, secondCharacter, FollowLinkType, 1);
         vm.prank(bob);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, ""));
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
@@ -82,9 +72,7 @@ contract LinkCharacterTest is CommonTest {
     function testLinkCharacterFail() public {
         // case 1: NotEnoughPermission
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, ""));
 
         // case 2: link a non-existing character
         vm.expectRevert(abi.encodeWithSelector(ErrCharacterNotExists.selector, 3));
@@ -96,45 +84,31 @@ contract LinkCharacterTest is CommonTest {
         web3Entry.burn(secondCharacter);
         vm.expectRevert(abi.encodeWithSelector(ErrCharacterNotExists.selector, secondCharacter));
         vm.prank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, ""));
     }
 
     function testLinkCharacterFailWithOperator() public {
         // grant all permissions except `linkCharacter`
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            UINT256_MAX ^ (1 << OP.LINK_CHARACTER)
-        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, UINT256_MAX ^ (1 << OP.LINK_CHARACTER));
 
         // NotEnoughPermission
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, ""));
     }
 
     function testUnlinkCharacter() public {
         vm.startPrank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, ""));
 
         // unlink
         expectEmit(CheckAll);
         emit Events.UnlinkCharacter(alice, firstCharacter, secondCharacter, FollowLinkType);
-        web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType)
-        );
+        web3Entry.unlinkCharacter(DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType));
 
         // unlink twice
-        web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType)
-        );
+        web3Entry.unlinkCharacter(DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType));
 
         // unlink a non-existing character
         web3Entry.unlinkCharacter(DataTypes.unlinkCharacterData(firstCharacter, 9, FollowLinkType));
@@ -150,9 +124,7 @@ contract LinkCharacterTest is CommonTest {
 
     function testUnlinkCharacterWithOperator() public {
         vm.startPrank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, ""));
         web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.UNLINK_CHARACTER);
         vm.stopPrank();
 
@@ -160,9 +132,7 @@ contract LinkCharacterTest is CommonTest {
         expectEmit(CheckAll);
         emit Events.UnlinkCharacter(alice, firstCharacter, secondCharacter, FollowLinkType);
         vm.prank(bob);
-        web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType)
-        );
+        web3Entry.unlinkCharacter(DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType));
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
@@ -174,63 +144,45 @@ contract LinkCharacterTest is CommonTest {
 
     function testUnlinkCharacterFail() public {
         vm.prank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, ""));
 
         // unlink
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType)
-        );
+        web3Entry.unlinkCharacter(DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType));
     }
 
     function testUnlinkCharacterFailWithOperator() public {
         vm.prank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, ""));
 
         // grant all permissions except `unlinkCharacter`
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            UINT256_MAX ^ (1 << OP.UNLINK_CHARACTER)
-        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, UINT256_MAX ^ (1 << OP.UNLINK_CHARACTER));
 
         // unlink
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType)
-        );
+        web3Entry.unlinkCharacter(DataTypes.unlinkCharacterData(firstCharacter, secondCharacter, FollowLinkType));
     }
 
     function testLinklistTotalSupply() public {
         vm.prank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, ""));
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
         assertEq(linklist.characterOwnerOf(1), firstCharacter);
         assertEq(linklist.totalSupply(), 1);
 
         vm.prank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, LikeLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, LikeLinkType, ""));
         // check linklist
         assertEq(linklist.ownerOf(2), alice);
         assertEq(linklist.characterOwnerOf(2), firstCharacter);
         assertEq(linklist.totalSupply(), 2);
 
         vm.prank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, WatchLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, WatchLinkType, ""));
         // check linklist
         assertEq(linklist.ownerOf(3), alice);
         assertEq(linklist.characterOwnerOf(3), firstCharacter);
@@ -243,9 +195,8 @@ contract LinkCharacterTest is CommonTest {
         expectEmit(CheckAll);
         emit Events.LinkCharacter(alice, firstCharacter, 3, FollowLinkType, 1);
         vm.prank(alice);
-        uint256 newCharacterId = web3Entry.createThenLinkCharacter(
-            DataTypes.createThenLinkCharacterData(firstCharacter, to, FollowLinkType)
-        );
+        uint256 newCharacterId =
+            web3Entry.createThenLinkCharacter(DataTypes.createThenLinkCharacterData(firstCharacter, to, FollowLinkType));
 
         // check state
         // check linklist
@@ -270,9 +221,8 @@ contract LinkCharacterTest is CommonTest {
         expectEmit(CheckAll);
         emit Events.LinkCharacter(alice, firstCharacter, 3, FollowLinkType, 1);
         vm.prank(bob);
-        uint256 newCharacterId = web3Entry.createThenLinkCharacter(
-            DataTypes.createThenLinkCharacterData(firstCharacter, to, FollowLinkType)
-        );
+        uint256 newCharacterId =
+            web3Entry.createThenLinkCharacter(DataTypes.createThenLinkCharacterData(firstCharacter, to, FollowLinkType));
 
         // check state
         // check linklist
@@ -305,11 +255,7 @@ contract LinkCharacterTest is CommonTest {
 
     function testCreateThenLinkCharacterFailWithOperator() public {
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            UINT256_MAX ^ (1 << OP.CREATE_THEN_LINK_CHARACTER)
-        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, UINT256_MAX ^ (1 << OP.CREATE_THEN_LINK_CHARACTER));
 
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);

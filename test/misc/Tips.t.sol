@@ -10,12 +10,7 @@ contract TipsTest is CommonTest {
     uint256 public constant initialBalance = 10 ether;
 
     // events
-    event TipCharacter(
-        uint256 indexed fromCharacterId,
-        uint256 indexed toCharacterId,
-        address token,
-        uint256 amount
-    );
+    event TipCharacter(uint256 indexed fromCharacterId, uint256 indexed toCharacterId, address token, uint256 amount);
     event TipCharacterForNote(
         uint256 indexed fromCharacterId,
         uint256 indexed toCharacterId,
@@ -141,24 +136,11 @@ contract TipsTest is CommonTest {
         expectEmit(CheckAll);
         emit Transfer(alice, address(tips), amount);
         expectEmit(CheckAll);
-        emit Sent(
-            address(tips),
-            address(tips),
-            bob,
-            amount,
-            abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID),
-            ""
-        );
+        emit Sent(address(tips), address(tips), bob, amount, abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID), "");
         expectEmit(CheckAll);
         emit Transfer(address(tips), bob, amount);
         expectEmit(CheckAll);
-        emit TipCharacterForNote(
-            FIRST_CHARACTER_ID,
-            SECOND_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            address(token),
-            amount
-        );
+        emit TipCharacterForNote(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FIRST_NOTE_ID, address(token), amount);
         vm.prank(alice);
         token.send(address(tips), amount, data);
 
@@ -173,11 +155,7 @@ contract TipsTest is CommonTest {
         // case 1: caller is not character owner
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotCharacterOwner.selector));
         vm.prank(carol);
-        token.send(
-            address(tips),
-            amount,
-            abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FIRST_NOTE_ID)
-        );
+        token.send(address(tips), amount, abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID, FIRST_NOTE_ID));
 
         // case 2: character does not exist
         vm.expectRevert("ERC721: owner query for nonexistent token");
@@ -201,13 +179,7 @@ contract TipsTest is CommonTest {
         token.authorizeOperator(carol);
 
         vm.prank(carol);
-        token.operatorSend(
-            alice,
-            address(tips),
-            amount,
-            "",
-            abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID)
-        );
+        token.operatorSend(alice, address(tips), amount, "", abi.encode(FIRST_CHARACTER_ID, SECOND_CHARACTER_ID));
 
         // check balance
         assertEq(token.balanceOf(bob), amount);
@@ -222,21 +194,12 @@ contract TipsTest is CommonTest {
         // case 2: unknown receiving
         vm.expectRevert("Tips: unknown receiving");
         vm.prank(alice);
-        token.send(
-            address(tips),
-            1 ether,
-            abi.encode(uint256(1), uint256(1), uint256(1), uint256(1))
-        );
+        token.send(address(tips), 1 ether, abi.encode(uint256(1), uint256(1), uint256(1), uint256(1)));
 
         // case 3: invalid token
         vm.expectRevert("Tips: invalid token");
         tips.tokensReceived(
-            address(this),
-            alice,
-            address(tips),
-            1 ether,
-            abi.encode(uint256(1), uint256(1), uint256(1)),
-            ""
+            address(this), alice, address(tips), 1 ether, abi.encode(uint256(1), uint256(1), uint256(1)), ""
         );
     }
 }

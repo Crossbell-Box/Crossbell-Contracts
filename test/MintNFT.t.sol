@@ -8,9 +8,7 @@ import {IMintNFT} from "../contracts/interfaces/IMintNFT.sol";
 import {CommonTest} from "./helpers/CommonTest.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {
-    IERC721Enumerable
-} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 
@@ -60,10 +58,7 @@ contract MintNFTTest is CommonTest {
         IMintNFT(mintNFT).setTokenRoyalty(FIRST_TOKEN_ID, bob, fraction);
 
         // check royaltyInfo
-        (address receiver, uint256 royaltyAmount) = IERC2981(mintNFT).royaltyInfo(
-            FIRST_TOKEN_ID,
-            salePrice
-        );
+        (address receiver, uint256 royaltyAmount) = IERC2981(mintNFT).royaltyInfo(FIRST_TOKEN_ID, salePrice);
         assertEq(receiver, bob);
         assertEq(royaltyAmount, (salePrice * fraction) / 10000);
     }
@@ -84,10 +79,7 @@ contract MintNFTTest is CommonTest {
         IMintNFT(mintNFT).setDefaultRoyalty(bob, fraction);
 
         // check royaltyInfo
-        (address receiver, uint256 royaltyAmount) = IERC2981(mintNFT).royaltyInfo(
-            tokenId,
-            salePrice
-        );
+        (address receiver, uint256 royaltyAmount) = IERC2981(mintNFT).royaltyInfo(tokenId, salePrice);
         assertEq(receiver, bob);
         assertEq(royaltyAmount, (salePrice * fraction) / 10000);
     }
@@ -111,10 +103,7 @@ contract MintNFTTest is CommonTest {
         vm.stopPrank();
 
         // check royaltyInfo
-        (address receiver, uint256 royaltyAmount) = IERC2981(mintNFT).royaltyInfo(
-            tokenId,
-            salePrice
-        );
+        (address receiver, uint256 royaltyAmount) = IERC2981(mintNFT).royaltyInfo(tokenId, salePrice);
         assertEq(receiver, address(0));
         assertEq(royaltyAmount, 0);
     }

@@ -30,10 +30,11 @@ library ValidationLib {
     function validateHandle(string memory handle) internal pure {
         bytes memory byteHandle = bytes(handle);
         uint256 len = byteHandle.length;
-        if (len > Constants.MAX_HANDLE_LENGTH || len < Constants.MIN_HANDLE_LENGTH)
+        if (len > Constants.MAX_HANDLE_LENGTH || len < Constants.MIN_HANDLE_LENGTH) {
             revert ErrHandleLengthInvalid();
+        }
 
-        for (uint256 i = 0; i < len; ) {
+        for (uint256 i = 0; i < len;) {
             validateChar(byteHandle[i]);
 
             unchecked {
@@ -44,7 +45,8 @@ library ValidationLib {
 
     function validateChar(bytes1 c) internal pure {
         // char range: [0,9][a,z][-][_]
-        if ((c < "0" || c > "z" || (c > "9" && c < "a")) && c != "-" && c != "_")
+        if ((c < "0" || c > "z" || (c > "9" && c < "a")) && c != "-" && c != "_") {
             revert ErrHandleContainsInvalidCharacters();
+        }
     }
 }

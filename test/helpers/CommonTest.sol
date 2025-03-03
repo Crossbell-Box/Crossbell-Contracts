@@ -11,15 +11,9 @@ import {NewbieVilla} from "../../contracts/misc/NewbieVilla.sol";
 import {MiraToken} from "../../contracts/mocks/MiraToken.sol";
 import {Tips} from "../../contracts/misc/Tips.sol";
 import {MintNFT} from "../../contracts/MintNFT.sol";
-import {
-    TransparentUpgradeableProxy
-} from "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
-import {
-    ApprovalLinkModule4Character
-} from "../../contracts/mocks/linkModule/ApprovalLinkModule4Character.sol";
-import {
-    ApprovalLinkModule4Note
-} from "../../contracts/mocks/linkModule/ApprovalLinkModule4Note.sol";
+import {TransparentUpgradeableProxy} from "../../contracts/upgradeability/TransparentUpgradeableProxy.sol";
+import {ApprovalLinkModule4Character} from "../../contracts/mocks/linkModule/ApprovalLinkModule4Character.sol";
+import {ApprovalLinkModule4Note} from "../../contracts/mocks/linkModule/ApprovalLinkModule4Note.sol";
 import {ApprovalMintModule} from "../../contracts/modules/mint/ApprovalMintModule.sol";
 import {LimitedMintModule} from "../../contracts/modules/mint/LimitedMintModule.sol";
 import {NFT} from "../../contracts/mocks/NFT.sol";
@@ -87,11 +81,7 @@ contract CommonTest is Utils {
 
         // deploy Linklist
         Linklist linklistImpl = new Linklist();
-        TransparentUpgradeableProxy proxyLinklist = new TransparentUpgradeableProxy(
-            address(linklistImpl),
-            admin,
-            ""
-        );
+        TransparentUpgradeableProxy proxyLinklist = new TransparentUpgradeableProxy(address(linklistImpl), admin, "");
         linklist = Linklist(address(proxyLinklist));
 
         // deploy periphery
@@ -134,13 +124,7 @@ contract CommonTest is Utils {
         periphery.initialize(address(web3Entry), address(linklist));
 
         // initialize newbieVilla
-        newbieVilla.initialize(
-            address(web3Entry),
-            xsyncOperator,
-            address(token),
-            newbieAdmin,
-            address(tips)
-        );
+        newbieVilla.initialize(address(web3Entry), xsyncOperator, address(token), newbieAdmin, address(tips));
         vm.prank(newbieAdmin);
         newbieVilla.grantRole(ADMIN_ROLE, newbieAdmin);
 
@@ -152,35 +136,18 @@ contract CommonTest is Utils {
         nft.initialize("NFT", "NFT");
     }
 
-    function _createCharacter(
-        string memory handle,
-        address to
-    ) internal returns (uint256 characterId) {
+    function _createCharacter(string memory handle, address to) internal returns (uint256 characterId) {
         return web3Entry.createCharacter(makeCharacterData(handle, to));
     }
 
-    function _mintNote(
-        uint256 characterId,
-        uint256 noteId,
-        address to,
-        bytes memory data
-    ) internal {
+    function _mintNote(uint256 characterId, uint256 noteId, address to, bytes memory data) internal {
         web3Entry.mintNote(DataTypes.MintNoteData(characterId, noteId, to, data));
     }
 
     function _postNote(uint256 characterId, string memory noteUri) internal returns (uint256) {
-        return
-            web3Entry.postNote(
-                DataTypes.PostNoteData(
-                    characterId,
-                    noteUri,
-                    address(0x0),
-                    new bytes(0),
-                    address(0),
-                    "",
-                    false
-                )
-            );
+        return web3Entry.postNote(
+            DataTypes.PostNoteData(characterId, noteUri, address(0x0), new bytes(0), address(0), "", false)
+        );
     }
 
     function _postNoteWithLinkModule(
@@ -189,18 +156,9 @@ contract CommonTest is Utils {
         address linkModule,
         bytes memory linkModuleInitData
     ) internal returns (uint256) {
-        return
-            web3Entry.postNote(
-                DataTypes.PostNoteData(
-                    characterId,
-                    noteUri,
-                    linkModule,
-                    linkModuleInitData,
-                    address(0),
-                    "",
-                    false
-                )
-            );
+        return web3Entry.postNote(
+            DataTypes.PostNoteData(characterId, noteUri, linkModule, linkModuleInitData, address(0), "", false)
+        );
     }
 
     function _postNoteWithMintModule(
@@ -209,16 +167,6 @@ contract CommonTest is Utils {
         address mintModule,
         bytes memory initData
     ) internal {
-        web3Entry.postNote(
-            DataTypes.PostNoteData(
-                characterId,
-                noteUri,
-                address(0x0),
-                "",
-                mintModule,
-                initData,
-                false
-            )
-        );
+        web3Entry.postNote(DataTypes.PostNoteData(characterId, noteUri, address(0x0), "", mintModule, initData, false));
     }
 }

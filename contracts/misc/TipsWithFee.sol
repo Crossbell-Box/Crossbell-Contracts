@@ -31,8 +31,7 @@ import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.s
  * and `setFeeFraction4Note`.
  */
 contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
-    IERC1820Registry public constant ERC1820_REGISTRY =
-        IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+    IERC1820Registry public constant ERC1820_REGISTRY = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
     bytes32 public constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
 
     // address of web3Entry
@@ -104,37 +103,36 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         _token = token_;
 
         // register interfaces
-        ERC1820_REGISTRY.setInterfaceImplementer(
-            address(this),
-            TOKENS_RECIPIENT_INTERFACE_HASH,
-            address(this)
-        );
+        ERC1820_REGISTRY.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, address(this));
     }
 
     /// @inheritdoc ITipsWithFee
-    function setDefaultFeeFraction(
-        address feeReceiver,
-        uint256 fraction
-    ) external override onlyFeeReceiver(feeReceiver) validateFraction(fraction) {
+    function setDefaultFeeFraction(address feeReceiver, uint256 fraction)
+        external
+        override
+        onlyFeeReceiver(feeReceiver)
+        validateFraction(fraction)
+    {
         _feeFractions[feeReceiver] = fraction;
     }
 
     /// @inheritdoc ITipsWithFee
-    function setFeeFraction4Character(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 fraction
-    ) external override onlyFeeReceiver(feeReceiver) validateFraction(fraction) {
+    function setFeeFraction4Character(address feeReceiver, uint256 characterId, uint256 fraction)
+        external
+        override
+        onlyFeeReceiver(feeReceiver)
+        validateFraction(fraction)
+    {
         _feeFractions4Character[feeReceiver][characterId] = fraction;
     }
 
     /// @inheritdoc ITipsWithFee
-    function setFeeFraction4Note(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 noteId,
-        uint256 fraction
-    ) external override onlyFeeReceiver(feeReceiver) validateFraction(fraction) {
+    function setFeeFraction4Note(address feeReceiver, uint256 characterId, uint256 noteId, uint256 fraction)
+        external
+        override
+        onlyFeeReceiver(feeReceiver)
+        validateFraction(fraction)
+    {
         _feeFractions4Note[feeReceiver][characterId][noteId] = fraction;
     }
 
@@ -161,29 +159,15 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         // abi encoded bytes of (fromCharacterId, toCharacter, receiver)
         if (data.length == 96) {
             // tip character
-            (uint256 fromCharacterId, uint256 toCharacterId, address receiver) = abi.decode(
-                data,
-                (uint256, uint256, address)
-            );
+            (uint256 fromCharacterId, uint256 toCharacterId, address receiver) =
+                abi.decode(data, (uint256, uint256, address));
             _tipCharacter(from, fromCharacterId, toCharacterId, _token, amount, receiver);
             // abi encoded bytes of (fromCharacterId, toCharacter, noteId, receiver)
         } else if (data.length == 128) {
             // tip character for note
-            (
-                uint256 fromCharacterId,
-                uint256 toCharacterId,
-                uint256 toNoteId,
-                address receiver
-            ) = abi.decode(data, (uint256, uint256, uint256, address));
-            _tipCharacterForNote(
-                from,
-                fromCharacterId,
-                toCharacterId,
-                toNoteId,
-                _token,
-                amount,
-                receiver
-            );
+            (uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId, address receiver) =
+                abi.decode(data, (uint256, uint256, uint256, address));
+            _tipCharacterForNote(from, fromCharacterId, toCharacterId, toNoteId, _token, amount, receiver);
         } else {
             revert("TipsWithFee: unknown receiving");
         }
@@ -200,21 +184,22 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
     }
 
     /// @inheritdoc ITipsWithFee
-    function getFeeFraction(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 noteId
-    ) external view override returns (uint256) {
+    function getFeeFraction(address feeReceiver, uint256 characterId, uint256 noteId)
+        external
+        view
+        override
+        returns (uint256)
+    {
         return _getFeeFraction(feeReceiver, characterId, noteId);
     }
 
     /// @inheritdoc ITipsWithFee
-    function getFeeAmount(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 noteId,
-        uint256 tipAmount
-    ) external view override returns (uint256) {
+    function getFeeAmount(address feeReceiver, uint256 characterId, uint256 noteId, uint256 tipAmount)
+        external
+        view
+        override
+        returns (uint256)
+    {
         return _getFeeAmount(feeReceiver, characterId, noteId, tipAmount);
     }
 
@@ -292,52 +277,30 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         address feeReceiver
     ) internal {
         // `from` must be the owner of fromCharacterId
-        require(
-            from == IERC721(_web3Entry).ownerOf(fromCharacterId),
-            "TipsWithFee: caller is not character owner"
-        );
+        require(from == IERC721(_web3Entry).ownerOf(fromCharacterId), "TipsWithFee: caller is not character owner");
 
         //  send token
         uint256 feeAmount = _getFeeAmount(feeReceiver, toCharacterId, toNoteId, amount);
         // send token to `toCharacterId` account
         bytes memory userData = abi.encode(fromCharacterId, toCharacterId, toNoteId, feeReceiver);
         // solhint-disable-next-line check-send-result
-        IERC777(token).send(
-            IERC721(_web3Entry).ownerOf(toCharacterId),
-            amount - feeAmount,
-            userData
-        );
+        IERC777(token).send(IERC721(_web3Entry).ownerOf(toCharacterId), amount - feeAmount, userData);
         // solhint-disable-next-line check-send-result,multiple-sends
         IERC777(token).send(feeReceiver, feeAmount, userData);
 
         // emit event
         if (toNoteId == 0) {
-            emit TipCharacter(
-                fromCharacterId,
-                toCharacterId,
-                token,
-                amount,
-                feeAmount,
-                feeReceiver
-            );
+            emit TipCharacter(fromCharacterId, toCharacterId, token, amount, feeAmount, feeReceiver);
         } else {
-            emit TipCharacterForNote(
-                fromCharacterId,
-                toCharacterId,
-                toNoteId,
-                token,
-                amount,
-                feeAmount,
-                feeReceiver
-            );
+            emit TipCharacterForNote(fromCharacterId, toCharacterId, toNoteId, token, amount, feeAmount, feeReceiver);
         }
     }
 
-    function _getFeeFraction(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 noteId
-    ) internal view returns (uint256) {
+    function _getFeeFraction(address feeReceiver, uint256 characterId, uint256 noteId)
+        internal
+        view
+        returns (uint256)
+    {
         // get note fraction
         uint256 fraction = _feeFractions4Note[feeReceiver][characterId][noteId];
         if (fraction > 0) return fraction;
@@ -349,12 +312,11 @@ contract TipsWithFee is ITipsWithFee, Initializable, IERC777Recipient {
         return fraction;
     }
 
-    function _getFeeAmount(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 noteId,
-        uint256 tipAmount
-    ) internal view returns (uint256) {
+    function _getFeeAmount(address feeReceiver, uint256 characterId, uint256 noteId, uint256 tipAmount)
+        internal
+        view
+        returns (uint256)
+    {
         uint256 fraction = _getFeeFraction(feeReceiver, characterId, noteId);
         uint256 feeAmount = (tipAmount * fraction) / _feeDenominator();
         return feeAmount;

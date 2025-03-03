@@ -2,10 +2,7 @@
 pragma solidity 0.8.18;
 
 import {Events} from "../../contracts/libraries/Events.sol";
-import {
-    ErrHandleLengthInvalid,
-    ErrHandleContainsInvalidCharacters
-} from "../../contracts/libraries/Error.sol";
+import {ErrHandleLengthInvalid, ErrHandleContainsInvalidCharacters} from "../../contracts/libraries/Error.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
 
 contract CreateCharacterTest is CommonTest {

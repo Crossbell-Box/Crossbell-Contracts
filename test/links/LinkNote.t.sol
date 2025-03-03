@@ -3,11 +3,7 @@ pragma solidity 0.8.18;
 
 import {DataTypes} from "../../contracts/libraries/DataTypes.sol";
 import {Events} from "../../contracts/libraries/Events.sol";
-import {
-    ErrNoteNotExists,
-    ErrNoteIsDeleted,
-    ErrNotEnoughPermission
-} from "../../contracts/libraries/Error.sol";
+import {ErrNoteNotExists, ErrNoteIsDeleted, ErrNotEnoughPermission} from "../../contracts/libraries/Error.sol";
 import {OP} from "../../contracts/libraries/OP.sol";
 import {CommonTest} from "../helpers/CommonTest.sol";
 
@@ -36,25 +32,19 @@ contract LinkNoteTest is CommonTest {
         expectEmit(CheckAll);
         emit Events.LinkNote(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, 1);
         vm.prank(alice);
-        web3Entry.linkNote(
-            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
-        );
+        web3Entry.linkNote(DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, ""));
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
 
         vm.prank(alice);
         // link twice
-        web3Entry.linkNote(
-            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
-        );
+        web3Entry.linkNote(DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, ""));
 
         // periphery can link
         // the first input is msg.sender and the second input is tx.origin
         vm.prank(address(periphery), alice);
-        web3Entry.linkNote(
-            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
-        );
+        web3Entry.linkNote(DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, ""));
 
         // check state
         DataTypes.NoteStruct[] memory linkingNotes = linklist.getLinkingNotes(1);
@@ -79,9 +69,7 @@ contract LinkNoteTest is CommonTest {
         expectEmit(CheckAll);
         emit Events.LinkNote(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, 1);
         vm.prank(bob);
-        web3Entry.linkNote(
-            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
-        );
+        web3Entry.linkNote(DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, ""));
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
@@ -107,25 +95,19 @@ contract LinkNoteTest is CommonTest {
         // case 1: NotEnoughPermission
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.linkNote(
-            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
-        );
+        web3Entry.linkNote(DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, ""));
 
         // case 2: link a nonexistent note
         vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
         vm.prank(alice);
-        web3Entry.linkNote(
-            DataTypes.linkNoteData(fromCharacterId, toCharacterId, 2, FollowLinkType, "")
-        );
+        web3Entry.linkNote(DataTypes.linkNoteData(fromCharacterId, toCharacterId, 2, FollowLinkType, ""));
 
         // case 3: link a deleted note
         vm.prank(alice);
         web3Entry.deleteNote(toCharacterId, toNoteId);
         vm.expectRevert(abi.encodeWithSelector(ErrNoteIsDeleted.selector));
         vm.prank(alice);
-        web3Entry.linkNote(
-            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
-        );
+        web3Entry.linkNote(DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, ""));
     }
 
     function testLinkNoteFailWithOperator() public {
@@ -146,26 +128,18 @@ contract LinkNoteTest is CommonTest {
         uint256 toNoteId = 1;
 
         vm.startPrank(alice);
-        web3Entry.linkNote(
-            DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, "")
-        );
+        web3Entry.linkNote(DataTypes.linkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, ""));
 
         // unlink
         expectEmit(CheckAll);
         emit Events.UnlinkNote(fromCharacterId, toCharacterId, toNoteId, FollowLinkType, 1);
-        web3Entry.unlinkNote(
-            DataTypes.unlinkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType)
-        );
+        web3Entry.unlinkNote(DataTypes.unlinkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType));
 
         // unlink twice
-        web3Entry.unlinkNote(
-            DataTypes.unlinkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType)
-        );
+        web3Entry.unlinkNote(DataTypes.unlinkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType));
 
         // unlink a non-existing character
-        web3Entry.unlinkNote(
-            DataTypes.unlinkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType)
-        );
+        web3Entry.unlinkNote(DataTypes.unlinkNoteData(fromCharacterId, toCharacterId, toNoteId, FollowLinkType));
         vm.stopPrank();
 
         // check linklist
@@ -214,11 +188,7 @@ contract LinkNoteTest is CommonTest {
         web3Entry.linkNote(DataTypes.linkNoteData(fromCharacterId, 1, 1, FollowLinkType, ""));
 
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            UINT256_MAX ^ (1 << OP.UNLINK_NOTE)
-        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, UINT256_MAX ^ (1 << OP.UNLINK_NOTE));
 
         // unlink
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));

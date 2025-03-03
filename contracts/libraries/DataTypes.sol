@@ -235,8 +235,8 @@ library DataTypes {
     }
 
     /**
-     @param blocklist The list of blocklist addresses.
-     @param allowlist The list of allowlist addresses.
+     * @param blocklist The list of blocklist addresses.
+     *  @param allowlist The list of allowlist addresses.
      */
     struct Operators4Note {
         EnumerableSet.AddressSet blocklist;

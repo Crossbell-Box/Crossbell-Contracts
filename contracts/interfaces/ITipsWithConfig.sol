@@ -6,7 +6,6 @@ pragma solidity 0.8.18;
  * @title ITipsWithConfig
  * @notice This is the interface for the TipsWithConfig contract.
  */
-
 interface ITipsWithConfig {
     struct TipsConfig {
         uint256 id;
@@ -43,11 +42,7 @@ interface ITipsWithConfig {
      * @param characterId The character ID.
      * @param fraction The percentage measured in basis points. Each basis point represents 0.01%.
      */
-    function setFeeFraction4Character(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 fraction
-    ) external;
+    function setFeeFraction4Character(address feeReceiver, uint256 characterId, uint256 fraction) external;
 
     /**
      * @notice Sets the tips config of specific <fromCharacter, toCharacter>. <br>
@@ -98,10 +93,7 @@ interface ITipsWithConfig {
      * @param characterId The character ID .
      * @return fraction The percentage measured in basis points. Each basis point represents 0.01%.
      */
-    function getFeeFraction(
-        address feeReceiver,
-        uint256 characterId
-    ) external view returns (uint256);
+    function getFeeFraction(address feeReceiver, uint256 characterId) external view returns (uint256);
 
     /**
      * @notice Returns how much the fee is owed by <feeFraction, tipAmount>.
@@ -109,11 +101,10 @@ interface ITipsWithConfig {
      * @param characterId The character ID .
      * @return The fee amount.
      */
-    function getFeeAmount(
-        address feeReceiver,
-        uint256 characterId,
-        uint256 tipAmount
-    ) external view returns (uint256);
+    function getFeeAmount(address feeReceiver, uint256 characterId, uint256 tipAmount)
+        external
+        view
+        returns (uint256);
 
     /**
      * @notice Return the tips config Id.
@@ -121,10 +112,7 @@ interface ITipsWithConfig {
      * @param toCharacterId The token ID of character that would receive the reward.
      * @return uint256 Returns tips config ID.
      */
-    function getTipsConfigId(
-        uint256 fromCharacterId,
-        uint256 toCharacterId
-    ) external view returns (uint256);
+    function getTipsConfigId(uint256 fromCharacterId, uint256 toCharacterId) external view returns (uint256);
 
     /**
      * @notice Return the tips config.

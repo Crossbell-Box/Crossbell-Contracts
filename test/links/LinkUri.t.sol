@@ -107,11 +107,7 @@ contract LinkUriTest is CommonTest {
 
     function testLinkAnyUriFailWithOperator() public {
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            UINT256_MAX ^ (1 << OP.LINK_ANYURI)
-        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, UINT256_MAX ^ (1 << OP.LINK_ANYURI));
 
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
@@ -193,11 +189,7 @@ contract LinkUriTest is CommonTest {
         web3Entry.linkAnyUri(_makeLinkAnyUriData(firstCharacter, uri, FollowLinkType));
 
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            UINT256_MAX ^ (1 << OP.UNLINK_ANYURI)
-        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, UINT256_MAX ^ (1 << OP.UNLINK_ANYURI));
 
         // unlink
         // NotEnoughPermission
@@ -206,11 +198,11 @@ contract LinkUriTest is CommonTest {
         web3Entry.unlinkAnyUri(DataTypes.unlinkAnyUriData(firstCharacter, uri, FollowLinkType));
     }
 
-    function _makeLinkAnyUriData(
-        uint256 fromCharacterId,
-        string memory toUri,
-        bytes32 linkType
-    ) internal pure returns (DataTypes.linkAnyUriData memory) {
+    function _makeLinkAnyUriData(uint256 fromCharacterId, string memory toUri, bytes32 linkType)
+        internal
+        pure
+        returns (DataTypes.linkAnyUriData memory)
+    {
         return DataTypes.linkAnyUriData(fromCharacterId, toUri, linkType, "");
     }
 }

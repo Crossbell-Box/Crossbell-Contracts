@@ -223,11 +223,7 @@ contract CharacterSettingsTest is CommonTest {
         // case 2: operator without enough permission can't set social token
         // alice grant bob POST_NOTE_DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
-        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP);
 
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);

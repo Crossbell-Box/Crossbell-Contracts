@@ -10,11 +10,7 @@ import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol"
 contract MiraToken is AccessControlEnumerable, IERC20Mintable, ERC777 {
     bytes32 public constant BLOCK_ROLE = keccak256("BLOCK_ROLE");
 
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        address admin
-    ) ERC777(name_, symbol_, new address[](0)) {
+    constructor(string memory name_, string memory symbol_, address admin) ERC777(name_, symbol_, new address[](0)) {
         // Grants `DEFAULT_ADMIN_ROLE` to the account that deploys the contract
         _setupRole(DEFAULT_ADMIN_ROLE, admin);
     }
@@ -33,10 +29,11 @@ contract MiraToken is AccessControlEnumerable, IERC20Mintable, ERC777 {
      * Requirements:
      * - the caller must have the `DEFAULT_ADMIN_ROLE`.
      */
-    function renounceRole(
-        bytes32 role,
-        address account
-    ) public override(AccessControl, IAccessControl) onlyRole(DEFAULT_ADMIN_ROLE) {
+    function renounceRole(bytes32 role, address account)
+        public
+        override(AccessControl, IAccessControl)
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         super.renounceRole(role, account);
     }
 

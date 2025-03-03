@@ -12,48 +12,25 @@ library Events {
     event MintNFTInitialized(uint256 characterId, uint256 noteId, uint256 timestamp);
 
     event CharacterCreated(
-        uint256 indexed characterId,
-        address indexed creator,
-        address indexed to,
-        string handle,
-        uint256 timestamp
+        uint256 indexed characterId, address indexed creator, address indexed to, string handle, uint256 timestamp
     );
 
-    event SetPrimaryCharacterId(
-        address indexed account,
-        uint256 indexed characterId,
-        uint256 indexed oldCharacterId
-    );
+    event SetPrimaryCharacterId(address indexed account, uint256 indexed characterId, uint256 indexed oldCharacterId);
 
     event SetHandle(address indexed account, uint256 indexed characterId, string newHandle);
 
-    event SetSocialToken(
-        address indexed account,
-        uint256 indexed characterId,
-        address indexed tokenAddress
-    );
+    event SetSocialToken(address indexed account, uint256 indexed characterId, address indexed tokenAddress);
 
-    event GrantOperatorPermissions(
-        uint256 indexed characterId,
-        address indexed operator,
-        uint256 permissionBitMap
-    );
+    event GrantOperatorPermissions(uint256 indexed characterId, address indexed operator, uint256 permissionBitMap);
 
     event GrantOperators4Note(
-        uint256 indexed characterId,
-        uint256 indexed noteId,
-        address[] blocklist,
-        address[] allowlist
+        uint256 indexed characterId, uint256 indexed noteId, address[] blocklist, address[] allowlist
     );
 
     event SetCharacterUri(uint256 indexed characterId, string newUri);
 
     event PostNote(
-        uint256 indexed characterId,
-        uint256 indexed noteId,
-        bytes32 indexed linkKey,
-        bytes32 linkItemType,
-        bytes data
+        uint256 indexed characterId, uint256 indexed noteId, bytes32 indexed linkKey, bytes32 linkItemType, bytes data
     );
 
     event SetNoteUri(uint256 indexed characterId, uint256 noteId, string newUri);
@@ -71,10 +48,7 @@ library Events {
     );
 
     event UnlinkCharacter(
-        address indexed account,
-        uint256 indexed fromCharacterId,
-        uint256 indexed toCharacterId,
-        bytes32 linkType
+        address indexed account, uint256 indexed fromCharacterId, uint256 indexed toCharacterId, bytes32 linkType
     );
 
     event LinkNote(
@@ -102,24 +76,12 @@ library Events {
     );
 
     event LinkAddress(
-        uint256 indexed fromCharacterId,
-        address indexed ethAddress,
-        bytes32 linkType,
-        uint256 linklistId
+        uint256 indexed fromCharacterId, address indexed ethAddress, bytes32 linkType, uint256 linklistId
     );
 
-    event UnlinkAddress(
-        uint256 indexed fromCharacterId,
-        address indexed ethAddress,
-        bytes32 linkType
-    );
+    event UnlinkAddress(uint256 indexed fromCharacterId, address indexed ethAddress, bytes32 linkType);
 
-    event LinkAnyUri(
-        uint256 indexed fromCharacterId,
-        string toUri,
-        bytes32 linkType,
-        uint256 linklistId
-    );
+    event LinkAnyUri(uint256 indexed fromCharacterId, string toUri, bytes32 linkType, uint256 linklistId);
 
     event UnlinkAnyUri(uint256 indexed fromCharacterId, string toUri, bytes32 linkType);
 
@@ -148,32 +110,19 @@ library Events {
     );
 
     event LinkLinklist(
-        uint256 indexed fromCharacterId,
-        uint256 indexed toLinklistId,
-        bytes32 linkType,
-        uint256 indexed linklistId
+        uint256 indexed fromCharacterId, uint256 indexed toLinklistId, bytes32 linkType, uint256 indexed linklistId
     );
 
     event UnlinkLinklist(
-        uint256 indexed fromCharacterId,
-        uint256 indexed toLinklistId,
-        bytes32 linkType,
-        uint256 indexed linklistId
+        uint256 indexed fromCharacterId, uint256 indexed toLinklistId, bytes32 linkType, uint256 indexed linklistId
     );
 
     event MintNote(
-        address indexed to,
-        uint256 indexed characterId,
-        uint256 indexed noteId,
-        address tokenAddress,
-        uint256 tokenId
+        address indexed to, uint256 indexed characterId, uint256 indexed noteId, address tokenAddress, uint256 tokenId
     );
 
     event SetLinkModule4Character(
-        uint256 indexed characterId,
-        address indexed linkModule,
-        bytes linkModuleInitData,
-        bytes returnData
+        uint256 indexed characterId, address indexed linkModule, bytes linkModuleInitData, bytes returnData
     );
 
     event SetLinkModule4Note(
@@ -185,10 +134,7 @@ library Events {
     );
 
     event SetLinkModule4Address(
-        address indexed account,
-        address indexed linkModule,
-        bytes linkModuleInitData,
-        bytes returnData
+        address indexed account, address indexed linkModule, bytes linkModuleInitData, bytes returnData
     );
 
     event SetLinkModule4ERC721(
@@ -200,10 +146,7 @@ library Events {
     );
 
     event SetLinkModule4Linklist(
-        uint256 indexed linklistId,
-        address indexed linkModule,
-        bytes linkModuleInitData,
-        bytes returnData
+        uint256 indexed linklistId, address indexed linkModule, bytes linkModuleInitData, bytes returnData
     );
 
     event SetMintModule4Note(
@@ -214,22 +157,11 @@ library Events {
         bytes returnData
     );
 
-    event AttachLinklist(
-        uint256 indexed linklistId,
-        uint256 indexed characterId,
-        bytes32 indexed linkType
-    );
+    event AttachLinklist(uint256 indexed linklistId, uint256 indexed characterId, bytes32 indexed linkType);
 
-    event DetachLinklist(
-        uint256 indexed linklistId,
-        uint256 indexed characterId,
-        bytes32 indexed linkType
-    );
+    event DetachLinklist(uint256 indexed linklistId, uint256 indexed characterId, bytes32 indexed linkType);
 
     event SetApprovedMintAmount4Addresses(
-        uint256 indexed characterId,
-        uint256 indexed noteId,
-        uint256 indexed amount,
-        address[] approvedAddresses
+        uint256 indexed characterId, uint256 indexed noteId, uint256 indexed amount, address[] approvedAddresses
     );
 }

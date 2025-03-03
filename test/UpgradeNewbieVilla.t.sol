@@ -4,17 +4,14 @@ pragma solidity 0.8.18;
 
 import {CommonTest} from "./helpers/CommonTest.sol";
 import {NewbieVilla} from "../contracts/misc/NewbieVilla.sol";
-import {
-    TransparentUpgradeableProxy
-} from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
+import {TransparentUpgradeableProxy} from "../contracts/upgradeability/TransparentUpgradeableProxy.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract UpgradeNewbieVillaTest is CommonTest {
     // test upgradeability of NewbieVilla from crossbell fork
     address internal _web3Entry = address(0xa6f969045641Cf486a747A2688F3a5A6d43cd0D8);
     address internal constant _token = 0xAfB95CC0BD320648B3E8Df6223d9CDD05EbeDC64;
-    address payable internal _newbieVilla =
-        payable(address(0xD0c83f0BB2c61D55B3d33950b70C59ba2f131caA));
+    address payable internal _newbieVilla = payable(address(0xD0c83f0BB2c61D55B3d33950b70C59ba2f131caA));
     address internal _proxyAdmin = address(0x5f603895B48F0C451af39bc7e0c587aE15718e4d);
 
     function setUp() public {

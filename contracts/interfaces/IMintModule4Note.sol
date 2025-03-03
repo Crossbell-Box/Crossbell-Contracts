@@ -9,11 +9,9 @@ interface IMintModule4Note {
      * @param   data  The data passed from the user to be decoded.
      * @return  bytes  The returned data of calling initializeMintModule.
      */
-    function initializeMintModule(
-        uint256 characterId,
-        uint256 noteId,
-        bytes calldata data
-    ) external returns (bytes memory);
+    function initializeMintModule(uint256 characterId, uint256 noteId, bytes calldata data)
+        external
+        returns (bytes memory);
 
     /**
      * @notice Processes the mint logic. <br>
@@ -23,10 +21,5 @@ interface IMintModule4Note {
      * @param   noteId  The note ID.
      * @param   data  The data passed from the user to be decoded.
      */
-    function processMint(
-        address to,
-        uint256 characterId,
-        uint256 noteId,
-        bytes calldata data
-    ) external;
+    function processMint(address to, uint256 characterId, uint256 noteId, bytes calldata data) external;
 }

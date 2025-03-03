@@ -13,9 +13,7 @@ import {Events} from "../../../contracts/libraries/Events.sol";
 import {IMintModule4Note} from "../../../contracts/interfaces/IMintModule4Note.sol";
 import {IMintNFT} from "../../../contracts/interfaces/IMintNFT.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import {
-    IERC721Enumerable
-} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 contract ApprovalMintModuleTest is CommonTest {
     function setUp() public {
@@ -35,17 +33,10 @@ contract ApprovalMintModuleTest is CommonTest {
 
         // initialize the mint module
         expectEmit(CheckAll);
-        emit Events.SetApprovedMintAmount4Addresses(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            approvedAmount,
-            approvedList
-        );
+        emit Events.SetApprovedMintAmount4Addresses(FIRST_CHARACTER_ID, FIRST_NOTE_ID, approvedAmount, approvedList);
         vm.prank(address(web3Entry));
         bytes memory result = IMintModule4Note(address(approvalMintModule)).initializeMintModule(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            abi.encode(approvedList, approvedAmount)
+            FIRST_CHARACTER_ID, FIRST_NOTE_ID, abi.encode(approvedList, approvedAmount)
         );
 
         // check return value
@@ -53,24 +44,14 @@ contract ApprovalMintModuleTest is CommonTest {
 
         // check approved info
         for (uint256 i = 0; i < approvedList.length; i++) {
-            _checkApprovedInfo(
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                approvedList[i],
-                approvedAmount,
-                0
-            );
+            _checkApprovedInfo(FIRST_CHARACTER_ID, FIRST_NOTE_ID, approvedList[i], approvedAmount, 0);
         }
     }
 
     function testInitializeMintModuleFail() public {
         // caller is not web3Entry
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
-        IMintModule4Note(address(approvalMintModule)).initializeMintModule(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            ""
-        );
+        IMintModule4Note(address(approvalMintModule)).initializeMintModule(FIRST_CHARACTER_ID, FIRST_NOTE_ID, "");
     }
 
     function testSetApprovedAmount(uint256 approvedAmount) public {
@@ -78,29 +59,13 @@ contract ApprovalMintModuleTest is CommonTest {
 
         // alice set approved amount for bob and carol
         expectEmit(CheckAll);
-        emit Events.SetApprovedMintAmount4Addresses(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            approvedAmount,
-            approvedList
-        );
+        emit Events.SetApprovedMintAmount4Addresses(FIRST_CHARACTER_ID, FIRST_NOTE_ID, approvedAmount, approvedList);
         vm.prank(alice);
-        approvalMintModule.setApprovedAmount(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            approvedList,
-            approvedAmount
-        );
+        approvalMintModule.setApprovedAmount(FIRST_CHARACTER_ID, FIRST_NOTE_ID, approvedList, approvedAmount);
 
         // check approved amount
         for (uint256 i = 0; i < approvedList.length; i++) {
-            _checkApprovedInfo(
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                approvedList[i],
-                approvedAmount,
-                0
-            );
+            _checkApprovedInfo(FIRST_CHARACTER_ID, FIRST_NOTE_ID, approvedList[i], approvedAmount, 0);
         }
     }
 
@@ -110,56 +75,27 @@ contract ApprovalMintModuleTest is CommonTest {
         // set dick as note operator
         vm.startPrank(alice);
         _postNoteWithMintModule(
-            FIRST_CHARACTER_ID,
-            NOTE_URI,
-            address(approvalMintModule),
-            abi.encode(new address[](0), 1)
+            FIRST_CHARACTER_ID, NOTE_URI, address(approvalMintModule), abi.encode(new address[](0), 1)
         );
-        web3Entry.grantOperators4Note(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            new address[](0),
-            array(dick)
-        );
+        web3Entry.grantOperators4Note(FIRST_CHARACTER_ID, FIRST_NOTE_ID, new address[](0), array(dick));
         vm.stopPrank();
 
         // note operator set approved amount for bob and carol
         expectEmit(CheckAll);
-        emit Events.SetApprovedMintAmount4Addresses(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            approvedAmount,
-            approvedList
-        );
+        emit Events.SetApprovedMintAmount4Addresses(FIRST_CHARACTER_ID, FIRST_NOTE_ID, approvedAmount, approvedList);
         vm.prank(dick);
-        approvalMintModule.setApprovedAmount(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            approvedList,
-            approvedAmount
-        );
+        approvalMintModule.setApprovedAmount(FIRST_CHARACTER_ID, FIRST_NOTE_ID, approvedList, approvedAmount);
 
         // check approved amount
         for (uint256 i = 0; i < approvedList.length; i++) {
-            _checkApprovedInfo(
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                approvedList[i],
-                approvedAmount,
-                0
-            );
+            _checkApprovedInfo(FIRST_CHARACTER_ID, FIRST_NOTE_ID, approvedList[i], approvedAmount, 0);
         }
     }
 
     function testSetApprovedAmountFail(uint256 amount) public {
         // caller is not web3Entry
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        approvalMintModule.setApprovedAmount(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            array(carol),
-            amount
-        );
+        approvalMintModule.setApprovedAmount(FIRST_CHARACTER_ID, FIRST_NOTE_ID, array(carol), amount);
     }
 
     function testProcessMintWithInitializeMintModule(uint256 approvedAmount) public {
@@ -168,9 +104,7 @@ contract ApprovalMintModuleTest is CommonTest {
         // initialize the mint module
         vm.prank(address(web3Entry));
         IMintModule4Note(address(approvalMintModule)).initializeMintModule(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            abi.encode(array(bob), approvedAmount)
+            FIRST_CHARACTER_ID, FIRST_NOTE_ID, abi.encode(array(bob), approvedAmount)
         );
 
         // processMint
@@ -186,12 +120,7 @@ contract ApprovalMintModuleTest is CommonTest {
 
         // set approved amount
         vm.prank(alice);
-        approvalMintModule.setApprovedAmount(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            array(bob),
-            approvedAmount
-        );
+        approvalMintModule.setApprovedAmount(FIRST_CHARACTER_ID, FIRST_NOTE_ID, array(bob), approvedAmount);
 
         // processMint
         vm.prank(address(web3Entry));
@@ -207,12 +136,7 @@ contract ApprovalMintModuleTest is CommonTest {
 
         // set approved amount
         vm.prank(alice);
-        approvalMintModule.setApprovedAmount(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            array(bob),
-            approvedAmount
-        );
+        approvalMintModule.setApprovedAmount(FIRST_CHARACTER_ID, FIRST_NOTE_ID, array(bob), approvedAmount);
 
         // processMint
         for (uint256 i = 1; i < approvedAmount; i++) {
@@ -236,12 +160,7 @@ contract ApprovalMintModuleTest is CommonTest {
 
         // alice set approved amount
         vm.prank(alice);
-        approvalMintModule.setApprovedAmount(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            array(bob),
-            approvedAmount
-        );
+        approvalMintModule.setApprovedAmount(FIRST_CHARACTER_ID, FIRST_NOTE_ID, array(bob), approvedAmount);
 
         // processMint
         vm.startPrank(address(web3Entry));
@@ -268,12 +187,7 @@ contract ApprovalMintModuleTest is CommonTest {
 
         // alice post a note with approvalMintModule
         vm.prank(alice);
-        _postNoteWithMintModule(
-            FIRST_CHARACTER_ID,
-            NOTE_URI,
-            address(approvalMintModule),
-            abi.encode(approvedList, 1)
-        );
+        _postNoteWithMintModule(FIRST_CHARACTER_ID, NOTE_URI, address(approvalMintModule), abi.encode(approvedList, 1));
 
         // alice and bob in approvedAddrs can mint note
         for (uint256 i = 0; i < approvedList.length; i++) {
@@ -327,12 +241,7 @@ contract ApprovalMintModuleTest is CommonTest {
 
         // alice post a note with approvalMintModule
         vm.prank(alice);
-        _postNoteWithMintModule(
-            FIRST_CHARACTER_ID,
-            NOTE_URI,
-            address(approvalMintModule),
-            abi.encode(approvedList, 1)
-        );
+        _postNoteWithMintModule(FIRST_CHARACTER_ID, NOTE_URI, address(approvalMintModule), abi.encode(approvedList, 1));
 
         //  alice with no approved amount can't mint note
         vm.expectRevert(abi.encodeWithSelector(ErrNotApprovedOrExceedApproval.selector));
@@ -344,12 +253,7 @@ contract ApprovalMintModuleTest is CommonTest {
 
         // alice post a note with approvalMintModule
         vm.prank(alice);
-        _postNoteWithMintModule(
-            FIRST_CHARACTER_ID,
-            NOTE_URI,
-            address(approvalMintModule),
-            abi.encode(approvedList, 1)
-        );
+        _postNoteWithMintModule(FIRST_CHARACTER_ID, NOTE_URI, address(approvalMintModule), abi.encode(approvedList, 1));
 
         // set approvedAmount as 0
         vm.prank(alice);
@@ -364,12 +268,7 @@ contract ApprovalMintModuleTest is CommonTest {
 
         // alice post a note with approvalMintModule
         vm.prank(alice);
-        _postNoteWithMintModule(
-            FIRST_CHARACTER_ID,
-            NOTE_URI,
-            address(approvalMintModule),
-            abi.encode(approvedList, 1)
-        );
+        _postNoteWithMintModule(FIRST_CHARACTER_ID, NOTE_URI, address(approvalMintModule), abi.encode(approvedList, 1));
 
         // carol mint note
         _mintNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID, carol, "");
@@ -386,12 +285,7 @@ contract ApprovalMintModuleTest is CommonTest {
         address[] memory approvedList = array(bob, carol);
 
         vm.prank(alice);
-        _postNoteWithMintModule(
-            FIRST_CHARACTER_ID,
-            NOTE_URI,
-            address(approvalMintModule),
-            abi.encode(approvedList, 1)
-        );
+        _postNoteWithMintModule(FIRST_CHARACTER_ID, NOTE_URI, address(approvalMintModule), abi.encode(approvedList, 1));
 
         // approved addresses in init can mint (mintNFT is initialized)
         _mintNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, "");
@@ -410,11 +304,8 @@ contract ApprovalMintModuleTest is CommonTest {
         uint256 expectedMintedAmount
     ) internal view {
         // check approved amount of `account`
-        (uint256 approvedAmount, uint256 mintedAmount) = approvalMintModule.getApprovedInfo(
-            characterId,
-            noteId,
-            account
-        );
+        (uint256 approvedAmount, uint256 mintedAmount) =
+            approvalMintModule.getApprovedInfo(characterId, noteId, account);
         assertEq(approvedAmount, expectedApprovedAmount);
         assertEq(expectedMintedAmount, mintedAmount);
     }

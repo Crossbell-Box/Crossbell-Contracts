@@ -37,9 +37,7 @@ library LinkLib {
         // process link module
         address linkModule = StorageLib.getCharacter(toCharacterId).linkModule;
         if (linkModule != address(0)) {
-            try
-                ILinkModule4Character(linkModule).processLink(linker, toCharacterId, data)
-            {} catch {} // solhint-disable-line no-empty-blocks
+            try ILinkModule4Character(linkModule).processLink(linker, toCharacterId, data) {} catch {} // solhint-disable-line no-empty-blocks
         }
 
         emit Events.LinkCharacter(linker, fromCharacterId, toCharacterId, linkType, linklistId);
@@ -52,12 +50,9 @@ library LinkLib {
      * @param   linkType  linkType, like “follow”.
      * @param   linklist  The linklist contract address.
      */
-    function unlinkCharacter(
-        uint256 fromCharacterId,
-        uint256 toCharacterId,
-        bytes32 linkType,
-        address linklist
-    ) external {
+    function unlinkCharacter(uint256 fromCharacterId, uint256 toCharacterId, bytes32 linkType, address linklist)
+        external
+    {
         address linker = _ownerOf(fromCharacterId);
         uint256 linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
         // remove from link list
@@ -92,9 +87,7 @@ library LinkLib {
         // process link
         address linkModule = StorageLib.getNote(toCharacterId, toNoteId).linkModule;
         if (linkModule != address(0)) {
-            try
-                ILinkModule4Note(linkModule).processLink(linker, toCharacterId, toNoteId, data)
-            {} catch {} // solhint-disable-line no-empty-blocks
+            try ILinkModule4Note(linkModule).processLink(linker, toCharacterId, toNoteId, data) {} catch {} // solhint-disable-line no-empty-blocks
         }
 
         emit Events.LinkNote(fromCharacterId, toCharacterId, toNoteId, linkType, linklistId);
@@ -131,12 +124,7 @@ library LinkLib {
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
      */
-    function linkLinklist(
-        uint256 fromCharacterId,
-        uint256 toLinkListId,
-        bytes32 linkType,
-        address linklist
-    ) external {
+    function linkLinklist(uint256 fromCharacterId, uint256 toLinkListId, bytes32 linkType, address linklist) external {
         uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist);
 
         // add to link list
@@ -152,12 +140,9 @@ library LinkLib {
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
      */
-    function unlinkLinklist(
-        uint256 fromCharacterId,
-        uint256 toLinkListId,
-        bytes32 linkType,
-        address linklist
-    ) external {
+    function unlinkLinklist(uint256 fromCharacterId, uint256 toLinkListId, bytes32 linkType, address linklist)
+        external
+    {
         uint256 linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
         // remove `toLinkListId` from linklist
         ILinklist(linklist).removeLinkingLinklistId(linklistId, toLinkListId);
@@ -218,12 +203,7 @@ library LinkLib {
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
      */
-    function linkAddress(
-        uint256 fromCharacterId,
-        address ethAddress,
-        bytes32 linkType,
-        address linklist
-    ) external {
+    function linkAddress(uint256 fromCharacterId, address ethAddress, bytes32 linkType, address linklist) external {
         uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist);
 
         // add to link list
@@ -239,12 +219,7 @@ library LinkLib {
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
      */
-    function unlinkAddress(
-        uint256 fromCharacterId,
-        address ethAddress,
-        bytes32 linkType,
-        address linklist
-    ) external {
+    function unlinkAddress(uint256 fromCharacterId, address ethAddress, bytes32 linkType, address linklist) external {
         uint256 linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
         // remove from linklist
         ILinklist(linklist).removeLinkingAddress(linklistId, ethAddress);
@@ -259,12 +234,7 @@ library LinkLib {
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
      */
-    function linkAnyUri(
-        uint256 fromCharacterId,
-        string calldata toUri,
-        bytes32 linkType,
-        address linklist
-    ) external {
+    function linkAnyUri(uint256 fromCharacterId, string calldata toUri, bytes32 linkType, address linklist) external {
         uint256 linklistId = _mintLinklist(fromCharacterId, linkType, linklist);
 
         // add to link list
@@ -280,12 +250,9 @@ library LinkLib {
      * @param   linkType  LinkType, like “follow”.
      * @param   linklist  The linklist contract address.
      */
-    function unlinkAnyUri(
-        uint256 fromCharacterId,
-        string calldata toUri,
-        bytes32 linkType,
-        address linklist
-    ) external {
+    function unlinkAnyUri(uint256 fromCharacterId, string calldata toUri, bytes32 linkType, address linklist)
+        external
+    {
         uint256 linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
         // remove from linklist
         ILinklist(linklist).removeLinkingAnyUri(linklistId, toUri);
@@ -294,14 +261,13 @@ library LinkLib {
     }
 
     /**
-     * @notice  Returns the linklistId if the linklist already exists, Otherwise, creates a new 
-        linklist and return its ID.
+     * @notice  Returns the linklistId if the linklist already exists, Otherwise, creates a new
+     *     linklist and return its ID.
      */
-    function _mintLinklist(
-        uint256 fromCharacterId,
-        bytes32 linkType,
-        address linklist
-    ) internal returns (uint256 linklistId) {
+    function _mintLinklist(uint256 fromCharacterId, bytes32 linkType, address linklist)
+        internal
+        returns (uint256 linklistId)
+    {
         linklistId = StorageLib.getAttachedLinklistId(fromCharacterId, linkType);
         if (linklistId == 0) {
             // mint linkList nft

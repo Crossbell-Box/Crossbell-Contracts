@@ -43,11 +43,7 @@ contract PrimaryCharacterTest is CommonTest {
         assertEq(web3Entry.getPrimaryCharacterId(alice), FIRST_CHARACTER_ID);
 
         expectEmit(CheckAll);
-        emit Events.SetPrimaryCharacterId(
-            address(periphery),
-            SECOND_CHARACTER_ID,
-            FIRST_CHARACTER_ID
-        );
+        emit Events.SetPrimaryCharacterId(address(periphery), SECOND_CHARACTER_ID, FIRST_CHARACTER_ID);
         vm.prank(address(periphery), alice);
         web3Entry.setPrimaryCharacterId(SECOND_CHARACTER_ID);
 
@@ -156,9 +152,7 @@ contract PrimaryCharacterTest is CommonTest {
         uint256 firstCharacter = _createCharacter(CHARACTER_HANDLE, bob);
         uint256 secondCharacter = _createCharacter(CHARACTER_HANDLE2, bob);
         // link character
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, FollowLinkType, ""));
         // transfer firstCharacter to alice
         web3Entry.transferFrom(bob, alice, firstCharacter);
         // transfer secondCharacter to carol

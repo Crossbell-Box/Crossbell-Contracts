@@ -29,11 +29,12 @@ contract LimitedMintModule is IMintModule4Note, ModuleBase {
      * @dev The data should an abi encoded bytes of (uint256,uint256)
      */
     /// @inheritdoc IMintModule4Note
-    function initializeMintModule(
-        uint256 characterId,
-        uint256 noteId,
-        bytes calldata data
-    ) external override onlyWeb3Entry returns (bytes memory) {
+    function initializeMintModule(uint256 characterId, uint256 noteId, bytes calldata data)
+        external
+        override
+        onlyWeb3Entry
+        returns (bytes memory)
+    {
         if (data.length > 0) {
             (uint256 maxSupply, uint256 maxMintPerAddress) = abi.decode(data, (uint256, uint256));
             _limitedMintInfo[characterId][noteId].maxSupply = maxSupply;
@@ -46,18 +47,18 @@ contract LimitedMintModule is IMintModule4Note, ModuleBase {
      * @notice  Process minting and check if the caller is eligible.
      */
     /// @inheritdoc IMintModule4Note
-    function processMint(
-        address to,
-        uint256 characterId,
-        uint256 noteId,
-        bytes calldata
-    ) external override onlyWeb3Entry {
+    function processMint(address to, uint256 characterId, uint256 noteId, bytes calldata)
+        external
+        override
+        onlyWeb3Entry
+    {
         LimitedMintInfo storage info = _limitedMintInfo[characterId][noteId];
         // check max supply
         if (info.currentSupply >= info.maxSupply) revert ErrExceedMaxSupply();
         // check approved amount
-        if (_mintedAmount[characterId][noteId][to] >= info.maxMintPerAddress)
+        if (_mintedAmount[characterId][noteId][to] >= info.maxMintPerAddress) {
             revert ErrExceedApproval();
+        }
 
         // increase currentSupply and mintedAmount
         ++info.currentSupply;
@@ -75,19 +76,10 @@ contract LimitedMintModule is IMintModule4Note, ModuleBase {
      * @return mintedAmount The amount that the address has already minted.
      */
     // solhint-disable-next-line comprehensive-interface
-    function getLimitedMintInfo(
-        uint256 characterId,
-        uint256 noteId,
-        address account
-    )
+    function getLimitedMintInfo(uint256 characterId, uint256 noteId, address account)
         external
         view
-        returns (
-            uint256 maxSupply,
-            uint256 currentSupply,
-            uint256 maxMintPerAddress,
-            uint256 mintedAmount
-        )
+        returns (uint256 maxSupply, uint256 currentSupply, uint256 maxMintPerAddress, uint256 mintedAmount)
     {
         maxSupply = _limitedMintInfo[characterId][noteId].maxSupply;
         currentSupply = _limitedMintInfo[characterId][noteId].currentSupply;

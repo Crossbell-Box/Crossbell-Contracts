@@ -27,25 +27,19 @@ contract LinkAddressTest is CommonTest {
         emit Events.LinkAddress(firstCharacter, ethAddress, FollowLinkType, 1);
         //  link an address
         vm.prank(alice);
-        web3Entry.linkAddress(
-            DataTypes.linkAddressData(firstCharacter, ethAddress, FollowLinkType, "")
-        );
+        web3Entry.linkAddress(DataTypes.linkAddressData(firstCharacter, ethAddress, FollowLinkType, ""));
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
 
         // link twice
         vm.prank(alice);
-        web3Entry.linkAddress(
-            DataTypes.linkAddressData(firstCharacter, ethAddress, FollowLinkType, "")
-        );
+        web3Entry.linkAddress(DataTypes.linkAddressData(firstCharacter, ethAddress, FollowLinkType, ""));
 
         // periphery can link
         // the first input is msg.sender and the second input is tx.origin
         vm.prank(address(periphery), alice);
-        web3Entry.linkAddress(
-            DataTypes.linkAddressData(firstCharacter, ethAddress, FollowLinkType, "")
-        );
+        web3Entry.linkAddress(DataTypes.linkAddressData(firstCharacter, ethAddress, FollowLinkType, ""));
 
         // check state
         assertEq(linklist.getLinkingAddresses(1)[0], ethAddress);
@@ -59,9 +53,7 @@ contract LinkAddressTest is CommonTest {
         web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.LINK_ADDRESS);
 
         vm.prank(bob);
-        web3Entry.linkAddress(
-            DataTypes.linkAddressData(firstCharacter, ethAdddress, FollowLinkType, "")
-        );
+        web3Entry.linkAddress(DataTypes.linkAddressData(firstCharacter, ethAdddress, FollowLinkType, ""));
 
         // check state
         assertEq(linklist.ownerOf(1), alice);
@@ -73,44 +65,30 @@ contract LinkAddressTest is CommonTest {
         // case 1: NotEnoughPermission
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.linkAddress(
-            DataTypes.linkAddressData(firstCharacter, vm.addr(1), FollowLinkType, "")
-        );
+        web3Entry.linkAddress(DataTypes.linkAddressData(firstCharacter, vm.addr(1), FollowLinkType, ""));
 
         // case 2: operator has no permission
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            UINT256_MAX ^ (1 << OP.LINK_ADDRESS)
-        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, UINT256_MAX ^ (1 << OP.LINK_ADDRESS));
 
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.linkAddress(
-            DataTypes.linkAddressData(firstCharacter, vm.addr(1), FollowLinkType, "")
-        );
+        web3Entry.linkAddress(DataTypes.linkAddressData(firstCharacter, vm.addr(1), FollowLinkType, ""));
     }
 
     function testUnlinkAddress() public {
         address ethAddress = vm.addr(1);
 
         vm.startPrank(alice);
-        web3Entry.linkAddress(
-            DataTypes.linkAddressData(firstCharacter, ethAddress, FollowLinkType, "")
-        );
+        web3Entry.linkAddress(DataTypes.linkAddressData(firstCharacter, ethAddress, FollowLinkType, ""));
 
         // unlink
         expectEmit(CheckAll);
         emit Events.UnlinkAddress(firstCharacter, ethAddress, FollowLinkType);
-        web3Entry.unlinkAddress(
-            DataTypes.unlinkAddressData(firstCharacter, ethAddress, FollowLinkType)
-        );
+        web3Entry.unlinkAddress(DataTypes.unlinkAddressData(firstCharacter, ethAddress, FollowLinkType));
 
         // unlink twice
-        web3Entry.unlinkAddress(
-            DataTypes.unlinkAddressData(firstCharacter, ethAddress, FollowLinkType)
-        );
+        web3Entry.unlinkAddress(DataTypes.unlinkAddressData(firstCharacter, ethAddress, FollowLinkType));
         vm.stopPrank();
 
         // check linklist
@@ -126,9 +104,7 @@ contract LinkAddressTest is CommonTest {
         address ethAddress = vm.addr(1);
 
         vm.startPrank(alice);
-        web3Entry.linkAddress(
-            DataTypes.linkAddressData(firstCharacter, ethAddress, FollowLinkType, "")
-        );
+        web3Entry.linkAddress(DataTypes.linkAddressData(firstCharacter, ethAddress, FollowLinkType, ""));
         web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.UNLINK_ADDRESS);
         vm.stopPrank();
 
@@ -136,9 +112,7 @@ contract LinkAddressTest is CommonTest {
         expectEmit(CheckAll);
         emit Events.UnlinkAddress(firstCharacter, ethAddress, FollowLinkType);
         vm.prank(bob);
-        web3Entry.unlinkAddress(
-            DataTypes.unlinkAddressData(firstCharacter, ethAddress, FollowLinkType)
-        );
+        web3Entry.unlinkAddress(DataTypes.unlinkAddressData(firstCharacter, ethAddress, FollowLinkType));
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
@@ -153,22 +127,14 @@ contract LinkAddressTest is CommonTest {
         // case 1: NotEnoughPermission
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.unlinkAddress(
-            DataTypes.unlinkAddressData(firstCharacter, vm.addr(1), FollowLinkType)
-        );
+        web3Entry.unlinkAddress(DataTypes.unlinkAddressData(firstCharacter, vm.addr(1), FollowLinkType));
 
         // case 2: operator has no permission
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            UINT256_MAX ^ (1 << OP.UNLINK_ADDRESS)
-        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, UINT256_MAX ^ (1 << OP.UNLINK_ADDRESS));
 
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.unlinkAddress(
-            DataTypes.unlinkAddressData(firstCharacter, vm.addr(1), FollowLinkType)
-        );
+        web3Entry.unlinkAddress(DataTypes.unlinkAddressData(firstCharacter, vm.addr(1), FollowLinkType));
     }
 }

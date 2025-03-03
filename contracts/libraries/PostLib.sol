@@ -32,22 +32,10 @@ library PostLib {
         }
 
         // init link module
-        _setLinkModule4Note(
-            vars.characterId,
-            noteId,
-            vars.linkModule,
-            vars.linkModuleInitData,
-            _note
-        );
+        _setLinkModule4Note(vars.characterId, noteId, vars.linkModule, vars.linkModuleInitData, _note);
 
         // init mint module
-        _setMintModule4Note(
-            vars.characterId,
-            noteId,
-            vars.mintModule,
-            vars.mintModuleInitData,
-            _note
-        );
+        _setMintModule4Note(vars.characterId, noteId, vars.mintModule, vars.mintModuleInitData, _note);
 
         emit Events.PostNote(vars.characterId, noteId, linkKey, linkItemType, data);
     }
@@ -117,11 +105,7 @@ library PostLib {
         ValidationLib.validateNoteNotLocked(characterId, noteId);
 
         _setLinkModule4Note(
-            characterId,
-            noteId,
-            linkModule,
-            linkModuleInitData,
-            StorageLib.getNote(characterId, noteId)
+            characterId, noteId, linkModule, linkModuleInitData, StorageLib.getNote(characterId, noteId)
         );
     }
 
@@ -139,25 +123,15 @@ library PostLib {
         bytes calldata mintModuleInitData
     ) external {
         _setMintModule4Note(
-            characterId,
-            noteId,
-            mintModule,
-            mintModuleInitData,
-            StorageLib.getNote(characterId, noteId)
+            characterId, noteId, mintModule, mintModuleInitData, StorageLib.getNote(characterId, noteId)
         );
     }
 
-    function _deployMintNFT(
-        uint256 characterId,
-        uint256 noteId,
-        address mintNFTImpl
-    ) internal returns (address mintNFT) {
-        string memory symbol = string.concat(
-            "Note-",
-            characterId.toString(),
-            "-",
-            noteId.toString()
-        );
+    function _deployMintNFT(uint256 characterId, uint256 noteId, address mintNFTImpl)
+        internal
+        returns (address mintNFT)
+    {
+        string memory symbol = string.concat("Note-", characterId.toString(), "-", noteId.toString());
 
         // deploy nft contract
         mintNFT = Clones.clone(mintNFTImpl);
@@ -175,19 +149,10 @@ library PostLib {
         if (linkModule != address(0)) {
             _note.linkModule = linkModule;
 
-            bytes memory returnData = ILinkModule4Note(linkModule).initializeLinkModule(
-                characterId,
-                noteId,
-                linkModuleInitData
-            );
+            bytes memory returnData =
+                ILinkModule4Note(linkModule).initializeLinkModule(characterId, noteId, linkModuleInitData);
 
-            emit Events.SetLinkModule4Note(
-                characterId,
-                noteId,
-                linkModule,
-                linkModuleInitData,
-                returnData
-            );
+            emit Events.SetLinkModule4Note(characterId, noteId, linkModule, linkModuleInitData, returnData);
         }
     }
 
@@ -201,19 +166,10 @@ library PostLib {
         if (mintModule != address(0)) {
             _note.mintModule = mintModule;
 
-            bytes memory returnData = IMintModule4Note(mintModule).initializeMintModule(
-                characterId,
-                noteId,
-                mintModuleInitData
-            );
+            bytes memory returnData =
+                IMintModule4Note(mintModule).initializeMintModule(characterId, noteId, mintModuleInitData);
 
-            emit Events.SetMintModule4Note(
-                characterId,
-                noteId,
-                mintModule,
-                mintModuleInitData,
-                returnData
-            );
+            emit Events.SetMintModule4Note(characterId, noteId, mintModule, mintModuleInitData, returnData);
         }
     }
 }

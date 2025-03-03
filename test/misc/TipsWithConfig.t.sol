@@ -168,14 +168,7 @@ contract TipsWithConfigTest is CommonTest {
         );
         vm.prank(alice);
         _tips.setTipsConfig4Character(
-            firstCharacter,
-            secondCharacter,
-            address(token),
-            amount,
-            startTime,
-            endTime,
-            interval,
-            address(1)
+            firstCharacter, secondCharacter, address(token), amount, startTime, endTime, interval, address(1)
         );
 
         // check status
@@ -208,14 +201,7 @@ contract TipsWithConfigTest is CommonTest {
         vm.startPrank(alice);
         token.approve(address(_tips), 1 ether);
         _tips.setTipsConfig4Character(
-            firstCharacter,
-            secondCharacter,
-            address(token),
-            amount,
-            startTime,
-            endTime,
-            interval,
-            address(1)
+            firstCharacter, secondCharacter, address(token), amount, startTime, endTime, interval, address(1)
         );
 
         // check status
@@ -245,14 +231,7 @@ contract TipsWithConfigTest is CommonTest {
         endTime = startTime + interval;
 
         _tips.setTipsConfig4Character(
-            firstCharacter,
-            secondCharacter,
-            address(token),
-            amount,
-            startTime,
-            endTime,
-            interval,
-            address(2)
+            firstCharacter, secondCharacter, address(token), amount, startTime, endTime, interval, address(2)
         );
         vm.stopPrank();
 
@@ -286,56 +265,28 @@ contract TipsWithConfigTest is CommonTest {
         // case 1: msg.sender is not character owner
         vm.expectRevert("TipsWithConfig: not character owner");
         _tips.setTipsConfig4Character(
-            1,
-            2,
-            address(token),
-            1 ether,
-            block.timestamp + 10,
-            block.timestamp + interval,
-            interval,
-            address(0)
+            1, 2, address(token), 1 ether, block.timestamp + 10, block.timestamp + interval, interval, address(0)
         );
 
         // case 2: invalid endTime
         vm.expectRevert("TipsWithConfig: invalid endTime");
         vm.prank(alice);
         _tips.setTipsConfig4Character(
-            1,
-            2,
-            address(token),
-            1 ether,
-            block.timestamp,
-            block.timestamp,
-            interval,
-            address(0)
+            1, 2, address(token), 1 ether, block.timestamp, block.timestamp, interval, address(0)
         );
 
         // case 3: invalid interval
         vm.expectRevert("TipsWithConfig: interval must be greater than 0");
         vm.prank(alice);
         _tips.setTipsConfig4Character(
-            1,
-            2,
-            address(token),
-            1 ether,
-            block.timestamp + 10,
-            block.timestamp + 20,
-            0,
-            address(0)
+            1, 2, address(token), 1 ether, block.timestamp + 10, block.timestamp + 20, 0, address(0)
         );
 
         // case 4: invalid amount
         vm.expectRevert("TipsWithConfig: amount must be greater than 0");
         vm.prank(alice);
         _tips.setTipsConfig4Character(
-            1,
-            2,
-            address(token),
-            0,
-            block.timestamp + 10,
-            block.timestamp + 20,
-            interval,
-            address(0)
+            1, 2, address(token), 0, block.timestamp + 10, block.timestamp + 20, interval, address(0)
         );
     }
 
@@ -414,14 +365,7 @@ contract TipsWithConfigTest is CommonTest {
         vm.startPrank(alice);
         token.approve(address(_tips), amount);
         _tips.setTipsConfig4Character(
-            firstCharacter,
-            secondCharacter,
-            address(token),
-            amount,
-            startTime,
-            endTime,
-            interval,
-            address(0)
+            firstCharacter, secondCharacter, address(token), amount, startTime, endTime, interval, address(0)
         );
         vm.stopPrank();
 
@@ -435,16 +379,7 @@ contract TipsWithConfigTest is CommonTest {
         expectEmit(CheckAll);
         emit Transfer(alice, bob, amount);
         expectEmit(CheckAll);
-        emit CollectTips4Character(
-            1,
-            firstCharacter,
-            secondCharacter,
-            address(token),
-            amount,
-            0,
-            address(0),
-            1
-        );
+        emit CollectTips4Character(1, firstCharacter, secondCharacter, address(token), amount, 0, address(0), 1);
         _tips.collectTips4Character(1);
 
         // check status
@@ -471,11 +406,7 @@ contract TipsWithConfigTest is CommonTest {
     }
 
     // solhint-disable-next-line function-max-lines
-    function testCollectTips4CharacterWithFee(
-        uint256 amount,
-        uint256 interval,
-        uint256 fraction
-    ) public {
+    function testCollectTips4CharacterWithFee(uint256 amount, uint256 interval, uint256 fraction) public {
         amount = bound(amount, 1, initialBalance / 3);
         interval = bound(interval, 1, 100 days);
         fraction = bound(fraction, 1, 10000);
@@ -494,14 +425,7 @@ contract TipsWithConfigTest is CommonTest {
         vm.startPrank(alice);
         token.approve(address(_tips), initialBalance);
         _tips.setTipsConfig4Character(
-            firstCharacter,
-            secondCharacter,
-            address(token),
-            amount,
-            startTime,
-            endTime,
-            interval,
-            feeReceiver
+            firstCharacter, secondCharacter, address(token), amount, startTime, endTime, interval, feeReceiver
         );
         vm.stopPrank();
 
@@ -545,14 +469,7 @@ contract TipsWithConfigTest is CommonTest {
 
         vm.prank(alice);
         _tips.setTipsConfig4Character(
-            firstCharacter,
-            secondCharacter,
-            address(token),
-            amount,
-            startTime,
-            endTime,
-            interval,
-            address(0)
+            firstCharacter, secondCharacter, address(token), amount, startTime, endTime, interval, address(0)
         );
 
         _tips.collectTips4Character(1);
@@ -582,11 +499,7 @@ contract TipsWithConfigTest is CommonTest {
     }
 
     // solhint-disable-next-line function-max-lines
-    function testCollectTips4CharacterAfterEndTime(
-        uint256 amount,
-        uint256 interval,
-        uint256 num
-    ) public {
+    function testCollectTips4CharacterAfterEndTime(uint256 amount, uint256 interval, uint256 num) public {
         vm.assume(amount > 0 && amount < initialBalance / 10000);
         vm.assume(interval > 0 && interval < 100 days);
         vm.assume(num > 1 && num < 500);
@@ -605,14 +518,7 @@ contract TipsWithConfigTest is CommonTest {
         vm.startPrank(alice);
         token.approve(address(_tips), initialBalance);
         _tips.setTipsConfig4Character(
-            firstCharacter,
-            secondCharacter,
-            address(token),
-            amount,
-            startTime,
-            endTime,
-            interval,
-            feeReceiver
+            firstCharacter, secondCharacter, address(token), amount, startTime, endTime, interval, feeReceiver
         );
         vm.stopPrank();
 
@@ -647,11 +553,7 @@ contract TipsWithConfigTest is CommonTest {
     }
 
     // solhint-disable-next-line function-max-lines
-    function testCollectTips4CharacterMultiTimes(
-        uint256 amount,
-        uint256 interval,
-        uint256 num
-    ) public {
+    function testCollectTips4CharacterMultiTimes(uint256 amount, uint256 interval, uint256 num) public {
         vm.assume(amount > 0 && amount < initialBalance / 10000);
         vm.assume(interval > 0 && interval < 100 days);
         vm.assume(num > 1 && num < 500);
@@ -670,14 +572,7 @@ contract TipsWithConfigTest is CommonTest {
         vm.startPrank(alice);
         token.approve(address(_tips), initialBalance);
         _tips.setTipsConfig4Character(
-            firstCharacter,
-            secondCharacter,
-            address(token),
-            amount,
-            startTime,
-            endTime,
-            interval,
-            feeReceiver
+            firstCharacter, secondCharacter, address(token), amount, startTime, endTime, interval, feeReceiver
         );
         vm.stopPrank();
 
@@ -717,10 +612,9 @@ contract TipsWithConfigTest is CommonTest {
         assertEq(_tips.collectTips4Character(1), 0);
     }
 
-    function _checkConfig(
-        ITipsWithConfig.TipsConfig memory config1,
-        ITipsWithConfig.TipsConfig memory config2
-    ) internal {
+    function _checkConfig(ITipsWithConfig.TipsConfig memory config1, ITipsWithConfig.TipsConfig memory config2)
+        internal
+    {
         assertEq(config1.id, config2.id);
         assertEq(config1.fromCharacterId, config2.fromCharacterId);
         assertEq(config1.toCharacterId, config2.toCharacterId);

@@ -15,9 +15,7 @@ import {
 } from "../contracts/libraries/Error.sol";
 import {IWeb3Entry} from "../contracts/interfaces/IWeb3Entry.sol";
 import {CommonTest} from "./helpers/CommonTest.sol";
-import {
-    IERC721Enumerable
-} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
@@ -53,14 +51,8 @@ contract NoteTest is CommonTest {
 
     function testPostNoteWithMulticall() public {
         bytes[] memory data = new bytes[](2);
-        data[0] = abi.encodeWithSelector(
-            IWeb3Entry.postNote.selector,
-            makePostNoteData(firstCharacter)
-        );
-        data[1] = abi.encodeWithSelector(
-            IWeb3Entry.postNote.selector,
-            makePostNoteData(firstCharacter)
-        );
+        data[0] = abi.encodeWithSelector(IWeb3Entry.postNote.selector, makePostNoteData(firstCharacter));
+        data[1] = abi.encodeWithSelector(IWeb3Entry.postNote.selector, makePostNoteData(firstCharacter));
 
         // multicall
         vm.prank(alice);
@@ -294,9 +286,7 @@ contract NoteTest is CommonTest {
 
     function testPostNote4Linklist() public {
         vm.startPrank(alice);
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(firstCharacter, secondCharacter, LikeLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(firstCharacter, secondCharacter, LikeLinkType, ""));
 
         web3Entry.postNote4Linklist(makePostNoteData(firstCharacter), FIRST_LINKLIST_ID);
         vm.stopPrank();
@@ -327,10 +317,7 @@ contract NoteTest is CommonTest {
         web3Entry.postNote(makePostNoteData(firstCharacter));
 
         vm.prank(bob);
-        web3Entry.postNote4Note(
-            makePostNoteData(secondCharacter),
-            DataTypes.NoteStruct(firstCharacter, FIRST_NOTE_ID)
-        );
+        web3Entry.postNote4Note(makePostNoteData(secondCharacter), DataTypes.NoteStruct(firstCharacter, FIRST_NOTE_ID));
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(secondCharacter, FIRST_NOTE_ID);
@@ -350,20 +337,14 @@ contract NoteTest is CommonTest {
     function testPostNote4NoteFail() public {
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.postNote4Note(
-            makePostNoteData(firstCharacter),
-            DataTypes.NoteStruct(firstCharacter, FIRST_NOTE_ID)
-        );
+        web3Entry.postNote4Note(makePostNoteData(firstCharacter), DataTypes.NoteStruct(firstCharacter, FIRST_NOTE_ID));
     }
 
     function testPostNote4ERC721() public {
         nft.mint(bob);
 
         vm.prank(alice);
-        web3Entry.postNote4ERC721(
-            makePostNoteData(firstCharacter),
-            DataTypes.ERC721Struct(address(nft), 1)
-        );
+        web3Entry.postNote4ERC721(makePostNoteData(firstCharacter), DataTypes.ERC721Struct(address(nft), 1));
 
         // check note
         DataTypes.Note memory note = web3Entry.getNote(firstCharacter, FIRST_NOTE_ID);
@@ -384,10 +365,7 @@ contract NoteTest is CommonTest {
         // NotEnoughPermission
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.postNote4ERC721(
-            makePostNoteData(firstCharacter),
-            DataTypes.ERC721Struct(address(nft), 1)
-        );
+        web3Entry.postNote4ERC721(makePostNoteData(firstCharacter), DataTypes.ERC721Struct(address(nft), 1));
     }
 
     function testPostNote4AnyUri() public {
@@ -496,10 +474,7 @@ contract NoteTest is CommonTest {
         );
         web3Entry.setMintModule4Note(
             DataTypes.setMintModule4NoteData(
-                firstCharacter,
-                FIRST_NOTE_ID,
-                address(approvalMintModule),
-                mintModuleInitData
+                firstCharacter, FIRST_NOTE_ID, address(approvalMintModule), mintModuleInitData
             )
         );
 
@@ -530,10 +505,7 @@ contract NoteTest is CommonTest {
         );
         web3Entry.setMintModule4Note(
             DataTypes.setMintModule4NoteData(
-                firstCharacter,
-                FIRST_NOTE_ID,
-                address(approvalMintModule),
-                mintModuleInitData
+                firstCharacter, FIRST_NOTE_ID, address(approvalMintModule), mintModuleInitData
             )
         );
 
@@ -551,19 +523,12 @@ contract NoteTest is CommonTest {
         // alice can setMintModule4Note, through the periphery contract
         expectEmit(CheckAll);
         emit Events.SetMintModule4Note(
-            firstCharacter,
-            FIRST_NOTE_ID,
-            address(approvalMintModule),
-            mintModuleInitData,
-            mintModuleInitData
+            firstCharacter, FIRST_NOTE_ID, address(approvalMintModule), mintModuleInitData, mintModuleInitData
         );
         vm.prank(address(periphery), alice);
         web3Entry.setMintModule4Note(
             DataTypes.setMintModule4NoteData(
-                firstCharacter,
-                FIRST_NOTE_ID,
-                address(approvalMintModule),
-                mintModuleInitData
+                firstCharacter, FIRST_NOTE_ID, address(approvalMintModule), mintModuleInitData
             )
         );
 
@@ -585,19 +550,12 @@ contract NoteTest is CommonTest {
         // operator bob can setMintModule4Note for alice, through the periphery contract
         expectEmit(CheckAll);
         emit Events.SetMintModule4Note(
-            firstCharacter,
-            FIRST_NOTE_ID,
-            address(approvalMintModule),
-            mintModuleInitData,
-            mintModuleInitData
+            firstCharacter, FIRST_NOTE_ID, address(approvalMintModule), mintModuleInitData, mintModuleInitData
         );
         vm.prank(address(periphery), bob);
         web3Entry.setMintModule4Note(
             DataTypes.setMintModule4NoteData(
-                firstCharacter,
-                FIRST_NOTE_ID,
-                address(approvalMintModule),
-                mintModuleInitData
+                firstCharacter, FIRST_NOTE_ID, address(approvalMintModule), mintModuleInitData
             )
         );
 
@@ -614,12 +572,7 @@ contract NoteTest is CommonTest {
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         web3Entry.setMintModule4Note(
-            DataTypes.setMintModule4NoteData(
-                firstCharacter,
-                FIRST_NOTE_ID,
-                address(approvalMintModule),
-                ""
-            )
+            DataTypes.setMintModule4NoteData(firstCharacter, FIRST_NOTE_ID, address(approvalMintModule), "")
         );
     }
 
@@ -630,12 +583,7 @@ contract NoteTest is CommonTest {
 
         vm.expectRevert(abi.encodeWithSelector(ErrNoteNotExists.selector));
         web3Entry.setMintModule4Note(
-            DataTypes.setMintModule4NoteData(
-                firstCharacter,
-                SECOND_NOTE_ID,
-                address(approvalMintModule),
-                ""
-            )
+            DataTypes.setMintModule4NoteData(firstCharacter, SECOND_NOTE_ID, address(approvalMintModule), "")
         );
         vm.stopPrank();
     }
@@ -650,12 +598,7 @@ contract NoteTest is CommonTest {
 
         vm.expectRevert(abi.encodeWithSelector(ErrNoteLocked.selector));
         web3Entry.setMintModule4Note(
-            DataTypes.setMintModule4NoteData(
-                firstCharacter,
-                FIRST_NOTE_ID,
-                address(approvalMintModule),
-                ""
-            )
+            DataTypes.setMintModule4NoteData(firstCharacter, FIRST_NOTE_ID, address(approvalMintModule), "")
         );
         vm.stopPrank();
     }
@@ -670,21 +613,12 @@ contract NoteTest is CommonTest {
 
         vm.expectRevert(abi.encodeWithSelector(ErrNoteIsDeleted.selector));
         web3Entry.setMintModule4Note(
-            DataTypes.setMintModule4NoteData(
-                firstCharacter,
-                FIRST_NOTE_ID,
-                address(approvalMintModule),
-                ""
-            )
+            DataTypes.setMintModule4NoteData(firstCharacter, FIRST_NOTE_ID, address(approvalMintModule), "")
         );
         vm.stopPrank();
     }
 
-    function _checkMintModule(
-        uint256 characterId,
-        uint256 noteId,
-        address expectedMintModule
-    ) internal {
+    function _checkMintModule(uint256 characterId, uint256 noteId, address expectedMintModule) internal {
         DataTypes.Note memory note = web3Entry.getNote(characterId, noteId);
         assertEq(note.mintModule, expectedMintModule);
     }

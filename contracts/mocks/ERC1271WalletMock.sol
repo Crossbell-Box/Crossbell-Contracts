@@ -12,20 +12,16 @@ contract ERC1271WalletMock is Ownable, IERC1271, IERC721Receiver {
         transferOwnership(originalOwner);
     }
 
-    function isValidSignature(
-        bytes32 hash,
-        bytes memory signature
-    ) external view override returns (bytes4 magicValue) {
-        return
-            ECDSA.recover(hash, signature) == owner() ? this.isValidSignature.selector : bytes4(0);
+    function isValidSignature(bytes32 hash, bytes memory signature)
+        external
+        view
+        override
+        returns (bytes4 magicValue)
+    {
+        return ECDSA.recover(hash, signature) == owner() ? this.isValidSignature.selector : bytes4(0);
     }
 
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    ) external pure override returns (bytes4) {
+    function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4) {
         return this.onERC721Received.selector;
     }
 }
@@ -35,12 +31,7 @@ contract ERC1271MaliciousMock is IERC1271, IERC721Receiver {
         return 0xffffffff;
     }
 
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    ) external pure override returns (bytes4) {
+    function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4) {
         return this.onERC721Received.selector;
     }
 }

@@ -95,12 +95,15 @@ beforeEach(async () => {
 
 describe("NewbieVilla contract", function () {
     it("Admin should be able to transfer the newbie out", async function () {
-        expect(await mockNft.balanceOf(receiver.address)).to.be.eq(0);
+        let balance = await mockNft.balanceOf(receiver.address);
+        expect(balance.toString()).to.be.eq("0");
+
         await newbieVilla
             .connect(receiver)
             .withdraw(receiver.address, FIRST_CHARACTER_ID, nonce, expires, proof);
 
-        expect(await mockNft.balanceOf(receiver.address)).to.be.eq(1);
+        balance = await mockNft.balanceOf(receiver.address);
+        expect(balance.toString()).to.be.eq("1");
     });
 
     it("Double withdraw will fail", async function () {

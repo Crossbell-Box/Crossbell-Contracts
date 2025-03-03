@@ -27,25 +27,19 @@ contract LinkERC721Test is CommonTest {
         vm.prank(alice);
         expectEmit(CheckAll);
         emit Events.LinkERC721(firstCharacter, address(nft), 1, LikeLinkType, 1);
-        web3Entry.linkERC721(
-            DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, "")
-        );
+        web3Entry.linkERC721(DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, ""));
 
         // check linklist
         assertEq(linklist.ownerOf(1), alice);
 
         // link twice
         vm.prank(alice);
-        web3Entry.linkERC721(
-            DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, "")
-        );
+        web3Entry.linkERC721(DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, ""));
 
         // periphery can link
         // the first input is msg.sender and the second input is tx.origin
         vm.prank(address(periphery), alice);
-        web3Entry.linkERC721(
-            DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, "")
-        );
+        web3Entry.linkERC721(DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, ""));
 
         // check state
         DataTypes.ERC721Struct[] memory linkingERC721s = linklist.getLinkingERC721s(1);
@@ -64,55 +58,39 @@ contract LinkERC721Test is CommonTest {
         web3Entry.grantOperatorPermissions(firstCharacter, bob, 1 << OP.LINK_ERC721);
 
         vm.prank(bob);
-        web3Entry.linkERC721(
-            DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, "")
-        );
+        web3Entry.linkERC721(DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, ""));
     }
 
     function testLinkERC721Fail() public {
         //  NotEnoughPermission
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.linkERC721(
-            DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, "")
-        );
+        web3Entry.linkERC721(DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, ""));
     }
 
     function testLinkERC721FailWithOperator() public {
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            UINT256_MAX ^ (1 << OP.LINK_ERC721)
-        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, UINT256_MAX ^ (1 << OP.LINK_ERC721));
 
         //  NotEnoughPermission
         vm.prank(bob);
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
-        web3Entry.linkERC721(
-            DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, "")
-        );
+        web3Entry.linkERC721(DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, ""));
     }
 
     function testUnlinkERC721() public {
         nft.mint(bob);
 
         vm.startPrank(alice);
-        web3Entry.linkERC721(
-            DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, "")
-        );
+        web3Entry.linkERC721(DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, ""));
 
         // unlink
         expectEmit(CheckAll);
         emit Events.UnlinkERC721(firstCharacter, address(nft), 1, LikeLinkType, 1);
-        web3Entry.unlinkERC721(
-            DataTypes.unlinkERC721Data(firstCharacter, address(nft), 1, LikeLinkType)
-        );
+        web3Entry.unlinkERC721(DataTypes.unlinkERC721Data(firstCharacter, address(nft), 1, LikeLinkType));
 
         // unlink twice
-        web3Entry.unlinkERC721(
-            DataTypes.unlinkERC721Data(firstCharacter, address(nft), 1, LikeLinkType)
-        );
+        web3Entry.unlinkERC721(DataTypes.unlinkERC721Data(firstCharacter, address(nft), 1, LikeLinkType));
         vm.stopPrank();
 
         // check linklist
@@ -127,15 +105,11 @@ contract LinkERC721Test is CommonTest {
     function testUnlinkERC721Fail() public {
         nft.mint(bob);
         vm.prank(alice);
-        web3Entry.linkERC721(
-            DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, "")
-        );
+        web3Entry.linkERC721(DataTypes.linkERC721Data(firstCharacter, address(nft), 1, LikeLinkType, ""));
 
         // unlink
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
         vm.prank(bob);
-        web3Entry.unlinkERC721(
-            DataTypes.unlinkERC721Data(firstCharacter, address(nft), 1, LikeLinkType)
-        );
+        web3Entry.unlinkERC721(DataTypes.unlinkERC721Data(firstCharacter, address(nft), 1, LikeLinkType));
     }
 }

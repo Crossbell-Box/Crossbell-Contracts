@@ -17,11 +17,7 @@ library OperatorLib {
      * @param   operator  The operator address to set.
      * @param   permissionBitMap  The permission bitmap for the operator.
      */
-    function grantOperatorPermissions(
-        uint256 characterId,
-        address operator,
-        uint256 permissionBitMap
-    ) external {
+    function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) external {
         EnumerableSet.AddressSet storage operators = StorageLib.operatorsByCharacter()[characterId];
         if (permissionBitMap == 0) {
             operators.remove(operator);
@@ -35,11 +31,11 @@ library OperatorLib {
     }
 
     /**
-     @notice Sets blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.
-     @param characterId The character ID of the note owner.
-     @param noteId The note ID to grant.
-     @param blocklist The addresses list of blocked operators.
-     @param allowlist The addresses list of allowed operators.
+     * @notice Sets blocklist and allowlist for a specific note. Blocklist and allowlist are overwritten every time.
+     *  @param characterId The character ID of the note owner.
+     *  @param noteId The note ID to grant.
+     *  @param blocklist The addresses list of blocked operators.
+     *  @param allowlist The addresses list of allowed operators.
      */
     function grantOperators4Note(
         uint256 characterId,
@@ -47,10 +43,7 @@ library OperatorLib {
         address[] calldata blocklist,
         address[] calldata allowlist
     ) external {
-        DataTypes.Operators4Note storage operators4Note = StorageLib.getOperators4Note(
-            characterId,
-            noteId
-        );
+        DataTypes.Operators4Note storage operators4Note = StorageLib.getOperators4Note(characterId, noteId);
         // clear all items in blocklist and allowlist first
         _clearOperators4Note(operators4Note);
 
@@ -61,9 +54,7 @@ library OperatorLib {
     }
 
     function clearOperators(uint256 characterId) external {
-        EnumerableSet.AddressSet storage _operators = StorageLib.operatorsByCharacter()[
-            characterId
-        ];
+        EnumerableSet.AddressSet storage _operators = StorageLib.operatorsByCharacter()[characterId];
 
         // clear operators
         uint256 len = _operators.length();
@@ -77,7 +68,7 @@ library OperatorLib {
 
     function _clearOperators4Note(DataTypes.Operators4Note storage operators4Note) internal {
         uint256 blocklistLength = operators4Note.blocklist.length();
-        for (uint256 i = blocklistLength; i > 0; ) {
+        for (uint256 i = blocklistLength; i > 0;) {
             operators4Note.blocklist.remove(operators4Note.blocklist.at(i - 1));
             unchecked {
                 i--;
@@ -85,7 +76,7 @@ library OperatorLib {
         }
 
         uint256 allowlistLength = operators4Note.allowlist.length();
-        for (uint256 i = allowlistLength; i > 0; ) {
+        for (uint256 i = allowlistLength; i > 0;) {
             operators4Note.allowlist.remove(operators4Note.allowlist.at(i - 1));
             unchecked {
                 i--;
@@ -99,13 +90,13 @@ library OperatorLib {
         address[] calldata allowlist
     ) internal {
         // grant blocklist roles
-        for (uint256 i = 0; i < blocklist.length; ) {
+        for (uint256 i = 0; i < blocklist.length;) {
             operators4Note.blocklist.add(blocklist[i]);
             unchecked {
                 i++;
             }
         }
-        for (uint256 i = 0; i < allowlist.length; ) {
+        for (uint256 i = 0; i < allowlist.length;) {
             operators4Note.allowlist.add(allowlist[i]);
             unchecked {
                 i++;

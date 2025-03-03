@@ -71,26 +71,16 @@ library CharacterLib {
      * @param   linkModule  The link module to set.
      * @param   linkModuleInitData  The data to pass to the link module for initialization, if any.
      */
-    function setCharacterLinkModule(
-        uint256 characterId,
-        address linkModule,
-        bytes calldata linkModuleInitData
-    ) external {
+    function setCharacterLinkModule(uint256 characterId, address linkModule, bytes calldata linkModuleInitData)
+        external
+    {
         StorageLib.getCharacter(characterId).linkModule = linkModule;
 
         bytes memory returnData = "";
         if (linkModule != address(0)) {
-            returnData = ILinkModule4Character(linkModule).initializeLinkModule(
-                characterId,
-                linkModuleInitData
-            );
+            returnData = ILinkModule4Character(linkModule).initializeLinkModule(characterId, linkModuleInitData);
         }
-        emit Events.SetLinkModule4Character(
-            characterId,
-            linkModule,
-            linkModuleInitData,
-            returnData
-        );
+        emit Events.SetLinkModule4Character(characterId, linkModule, linkModuleInitData, returnData);
     }
 
     /**

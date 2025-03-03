@@ -10,11 +10,7 @@ interface ILinklist {
      * @param symbol_ The symbol of the token.
      * @param web3Entry_ The address of the Web3Entry contract.
      */
-    function initialize(
-        string calldata name_,
-        string calldata symbol_,
-        address web3Entry_
-    ) external;
+    function initialize(string calldata name_, string calldata symbol_, address web3Entry_) external;
 
     /**
      * @notice Mints a Linklist NFT to the specified character with linkType.
@@ -76,11 +72,7 @@ interface ILinklist {
      * @param toNoteId The note ID to link.
      * @return linkKey The link key.
      */
-    function addLinkingNote(
-        uint256 tokenId,
-        uint256 toCharacterId,
-        uint256 toNoteId
-    ) external returns (bytes32);
+    function addLinkingNote(uint256 tokenId, uint256 toCharacterId, uint256 toNoteId) external returns (bytes32);
 
     /**
      * @notice Removes a linked note from a linklist.
@@ -100,11 +92,9 @@ interface ILinklist {
      * @param erc721TokenId The token ID of ERC721.
      * @return linkKey The link key of ERC721.
      */
-    function addLinkingERC721(
-        uint256 tokenId,
-        address tokenAddress,
-        uint256 erc721TokenId
-    ) external returns (bytes32);
+    function addLinkingERC721(uint256 tokenId, address tokenAddress, uint256 erc721TokenId)
+        external
+        returns (bytes32);
 
     /**
      * @notice Removes a linked ERC721 from a linklist.
@@ -112,11 +102,7 @@ interface ILinklist {
      * @param tokenAddress The address of ERC721 contract.
      * @param erc721TokenId The token ID of ERC721.
      */
-    function removeLinkingERC721(
-        uint256 tokenId,
-        address tokenAddress,
-        uint256 erc721TokenId
-    ) external;
+    function removeLinkingERC721(uint256 tokenId, address tokenAddress, uint256 erc721TokenId) external;
 
     /////////////////////////////////
     // linking Address
@@ -196,9 +182,7 @@ interface ILinklist {
      * @param tokenId The token ID of linklist to check.
      * @return results The linked notes.
      */
-    function getLinkingNotes(
-        uint256 tokenId
-    ) external view returns (DataTypes.NoteStruct[] memory results);
+    function getLinkingNotes(uint256 tokenId) external view returns (DataTypes.NoteStruct[] memory results);
 
     /**
      * @notice Return the linked note of the linklist NFT by linkKey.
@@ -219,18 +203,14 @@ interface ILinklist {
      * @param tokenId The token ID of linklist to check.
      * @return results The linked ERC721s.
      */
-    function getLinkingERC721s(
-        uint256 tokenId
-    ) external view returns (DataTypes.ERC721Struct[] memory results);
+    function getLinkingERC721s(uint256 tokenId) external view returns (DataTypes.ERC721Struct[] memory results);
 
     /**
      * @notice Return the linked ERC721 of the linklist NFT by linkKey.
      * @param linkKey The link key of the ERC721.
      * @return The linked ERC721.
      */
-    function getLinkingERC721(
-        bytes32 linkKey
-    ) external view returns (DataTypes.ERC721Struct memory);
+    function getLinkingERC721(bytes32 linkKey) external view returns (DataTypes.ERC721Struct memory);
 
     /**
      * @notice Returns the length of linked ERC721s of the linklist NFT.

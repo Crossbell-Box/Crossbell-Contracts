@@ -18,12 +18,10 @@ import {IERC1820Registry} from "@openzeppelin/contracts/utils/introspection/IERC
  * the ADMIN_ROLE are expected to issue the proof to users. Then users could use the
  * proof to withdraw the corresponding character.
  */
-
 contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver, IERC777Recipient {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
-    IERC1820Registry public constant ERC1820_REGISTRY =
-        IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+    IERC1820Registry public constant ERC1820_REGISTRY = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
     bytes32 public constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
 
     address public web3Entry;
@@ -59,13 +57,10 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * @param admin_ Address of admin.
      * @param tips_ Address of Tips contract.
      */
-    function initialize(
-        address web3Entry_,
-        address xsyncOperator_,
-        address token_,
-        address admin_,
-        address tips_
-    ) external reinitializer(3) {
+    function initialize(address web3Entry_, address xsyncOperator_, address token_, address admin_, address tips_)
+        external
+        reinitializer(3)
+    {
         web3Entry = web3Entry_;
         xsyncOperator = xsyncOperator_;
         _token = token_;
@@ -75,11 +70,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
         _setupRole(DEFAULT_ADMIN_ROLE, admin_);
 
         // register interfaces
-        ERC1820_REGISTRY.setInterfaceImplementer(
-            address(this),
-            TOKENS_RECIPIENT_INTERFACE_HASH,
-            address(this)
-        );
+        ERC1820_REGISTRY.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, address(this));
     }
 
     /**
@@ -102,10 +93,7 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      */
     function tipCharacter(uint256 fromCharacterId, uint256 toCharacterId, uint256 amount) external {
         // check permission
-        require(
-            _hasPermission(msg.sender, fromCharacterId),
-            "NewbieVilla: unauthorized role for tipCharacter"
-        );
+        require(_hasPermission(msg.sender, fromCharacterId), "NewbieVilla: unauthorized role for tipCharacter");
 
         // newbievilla's balance - tip amount
         // will fail if balance is insufficient
@@ -137,17 +125,11 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * @param toNoteId The note ID.
      * @param amount Amount of token.
      */
-    function tipCharacterForNote(
-        uint256 fromCharacterId,
-        uint256 toCharacterId,
-        uint256 toNoteId,
-        uint256 amount
-    ) external {
+    function tipCharacterForNote(uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId, uint256 amount)
+        external
+    {
         // check permission
-        require(
-            _hasPermission(msg.sender, fromCharacterId),
-            "NewbieVilla: unauthorized role for tipCharacterForNote"
-        );
+        require(_hasPermission(msg.sender, fromCharacterId), "NewbieVilla: unauthorized role for tipCharacterForNote");
 
         // newbievilla's balance - tip amount
         // will fail if balance is insufficient
@@ -187,16 +169,12 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * @param   expires  Expire time of the proof, Unix timestamp in seconds.
      * @param   proof  The proof using to withdraw the character.
      */
-    function withdraw(
-        address to,
-        uint256 characterId,
-        uint256 nonce,
-        uint256 expires,
-        bytes calldata proof
-    ) external notExpired(expires) {
-        bytes32 signedData = ECDSA.toEthSignedMessageHash(
-            keccak256(abi.encodePacked(address(this), characterId, nonce, expires))
-        );
+    function withdraw(address to, uint256 characterId, uint256 nonce, uint256 expires, bytes calldata proof)
+        external
+        notExpired(expires)
+    {
+        bytes32 signedData =
+            ECDSA.toEthSignedMessageHash(keccak256(abi.encodePacked(address(this), characterId, nonce, expires)));
 
         // check proof
         address signer = ECDSA.recover(signedData, proof);
@@ -230,12 +208,11 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
      * @param data bytes encoded from the operator address to set for the incoming character.
      *
      */
-    function onERC721Received(
-        address operator,
-        address,
-        uint256 tokenId,
-        bytes calldata data
-    ) external override returns (bytes4) {
+    function onERC721Received(address operator, address, uint256 tokenId, bytes calldata data)
+        external
+        override
+        returns (bytes4)
+    {
         // Only character nft could be received, other nft, e.g. mint nft would be reverted
         require(msg.sender == web3Entry, "NewbieVilla: receive unknown token");
 
@@ -244,31 +221,19 @@ contract NewbieVilla is Initializable, AccessControlEnumerable, IERC721Receiver,
 
         // grant operator permissions
         if (data.length == 0) {
-            IWeb3Entry(web3Entry).grantOperatorPermissions(
-                tokenId,
-                operator,
-                OP.DEFAULT_PERMISSION_BITMAP
-            );
+            IWeb3Entry(web3Entry).grantOperatorPermissions(tokenId, operator, OP.DEFAULT_PERMISSION_BITMAP);
         } else {
             address selectedOperator = abi.decode(data, (address));
-            IWeb3Entry(web3Entry).grantOperatorPermissions(
-                tokenId,
-                selectedOperator,
-                OP.DEFAULT_PERMISSION_BITMAP
-            );
+            IWeb3Entry(web3Entry).grantOperatorPermissions(tokenId, selectedOperator, OP.DEFAULT_PERMISSION_BITMAP);
         }
-        IWeb3Entry(web3Entry).grantOperatorPermissions(
-            tokenId,
-            xsyncOperator,
-            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
-        );
+        IWeb3Entry(web3Entry).grantOperatorPermissions(tokenId, xsyncOperator, OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP);
         return IERC721Receiver.onERC721Received.selector;
     }
 
     /// @inheritdoc IERC777Recipient
     /**
      * @notice  Receives tokens. Only specific tokens are accepted, so be careful not to send tokens to this
-     address randomly.
+     *  address randomly.
      * @dev     The userData/operatorData should be an abi-encoded bytes of `fromCharacterId` and `toCharacter`,
      * which are both uint256 type, so the length of data is 64.
      * @param   to  The Newbie Villa contract address.

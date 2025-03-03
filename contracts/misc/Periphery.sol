@@ -57,11 +57,11 @@ contract Periphery is Initializable {
         _migrate(vars.account, vars.handle, vars.uri, vars.toAddresses, vars.linkType);
     }
 
-    function getNotesByCharacterId(
-        uint256 characterId,
-        uint256 offset,
-        uint256 limit
-    ) external view returns (DataTypes.Note[] memory results) {
+    function getNotesByCharacterId(uint256 characterId, uint256 offset, uint256 limit)
+        external
+        view
+        returns (DataTypes.Note[] memory results)
+    {
         uint256 count = IWeb3Entry(web3Entry).getCharacter(characterId).noteCount;
         limit = Math.min(limit, count - offset);
 
@@ -73,14 +73,13 @@ contract Periphery is Initializable {
         }
     }
 
-    function getLinkingCharacterIds(
-        uint256 fromCharacterId,
-        bytes32 linkType
-    ) external view returns (uint256[] memory results) {
+    function getLinkingCharacterIds(uint256 fromCharacterId, bytes32 linkType)
+        external
+        view
+        returns (uint256[] memory results)
+    {
         uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromCharacterId, linkType);
-        uint256[] memory linkingCharacterIds = ILinklist(linklist).getLinkingCharacterIds(
-            linklistId
-        );
+        uint256[] memory linkingCharacterIds = ILinklist(linklist).getLinkingCharacterIds(linklistId);
 
         uint256 len = linkingCharacterIds.length;
 
@@ -100,10 +99,11 @@ contract Periphery is Initializable {
         }
     }
 
-    function getLinkingNotes(
-        uint256 fromCharacterId,
-        bytes32 linkType
-    ) external view returns (DataTypes.Note[] memory results) {
+    function getLinkingNotes(uint256 fromCharacterId, bytes32 linkType)
+        external
+        view
+        returns (DataTypes.Note[] memory results)
+    {
         uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromCharacterId, linkType);
         DataTypes.NoteStruct[] memory notes = ILinklist(linklist).getLinkingNotes(linklistId);
         results = new DataTypes.Note[](notes.length);
@@ -116,24 +116,24 @@ contract Periphery is Initializable {
         return ILinklist(linklist).getLinkingNote(linkKey);
     }
 
-    function getLinkingERC721s(
-        uint256 fromCharacterId,
-        bytes32 linkType
-    ) external view returns (DataTypes.ERC721Struct[] memory results) {
+    function getLinkingERC721s(uint256 fromCharacterId, bytes32 linkType)
+        external
+        view
+        returns (DataTypes.ERC721Struct[] memory results)
+    {
         uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromCharacterId, linkType);
         return ILinklist(linklist).getLinkingERC721s(linklistId);
     }
 
-    function getLinkingERC721(
-        bytes32 linkKey
-    ) external view returns (DataTypes.ERC721Struct memory) {
+    function getLinkingERC721(bytes32 linkKey) external view returns (DataTypes.ERC721Struct memory) {
         return ILinklist(linklist).getLinkingERC721(linkKey);
     }
 
-    function getLinkingAnyUris(
-        uint256 fromCharacterId,
-        bytes32 linkType
-    ) external view returns (string[] memory results) {
+    function getLinkingAnyUris(uint256 fromCharacterId, bytes32 linkType)
+        external
+        view
+        returns (string[] memory results)
+    {
         uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromCharacterId, linkType);
         return ILinklist(linklist).getLinkingAnyUris(linklistId);
     }
@@ -142,18 +142,16 @@ contract Periphery is Initializable {
         return ILinklist(linklist).getLinkingAnyUri(linkKey);
     }
 
-    function getLinkingAddresses(
-        uint256 fromCharacterId,
-        bytes32 linkType
-    ) external view returns (address[] memory) {
+    function getLinkingAddresses(uint256 fromCharacterId, bytes32 linkType) external view returns (address[] memory) {
         uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromCharacterId, linkType);
         return ILinklist(linklist).getLinkingAddresses(linklistId);
     }
 
-    function getLinkingLinklistIds(
-        uint256 fromCharacterId,
-        bytes32 linkType
-    ) external view returns (uint256[] memory linklistIds) {
+    function getLinkingLinklistIds(uint256 fromCharacterId, bytes32 linkType)
+        external
+        view
+        returns (uint256[] memory linklistIds)
+    {
         uint256 linklistId = IWeb3Entry(web3Entry).getLinklistId(fromCharacterId, linkType);
         return ILinklist(linklist).getLinkingLinklistIds(linklistId);
     }

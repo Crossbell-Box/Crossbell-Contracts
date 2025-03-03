@@ -27,10 +27,9 @@ contract OperatorTest is CommonTest {
     uint256 public secondCharacter;
 
     // solhint-disable-next-line private-vars-leading-underscore, var-name-mixedcase
-    bytes32 internal constant TYPEHASH =
-        keccak256( // solhint-disable-next-line max-line-length
-            "grantOperatorPermissions(uint256 characterId,address operator,uint256 permissionBitMap,uint256 nonce,uint256 deadline)"
-        );
+    bytes32 internal constant TYPEHASH = keccak256( // solhint-disable-next-line max-line-length
+        "grantOperatorPermissions(uint256 characterId,address operator,uint256 permissionBitMap,uint256 nonce,uint256 deadline)"
+    );
 
     function setUp() public {
         _setUp();
@@ -49,24 +48,15 @@ contract OperatorTest is CommonTest {
         // case 1: alice set bob as her operator with OP.DEFAULT_PERMISSION_BITMAP
         vm.startPrank(alice);
         web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP);
-        assertEq(
-            web3Entry.getOperatorPermissions(firstCharacter, bob),
-            OP.DEFAULT_PERMISSION_BITMAP
-        );
+        assertEq(web3Entry.getOperatorPermissions(firstCharacter, bob), OP.DEFAULT_PERMISSION_BITMAP);
 
         // case 2: grant operator sync permission
         web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.POST_NOTE_PERMISSION_BITMAP);
-        assertEq(
-            web3Entry.getOperatorPermissions(firstCharacter, bob),
-            OP.POST_NOTE_PERMISSION_BITMAP
-        );
+        assertEq(web3Entry.getOperatorPermissions(firstCharacter, bob), OP.POST_NOTE_PERMISSION_BITMAP);
 
         // case 3: test bitmap is correctly filtered
         web3Entry.grantOperatorPermissions(firstCharacter, bob, UINT256_MAX);
-        assertEq(
-            web3Entry.getOperatorPermissions(firstCharacter, bob),
-            OP.ALLOWED_PERMISSION_BITMAP_MASK
-        );
+        assertEq(web3Entry.getOperatorPermissions(firstCharacter, bob), OP.ALLOWED_PERMISSION_BITMAP_MASK);
         vm.stopPrank();
     }
 
@@ -74,9 +64,7 @@ contract OperatorTest is CommonTest {
         // bob is not the owner of firstCharacter, he can't grant
         vm.prank(alice);
         web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            OP.ALLOWED_PERMISSION_BITMAP_MASK ^ (1 << OP.GRANT_OPERATOR_PERMISSIONS)
+            firstCharacter, bob, OP.ALLOWED_PERMISSION_BITMAP_MASK ^ (1 << OP.GRANT_OPERATOR_PERMISSIONS)
         );
 
         vm.expectRevert(abi.encodeWithSelector(ErrNotEnoughPermission.selector));
@@ -91,24 +79,15 @@ contract OperatorTest is CommonTest {
         uint256 deadline = block.timestamp + 10;
         uint256 nonce = web3Entry.nonces(alice);
 
-        bytes32 hashedMessage = keccak256(
-            abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline)
-        );
+        bytes32 hashedMessage =
+            keccak256(abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline));
         DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
         sig.deadline = deadline;
 
-        web3Entry.grantOperatorPermissionsWithSig(
-            firstCharacter,
-            bob,
-            OP.DEFAULT_PERMISSION_BITMAP,
-            sig
-        );
+        web3Entry.grantOperatorPermissionsWithSig(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP, sig);
 
         // check operator permission
-        assertEq(
-            web3Entry.getOperatorPermissions(firstCharacter, bob),
-            OP.DEFAULT_PERMISSION_BITMAP
-        );
+        assertEq(web3Entry.getOperatorPermissions(firstCharacter, bob), OP.DEFAULT_PERMISSION_BITMAP);
         assertEq(web3Entry.nonces(alice), 1);
     }
 
@@ -119,30 +98,20 @@ contract OperatorTest is CommonTest {
         uint256 deadline = block.timestamp + 10;
 
         DataTypes.EIP712Signature memory sig = _getEIP712Signature(
-            alicePrivateKey,
-            keccak256(abi.encode(TYPEHASH, characterId, operator, permissionBitMap, 0, deadline))
+            alicePrivateKey, keccak256(abi.encode(TYPEHASH, characterId, operator, permissionBitMap, 0, deadline))
         );
         sig.deadline = deadline;
-        web3Entry.grantOperatorPermissionsWithSig(
-            firstCharacter,
-            bob,
-            OP.DEFAULT_PERMISSION_BITMAP,
-            sig
-        );
+        web3Entry.grantOperatorPermissionsWithSig(firstCharacter, bob, OP.DEFAULT_PERMISSION_BITMAP, sig);
 
         // grant again
         sig = _getEIP712Signature(
-            alicePrivateKey,
-            keccak256(abi.encode(TYPEHASH, characterId, operator, UINT256_MAX, 1, deadline))
+            alicePrivateKey, keccak256(abi.encode(TYPEHASH, characterId, operator, UINT256_MAX, 1, deadline))
         );
         sig.deadline = deadline;
         web3Entry.grantOperatorPermissionsWithSig(firstCharacter, bob, UINT256_MAX, sig);
 
         // check operator permission
-        assertEq(
-            web3Entry.getOperatorPermissions(firstCharacter, bob),
-            OP.ALLOWED_PERMISSION_BITMAP_MASK
-        );
+        assertEq(web3Entry.getOperatorPermissions(firstCharacter, bob), OP.ALLOWED_PERMISSION_BITMAP_MASK);
         assertEq(web3Entry.nonces(alice), 2);
     }
 
@@ -159,9 +128,8 @@ contract OperatorTest is CommonTest {
         web3Entry.safeTransferFrom(alice, signer, characterId);
 
         // generate signature
-        bytes32 hashedMessage = keccak256(
-            abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline)
-        );
+        bytes32 hashedMessage =
+            keccak256(abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline));
         DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
         sig.deadline = deadline;
         sig.signer = signer;
@@ -181,9 +149,8 @@ contract OperatorTest is CommonTest {
         uint256 deadline = block.timestamp + 10;
         uint256 nonce = web3Entry.nonces(alice);
 
-        bytes32 hashedMessage = keccak256(
-            abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline)
-        );
+        bytes32 hashedMessage =
+            keccak256(abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline));
         DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
         sig.deadline = block.timestamp - 1;
 
@@ -202,9 +169,8 @@ contract OperatorTest is CommonTest {
         uint256 deadline = block.timestamp + 10;
         uint256 nonce = web3Entry.nonces(alice);
 
-        bytes32 hashedMessage = keccak256(
-            abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline)
-        );
+        bytes32 hashedMessage =
+            keccak256(abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline));
         DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
         sig.deadline = deadline;
         sig.v = sig.v + 1;
@@ -224,9 +190,8 @@ contract OperatorTest is CommonTest {
         uint256 deadline = block.timestamp + 10;
         uint256 nonce = web3Entry.nonces(alice);
 
-        bytes32 hashedMessage = keccak256(
-            abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline)
-        );
+        bytes32 hashedMessage =
+            keccak256(abi.encode(TYPEHASH, characterId, operator, permissionBitMap, nonce, deadline));
         DataTypes.EIP712Signature memory sig = _getEIP712Signature(alicePrivateKey, hashedMessage);
         sig.deadline = deadline;
         web3Entry.grantOperatorPermissionsWithSig(characterId, operator, permissionBitMap, sig);
@@ -316,21 +281,14 @@ contract OperatorTest is CommonTest {
 
         vm.startPrank(alice);
         for (uint256 i = 0; i < accounts.length; i++) {
-            web3Entry.grantOperatorPermissions(
-                firstCharacter,
-                accounts[i],
-                OP.DEFAULT_PERMISSION_BITMAP
-            );
+            web3Entry.grantOperatorPermissions(firstCharacter, accounts[i], OP.DEFAULT_PERMISSION_BITMAP);
         }
         // check operators
         address[] memory operators = web3Entry.getOperators(firstCharacter);
         for (uint256 i = 0; i < operators.length; i++) {
             assertEq(operators[i], accounts[i]);
             // check Operator permission
-            assertEq(
-                web3Entry.getOperatorPermissions(firstCharacter, accounts[i]),
-                OP.DEFAULT_PERMISSION_BITMAP
-            );
+            assertEq(web3Entry.getOperatorPermissions(firstCharacter, accounts[i]), OP.DEFAULT_PERMISSION_BITMAP);
         }
 
         // remove all operators
@@ -365,9 +323,7 @@ contract OperatorTest is CommonTest {
         uint256 expires = block.timestamp + 10 minutes;
 
         // create and transfer web3Entry nft to newbieVilla
-        uint256 characterId = web3Entry.createCharacter(
-            makeCharacterData(CHARACTER_HANDLE3, newbieAdmin)
-        );
+        uint256 characterId = web3Entry.createCharacter(makeCharacterData(CHARACTER_HANDLE3, newbieAdmin));
         vm.prank(newbieAdmin);
         web3Entry.safeTransferFrom(newbieAdmin, address(newbieVilla), characterId);
         // generate proof for withdrawal
@@ -383,14 +339,8 @@ contract OperatorTest is CommonTest {
         newbieVilla.withdraw(alice, characterId, nonce, expires, abi.encodePacked(r, s, v));
 
         // check operator permission
-        assertEq(
-            web3Entry.getOperatorPermissions(characterId, xsyncOperator),
-            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
-        );
-        assertEq(
-            web3Entry.getOperatorPermissions(characterId, newbieAdmin),
-            OP.DEFAULT_PERMISSION_BITMAP
-        );
+        assertEq(web3Entry.getOperatorPermissions(characterId, xsyncOperator), OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP);
+        assertEq(web3Entry.getOperatorPermissions(characterId, newbieAdmin), OP.DEFAULT_PERMISSION_BITMAP);
         assertEq(web3Entry.getOperators(characterId).length, 2);
     }
 
@@ -446,11 +396,7 @@ contract OperatorTest is CommonTest {
     function testOperatorWithPostNoteDefaultPermission() public {
         // grant bob POST_NOTE_DEFAULT_PERMISSION_BITMAP
         vm.prank(alice);
-        web3Entry.grantOperatorPermissions(
-            firstCharacter,
-            bob,
-            OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP
-        );
+        web3Entry.grantOperatorPermissions(firstCharacter, bob, OP.POST_NOTE_DEFAULT_PERMISSION_BITMAP);
 
         // bob can action
         _operatorCanPostNotes(bob, firstCharacter);
@@ -589,15 +535,9 @@ contract OperatorTest is CommonTest {
         // post note for linklist
         web3Entry.postNote4Linklist(makePostNoteData(characterId), FIRST_LINKLIST_ID);
         // post note for note
-        web3Entry.postNote4Note(
-            makePostNoteData(characterId),
-            DataTypes.NoteStruct(characterId, FIRST_NOTE_ID)
-        );
+        web3Entry.postNote4Note(makePostNoteData(characterId), DataTypes.NoteStruct(characterId, FIRST_NOTE_ID));
         //post note for erc721
-        web3Entry.postNote4ERC721(
-            makePostNoteData(characterId),
-            DataTypes.ERC721Struct(address(web3Entry), 1)
-        );
+        web3Entry.postNote4ERC721(makePostNoteData(characterId), DataTypes.ERC721Struct(address(web3Entry), 1));
         // post note for any uri
         web3Entry.postNote4AnyUri(makePostNoteData(characterId), "ipfs://anyURI");
         vm.stopPrank();
@@ -631,13 +571,9 @@ contract OperatorTest is CommonTest {
         // set character uri
         web3Entry.setCharacterUri(characterId, "https://example.com/character");
         // link character
-        web3Entry.linkCharacter(
-            DataTypes.linkCharacterData(characterId, secondCharacter, LikeLinkType, "")
-        );
+        web3Entry.linkCharacter(DataTypes.linkCharacterData(characterId, secondCharacter, LikeLinkType, ""));
         // unlink character
-        web3Entry.unlinkCharacter(
-            DataTypes.unlinkCharacterData(characterId, secondCharacter, LikeLinkType)
-        );
+        web3Entry.unlinkCharacter(DataTypes.unlinkCharacterData(characterId, secondCharacter, LikeLinkType));
         // create then link character
         web3Entry.createThenLinkCharacter(
             DataTypes.createThenLinkCharacterData(characterId, vm.addr(10), FollowLinkType)
@@ -647,58 +583,36 @@ contract OperatorTest is CommonTest {
         // unlink note
         web3Entry.unlinkNote(DataTypes.unlinkNoteData(characterId, characterId, 1, FollowLinkType));
         // link erc721
-        web3Entry.linkERC721(
-            DataTypes.linkERC721Data(characterId, address(web3Entry), 1, LikeLinkType, "")
-        );
+        web3Entry.linkERC721(DataTypes.linkERC721Data(characterId, address(web3Entry), 1, LikeLinkType, ""));
         // unlink erc721
-        web3Entry.unlinkERC721(
-            DataTypes.unlinkERC721Data(firstCharacter, address(web3Entry), 1, LikeLinkType)
-        );
+        web3Entry.unlinkERC721(DataTypes.unlinkERC721Data(firstCharacter, address(web3Entry), 1, LikeLinkType));
         // link address
-        web3Entry.linkAddress(
-            DataTypes.linkAddressData(characterId, vm.addr(10), LikeLinkType, "")
-        );
+        web3Entry.linkAddress(DataTypes.linkAddressData(characterId, vm.addr(10), LikeLinkType, ""));
         // unlink address
-        web3Entry.unlinkAddress(
-            DataTypes.unlinkAddressData(characterId, address(0x1232414), LikeLinkType)
-        );
+        web3Entry.unlinkAddress(DataTypes.unlinkAddressData(characterId, address(0x1232414), LikeLinkType));
         // link any uri
-        web3Entry.linkAnyUri(
-            DataTypes.linkAnyUriData(characterId, "ipfs://anyURI", LikeLinkType, "")
-        );
+        web3Entry.linkAnyUri(DataTypes.linkAnyUriData(characterId, "ipfs://anyURI", LikeLinkType, ""));
         // unlink any uri
-        web3Entry.unlinkAnyUri(
-            DataTypes.unlinkAnyUriData(characterId, "ipfs://anyURI", LikeLinkType)
-        );
+        web3Entry.unlinkAnyUri(DataTypes.unlinkAnyUriData(characterId, "ipfs://anyURI", LikeLinkType));
         // link linklist
         web3Entry.linkLinklist(DataTypes.linkLinklistData(characterId, 1, LikeLinkType, ""));
         // unlink linklist
         web3Entry.unlinkLinklist(DataTypes.unlinkLinklistData(characterId, 1, LikeLinkType));
         // set link module for character
         web3Entry.setLinkModule4Character(
-            DataTypes.setLinkModule4CharacterData(
-                characterId,
-                address(approvalLinkModule4Character),
-                ""
-            )
+            DataTypes.setLinkModule4CharacterData(characterId, address(approvalLinkModule4Character), "")
         );
         // set link module for note
         web3Entry.setLinkModule4Note(
             DataTypes.setLinkModule4NoteData(
-                characterId,
-                1,
-                address(approvalLinkModule4Note),
-                abi.encode(array(bob, carol))
+                characterId, 1, address(approvalLinkModule4Note), abi.encode(array(bob, carol))
             )
         );
         // set link module for linklist(setLinkModule4Linklist is not implemented yet)
         // set mint module for note
         web3Entry.setMintModule4Note(
             DataTypes.setMintModule4NoteData(
-                firstCharacter,
-                1,
-                address(approvalMintModule),
-                abi.encode(array(carol, dick), 1)
+                firstCharacter, 1, address(approvalMintModule), abi.encode(array(carol, dick), 1)
             )
         );
         // set note uri
@@ -719,10 +633,7 @@ contract OperatorTest is CommonTest {
         address[] memory blocklist,
         address[] memory allowlist
     ) internal {
-        (address[] memory blocklist_, address[] memory allowlist_) = web3Entry.getOperators4Note(
-            characterId,
-            noteId
-        );
+        (address[] memory blocklist_, address[] memory allowlist_) = web3Entry.getOperators4Note(characterId, noteId);
         assertEq(blocklist_, blocklist);
         assertEq(allowlist_, allowlist);
 
@@ -734,10 +645,11 @@ contract OperatorTest is CommonTest {
         }
     }
 
-    function _getEIP712Signature(
-        uint256 privateKey,
-        bytes32 hashedMessage
-    ) internal view returns (DataTypes.EIP712Signature memory sig) {
+    function _getEIP712Signature(uint256 privateKey, bytes32 hashedMessage)
+        internal
+        view
+        returns (DataTypes.EIP712Signature memory sig)
+    {
         bytes32 domainSeparator = web3Entry.getDomainSeparator();
         bytes32 typedDataHash = ECDSA.toTypedDataHash(domainSeparator, hashedMessage);
 

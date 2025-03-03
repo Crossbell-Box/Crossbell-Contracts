@@ -2,18 +2,12 @@
 // solhint-disable comprehensive-interface
 pragma solidity 0.8.18;
 
-import {
-    ErrExceedMaxSupply,
-    ErrExceedApproval,
-    ErrCallerNotWeb3Entry
-} from "../../../contracts/libraries/Error.sol";
+import {ErrExceedMaxSupply, ErrExceedApproval, ErrCallerNotWeb3Entry} from "../../../contracts/libraries/Error.sol";
 import {CommonTest} from "../../helpers/CommonTest.sol";
 import {DataTypes} from "../../../contracts/libraries/DataTypes.sol";
 import {IMintModule4Note} from "../../../contracts/interfaces/IMintModule4Note.sol";
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import {
-    IERC721Enumerable
-} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 contract LimitedMintModuleTest is CommonTest {
     function setUp() public {
@@ -32,49 +26,30 @@ contract LimitedMintModuleTest is CommonTest {
         // initialize the mint module
         vm.prank(address(web3Entry));
         bytes memory result = IMintModule4Note(address(limitedMintModule)).initializeMintModule(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            abi.encode(maxSupply, approvedAmount)
+            FIRST_CHARACTER_ID, FIRST_NOTE_ID, abi.encode(maxSupply, approvedAmount)
         );
 
         // check return value
         assertEq(result, abi.encode(maxSupply, approvedAmount));
 
         // check mint info
-        _checkLimitedMintInfo(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            bob,
-            maxSupply,
-            0,
-            approvedAmount,
-            0
-        );
+        _checkLimitedMintInfo(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, maxSupply, 0, approvedAmount, 0);
     }
 
     function testInitializeMintModuleFail() public {
         // caller is not web3Entry
         vm.expectRevert(abi.encodeWithSelector(ErrCallerNotWeb3Entry.selector));
-        IMintModule4Note(address(limitedMintModule)).initializeMintModule(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            ""
-        );
+        IMintModule4Note(address(limitedMintModule)).initializeMintModule(FIRST_CHARACTER_ID, FIRST_NOTE_ID, "");
     }
 
-    function testProcessMintWithInitializeMintModule(
-        uint256 maxSupply,
-        uint256 approvedAmount
-    ) public {
+    function testProcessMintWithInitializeMintModule(uint256 maxSupply, uint256 approvedAmount) public {
         vm.assume(approvedAmount > 0 && approvedAmount < 10);
         vm.assume(maxSupply > approvedAmount);
 
         // initialize the mint module
         vm.prank(address(web3Entry));
         IMintModule4Note(address(limitedMintModule)).initializeMintModule(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            abi.encode(maxSupply, approvedAmount)
+            FIRST_CHARACTER_ID, FIRST_NOTE_ID, abi.encode(maxSupply, approvedAmount)
         );
 
         // processMint
@@ -82,15 +57,7 @@ contract LimitedMintModuleTest is CommonTest {
         limitedMintModule.processMint(bob, FIRST_CHARACTER_ID, FIRST_NOTE_ID, "");
 
         // check mint info
-        _checkLimitedMintInfo(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            bob,
-            maxSupply,
-            1,
-            approvedAmount,
-            1
-        );
+        _checkLimitedMintInfo(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, maxSupply, 1, approvedAmount, 1);
     }
 
     function testProcessMintMultiple(uint256 maxSupply, uint256 approvedAmount) public {
@@ -100,9 +67,7 @@ contract LimitedMintModuleTest is CommonTest {
         // initialize the mint module
         vm.startPrank(address(web3Entry));
         IMintModule4Note(address(limitedMintModule)).initializeMintModule(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            abi.encode(maxSupply, approvedAmount)
+            FIRST_CHARACTER_ID, FIRST_NOTE_ID, abi.encode(maxSupply, approvedAmount)
         );
 
         // processMint
@@ -110,15 +75,7 @@ contract LimitedMintModuleTest is CommonTest {
             limitedMintModule.processMint(bob, FIRST_CHARACTER_ID, FIRST_NOTE_ID, "");
 
             // check state: approvedAmount decreases by 1 after every processMint
-            _checkLimitedMintInfo(
-                FIRST_CHARACTER_ID,
-                FIRST_NOTE_ID,
-                bob,
-                maxSupply,
-                i,
-                approvedAmount,
-                i
-            );
+            _checkLimitedMintInfo(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, maxSupply, i, approvedAmount, i);
         }
         vm.stopPrank();
     }
@@ -127,9 +84,7 @@ contract LimitedMintModuleTest is CommonTest {
         // initialize the mint module
         vm.startPrank(address(web3Entry));
         IMintModule4Note(address(limitedMintModule)).initializeMintModule(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            abi.encode(100, 0)
+            FIRST_CHARACTER_ID, FIRST_NOTE_ID, abi.encode(100, 0)
         );
 
         vm.expectRevert(abi.encodeWithSelector(ErrExceedApproval.selector));
@@ -149,9 +104,7 @@ contract LimitedMintModuleTest is CommonTest {
         // initialize the mint module
         vm.startPrank(address(web3Entry));
         IMintModule4Note(address(limitedMintModule)).initializeMintModule(
-            FIRST_CHARACTER_ID,
-            FIRST_NOTE_ID,
-            abi.encode(maxSupply, maxSupply)
+            FIRST_CHARACTER_ID, FIRST_NOTE_ID, abi.encode(maxSupply, maxSupply)
         );
 
         for (uint256 i = 0; i < maxSupply; i++) {
@@ -165,12 +118,7 @@ contract LimitedMintModuleTest is CommonTest {
     function testMintNoteWithMintModule() public {
         // alice post a note with approvalMintModule
         vm.prank(alice);
-        _postNoteWithMintModule(
-            FIRST_CHARACTER_ID,
-            NOTE_URI,
-            address(limitedMintModule),
-            abi.encode(100, 1)
-        );
+        _postNoteWithMintModule(FIRST_CHARACTER_ID, NOTE_URI, address(limitedMintModule), abi.encode(100, 1));
 
         _mintNote(FIRST_CHARACTER_ID, FIRST_NOTE_ID, bob, "");
         // check mint info
@@ -196,12 +144,8 @@ contract LimitedMintModuleTest is CommonTest {
         uint256 expectedMintedAmount
     ) internal view {
         // check approved amount of `account`
-        (
-            uint256 maxSupply,
-            uint256 currentSupply,
-            uint256 approvedAmount,
-            uint256 mintedAmount
-        ) = limitedMintModule.getLimitedMintInfo(characterId, noteId, account);
+        (uint256 maxSupply, uint256 currentSupply, uint256 approvedAmount, uint256 mintedAmount) =
+            limitedMintModule.getLimitedMintInfo(characterId, noteId, account);
 
         assertEq(maxSupply, expectedMaxSupply);
         assertEq(currentSupply, expectedCurrentSupply);
