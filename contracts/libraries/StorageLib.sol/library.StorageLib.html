@@ -159,7 +159,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="storagelib"><a class="header" href="#storagelib">StorageLib</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/StorageLib.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/StorageLib.sol">Git Source</a></p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
 <h3 id="characters_mapping_slot"><a class="header" href="#characters_mapping_slot">CHARACTERS_MAPPING_SLOT</a></h3>
 <pre><code class="language-solidity">uint256 public constant CHARACTERS_MAPPING_SLOT = 10;
@@ -214,25 +214,39 @@
 </code></pre>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="setoperatorspermissionbitmap"><a class="header" href="#setoperatorspermissionbitmap">setOperatorsPermissionBitMap</a></h3>
-<pre><code class="language-solidity">function setOperatorsPermissionBitMap(uint256 characterId, address operator, uint256 permissionBitMap) internal;
+<pre><code class="language-solidity">function setOperatorsPermissionBitMap(
+    uint256 characterId,
+    address operator,
+    uint256 permissionBitMap
+) internal;
 </code></pre>
 <h3 id="setattachedlinklistid"><a class="header" href="#setattachedlinklistid">setAttachedLinklistId</a></h3>
-<pre><code class="language-solidity">function setAttachedLinklistId(uint256 characterId, bytes32 linkType, uint256 linklistId) internal;
+<pre><code class="language-solidity">function setAttachedLinklistId(uint256 characterId, bytes32 linkType, uint256 linklistId)
+    internal;
 </code></pre>
 <h3 id="deleteattachedlinklistid"><a class="header" href="#deleteattachedlinklistid">deleteAttachedLinklistId</a></h3>
 <pre><code class="language-solidity">function deleteAttachedLinklistId(uint256 characterId, bytes32 linkType) internal;
 </code></pre>
 <h3 id="getattachedlinklistid"><a class="header" href="#getattachedlinklistid">getAttachedLinklistId</a></h3>
-<pre><code class="language-solidity">function getAttachedLinklistId(uint256 characterId, bytes32 linkType) internal view returns (uint256 _linklistId);
+<pre><code class="language-solidity">function getAttachedLinklistId(uint256 characterId, bytes32 linkType)
+    internal
+    view
+    returns (uint256 _linklistId);
 </code></pre>
 <h3 id="nonces"><a class="header" href="#nonces">nonces</a></h3>
 <pre><code class="language-solidity">function nonces() internal pure returns (mapping(address =&gt; uint256) storage _nonces);
 </code></pre>
 <h3 id="getcharacter"><a class="header" href="#getcharacter">getCharacter</a></h3>
-<pre><code class="language-solidity">function getCharacter(uint256 characterId) internal pure returns (DataTypes.Character storage _character);
+<pre><code class="language-solidity">function getCharacter(uint256 characterId)
+    internal
+    pure
+    returns (DataTypes.Character storage _character);
 </code></pre>
 <h3 id="getnote"><a class="header" href="#getnote">getNote</a></h3>
-<pre><code class="language-solidity">function getNote(uint256 characterId, uint256 noteId) internal pure returns (DataTypes.Note storage _note);
+<pre><code class="language-solidity">function getNote(uint256 characterId, uint256 noteId)
+    internal
+    pure
+    returns (DataTypes.Note storage _note);
 </code></pre>
 <h3 id="characteridbyhandlehash"><a class="header" href="#characteridbyhandlehash">characterIdByHandleHash</a></h3>
 <pre><code class="language-solidity">function characterIdByHandleHash()

@@ -159,7 +159,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="op"><a class="header" href="#op">OP</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/OP.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/OP.sol">Git Source</a></p>
 <p>In Crossbell's operator system, every uint8 stands for a single method in Web3Entry.sol. <br>
 For most cases, we recommend simply granting operators the <code>OPERATOR_SIGN_PERMISSION_BITMAP</code>,
 which gives operator full permissions aside from owner permissions and future permissions, but for
@@ -310,7 +310,8 @@ so the bitmap looks like this:</p>
     ((UINT256_MAX &lt;&lt; 176) &amp; ~(UINT256_MAX &lt;&lt; 205)) | POST_NOTE_PERMISSION_BITMAP;
 </code></pre>
 <h3 id="allowed_permission_bitmap_mask"><a class="header" href="#allowed_permission_bitmap_mask">ALLOWED_PERMISSION_BITMAP_MASK</a></h3>
-<pre><code class="language-solidity">uint256 internal constant ALLOWED_PERMISSION_BITMAP_MASK = OWNER_PERMISSION_BITMAP | DEFAULT_PERMISSION_BITMAP;
+<pre><code class="language-solidity">uint256 internal constant ALLOWED_PERMISSION_BITMAP_MASK =
+    OWNER_PERMISSION_BITMAP | DEFAULT_PERMISSION_BITMAP;
 </code></pre>
 
                     </main>

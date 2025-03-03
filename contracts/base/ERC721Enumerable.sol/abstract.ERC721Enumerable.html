@@ -159,7 +159,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="erc721enumerable"><a class="header" href="#erc721enumerable">ERC721Enumerable</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/base/ERC721Enumerable.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/base/ERC721Enumerable.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/contracts/base/ERC721.sol/contract.ERC721.html">ERC721</a>, IERC721Enumerable</p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
@@ -178,11 +178,21 @@
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="supportsinterface"><a class="header" href="#supportsinterface">supportsInterface</a></h3>
 <p><em>See <a href="/contracts/base/LinklistBase.sol/abstract.LinklistBase.html#supportsinterface">IERC165-supportsInterface</a>.</em></p>
-<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, ERC721) returns (bool);
+<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId)
+    public
+    view
+    virtual
+    override(IERC165, ERC721)
+    returns (bool);
 </code></pre>
 <h3 id="tokenofownerbyindex"><a class="header" href="#tokenofownerbyindex">tokenOfOwnerByIndex</a></h3>
 <p><em>See <a href="/lib/forge-std/src/interfaces/IERC721.sol/interface.IERC721Enumerable.html#tokenofownerbyindex">IERC721Enumerable-tokenOfOwnerByIndex</a>.</em></p>
-<pre><code class="language-solidity">function tokenOfOwnerByIndex(address owner, uint256 index) public view virtual override returns (uint256);
+<pre><code class="language-solidity">function tokenOfOwnerByIndex(address owner, uint256 index)
+    public
+    view
+    virtual
+    override
+    returns (uint256);
 </code></pre>
 <h3 id="totalsupply"><a class="header" href="#totalsupply">totalSupply</a></h3>
 <p><em>See <a href="/contracts/MintNFT.sol/contract.MintNFT.html#totalsupply">IERC721Enumerable-totalSupply</a>.</em></p>
@@ -205,7 +215,10 @@ transferred to <code>to</code>.</li>
 <li><code>to</code> cannot be the zero address.
 To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].*</li>
 </ul>
-<pre><code class="language-solidity">function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override;
+<pre><code class="language-solidity">function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+    internal
+    virtual
+    override;
 </code></pre>
 <h3 id="_addtokentoownerenumeration"><a class="header" href="#_addtokentoownerenumeration">_addTokenToOwnerEnumeration</a></h3>
 <p><em>Private function to add a token to this extension's ownership-tracking data structures.</em></p>

@@ -159,7 +159,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="mintnft"><a class="header" href="#mintnft">MintNFT</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/MintNFT.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/MintNFT.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/contracts/base/NFTBase.sol/abstract.NFTBase.html">NFTBase</a>, <a href="/contracts/interfaces/IMintNFT.sol/interface.IMintNFT.html">IMintNFT</a>, ERC2981, Initializable</p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
@@ -222,7 +222,10 @@ This can only be called by web3Entry, and is called upon note.</p>
 <h3 id="settokenroyalty"><a class="header" href="#settokenroyalty">setTokenRoyalty</a></h3>
 <p>Changes the royalty percentage of specific token ID for secondary sales.
 Can only be called by character owner of note.</p>
-<pre><code class="language-solidity">function setTokenRoyalty(uint256 tokenId, address recipient, uint96 fraction) external override onlyOwner;
+<pre><code class="language-solidity">function setTokenRoyalty(uint256 tokenId, address recipient, uint96 fraction)
+    external
+    override
+    onlyOwner;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -258,7 +261,11 @@ Can only be called by character owner of note.</p>
 </div>
 <h3 id="getsourcenotepointer"><a class="header" href="#getsourcenotepointer">getSourceNotePointer</a></h3>
 <p>Returns the source note pointer mapped to this note NFT.</p>
-<pre><code class="language-solidity">function getSourceNotePointer() external view override returns (uint256 characterId, uint256 noteId);
+<pre><code class="language-solidity">function getSourceNotePointer()
+    external
+    view
+    override
+    returns (uint256 characterId, uint256 noteId);
 </code></pre>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -270,7 +277,12 @@ Can only be called by character owner of note.</p>
 <p>Query if a contract implements an interface</p>
 <p><em>Interface identification is specified in ERC-165. This function
 uses less than 30,000 gas.</em></p>
-<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId) public view virtual override(ERC2981, ERC721Enumerable) returns (bool);
+<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId)
+    public
+    view
+    virtual
+    override(ERC2981, ERC721Enumerable)
+    returns (bool);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>

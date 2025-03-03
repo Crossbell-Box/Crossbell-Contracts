@@ -159,7 +159,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="tipswithfee"><a class="header" href="#tipswithfee">TipsWithFee</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/misc/TipsWithFee.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/misc/TipsWithFee.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/contracts/interfaces/ITipsWithFee.sol/interface.ITipsWithFee.html">ITipsWithFee</a>, Initializable, IERC777Recipient</p>
 <p>Logic to handle rewards that user can send to character and note.</p>
@@ -179,7 +179,8 @@ The platform account can set the commission ratio through <code>setDefaultFeeFra
 and <code>setFeeFraction4Note</code>.</em></p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
 <h3 id="erc1820_registry"><a class="header" href="#erc1820_registry">ERC1820_REGISTRY</a></h3>
-<pre><code class="language-solidity">IERC1820Registry public constant ERC1820_REGISTRY = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+<pre><code class="language-solidity">IERC1820Registry public constant ERC1820_REGISTRY =
+    IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
 </code></pre>
 <h3 id="tokens_recipient_interface_hash"><a class="header" href="#tokens_recipient_interface_hash">TOKENS_RECIPIENT_INTERFACE_HASH</a></h3>
 <pre><code class="language-solidity">bytes32 public constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
@@ -250,11 +251,12 @@ and <code>setFeeFraction4Note</code>.</em></p>
 <h3 id="setfeefraction4note"><a class="header" href="#setfeefraction4note">setFeeFraction4Note</a></h3>
 <p>Changes the fee percentage of specific &lt;receiver, note&gt;.</p>
 <p><em>If feeFraction4Note is set, it will override feeFraction4Character and the default fee fraction.</em></p>
-<pre><code class="language-solidity">function setFeeFraction4Note(address feeReceiver, uint256 characterId, uint256 noteId, uint256 fraction)
-    external
-    override
-    onlyFeeReceiver(feeReceiver)
-    validateFraction(fraction);
+<pre><code class="language-solidity">function setFeeFraction4Note(
+    address feeReceiver,
+    uint256 characterId,
+    uint256 noteId,
+    uint256 fraction
+) external override onlyFeeReceiver(feeReceiver) validateFraction(fraction);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -415,7 +417,10 @@ User should call <code>send</code> erc777 token to the Tips contract, with <code
 ) internal;
 </code></pre>
 <h3 id="_getfeefraction"><a class="header" href="#_getfeefraction">_getFeeFraction</a></h3>
-<pre><code class="language-solidity">function _getFeeFraction(address feeReceiver, uint256 characterId, uint256 noteId) internal view returns (uint256);
+<pre><code class="language-solidity">function _getFeeFraction(address feeReceiver, uint256 characterId, uint256 noteId)
+    internal
+    view
+    returns (uint256);
 </code></pre>
 <h3 id="_getfeeamount"><a class="header" href="#_getfeeamount">_getFeeAmount</a></h3>
 <pre><code class="language-solidity">function _getFeeAmount(address feeReceiver, uint256 characterId, uint256 noteId, uint256 tipAmount)

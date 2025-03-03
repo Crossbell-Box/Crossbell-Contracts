@@ -159,7 +159,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="linklist"><a class="header" href="#linklist">Linklist</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/Linklist.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/Linklist.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/contracts/interfaces/ILinklist.sol/interface.ILinklist.html">ILinklist</a>, <a href="/contracts/base/LinklistBase.sol/abstract.LinklistBase.html">LinklistBase</a>, <a href="/contracts/storage/LinklistStorage.sol/contract.LinklistStorage.html">LinklistStorage</a>, Initializable, <a href="/contracts/storage/LinklistExtendStorage.sol/contract.LinklistExtendStorage.html">LinklistExtendStorage</a></p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
@@ -186,7 +186,11 @@
 <h3 id="mint"><a class="header" href="#mint">mint</a></h3>
 <p>Mints a Linklist NFT to the specified character with linkType.
 This can only be called by web3Entry.</p>
-<pre><code class="language-solidity">function mint(uint256 characterId, bytes32 linkType) external override onlyWeb3Entry returns (uint256 tokenId);
+<pre><code class="language-solidity">function mint(uint256 characterId, bytes32 linkType)
+    external
+    override
+    onlyWeb3Entry
+    returns (uint256 tokenId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -224,7 +228,11 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="setlinktype"><a class="header" href="#setlinktype">setLinkType</a></h3>
 <p>Sets the link type of the linklist NFT.</p>
-<pre><code class="language-solidity">function setLinkType(uint256 tokenId, bytes32 linkType) external override onlyWeb3Entry onlyExistingToken(tokenId);
+<pre><code class="language-solidity">function setLinkType(uint256 tokenId, bytes32 linkType)
+    external
+    override
+    onlyWeb3Entry
+    onlyExistingToken(tokenId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -234,7 +242,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="addlinkingcharacterid"><a class="header" href="#addlinkingcharacterid">addLinkingCharacterId</a></h3>
 <p>Adds a linked character to a linklist.</p>
-<pre><code class="language-solidity">function addLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function addLinkingCharacterId(uint256 tokenId, uint256 toCharacterId)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -244,7 +255,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="removelinkingcharacterid"><a class="header" href="#removelinkingcharacterid">removeLinkingCharacterId</a></h3>
 <p>Removes a linked character from a linklist.</p>
-<pre><code class="language-solidity">function removeLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function removeLinkingCharacterId(uint256 tokenId, uint256 toCharacterId)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -274,7 +288,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="removelinkingnote"><a class="header" href="#removelinkingnote">removeLinkingNote</a></h3>
 <p>Removes a linked note from a linklist.</p>
-<pre><code class="language-solidity">function removeLinkingNote(uint256 tokenId, uint256 toCharacterId, uint256 toNoteId) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function removeLinkingNote(uint256 tokenId, uint256 toCharacterId, uint256 toNoteId)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -329,7 +346,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="removelinkingaddress"><a class="header" href="#removelinkingaddress">removeLinkingAddress</a></h3>
 <p>Removes a linked address from a linklist.</p>
-<pre><code class="language-solidity">function removeLinkingAddress(uint256 tokenId, address ethAddress) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function removeLinkingAddress(uint256 tokenId, address ethAddress)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -339,7 +359,11 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="addlinkinganyuri"><a class="header" href="#addlinkinganyuri">addLinkingAnyUri</a></h3>
 <p>Adds a linked anyURI to a linklist.</p>
-<pre><code class="language-solidity">function addLinkingAnyUri(uint256 tokenId, string memory toUri) external override onlyWeb3Entry returns (bytes32);
+<pre><code class="language-solidity">function addLinkingAnyUri(uint256 tokenId, string memory toUri)
+    external
+    override
+    onlyWeb3Entry
+    returns (bytes32);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -354,7 +378,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="removelinkinganyuri"><a class="header" href="#removelinkinganyuri">removeLinkingAnyUri</a></h3>
 <p>Removes a linked anyURI from a linklist.</p>
-<pre><code class="language-solidity">function removeLinkingAnyUri(uint256 tokenId, string memory toUri) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function removeLinkingAnyUri(uint256 tokenId, string memory toUri)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -364,7 +391,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="addlinkinglinklistid"><a class="header" href="#addlinkinglinklistid">addLinkingLinklistId</a></h3>
 <p>Adds a linked linklist to a linklist.</p>
-<pre><code class="language-solidity">function addLinkingLinklistId(uint256 tokenId, uint256 linklistId) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function addLinkingLinklistId(uint256 tokenId, uint256 linklistId)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -374,7 +404,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="removelinkinglinklistid"><a class="header" href="#removelinkinglinklistid">removeLinkingLinklistId</a></h3>
 <p>Removes a linked linklist from a linklist.</p>
-<pre><code class="language-solidity">function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -422,7 +455,12 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="getownercharacterid"><a class="header" href="#getownercharacterid">getOwnerCharacterId</a></h3>
 <p>Returns the character ID who owns the linklist NFT.</p>
-<pre><code class="language-solidity">function getOwnerCharacterId(uint256 tokenId) external view override onlyExistingToken(tokenId) returns (uint256);
+<pre><code class="language-solidity">function getOwnerCharacterId(uint256 tokenId)
+    external
+    view
+    override
+    onlyExistingToken(tokenId)
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -455,7 +493,11 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="getlinkingnote"><a class="header" href="#getlinkingnote">getLinkingNote</a></h3>
 <p>Return the linked note of the linklist NFT by linkKey.</p>
-<pre><code class="language-solidity">function getLinkingNote(bytes32 linkKey) external view override returns (DataTypes.NoteStruct memory);
+<pre><code class="language-solidity">function getLinkingNote(bytes32 linkKey)
+    external
+    view
+    override
+    returns (DataTypes.NoteStruct memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -507,7 +549,11 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="getlinkingerc721"><a class="header" href="#getlinkingerc721">getLinkingERC721</a></h3>
 <p>Return the linked ERC721 of the linklist NFT by linkKey.</p>
-<pre><code class="language-solidity">function getLinkingERC721(bytes32 linkKey) external view override returns (DataTypes.ERC721Struct memory);
+<pre><code class="language-solidity">function getLinkingERC721(bytes32 linkKey)
+    external
+    view
+    override
+    returns (DataTypes.ERC721Struct memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -630,7 +676,12 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="getlinkinganylistlength"><a class="header" href="#getlinkinganylistlength">getLinkingAnyListLength</a></h3>
 <p>Returns the length of linked Uris of the linklist NFT.</p>
-<pre><code class="language-solidity">function getLinkingAnyListLength(uint256 tokenId) external view override onlyExistingToken(tokenId) returns (uint256);
+<pre><code class="language-solidity">function getLinkingAnyListLength(uint256 tokenId)
+    external
+    view
+    override
+    onlyExistingToken(tokenId)
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -685,7 +736,12 @@ or following list in your bookmarks.</em></p>
 </code></pre>
 <h3 id="getlinktype"><a class="header" href="#getlinktype">getLinkType</a></h3>
 <p>Returns the link type of the linklist NFT.</p>
-<pre><code class="language-solidity">function getLinkType(uint256 tokenId) external view override onlyExistingToken(tokenId) returns (bytes32);
+<pre><code class="language-solidity">function getLinkType(uint256 tokenId)
+    external
+    view
+    override
+    onlyExistingToken(tokenId)
+    returns (bytes32);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -699,7 +755,12 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="uri"><a class="header" href="#uri">Uri</a></h3>
 <p>Returns the URI of the linklist NFT.</p>
-<pre><code class="language-solidity">function Uri(uint256 tokenId) external view override onlyExistingToken(tokenId) returns (string memory);
+<pre><code class="language-solidity">function Uri(uint256 tokenId)
+    external
+    view
+    override
+    onlyExistingToken(tokenId)
+    returns (string memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -713,7 +774,12 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="characterownerof"><a class="header" href="#characterownerof">characterOwnerOf</a></h3>
 <p>Returns the character ID who owns the Linklist NFT.</p>
-<pre><code class="language-solidity">function characterOwnerOf(uint256 tokenId) external view override onlyExistingToken(tokenId) returns (uint256);
+<pre><code class="language-solidity">function characterOwnerOf(uint256 tokenId)
+    external
+    view
+    override
+    onlyExistingToken(tokenId)
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -764,7 +830,12 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="ownerof"><a class="header" href="#ownerof">ownerOf</a></h3>
 <p>Returns the owner of the <code>tokenId</code> token.</p>
-<pre><code class="language-solidity">function ownerOf(uint256 tokenId) external view override onlyExistingToken(tokenId) returns (address);
+<pre><code class="language-solidity">function ownerOf(uint256 tokenId)
+    external
+    view
+    override
+    onlyExistingToken(tokenId)
+    returns (address);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>

@@ -219,7 +219,7 @@ forge script scripts/Deploy.s.sol:Deploy --sig 'sync()' --private-key $PRIVATE_K
 <li><a href="contracts/base/NFTBase.sol/abstract.NFTBase.html">NFTBase</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc721"><a class="header" href="#erc721">ERC721</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/base/ERC721.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/base/ERC721.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 Context, ERC165, IERC721, IERC721Metadata</p>
 <p><em>Implementation of https://eips.ethereum.org/EIPS/eip-721[ERC721] Non-Fungible Token Standard, including
@@ -250,7 +250,12 @@ the Metadata extension, but not including the Enumerable extension, which is ava
 </code></pre>
 <h3 id="supportsinterface"><a class="header" href="#supportsinterface">supportsInterface</a></h3>
 <p><em>See <a href="contracts/base/ERC721.sol//contracts/misc/CharacterBoundToken.sol/contract.CharacterBoundToken.html#supportsinterface">IERC165-supportsInterface</a>.</em></p>
-<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool);
+<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId)
+    public
+    view
+    virtual
+    override(ERC165, IERC165)
+    returns (bool);
 </code></pre>
 <h3 id="balanceof"><a class="header" href="#balanceof">balanceOf</a></h3>
 <p><em>See <a href="contracts/base/ERC721.sol//contracts/misc/NewbieVilla.sol/contract.NewbieVilla.html#balanceof">IERC721-balanceOf</a>.</em></p>
@@ -286,7 +291,12 @@ the Metadata extension, but not including the Enumerable extension, which is ava
 </code></pre>
 <h3 id="isapprovedforall"><a class="header" href="#isapprovedforall">isApprovedForAll</a></h3>
 <p><em>See <a href="contracts/base/ERC721.sol//contracts/misc/CharacterBoundToken.sol/contract.CharacterBoundToken.html#isapprovedforall">IERC721-isApprovedForAll</a>.</em></p>
-<pre><code class="language-solidity">function isApprovedForAll(address owner, address operator) public view virtual override returns (bool);
+<pre><code class="language-solidity">function isApprovedForAll(address owner, address operator)
+    public
+    view
+    virtual
+    override
+    returns (bool);
 </code></pre>
 <h3 id="transferfrom"><a class="header" href="#transferfrom">transferFrom</a></h3>
 <p><em>See <a href="contracts/base/ERC721.sol//lib/forge-std/src/interfaces/IERC20.sol/interface.IERC20.html#transferfrom">IERC721-transferFrom</a>.</em></p>
@@ -298,7 +308,10 @@ the Metadata extension, but not including the Enumerable extension, which is ava
 </code></pre>
 <h3 id="safetransferfrom-1"><a class="header" href="#safetransferfrom-1">safeTransferFrom</a></h3>
 <p><em>See <a href="contracts/base/ERC721.sol//contracts/misc/CharacterBoundToken.sol/contract.CharacterBoundToken.html#safetransferfrom">IERC721-safeTransferFrom</a>.</em></p>
-<pre><code class="language-solidity">function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public virtual override;
+<pre><code class="language-solidity">function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data)
+    public
+    virtual
+    override;
 </code></pre>
 <h3 id="_safetransfer"><a class="header" href="#_safetransfer">_safeTransfer</a></h3>
 <p>*Safely transfers <code>tokenId</code> token from <code>from</code> to <code>to</code>, checking first that contract recipients
@@ -315,7 +328,9 @@ Requirements:</p>
 which is called upon a safe transfer.
 Emits a {Transfer} event.*</li>
 </ul>
-<pre><code class="language-solidity">function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal virtual;
+<pre><code class="language-solidity">function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data)
+    internal
+    virtual;
 </code></pre>
 <h3 id="_exists"><a class="header" href="#_exists">_exists</a></h3>
 <p><em>Returns whether <code>tokenId</code> exists.
@@ -330,7 +345,11 @@ Requirements:</p>
 <ul>
 <li><code>tokenId</code> must exist.*</li>
 </ul>
-<pre><code class="language-solidity">function _isApprovedOrOwner(address spender, uint256 tokenId) internal view virtual returns (bool);
+<pre><code class="language-solidity">function _isApprovedOrOwner(address spender, uint256 tokenId)
+    internal
+    view
+    virtual
+    returns (bool);
 </code></pre>
 <h3 id="_safemint"><a class="header" href="#_safemint">_safeMint</a></h3>
 <p>*Safely mints <code>tokenId</code> and transfers it to <code>to</code>.
@@ -393,7 +412,9 @@ Emits a {ApprovalForAll} event.</em></p>
 <h3 id="_checkonerc721received"><a class="header" href="#_checkonerc721received">_checkOnERC721Received</a></h3>
 <p><em>Internal function to invoke <a href="contracts/base/ERC721.sol//contracts/misc/NewbieVilla.sol/contract.NewbieVilla.html#onerc721received">IERC721Receiver-onERC721Received</a> on a target address.
 The call is not executed if the target address is not a contract.</em></p>
-<pre><code class="language-solidity">function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data) private returns (bool);
+<pre><code class="language-solidity">function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data)
+    private
+    returns (bool);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -434,7 +455,7 @@ To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hook
 <pre><code class="language-solidity">function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc721enumerable"><a class="header" href="#erc721enumerable">ERC721Enumerable</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/base/ERC721Enumerable.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/base/ERC721Enumerable.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="contracts/base/ERC721Enumerable.sol//contracts/base/ERC721.sol/contract.ERC721.html">ERC721</a>, IERC721Enumerable</p>
 <h2 id="state-variables-1"><a class="header" href="#state-variables-1">State Variables</a></h2>
@@ -453,11 +474,21 @@ To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hook
 <h2 id="functions-1"><a class="header" href="#functions-1">Functions</a></h2>
 <h3 id="supportsinterface-1"><a class="header" href="#supportsinterface-1">supportsInterface</a></h3>
 <p><em>See <a href="contracts/base/ERC721Enumerable.sol//contracts/base/LinklistBase.sol/abstract.LinklistBase.html#supportsinterface">IERC165-supportsInterface</a>.</em></p>
-<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, ERC721) returns (bool);
+<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId)
+    public
+    view
+    virtual
+    override(IERC165, ERC721)
+    returns (bool);
 </code></pre>
 <h3 id="tokenofownerbyindex"><a class="header" href="#tokenofownerbyindex">tokenOfOwnerByIndex</a></h3>
 <p><em>See <a href="contracts/base/ERC721Enumerable.sol//lib/forge-std/src/interfaces/IERC721.sol/interface.IERC721Enumerable.html#tokenofownerbyindex">IERC721Enumerable-tokenOfOwnerByIndex</a>.</em></p>
-<pre><code class="language-solidity">function tokenOfOwnerByIndex(address owner, uint256 index) public view virtual override returns (uint256);
+<pre><code class="language-solidity">function tokenOfOwnerByIndex(address owner, uint256 index)
+    public
+    view
+    virtual
+    override
+    returns (uint256);
 </code></pre>
 <h3 id="totalsupply"><a class="header" href="#totalsupply">totalSupply</a></h3>
 <p><em>See <a href="contracts/base/ERC721Enumerable.sol//contracts/MintNFT.sol/contract.MintNFT.html#totalsupply">IERC721Enumerable-totalSupply</a>.</em></p>
@@ -480,7 +511,10 @@ transferred to <code>to</code>.</li>
 <li><code>to</code> cannot be the zero address.
 To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].*</li>
 </ul>
-<pre><code class="language-solidity">function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override;
+<pre><code class="language-solidity">function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+    internal
+    virtual
+    override;
 </code></pre>
 <h3 id="_addtokentoownerenumeration"><a class="header" href="#_addtokentoownerenumeration">_addTokenToOwnerEnumeration</a></h3>
 <p><em>Private function to add a token to this extension's ownership-tracking data structures.</em></p>
@@ -524,7 +558,7 @@ This has O(1) time complexity, but alters the order of the _allTokens array.</em
 <tr><td><code>tokenId</code></td><td><code>uint256</code></td><td>uint256 ID of the token to be removed from the tokens list</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="linklistbase"><a class="header" href="#linklistbase">LinklistBase</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/base/LinklistBase.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/base/LinklistBase.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 ERC165</p>
 <h2 id="state-variables-2"><a class="header" href="#state-variables-2">State Variables</a></h2>
@@ -565,7 +599,12 @@ ERC165</p>
 </code></pre>
 <h3 id="supportsinterface-2"><a class="header" href="#supportsinterface-2">supportsInterface</a></h3>
 <p><em>See <a href="contracts/base/LinklistBase.sol//contracts/base/ERC721.sol/contract.ERC721.html#supportsinterface">IERC165-supportsInterface</a>.</em></p>
-<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165) returns (bool);
+<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId)
+    public
+    view
+    virtual
+    override(ERC165)
+    returns (bool);
 </code></pre>
 <h3 id="name-1"><a class="header" href="#name-1">name</a></h3>
 <p><em>See <a href="contracts/base/LinklistBase.sol//contracts/base/ERC721.sol/contract.ERC721.html#name">IERC721Metadata-name</a>.</em></p>
@@ -576,7 +615,7 @@ ERC165</p>
 <pre><code class="language-solidity">function symbol() public view returns (string memory);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="nftbase"><a class="header" href="#nftbase">NFTBase</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/base/NFTBase.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/base/NFTBase.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="contracts/base/NFTBase.sol//contracts/base/ERC721Enumerable.sol/abstract.ERC721Enumerable.html">ERC721Enumerable</a></p>
 <h2 id="functions-3"><a class="header" href="#functions-3">Functions</a></h2>
@@ -603,42 +642,50 @@ ERC165</p>
 <li><a href="contracts/interfaces/IWeb3Entry.sol/interface.IWeb3Entry.html">IWeb3Entry</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ierc20mintable"><a class="header" href="#ierc20mintable">IERC20Mintable</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/IERC20Mintable.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/IERC20Mintable.sol">Git Source</a></p>
 <h2 id="functions-4"><a class="header" href="#functions-4">Functions</a></h2>
 <h3 id="mint"><a class="header" href="#mint">mint</a></h3>
 <pre><code class="language-solidity">function mint(address to, uint256 amount) external;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ilinkmodule"><a class="header" href="#ilinkmodule">ILinkModule</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/ILinkModule.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/ILinkModule.sol">Git Source</a></p>
 <h2 id="functions-5"><a class="header" href="#functions-5">Functions</a></h2>
 <h3 id="initializelinkmodule"><a class="header" href="#initializelinkmodule">initializeLinkModule</a></h3>
-<pre><code class="language-solidity">function initializeLinkModule(uint256 characterId, uint256 noteId, string calldata name, string calldata symbol)
-    external
-    returns (bytes memory);
+<pre><code class="language-solidity">function initializeLinkModule(
+    uint256 characterId,
+    uint256 noteId,
+    string calldata name,
+    string calldata symbol
+) external returns (bytes memory);
 </code></pre>
 <h3 id="processlink"><a class="header" href="#processlink">processLink</a></h3>
-<pre><code class="language-solidity">function processLink(address to, uint256 characterId, uint256 noteId, bytes calldata data) external;
+<pre><code class="language-solidity">function processLink(address to, uint256 characterId, uint256 noteId, bytes calldata data)
+    external;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ilinkmodule4address"><a class="header" href="#ilinkmodule4address">ILinkModule4Address</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/ILinkModule4Address.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/ILinkModule4Address.sol">Git Source</a></p>
 <h2 id="functions-6"><a class="header" href="#functions-6">Functions</a></h2>
 <h3 id="initializelinkmodule-1"><a class="header" href="#initializelinkmodule-1">initializeLinkModule</a></h3>
-<pre><code class="language-solidity">function initializeLinkModule(address account, bytes calldata data) external returns (bytes memory);
+<pre><code class="language-solidity">function initializeLinkModule(address account, bytes calldata data)
+    external
+    returns (bytes memory);
 </code></pre>
 <h3 id="processlink-1"><a class="header" href="#processlink-1">processLink</a></h3>
 <pre><code class="language-solidity">function processLink(address account, uint256 noteId, bytes calldata data) external;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ilinkmodule4character"><a class="header" href="#ilinkmodule4character">ILinkModule4Character</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/ILinkModule4Character.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/ILinkModule4Character.sol">Git Source</a></p>
 <h2 id="functions-7"><a class="header" href="#functions-7">Functions</a></h2>
 <h3 id="initializelinkmodule-2"><a class="header" href="#initializelinkmodule-2">initializeLinkModule</a></h3>
-<pre><code class="language-solidity">function initializeLinkModule(uint256 characterId, bytes calldata data) external returns (bytes memory);
+<pre><code class="language-solidity">function initializeLinkModule(uint256 characterId, bytes calldata data)
+    external
+    returns (bytes memory);
 </code></pre>
 <h3 id="processlink-2"><a class="header" href="#processlink-2">processLink</a></h3>
 <pre><code class="language-solidity">function processLink(address caller, uint256 characterId, bytes calldata data) external;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ilinkmodule4erc721"><a class="header" href="#ilinkmodule4erc721">ILinkModule4ERC721</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/ILinkModule4ERC721.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/ILinkModule4ERC721.sol">Git Source</a></p>
 <h2 id="functions-8"><a class="header" href="#functions-8">Functions</a></h2>
 <h3 id="initializelinkmodule-3"><a class="header" href="#initializelinkmodule-3">initializeLinkModule</a></h3>
 <pre><code class="language-solidity">function initializeLinkModule(address tokenAddress, uint256 tokenId, bytes calldata data)
@@ -646,19 +693,22 @@ ERC165</p>
     returns (bytes memory);
 </code></pre>
 <h3 id="processlink-3"><a class="header" href="#processlink-3">processLink</a></h3>
-<pre><code class="language-solidity">function processLink(address account, address tokenAddress, uint256 tokenId, bytes calldata data) external;
+<pre><code class="language-solidity">function processLink(address account, address tokenAddress, uint256 tokenId, bytes calldata data)
+    external;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ilinkmodule4linklist"><a class="header" href="#ilinkmodule4linklist">ILinkModule4Linklist</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/ILinkModule4Linklist.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/ILinkModule4Linklist.sol">Git Source</a></p>
 <h2 id="functions-9"><a class="header" href="#functions-9">Functions</a></h2>
 <h3 id="initializelinkmodule-4"><a class="header" href="#initializelinkmodule-4">initializeLinkModule</a></h3>
-<pre><code class="language-solidity">function initializeLinkModule(uint256 tokenId, bytes calldata data) external returns (bytes memory);
+<pre><code class="language-solidity">function initializeLinkModule(uint256 tokenId, bytes calldata data)
+    external
+    returns (bytes memory);
 </code></pre>
 <h3 id="processlink-4"><a class="header" href="#processlink-4">processLink</a></h3>
 <pre><code class="language-solidity">function processLink(address account, uint256 tokenId, bytes calldata data) external;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ilinkmodule4note"><a class="header" href="#ilinkmodule4note">ILinkModule4Note</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/ILinkModule4Note.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/ILinkModule4Note.sol">Git Source</a></p>
 <h2 id="functions-10"><a class="header" href="#functions-10">Functions</a></h2>
 <h3 id="initializelinkmodule-5"><a class="header" href="#initializelinkmodule-5">initializeLinkModule</a></h3>
 <pre><code class="language-solidity">function initializeLinkModule(uint256 characterId, uint256 noteId, bytes calldata data)
@@ -666,10 +716,11 @@ ERC165</p>
     returns (bytes memory);
 </code></pre>
 <h3 id="processlink-5"><a class="header" href="#processlink-5">processLink</a></h3>
-<pre><code class="language-solidity">function processLink(address caller, uint256 characterId, uint256 noteId, bytes calldata data) external;
+<pre><code class="language-solidity">function processLink(address caller, uint256 characterId, uint256 noteId, bytes calldata data)
+    external;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ilinklist"><a class="header" href="#ilinklist">ILinklist</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/ILinklist.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/ILinklist.sol">Git Source</a></p>
 <h2 id="functions-11"><a class="header" href="#functions-11">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
 <p>Initializes the contract.</p>
@@ -753,7 +804,9 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="addlinkingnote"><a class="header" href="#addlinkingnote">addLinkingNote</a></h3>
 <p>Adds a linked note to a linklist.</p>
-<pre><code class="language-solidity">function addLinkingNote(uint256 tokenId, uint256 toCharacterId, uint256 toNoteId) external returns (bytes32);
+<pre><code class="language-solidity">function addLinkingNote(uint256 tokenId, uint256 toCharacterId, uint256 toNoteId)
+    external
+    returns (bytes32);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -780,7 +833,9 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="addlinkingerc721"><a class="header" href="#addlinkingerc721">addLinkingERC721</a></h3>
 <p>Adds a linked ERC721 to a linklist.</p>
-<pre><code class="language-solidity">function addLinkingERC721(uint256 tokenId, address tokenAddress, uint256 erc721TokenId) external returns (bytes32);
+<pre><code class="language-solidity">function addLinkingERC721(uint256 tokenId, address tokenAddress, uint256 erc721TokenId)
+    external
+    returns (bytes32);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -796,7 +851,8 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="removelinkingerc721"><a class="header" href="#removelinkingerc721">removeLinkingERC721</a></h3>
 <p>Removes a linked ERC721 from a linklist.</p>
-<pre><code class="language-solidity">function removeLinkingERC721(uint256 tokenId, address tokenAddress, uint256 erc721TokenId) external;
+<pre><code class="language-solidity">function removeLinkingERC721(uint256 tokenId, address tokenAddress, uint256 erc721TokenId)
+    external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -914,7 +970,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="getlinkingnotes"><a class="header" href="#getlinkingnotes">getLinkingNotes</a></h3>
 <p>Returns the linked notes of the linklist NFT.</p>
-<pre><code class="language-solidity">function getLinkingNotes(uint256 tokenId) external view returns (DataTypes.NoteStruct[] memory results);
+<pre><code class="language-solidity">function getLinkingNotes(uint256 tokenId)
+    external
+    view
+    returns (DataTypes.NoteStruct[] memory results);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -956,7 +1015,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="getlinkingerc721s"><a class="header" href="#getlinkingerc721s">getLinkingERC721s</a></h3>
 <p>Returns the linked ERC721s of the linklist NFT.</p>
-<pre><code class="language-solidity">function getLinkingERC721s(uint256 tokenId) external view returns (DataTypes.ERC721Struct[] memory results);
+<pre><code class="language-solidity">function getLinkingERC721s(uint256 tokenId)
+    external
+    view
+    returns (DataTypes.ERC721Struct[] memory results);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1205,7 +1267,7 @@ or following list in your bookmarks.</em></p>
 <tr><td><code>&lt;none&gt;</code></td><td><code>address</code></td><td>The owner of the <code>tokenId</code> token.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="imintmodule4note"><a class="header" href="#imintmodule4note">IMintModule4Note</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/IMintModule4Note.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/IMintModule4Note.sol">Git Source</a></p>
 <h2 id="functions-12"><a class="header" href="#functions-12">Functions</a></h2>
 <h3 id="initializemintmodule"><a class="header" href="#initializemintmodule">initializeMintModule</a></h3>
 <p>Initialize the MintModule for a specific note.</p>
@@ -1228,7 +1290,8 @@ or following list in your bookmarks.</em></p>
 <h3 id="processmint"><a class="header" href="#processmint">processMint</a></h3>
 <p>Processes the mint logic. <br>
 Triggered when the <code>mintNote</code> of web3Entry is called, if mint module of note is set.</p>
-<pre><code class="language-solidity">function processMint(address to, uint256 characterId, uint256 noteId, bytes calldata data) external;
+<pre><code class="language-solidity">function processMint(address to, uint256 characterId, uint256 noteId, bytes calldata data)
+    external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1238,7 +1301,7 @@ Triggered when the <code>mintNote</code> of web3Entry is called, if mint module 
 <tr><td><code>data</code></td><td><code>bytes</code></td><td>The data passed from the user to be decoded.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="imintnft"><a class="header" href="#imintnft">IMintNFT</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/IMintNFT.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/IMintNFT.sol">Git Source</a></p>
 <h2 id="functions-13"><a class="header" href="#functions-13">Functions</a></h2>
 <h3 id="initialize-1"><a class="header" href="#initialize-1">initialize</a></h3>
 <p>Initialize the mint nft.</p>
@@ -1321,7 +1384,7 @@ Can only be called by character owner of note.</p>
 <tr><td><code>noteId</code></td><td><code>uint256</code></td><td>The note ID.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="itipswithconfig"><a class="header" href="#itipswithconfig">ITipsWithConfig</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/ITipsWithConfig.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/ITipsWithConfig.sol">Git Source</a></p>
 <p>This is the interface for the TipsWithConfig contract.</p>
 <h2 id="functions-14"><a class="header" href="#functions-14">Functions</a></h2>
 <h3 id="initialize-2"><a class="header" href="#initialize-2">initialize</a></h3>
@@ -1347,7 +1410,8 @@ Can only be called by character owner of note.</p>
 <h3 id="setfeefraction4character"><a class="header" href="#setfeefraction4character">setFeeFraction4Character</a></h3>
 <p>Sets the fee percentage of specific &lt;receiver, character&gt;.</p>
 <p><em>If this is set, it will override the default fee fraction.</em></p>
-<pre><code class="language-solidity">function setFeeFraction4Character(address feeReceiver, uint256 characterId, uint256 fraction) external;
+<pre><code class="language-solidity">function setFeeFraction4Character(address feeReceiver, uint256 characterId, uint256 fraction)
+    external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1429,7 +1493,10 @@ Emits a {CollectTips4Character} event if collects successfully.</p>
 </div>
 <h3 id="getfeeamount"><a class="header" href="#getfeeamount">getFeeAmount</a></h3>
 <p>Returns how much the fee is owed by &lt;feeFraction, tipAmount&gt;.</p>
-<pre><code class="language-solidity">function getFeeAmount(address feeReceiver, uint256 characterId, uint256 tipAmount) external view returns (uint256);
+<pre><code class="language-solidity">function getFeeAmount(address feeReceiver, uint256 characterId, uint256 tipAmount)
+    external
+    view
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1445,7 +1512,10 @@ Emits a {CollectTips4Character} event if collects successfully.</p>
 </div>
 <h3 id="gettipsconfigid"><a class="header" href="#gettipsconfigid">getTipsConfigId</a></h3>
 <p>Return the tips config Id.</p>
-<pre><code class="language-solidity">function getTipsConfigId(uint256 fromCharacterId, uint256 toCharacterId) external view returns (uint256);
+<pre><code class="language-solidity">function getTipsConfigId(uint256 fromCharacterId, uint256 toCharacterId)
+    external
+    view
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1493,7 +1563,7 @@ Emits a {CollectTips4Character} event if collects successfully.</p>
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="itipswithfee"><a class="header" href="#itipswithfee">ITipsWithFee</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/ITipsWithFee.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/ITipsWithFee.sol">Git Source</a></p>
 <p>This is the interface for the TipsWithFee contract.</p>
 <h2 id="functions-15"><a class="header" href="#functions-15">Functions</a></h2>
 <h3 id="initialize-3"><a class="header" href="#initialize-3">initialize</a></h3>
@@ -1520,7 +1590,8 @@ Emits a {CollectTips4Character} event if collects successfully.</p>
 <h3 id="setfeefraction4character-1"><a class="header" href="#setfeefraction4character-1">setFeeFraction4Character</a></h3>
 <p>Changes the fee percentage of specific &lt;receiver, character&gt;.</p>
 <p><em>If feeFraction4Character is set, it will override the default fee fraction.</em></p>
-<pre><code class="language-solidity">function setFeeFraction4Character(address feeReceiver, uint256 characterId, uint256 fraction) external;
+<pre><code class="language-solidity">function setFeeFraction4Character(address feeReceiver, uint256 characterId, uint256 fraction)
+    external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1532,7 +1603,12 @@ Emits a {CollectTips4Character} event if collects successfully.</p>
 <h3 id="setfeefraction4note"><a class="header" href="#setfeefraction4note">setFeeFraction4Note</a></h3>
 <p>Changes the fee percentage of specific &lt;receiver, note&gt;.</p>
 <p><em>If feeFraction4Note is set, it will override feeFraction4Character and the default fee fraction.</em></p>
-<pre><code class="language-solidity">function setFeeFraction4Note(address feeReceiver, uint256 characterId, uint256 noteId, uint256 fraction) external;
+<pre><code class="language-solidity">function setFeeFraction4Note(
+    address feeReceiver,
+    uint256 characterId,
+    uint256 noteId,
+    uint256 fraction
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1546,7 +1622,10 @@ Emits a {CollectTips4Character} event if collects successfully.</p>
 <p>Returns the fee percentage of specific &lt;receiver, note&gt;.</p>
 <p><em>It will return the first non-zero value by priority feeFraction4Note,
 feeFraction4Character and defaultFeeFraction.</em></p>
-<pre><code class="language-solidity">function getFeeFraction(address feeReceiver, uint256 characterId, uint256 noteId) external view returns (uint256);
+<pre><code class="language-solidity">function getFeeFraction(address feeReceiver, uint256 characterId, uint256 noteId)
+    external
+    view
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1598,7 +1677,7 @@ feeFraction4Character and defaultFeeFraction.</em></p>
 <tr><td><code>&lt;none&gt;</code></td><td><code>address</code></td><td>The address of mira token contract.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="iweb3entry"><a class="header" href="#iweb3entry">IWeb3Entry</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/IWeb3Entry.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/IWeb3Entry.sol">Git Source</a></p>
 <h2 id="functions-16"><a class="header" href="#functions-16">Functions</a></h2>
 <h3 id="initialize-4"><a class="header" href="#initialize-4">initialize</a></h3>
 <p>Initializes the Web3Entry.</p>
@@ -1623,7 +1702,9 @@ feeFraction4Character and defaultFeeFraction.</em></p>
 </div>
 <h3 id="createcharacter"><a class="header" href="#createcharacter">createCharacter</a></h3>
 <p>This method creates a character with the given parameters to the given address.</p>
-<pre><code class="language-solidity">function createCharacter(DataTypes.CreateCharacterData calldata vars) external returns (uint256 characterId);
+<pre><code class="language-solidity">function createCharacter(DataTypes.CreateCharacterData calldata vars)
+    external
+    returns (uint256 characterId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1675,7 +1756,8 @@ feeFraction4Character and defaultFeeFraction.</em></p>
 <h3 id="grantoperatorpermissions"><a class="header" href="#grantoperatorpermissions">grantOperatorPermissions</a></h3>
 <p>Grant an address as an operator and authorize it with custom permissions.</p>
 <p><em>Every bit in permissionBitMap stands for a corresponding method in Web3Entry. more details in OP.sol.</em></p>
-<pre><code class="language-solidity">function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) external;
+<pre><code class="language-solidity">function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap)
+    external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1962,7 +2044,9 @@ immutability of blockchain itself, but the deleted notes will be tagged as <code
 </div>
 <h3 id="postnote4address"><a class="header" href="#postnote4address">postNote4Address</a></h3>
 <p>Posts a note for a given address.</p>
-<pre><code class="language-solidity">function postNote4Address(DataTypes.PostNoteData calldata vars, address ethAddress) external returns (uint256 noteId);
+<pre><code class="language-solidity">function postNote4Address(DataTypes.PostNoteData calldata vars, address ethAddress)
+    external
+    returns (uint256 noteId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -2011,9 +2095,10 @@ immutability of blockchain itself, but the deleted notes will be tagged as <code
 </div>
 <h3 id="postnote4erc721"><a class="header" href="#postnote4erc721">postNote4ERC721</a></h3>
 <p>Posts a note for a given ERC721.</p>
-<pre><code class="language-solidity">function postNote4ERC721(DataTypes.PostNoteData calldata vars, DataTypes.ERC721Struct calldata erc721)
-    external
-    returns (uint256 noteId);
+<pre><code class="language-solidity">function postNote4ERC721(
+    DataTypes.PostNoteData calldata vars,
+    DataTypes.ERC721Struct calldata erc721
+) external returns (uint256 noteId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -2028,7 +2113,9 @@ immutability of blockchain itself, but the deleted notes will be tagged as <code
 </div>
 <h3 id="postnote4anyuri"><a class="header" href="#postnote4anyuri">postNote4AnyUri</a></h3>
 <p>Posts a note for a given uri.</p>
-<pre><code class="language-solidity">function postNote4AnyUri(DataTypes.PostNoteData calldata vars, string calldata uri) external returns (uint256 noteId);
+<pre><code class="language-solidity">function postNote4AnyUri(DataTypes.PostNoteData calldata vars, string calldata uri)
+    external
+    returns (uint256 noteId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -2070,7 +2157,10 @@ authorizations!!!</p>
 </div>
 <h3 id="getoperatorpermissions"><a class="header" href="#getoperatorpermissions">getOperatorPermissions</a></h3>
 <p>Get permission bitmap of an operator.</p>
-<pre><code class="language-solidity">function getOperatorPermissions(uint256 characterId, address operator) external view returns (uint256);
+<pre><code class="language-solidity">function getOperatorPermissions(uint256 characterId, address operator)
+    external
+    view
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -2098,7 +2188,10 @@ authorizations!!!</p>
 </div>
 <h3 id="isoperatorallowedfornote"><a class="header" href="#isoperatorallowedfornote">isOperatorAllowedForNote</a></h3>
 <p>Query if a operator has permission for a note.</p>
-<pre><code class="language-solidity">function isOperatorAllowedForNote(uint256 characterId, uint256 noteId, address operator) external view returns (bool);
+<pre><code class="language-solidity">function isOperatorAllowedForNote(uint256 characterId, uint256 noteId, address operator)
+    external
+    view
+    returns (bool);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -2156,7 +2249,10 @@ authorizations!!!</p>
 </div>
 <h3 id="getcharacterbyhandle"><a class="header" href="#getcharacterbyhandle">getCharacterByHandle</a></h3>
 <p>Returns the full character struct associated with a given character handle.</p>
-<pre><code class="language-solidity">function getCharacterByHandle(string calldata handle) external view returns (DataTypes.Character memory);
+<pre><code class="language-solidity">function getCharacterByHandle(string calldata handle)
+    external
+    view
+    returns (DataTypes.Character memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -2198,7 +2294,10 @@ authorizations!!!</p>
 </div>
 <h3 id="getnote"><a class="header" href="#getnote">getNote</a></h3>
 <p>Returns the full note struct associated with a given note.</p>
-<pre><code class="language-solidity">function getNote(uint256 characterId, uint256 noteId) external view returns (DataTypes.Note memory);
+<pre><code class="language-solidity">function getNote(uint256 characterId, uint256 noteId)
+    external
+    view
+    returns (DataTypes.Note memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -2341,7 +2440,7 @@ prevents a signature from being used multiple times.</p>
 <li><a href="contracts/libraries/ValidationLib.sol/library.ValidationLib.html">ValidationLib</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="characterlib"><a class="header" href="#characterlib">CharacterLib</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/CharacterLib.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/CharacterLib.sol">Git Source</a></p>
 <h2 id="functions-17"><a class="header" href="#functions-17">Functions</a></h2>
 <h3 id="createcharacter-1"><a class="header" href="#createcharacter-1">createCharacter</a></h3>
 <p>Creates a character.</p>
@@ -2378,7 +2477,11 @@ prevents a signature from being used multiple times.</p>
 </div>
 <h3 id="setcharacterlinkmodule"><a class="header" href="#setcharacterlinkmodule">setCharacterLinkModule</a></h3>
 <p>Sets link module for a given character.</p>
-<pre><code class="language-solidity">function setCharacterLinkModule(uint256 characterId, address linkModule, bytes calldata linkModuleInitData) external;
+<pre><code class="language-solidity">function setCharacterLinkModule(
+    uint256 characterId,
+    address linkModule,
+    bytes calldata linkModuleInitData
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -2401,7 +2504,7 @@ prevents a signature from being used multiple times.</p>
 <pre><code class="language-solidity">function _handleHash(string memory handle) internal pure returns (bytes32);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="constants"><a class="header" href="#constants">Constants</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Constants.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Constants.sol">Git Source</a></p>
 <h2 id="state-variables-3"><a class="header" href="#state-variables-3">State Variables</a></h2>
 <h3 id="max_handle_length"><a class="header" href="#max_handle_length">MAX_HANDLE_LENGTH</a></h3>
 <pre><code class="language-solidity">uint8 public constant MAX_HANDLE_LENGTH = 31;
@@ -2428,7 +2531,7 @@ prevents a signature from being used multiple times.</p>
 <pre><code class="language-solidity">bytes32 public constant LINK_ITEM_TYPE_ANYURI = "AnyUri";
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="datatypes"><a class="header" href="#datatypes">DataTypes</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/DataTypes.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/DataTypes.sol">Git Source</a></p>
 <p>A standard library of data types.</p>
 <h2 id="structs-1"><a class="header" href="#structs-1">Structs</a></h2>
 <h3 id="migratedata"><a class="header" href="#migratedata">MigrateData</a></h3>
@@ -2718,147 +2821,147 @@ prevents a signature from being used multiple times.</p>
 <tr><td><code>deadline</code></td><td><code>uint256</code></td><td>The signature's deadline.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="errcharacternotexists"><a class="header" href="#errcharacternotexists">ErrCharacterNotExists</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Character ID not exists</em></p>
 <pre><code class="language-solidity">error ErrCharacterNotExists(uint256 characterId);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errnotaddressowner"><a class="header" href="#errnotaddressowner">ErrNotAddressOwner</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Not owner of address</em></p>
 <pre><code class="language-solidity">error ErrNotAddressOwner();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errnotcharacterowner"><a class="header" href="#errnotcharacterowner">ErrNotCharacterOwner</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Caller is not the owner of character</em></p>
 <pre><code class="language-solidity">error ErrNotCharacterOwner();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errnotelocked"><a class="header" href="#errnotelocked">ErrNoteLocked</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Note has been locked</em></p>
 <pre><code class="language-solidity">error ErrNoteLocked();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errhandleexists"><a class="header" href="#errhandleexists">ErrHandleExists</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Handle does not exist</em></p>
 <pre><code class="language-solidity">error ErrHandleExists();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errsocialtokenexists"><a class="header" href="#errsocialtokenexists">ErrSocialTokenExists</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Social token address does not exist</em></p>
 <pre><code class="language-solidity">error ErrSocialTokenExists();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errhandlelengthinvalid"><a class="header" href="#errhandlelengthinvalid">ErrHandleLengthInvalid</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Handle length too long or too short</em></p>
 <pre><code class="language-solidity">error ErrHandleLengthInvalid();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errhandlecontainsinvalidcharacters"><a class="header" href="#errhandlecontainsinvalidcharacters">ErrHandleContainsInvalidCharacters</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Handle contains invalid characters</em></p>
 <pre><code class="language-solidity">error ErrHandleContainsInvalidCharacters();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errnotenoughpermission"><a class="header" href="#errnotenoughpermission">ErrNotEnoughPermission</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Operator has not enough permission for this character</em></p>
 <pre><code class="language-solidity">error ErrNotEnoughPermission();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errnotenoughpermissionforthisnote"><a class="header" href="#errnotenoughpermissionforthisnote">ErrNotEnoughPermissionForThisNote</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Operator has not enough permissions for this note</em></p>
 <pre><code class="language-solidity">error ErrNotEnoughPermissionForThisNote();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errtargetalreadyhasprimarycharacter"><a class="header" href="#errtargetalreadyhasprimarycharacter">ErrTargetAlreadyHasPrimaryCharacter</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Target address already has primary character</em></p>
 <pre><code class="language-solidity">error ErrTargetAlreadyHasPrimaryCharacter();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errnoteisdeleted"><a class="header" href="#errnoteisdeleted">ErrNoteIsDeleted</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Note has been deleted</em></p>
 <pre><code class="language-solidity">error ErrNoteIsDeleted();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errnotenotexists"><a class="header" href="#errnotenotexists">ErrNoteNotExists</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Note does not exist</em></p>
 <pre><code class="language-solidity">error ErrNoteNotExists();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errarraylengthmismatch"><a class="header" href="#errarraylengthmismatch">ErrArrayLengthMismatch</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Array length mismatch</em></p>
 <pre><code class="language-solidity">error ErrArrayLengthMismatch();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errcallernotweb3entry"><a class="header" href="#errcallernotweb3entry">ErrCallerNotWeb3Entry</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Caller is not web3Entry contract</em></p>
 <pre><code class="language-solidity">error ErrCallerNotWeb3Entry();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errcallernotweb3entryornotowner"><a class="header" href="#errcallernotweb3entryornotowner">ErrCallerNotWeb3EntryOrNotOwner</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Caller is not web3Entry contract, and not the owner of character</em></p>
 <pre><code class="language-solidity">error ErrCallerNotWeb3EntryOrNotOwner();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errtokenidalreadyexists"><a class="header" href="#errtokenidalreadyexists">ErrTokenIdAlreadyExists</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Token id already exists</em></p>
 <pre><code class="language-solidity">error ErrTokenIdAlreadyExists();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errnotexistingcharacter"><a class="header" href="#errnotexistingcharacter">ErrNotExistingCharacter</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Character does not exist</em></p>
 <pre><code class="language-solidity">error ErrNotExistingCharacter();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errnotexistinglinklisttoken"><a class="header" href="#errnotexistinglinklisttoken">ErrNotExistingLinklistToken</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Token id of linklist does not exist</em></p>
 <pre><code class="language-solidity">error ErrNotExistingLinklistToken();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errinvalidweb3entry"><a class="header" href="#errinvalidweb3entry">ErrInvalidWeb3Entry</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Invalid web3Entry address</em></p>
 <pre><code class="language-solidity">error ErrInvalidWeb3Entry();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errnotapprovedorexceedapproval"><a class="header" href="#errnotapprovedorexceedapproval">ErrNotApprovedOrExceedApproval</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Not approved by module or exceed the approval amount</em></p>
 <pre><code class="language-solidity">error ErrNotApprovedOrExceedApproval();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errexceedmaxsupply"><a class="header" href="#errexceedmaxsupply">ErrExceedMaxSupply</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Exceed max supply</em></p>
 <pre><code class="language-solidity">error ErrExceedMaxSupply();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errexceedapproval"><a class="header" href="#errexceedapproval">ErrExceedApproval</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Exceed the approval amount</em></p>
 <pre><code class="language-solidity">error ErrExceedApproval();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errsignatureexpired"><a class="header" href="#errsignatureexpired">ErrSignatureExpired</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Signature is expired</em></p>
 <pre><code class="language-solidity">error ErrSignatureExpired();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errsignatureinvalid"><a class="header" href="#errsignatureinvalid">ErrSignatureInvalid</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Signature is invalid</em></p>
 <pre><code class="language-solidity">error ErrSignatureInvalid();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errnotowner"><a class="header" href="#errnotowner">ErrNotOwner</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Caller not owner</em></p>
 <pre><code class="language-solidity">error ErrNotOwner();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errtokennotexists"><a class="header" href="#errtokennotexists">ErrTokenNotExists</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>Token not exists</em></p>
 <pre><code class="language-solidity">error ErrTokenNotExists();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errlinktypeexists"><a class="header" href="#errlinktypeexists">ErrLinkTypeExists</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Error.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Error.sol">Git Source</a></p>
 <p><em>LinkType already exists</em></p>
 <pre><code class="language-solidity">error ErrLinkTypeExists(uint256 characterId, bytes32 linkType);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="events"><a class="header" href="#events">Events</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/Events.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/Events.sol">Git Source</a></p>
 <h2 id="events-1"><a class="header" href="#events-1">Events</a></h2>
 <h3 id="baseinitialized"><a class="header" href="#baseinitialized">BaseInitialized</a></h3>
 <pre><code class="language-solidity">event BaseInitialized(string name, string symbol, uint256 timestamp);
@@ -2874,20 +2977,30 @@ prevents a signature from being used multiple times.</p>
 </code></pre>
 <h3 id="charactercreated"><a class="header" href="#charactercreated">CharacterCreated</a></h3>
 <pre><code class="language-solidity">event CharacterCreated(
-    uint256 indexed characterId, address indexed creator, address indexed to, string handle, uint256 timestamp
+    uint256 indexed characterId,
+    address indexed creator,
+    address indexed to,
+    string handle,
+    uint256 timestamp
 );
 </code></pre>
 <h3 id="setprimarycharacterid-1"><a class="header" href="#setprimarycharacterid-1">SetPrimaryCharacterId</a></h3>
-<pre><code class="language-solidity">event SetPrimaryCharacterId(address indexed account, uint256 indexed characterId, uint256 indexed oldCharacterId);
+<pre><code class="language-solidity">event SetPrimaryCharacterId(
+    address indexed account, uint256 indexed characterId, uint256 indexed oldCharacterId
+);
 </code></pre>
 <h3 id="sethandle-2"><a class="header" href="#sethandle-2">SetHandle</a></h3>
 <pre><code class="language-solidity">event SetHandle(address indexed account, uint256 indexed characterId, string newHandle);
 </code></pre>
 <h3 id="setsocialtoken-2"><a class="header" href="#setsocialtoken-2">SetSocialToken</a></h3>
-<pre><code class="language-solidity">event SetSocialToken(address indexed account, uint256 indexed characterId, address indexed tokenAddress);
+<pre><code class="language-solidity">event SetSocialToken(
+    address indexed account, uint256 indexed characterId, address indexed tokenAddress
+);
 </code></pre>
 <h3 id="grantoperatorpermissions-1"><a class="header" href="#grantoperatorpermissions-1">GrantOperatorPermissions</a></h3>
-<pre><code class="language-solidity">event GrantOperatorPermissions(uint256 indexed characterId, address indexed operator, uint256 permissionBitMap);
+<pre><code class="language-solidity">event GrantOperatorPermissions(
+    uint256 indexed characterId, address indexed operator, uint256 permissionBitMap
+);
 </code></pre>
 <h3 id="grantoperators4note-1"><a class="header" href="#grantoperators4note-1">GrantOperators4Note</a></h3>
 <pre><code class="language-solidity">event GrantOperators4Note(
@@ -2899,7 +3012,11 @@ prevents a signature from being used multiple times.</p>
 </code></pre>
 <h3 id="postnote-1"><a class="header" href="#postnote-1">PostNote</a></h3>
 <pre><code class="language-solidity">event PostNote(
-    uint256 indexed characterId, uint256 indexed noteId, bytes32 indexed linkKey, bytes32 linkItemType, bytes data
+    uint256 indexed characterId,
+    uint256 indexed noteId,
+    bytes32 indexed linkKey,
+    bytes32 linkItemType,
+    bytes data
 );
 </code></pre>
 <h3 id="setnoteuri-1"><a class="header" href="#setnoteuri-1">SetNoteUri</a></h3>
@@ -2922,7 +3039,10 @@ prevents a signature from being used multiple times.</p>
 </code></pre>
 <h3 id="unlinkcharacter-1"><a class="header" href="#unlinkcharacter-1">UnlinkCharacter</a></h3>
 <pre><code class="language-solidity">event UnlinkCharacter(
-    address indexed account, uint256 indexed fromCharacterId, uint256 indexed toCharacterId, bytes32 linkType
+    address indexed account,
+    uint256 indexed fromCharacterId,
+    uint256 indexed toCharacterId,
+    bytes32 linkType
 );
 </code></pre>
 <h3 id="linknote-1"><a class="header" href="#linknote-1">LinkNote</a></h3>
@@ -2953,13 +3073,20 @@ prevents a signature from being used multiple times.</p>
 );
 </code></pre>
 <h3 id="linkaddress-1"><a class="header" href="#linkaddress-1">LinkAddress</a></h3>
-<pre><code class="language-solidity">event LinkAddress(uint256 indexed fromCharacterId, address indexed ethAddress, bytes32 linkType, uint256 linklistId);
+<pre><code class="language-solidity">event LinkAddress(
+    uint256 indexed fromCharacterId,
+    address indexed ethAddress,
+    bytes32 linkType,
+    uint256 linklistId
+);
 </code></pre>
 <h3 id="unlinkaddress-1"><a class="header" href="#unlinkaddress-1">UnlinkAddress</a></h3>
 <pre><code class="language-solidity">event UnlinkAddress(uint256 indexed fromCharacterId, address indexed ethAddress, bytes32 linkType);
 </code></pre>
 <h3 id="linkanyuri-1"><a class="header" href="#linkanyuri-1">LinkAnyUri</a></h3>
-<pre><code class="language-solidity">event LinkAnyUri(uint256 indexed fromCharacterId, string toUri, bytes32 linkType, uint256 linklistId);
+<pre><code class="language-solidity">event LinkAnyUri(
+    uint256 indexed fromCharacterId, string toUri, bytes32 linkType, uint256 linklistId
+);
 </code></pre>
 <h3 id="unlinkanyuri-1"><a class="header" href="#unlinkanyuri-1">UnlinkAnyUri</a></h3>
 <pre><code class="language-solidity">event UnlinkAnyUri(uint256 indexed fromCharacterId, string toUri, bytes32 linkType);
@@ -2993,22 +3120,35 @@ prevents a signature from being used multiple times.</p>
 </code></pre>
 <h3 id="linklinklist-1"><a class="header" href="#linklinklist-1">LinkLinklist</a></h3>
 <pre><code class="language-solidity">event LinkLinklist(
-    uint256 indexed fromCharacterId, uint256 indexed toLinklistId, bytes32 linkType, uint256 indexed linklistId
+    uint256 indexed fromCharacterId,
+    uint256 indexed toLinklistId,
+    bytes32 linkType,
+    uint256 indexed linklistId
 );
 </code></pre>
 <h3 id="unlinklinklist-1"><a class="header" href="#unlinklinklist-1">UnlinkLinklist</a></h3>
 <pre><code class="language-solidity">event UnlinkLinklist(
-    uint256 indexed fromCharacterId, uint256 indexed toLinklistId, bytes32 linkType, uint256 indexed linklistId
+    uint256 indexed fromCharacterId,
+    uint256 indexed toLinklistId,
+    bytes32 linkType,
+    uint256 indexed linklistId
 );
 </code></pre>
 <h3 id="mintnote-1"><a class="header" href="#mintnote-1">MintNote</a></h3>
 <pre><code class="language-solidity">event MintNote(
-    address indexed to, uint256 indexed characterId, uint256 indexed noteId, address tokenAddress, uint256 tokenId
+    address indexed to,
+    uint256 indexed characterId,
+    uint256 indexed noteId,
+    address tokenAddress,
+    uint256 tokenId
 );
 </code></pre>
 <h3 id="setlinkmodule4character-1"><a class="header" href="#setlinkmodule4character-1">SetLinkModule4Character</a></h3>
 <pre><code class="language-solidity">event SetLinkModule4Character(
-    uint256 indexed characterId, address indexed linkModule, bytes linkModuleInitData, bytes returnData
+    uint256 indexed characterId,
+    address indexed linkModule,
+    bytes linkModuleInitData,
+    bytes returnData
 );
 </code></pre>
 <h3 id="setlinkmodule4note-1"><a class="header" href="#setlinkmodule4note-1">SetLinkModule4Note</a></h3>
@@ -3036,7 +3176,10 @@ prevents a signature from being used multiple times.</p>
 </code></pre>
 <h3 id="setlinkmodule4linklist"><a class="header" href="#setlinkmodule4linklist">SetLinkModule4Linklist</a></h3>
 <pre><code class="language-solidity">event SetLinkModule4Linklist(
-    uint256 indexed linklistId, address indexed linkModule, bytes linkModuleInitData, bytes returnData
+    uint256 indexed linklistId,
+    address indexed linkModule,
+    bytes linkModuleInitData,
+    bytes returnData
 );
 </code></pre>
 <h3 id="setmintmodule4note-1"><a class="header" href="#setmintmodule4note-1">SetMintModule4Note</a></h3>
@@ -3049,18 +3192,25 @@ prevents a signature from being used multiple times.</p>
 );
 </code></pre>
 <h3 id="attachlinklist"><a class="header" href="#attachlinklist">AttachLinklist</a></h3>
-<pre><code class="language-solidity">event AttachLinklist(uint256 indexed linklistId, uint256 indexed characterId, bytes32 indexed linkType);
+<pre><code class="language-solidity">event AttachLinklist(
+    uint256 indexed linklistId, uint256 indexed characterId, bytes32 indexed linkType
+);
 </code></pre>
 <h3 id="detachlinklist"><a class="header" href="#detachlinklist">DetachLinklist</a></h3>
-<pre><code class="language-solidity">event DetachLinklist(uint256 indexed linklistId, uint256 indexed characterId, bytes32 indexed linkType);
+<pre><code class="language-solidity">event DetachLinklist(
+    uint256 indexed linklistId, uint256 indexed characterId, bytes32 indexed linkType
+);
 </code></pre>
 <h3 id="setapprovedmintamount4addresses"><a class="header" href="#setapprovedmintamount4addresses">SetApprovedMintAmount4Addresses</a></h3>
 <pre><code class="language-solidity">event SetApprovedMintAmount4Addresses(
-    uint256 indexed characterId, uint256 indexed noteId, uint256 indexed amount, address[] approvedAddresses
+    uint256 indexed characterId,
+    uint256 indexed noteId,
+    uint256 indexed amount,
+    address[] approvedAddresses
 );
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="linklib"><a class="header" href="#linklib">LinkLib</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/LinkLib.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/LinkLib.sol">Git Source</a></p>
 <h2 id="functions-18"><a class="header" href="#functions-18">Functions</a></h2>
 <h3 id="linkcharacter-2"><a class="header" href="#linkcharacter-2">linkCharacter</a></h3>
 <p>Links any characterId.</p>
@@ -3083,7 +3233,12 @@ prevents a signature from being used multiple times.</p>
 </div>
 <h3 id="unlinkcharacter-2"><a class="header" href="#unlinkcharacter-2">unlinkCharacter</a></h3>
 <p>Unlinks a given character.</p>
-<pre><code class="language-solidity">function unlinkCharacter(uint256 fromCharacterId, uint256 toCharacterId, bytes32 linkType, address linklist) external;
+<pre><code class="language-solidity">function unlinkCharacter(
+    uint256 fromCharacterId,
+    uint256 toCharacterId,
+    bytes32 linkType,
+    address linklist
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -3135,7 +3290,12 @@ prevents a signature from being used multiple times.</p>
 </div>
 <h3 id="linklinklist-2"><a class="header" href="#linklinklist-2">linkLinklist</a></h3>
 <p>Links a linklist.</p>
-<pre><code class="language-solidity">function linkLinklist(uint256 fromCharacterId, uint256 toLinkListId, bytes32 linkType, address linklist) external;
+<pre><code class="language-solidity">function linkLinklist(
+    uint256 fromCharacterId,
+    uint256 toLinkListId,
+    bytes32 linkType,
+    address linklist
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -3147,7 +3307,12 @@ prevents a signature from being used multiple times.</p>
 </div>
 <h3 id="unlinklinklist-2"><a class="header" href="#unlinklinklist-2">unlinkLinklist</a></h3>
 <p>Unlinks a linklist.</p>
-<pre><code class="language-solidity">function unlinkLinklist(uint256 fromCharacterId, uint256 toLinkListId, bytes32 linkType, address linklist) external;
+<pre><code class="language-solidity">function unlinkLinklist(
+    uint256 fromCharacterId,
+    uint256 toLinkListId,
+    bytes32 linkType,
+    address linklist
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -3159,8 +3324,13 @@ prevents a signature from being used multiple times.</p>
 </div>
 <h3 id="linkerc721-2"><a class="header" href="#linkerc721-2">linkERC721</a></h3>
 <p>Links an ERC721 token.</p>
-<pre><code class="language-solidity">function linkERC721(uint256 fromCharacterId, address tokenAddress, uint256 tokenId, bytes32 linkType, address linklist)
-    external;
+<pre><code class="language-solidity">function linkERC721(
+    uint256 fromCharacterId,
+    address tokenAddress,
+    uint256 tokenId,
+    bytes32 linkType,
+    address linklist
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -3192,7 +3362,12 @@ prevents a signature from being used multiple times.</p>
 </div>
 <h3 id="linkaddress-2"><a class="header" href="#linkaddress-2">linkAddress</a></h3>
 <p>Creates a link to a given address.</p>
-<pre><code class="language-solidity">function linkAddress(uint256 fromCharacterId, address ethAddress, bytes32 linkType, address linklist) external;
+<pre><code class="language-solidity">function linkAddress(
+    uint256 fromCharacterId,
+    address ethAddress,
+    bytes32 linkType,
+    address linklist
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -3204,7 +3379,12 @@ prevents a signature from being used multiple times.</p>
 </div>
 <h3 id="unlinkaddress-2"><a class="header" href="#unlinkaddress-2">unlinkAddress</a></h3>
 <p>Unlinks a given address.</p>
-<pre><code class="language-solidity">function unlinkAddress(uint256 fromCharacterId, address ethAddress, bytes32 linkType, address linklist) external;
+<pre><code class="language-solidity">function unlinkAddress(
+    uint256 fromCharacterId,
+    address ethAddress,
+    bytes32 linkType,
+    address linklist
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -3216,7 +3396,12 @@ prevents a signature from being used multiple times.</p>
 </div>
 <h3 id="linkanyuri-2"><a class="header" href="#linkanyuri-2">linkAnyUri</a></h3>
 <p>Links any uri.</p>
-<pre><code class="language-solidity">function linkAnyUri(uint256 fromCharacterId, string calldata toUri, bytes32 linkType, address linklist) external;
+<pre><code class="language-solidity">function linkAnyUri(
+    uint256 fromCharacterId,
+    string calldata toUri,
+    bytes32 linkType,
+    address linklist
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -3228,7 +3413,12 @@ prevents a signature from being used multiple times.</p>
 </div>
 <h3 id="unlinkanyuri-2"><a class="header" href="#unlinkanyuri-2">unlinkAnyUri</a></h3>
 <p>Unlinks any uri.</p>
-<pre><code class="language-solidity">function unlinkAnyUri(uint256 fromCharacterId, string calldata toUri, bytes32 linkType, address linklist) external;
+<pre><code class="language-solidity">function unlinkAnyUri(
+    uint256 fromCharacterId,
+    string calldata toUri,
+    bytes32 linkType,
+    address linklist
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -3249,19 +3439,24 @@ linklist and return its ID.</p>
 <pre><code class="language-solidity">function _ownerOf(uint256 characterId) internal view returns (address);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="linklistlib"><a class="header" href="#linklistlib">LinklistLib</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/LinklistLib.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/LinklistLib.sol">Git Source</a></p>
 <h2 id="functions-19"><a class="header" href="#functions-19">Functions</a></h2>
 <h3 id="setlinklisturi-1"><a class="header" href="#setlinklisturi-1">setLinklistUri</a></h3>
 <pre><code class="language-solidity">function setLinklistUri(uint256 linklistId, string calldata uri, address linklist) external;
 </code></pre>
 <h3 id="setlinklisttype-1"><a class="header" href="#setlinklisttype-1">setLinklistType</a></h3>
-<pre><code class="language-solidity">function setLinklistType(uint256 characterId, uint256 linklistId, bytes32 linkType, address linklist) external;
+<pre><code class="language-solidity">function setLinklistType(
+    uint256 characterId,
+    uint256 linklistId,
+    bytes32 linkType,
+    address linklist
+) external;
 </code></pre>
 <h3 id="burnlinklist-1"><a class="header" href="#burnlinklist-1">burnLinklist</a></h3>
 <pre><code class="language-solidity">function burnLinklist(uint256 characterId, uint256 linklistId, address linklist) external;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="metatxlib"><a class="header" href="#metatxlib">MetaTxLib</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/MetaTxLib.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/MetaTxLib.sol">Git Source</a></p>
 <h2 id="state-variables-4"><a class="header" href="#state-variables-4">State Variables</a></h2>
 <h3 id="eip712_domain_typehash"><a class="header" href="#eip712_domain_typehash">EIP712_DOMAIN_TYPEHASH</a></h3>
 <pre><code class="language-solidity">bytes32 internal constant EIP712_DOMAIN_TYPEHASH =
@@ -3294,10 +3489,12 @@ linklist and return its ID.</p>
 </code></pre>
 <h3 id="_validaterecoveredaddress"><a class="header" href="#_validaterecoveredaddress">_validateRecoveredAddress</a></h3>
 <p><em>Wrapper for ecrecover to reduce code size, used in meta-tx specific functions.</em></p>
-<pre><code class="language-solidity">function _validateRecoveredAddress(bytes32 digest, DataTypes.EIP712Signature calldata signature) internal view;
+<pre><code class="language-solidity">function _validateRecoveredAddress(bytes32 digest, DataTypes.EIP712Signature calldata signature)
+    internal
+    view;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="op"><a class="header" href="#op">OP</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/OP.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/OP.sol">Git Source</a></p>
 <p>In Crossbell's operator system, every uint8 stands for a single method in Web3Entry.sol. <br>
 For most cases, we recommend simply granting operators the <code>OPERATOR_SIGN_PERMISSION_BITMAP</code>,
 which gives operator full permissions aside from owner permissions and future permissions, but for
@@ -3448,14 +3645,16 @@ so the bitmap looks like this:</p>
     ((UINT256_MAX &lt;&lt; 176) &amp; ~(UINT256_MAX &lt;&lt; 205)) | POST_NOTE_PERMISSION_BITMAP;
 </code></pre>
 <h3 id="allowed_permission_bitmap_mask"><a class="header" href="#allowed_permission_bitmap_mask">ALLOWED_PERMISSION_BITMAP_MASK</a></h3>
-<pre><code class="language-solidity">uint256 internal constant ALLOWED_PERMISSION_BITMAP_MASK = OWNER_PERMISSION_BITMAP | DEFAULT_PERMISSION_BITMAP;
+<pre><code class="language-solidity">uint256 internal constant ALLOWED_PERMISSION_BITMAP_MASK =
+    OWNER_PERMISSION_BITMAP | DEFAULT_PERMISSION_BITMAP;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="operatorlib"><a class="header" href="#operatorlib">OperatorLib</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/OperatorLib.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/OperatorLib.sol">Git Source</a></p>
 <h2 id="functions-21"><a class="header" href="#functions-21">Functions</a></h2>
 <h3 id="grantoperatorpermissions-2"><a class="header" href="#grantoperatorpermissions-2">grantOperatorPermissions</a></h3>
 <p>Grants permission to a given operator for a character.</p>
-<pre><code class="language-solidity">function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap) external;
+<pre><code class="language-solidity">function grantOperatorPermissions(uint256 characterId, address operator, uint256 permissionBitMap)
+    external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -3501,7 +3700,7 @@ so it's best to leave them blank and avoid messing up with future methods.</em><
 <pre><code class="language-solidity">function _bitmapFilter(uint256 bitmap) internal pure returns (uint256);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="postlib"><a class="header" href="#postlib">PostLib</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/PostLib.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/PostLib.sol">Git Source</a></p>
 <h2 id="functions-22"><a class="header" href="#functions-22">Functions</a></h2>
 <h3 id="postnotewithlink"><a class="header" href="#postnotewithlink">postNoteWithLink</a></h3>
 <pre><code class="language-solidity">function postNoteWithLink(
@@ -3513,9 +3712,13 @@ so it's best to leave them blank and avoid messing up with future methods.</em><
 ) external;
 </code></pre>
 <h3 id="mintnote-2"><a class="header" href="#mintnote-2">mintNote</a></h3>
-<pre><code class="language-solidity">function mintNote(uint256 characterId, uint256 noteId, address to, bytes calldata mintModuleData, address mintNFTImpl)
-    external
-    returns (uint256 tokenId);
+<pre><code class="language-solidity">function mintNote(
+    uint256 characterId,
+    uint256 noteId,
+    address to,
+    bytes calldata mintModuleData,
+    address mintNFTImpl
+) external returns (uint256 tokenId);
 </code></pre>
 <h3 id="setnoteuri-2"><a class="header" href="#setnoteuri-2">setNoteUri</a></h3>
 <pre><code class="language-solidity">function setNoteUri(uint256 characterId, uint256 noteId, string calldata newUri) external;
@@ -3528,8 +3731,12 @@ so it's best to leave them blank and avoid messing up with future methods.</em><
 </code></pre>
 <h3 id="setlinkmodule4note-2"><a class="header" href="#setlinkmodule4note-2">setLinkModule4Note</a></h3>
 <p>Sets link module for a given note.</p>
-<pre><code class="language-solidity">function setLinkModule4Note(uint256 characterId, uint256 noteId, address linkModule, bytes calldata linkModuleInitData)
-    external;
+<pre><code class="language-solidity">function setLinkModule4Note(
+    uint256 characterId,
+    uint256 noteId,
+    address linkModule,
+    bytes calldata linkModuleInitData
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -3541,8 +3748,12 @@ so it's best to leave them blank and avoid messing up with future methods.</em><
 </div>
 <h3 id="setmintmodule4note-2"><a class="header" href="#setmintmodule4note-2">setMintModule4Note</a></h3>
 <p>Sets the mint module for a given note.</p>
-<pre><code class="language-solidity">function setMintModule4Note(uint256 characterId, uint256 noteId, address mintModule, bytes calldata mintModuleInitData)
-    external;
+<pre><code class="language-solidity">function setMintModule4Note(
+    uint256 characterId,
+    uint256 noteId,
+    address mintModule,
+    bytes calldata mintModuleInitData
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -3553,7 +3764,9 @@ so it's best to leave them blank and avoid messing up with future methods.</em><
 </tbody></table>
 </div>
 <h3 id="_deploymintnft"><a class="header" href="#_deploymintnft">_deployMintNFT</a></h3>
-<pre><code class="language-solidity">function _deployMintNFT(uint256 characterId, uint256 noteId, address mintNFTImpl) internal returns (address mintNFT);
+<pre><code class="language-solidity">function _deployMintNFT(uint256 characterId, uint256 noteId, address mintNFTImpl)
+    internal
+    returns (address mintNFT);
 </code></pre>
 <h3 id="_setlinkmodule4note"><a class="header" href="#_setlinkmodule4note">_setLinkModule4Note</a></h3>
 <pre><code class="language-solidity">function _setLinkModule4Note(
@@ -3574,7 +3787,7 @@ so it's best to leave them blank and avoid messing up with future methods.</em><
 ) internal;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="storagelib"><a class="header" href="#storagelib">StorageLib</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/StorageLib.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/StorageLib.sol">Git Source</a></p>
 <h2 id="state-variables-6"><a class="header" href="#state-variables-6">State Variables</a></h2>
 <h3 id="characters_mapping_slot"><a class="header" href="#characters_mapping_slot">CHARACTERS_MAPPING_SLOT</a></h3>
 <pre><code class="language-solidity">uint256 public constant CHARACTERS_MAPPING_SLOT = 10;
@@ -3629,25 +3842,39 @@ so it's best to leave them blank and avoid messing up with future methods.</em><
 </code></pre>
 <h2 id="functions-23"><a class="header" href="#functions-23">Functions</a></h2>
 <h3 id="setoperatorspermissionbitmap"><a class="header" href="#setoperatorspermissionbitmap">setOperatorsPermissionBitMap</a></h3>
-<pre><code class="language-solidity">function setOperatorsPermissionBitMap(uint256 characterId, address operator, uint256 permissionBitMap) internal;
+<pre><code class="language-solidity">function setOperatorsPermissionBitMap(
+    uint256 characterId,
+    address operator,
+    uint256 permissionBitMap
+) internal;
 </code></pre>
 <h3 id="setattachedlinklistid"><a class="header" href="#setattachedlinklistid">setAttachedLinklistId</a></h3>
-<pre><code class="language-solidity">function setAttachedLinklistId(uint256 characterId, bytes32 linkType, uint256 linklistId) internal;
+<pre><code class="language-solidity">function setAttachedLinklistId(uint256 characterId, bytes32 linkType, uint256 linklistId)
+    internal;
 </code></pre>
 <h3 id="deleteattachedlinklistid"><a class="header" href="#deleteattachedlinklistid">deleteAttachedLinklistId</a></h3>
 <pre><code class="language-solidity">function deleteAttachedLinklistId(uint256 characterId, bytes32 linkType) internal;
 </code></pre>
 <h3 id="getattachedlinklistid"><a class="header" href="#getattachedlinklistid">getAttachedLinklistId</a></h3>
-<pre><code class="language-solidity">function getAttachedLinklistId(uint256 characterId, bytes32 linkType) internal view returns (uint256 _linklistId);
+<pre><code class="language-solidity">function getAttachedLinklistId(uint256 characterId, bytes32 linkType)
+    internal
+    view
+    returns (uint256 _linklistId);
 </code></pre>
 <h3 id="nonces-1"><a class="header" href="#nonces-1">nonces</a></h3>
 <pre><code class="language-solidity">function nonces() internal pure returns (mapping(address =&gt; uint256) storage _nonces);
 </code></pre>
 <h3 id="getcharacter-1"><a class="header" href="#getcharacter-1">getCharacter</a></h3>
-<pre><code class="language-solidity">function getCharacter(uint256 characterId) internal pure returns (DataTypes.Character storage _character);
+<pre><code class="language-solidity">function getCharacter(uint256 characterId)
+    internal
+    pure
+    returns (DataTypes.Character storage _character);
 </code></pre>
 <h3 id="getnote-1"><a class="header" href="#getnote-1">getNote</a></h3>
-<pre><code class="language-solidity">function getNote(uint256 characterId, uint256 noteId) internal pure returns (DataTypes.Note storage _note);
+<pre><code class="language-solidity">function getNote(uint256 characterId, uint256 noteId)
+    internal
+    pure
+    returns (DataTypes.Note storage _note);
 </code></pre>
 <h3 id="characteridbyhandlehash"><a class="header" href="#characteridbyhandlehash">characterIdByHandleHash</a></h3>
 <pre><code class="language-solidity">function characterIdByHandleHash()
@@ -3668,7 +3895,7 @@ so it's best to leave them blank and avoid messing up with future methods.</em><
     returns (DataTypes.Operators4Note storage _operators4Note);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="validationlib"><a class="header" href="#validationlib">ValidationLib</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/libraries/ValidationLib.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/libraries/ValidationLib.sol">Git Source</a></p>
 <h2 id="functions-24"><a class="header" href="#functions-24">Functions</a></h2>
 <h3 id="validatenoteexists"><a class="header" href="#validatenoteexists">validateNoteExists</a></h3>
 <pre><code class="language-solidity">function validateNoteExists(uint256 characterId, uint256 noteId) internal view;
@@ -3695,7 +3922,7 @@ so it's best to leave them blank and avoid messing up with future methods.</em><
 <li><a href="contracts/misc/TipsWithFee.sol/contract.TipsWithFee.html">TipsWithFee</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="characterboundtoken"><a class="header" href="#characterboundtoken">CharacterBoundToken</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/misc/CharacterBoundToken.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/misc/CharacterBoundToken.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 Context, ERC165, IERC1155, IERC1155MetadataURI, AccessControlEnumerable</p>
 <h2 id="state-variables-7"><a class="header" href="#state-variables-7">State Variables</a></h2>
@@ -3732,7 +3959,10 @@ Context, ERC165, IERC1155, IERC1155MetadataURI, AccessControlEnumerable</p>
 </code></pre>
 <h3 id="safetransferfrom-2"><a class="header" href="#safetransferfrom-2">safeTransferFrom</a></h3>
 <p><em>See <a href="contracts/misc/CharacterBoundToken.sol//lib/forge-std/src/interfaces/IERC1155.sol/interface.IERC1155.html#safetransferfrom">IERC1155-safeTransferFrom</a>.</em></p>
-<pre><code class="language-solidity">function safeTransferFrom(address, address, uint256, uint256, bytes memory) external virtual override;
+<pre><code class="language-solidity">function safeTransferFrom(address, address, uint256, uint256, bytes memory)
+    external
+    virtual
+    override;
 </code></pre>
 <h3 id="safebatchtransferfrom"><a class="header" href="#safebatchtransferfrom">safeBatchTransferFrom</a></h3>
 <p><em>See <a href="contracts/misc/CharacterBoundToken.sol//lib/forge-std/src/interfaces/IERC1155.sol/interface.IERC1155.html#safebatchtransferfrom">IERC1155-safeBatchTransferFrom</a>.</em></p>
@@ -3763,7 +3993,12 @@ Context, ERC165, IERC1155, IERC1155MetadataURI, AccessControlEnumerable</p>
     returns (bool);
 </code></pre>
 <h3 id="balanceof-3"><a class="header" href="#balanceof-3">balanceOf</a></h3>
-<pre><code class="language-solidity">function balanceOf(address account, uint256 tokenId) public view virtual override returns (uint256 balance);
+<pre><code class="language-solidity">function balanceOf(address account, uint256 tokenId)
+    public
+    view
+    virtual
+    override
+    returns (uint256 balance);
 </code></pre>
 <h3 id="balanceof-4"><a class="header" href="#balanceof-4">balanceOf</a></h3>
 <pre><code class="language-solidity">function balanceOf(uint256 characterId, uint256 tokenId) public view virtual returns (uint256);
@@ -3773,7 +4008,12 @@ Context, ERC165, IERC1155, IERC1155MetadataURI, AccessControlEnumerable</p>
 </code></pre>
 <h3 id="isapprovedforall-1"><a class="header" href="#isapprovedforall-1">isApprovedForAll</a></h3>
 <p><em>See <a href="contracts/misc/CharacterBoundToken.sol//lib/forge-std/src/interfaces/IERC1155.sol/interface.IERC1155.html#isapprovedforall">IERC1155-isApprovedForAll</a>.</em></p>
-<pre><code class="language-solidity">function isApprovedForAll(address account, address operator) public view virtual override returns (bool);
+<pre><code class="language-solidity">function isApprovedForAll(address account, address operator)
+    public
+    view
+    virtual
+    override
+    returns (bool);
 </code></pre>
 <h3 id="_setapprovalforall-1"><a class="header" href="#_setapprovalforall-1">_setApprovalForAll</a></h3>
 <p><em>Approve <code>operator</code> to operate on all of <code>owner</code> tokens
@@ -3791,7 +4031,7 @@ Emits an {ApprovalForAll} event.</em></p>
 <pre><code class="language-solidity">event Burn(uint256 indexed from, uint256 indexed tokenId, uint256 indexed amount);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="newbievilla"><a class="header" href="#newbievilla">NewbieVilla</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/misc/NewbieVilla.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/misc/NewbieVilla.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 Initializable, AccessControlEnumerable, IERC721Receiver, IERC777Recipient</p>
 <p><em>Implementation of a contract to keep characters for others. The keepers and addresses with
@@ -3802,7 +4042,8 @@ proof to withdraw the corresponding character.</em></p>
 <pre><code class="language-solidity">bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 </code></pre>
 <h3 id="erc1820_registry"><a class="header" href="#erc1820_registry">ERC1820_REGISTRY</a></h3>
-<pre><code class="language-solidity">IERC1820Registry public constant ERC1820_REGISTRY = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+<pre><code class="language-solidity">IERC1820Registry public constant ERC1820_REGISTRY =
+    IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
 </code></pre>
 <h3 id="tokens_recipient_interface_hash"><a class="header" href="#tokens_recipient_interface_hash">TOKENS_RECIPIENT_INTERFACE_HASH</a></h3>
 <pre><code class="language-solidity">bytes32 public constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
@@ -3832,9 +4073,13 @@ proof to withdraw the corresponding character.</em></p>
 <h3 id="initialize-5"><a class="header" href="#initialize-5">initialize</a></h3>
 <p>Initialize the Newbie Villa contract.</p>
 <p><em>msg.sender will be granted <code>DEFAULT_ADMIN_ROLE</code>.</em></p>
-<pre><code class="language-solidity">function initialize(address web3Entry_, address xsyncOperator_, address token_, address admin_, address tips_)
-    external
-    reinitializer(3);
+<pre><code class="language-solidity">function initialize(
+    address web3Entry_,
+    address xsyncOperator_,
+    address token_,
+    address admin_,
+    address tips_
+) external reinitializer(3);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -3880,8 +4125,12 @@ and parameters encode refers
 <ul>
 <li>The <code>msg.sender</code> must be character's keeper or have <code>ADMIN_ROLE</code> but not character's keeper.</li>
 </ul>
-<pre><code class="language-solidity">function tipCharacterForNote(uint256 fromCharacterId, uint256 toCharacterId, uint256 toNoteId, uint256 amount)
-    external;
+<pre><code class="language-solidity">function tipCharacterForNote(
+    uint256 fromCharacterId,
+    uint256 toCharacterId,
+    uint256 toNoteId,
+    uint256 amount
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -3910,9 +4159,13 @@ proof = await owner.signMessage(digest);
 <li><code>expires</code> is greater than the current timestamp</li>
 <li><code>proof</code> is signed by the keeper or address with the ADMIN_ROLE*</li>
 </ul>
-<pre><code class="language-solidity">function withdraw(address to, uint256 characterId, uint256 nonce, uint256 expires, bytes calldata proof)
-    external
-    notExpired(expires);
+<pre><code class="language-solidity">function withdraw(
+    address to,
+    uint256 characterId,
+    uint256 nonce,
+    uint256 expires,
+    bytes calldata proof
+) external notExpired(expires);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -4023,7 +4276,7 @@ which are both uint256 type, so the length of data is 64.</em></p>
 <tr><td><code>amount</code></td><td><code>uint256</code></td><td>Amount of token withdrawn.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="periphery"><a class="header" href="#periphery">Periphery</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/misc/Periphery.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/misc/Periphery.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 Initializable</p>
 <h2 id="state-variables-9"><a class="header" href="#state-variables-9">State Variables</a></h2>
@@ -4083,13 +4336,19 @@ Initializable</p>
 <pre><code class="language-solidity">function getLinkingERC721(bytes32 linkKey) external view returns (DataTypes.ERC721Struct memory);
 </code></pre>
 <h3 id="getlinkinganyuris-1"><a class="header" href="#getlinkinganyuris-1">getLinkingAnyUris</a></h3>
-<pre><code class="language-solidity">function getLinkingAnyUris(uint256 fromCharacterId, bytes32 linkType) external view returns (string[] memory results);
+<pre><code class="language-solidity">function getLinkingAnyUris(uint256 fromCharacterId, bytes32 linkType)
+    external
+    view
+    returns (string[] memory results);
 </code></pre>
 <h3 id="getlinkinganyuri-1"><a class="header" href="#getlinkinganyuri-1">getLinkingAnyUri</a></h3>
 <pre><code class="language-solidity">function getLinkingAnyUri(bytes32 linkKey) external view returns (string memory);
 </code></pre>
 <h3 id="getlinkingaddresses-1"><a class="header" href="#getlinkingaddresses-1">getLinkingAddresses</a></h3>
-<pre><code class="language-solidity">function getLinkingAddresses(uint256 fromCharacterId, bytes32 linkType) external view returns (address[] memory);
+<pre><code class="language-solidity">function getLinkingAddresses(uint256 fromCharacterId, bytes32 linkType)
+    external
+    view
+    returns (address[] memory);
 </code></pre>
 <h3 id="getlinkinglinklistids-1"><a class="header" href="#getlinkinglinklistids-1">getLinkingLinklistIds</a></h3>
 <pre><code class="language-solidity">function getLinkingLinklistIds(uint256 fromCharacterId, bytes32 linkType)
@@ -4120,13 +4379,14 @@ Initializable</p>
 <pre><code class="language-solidity">function _exists(uint256 characterId) internal view returns (bool);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="tips"><a class="header" href="#tips">Tips</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/misc/Tips.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/misc/Tips.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 Initializable, IERC777Recipient</p>
 <p><em>Logic to handle rewards that user can send to character and note.</em></p>
 <h2 id="state-variables-10"><a class="header" href="#state-variables-10">State Variables</a></h2>
 <h3 id="erc1820_registry-1"><a class="header" href="#erc1820_registry-1">ERC1820_REGISTRY</a></h3>
-<pre><code class="language-solidity">IERC1820Registry public constant ERC1820_REGISTRY = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+<pre><code class="language-solidity">IERC1820Registry public constant ERC1820_REGISTRY =
+    IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
 </code></pre>
 <h3 id="tokens_recipient_interface_hash-1"><a class="header" href="#tokens_recipient_interface_hash-1">TOKENS_RECIPIENT_INTERFACE_HASH</a></h3>
 <pre><code class="language-solidity">bytes32 public constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
@@ -4194,8 +4454,13 @@ and parameters encode refers
 <ul>
 <li>The <code>from</code> account must be the character owner of `fromCharacterId.</li>
 </ul>
-<pre><code class="language-solidity">function _tipCharacter(address from, uint256 fromCharacterId, uint256 toCharacterId, address token, uint256 amount)
-    internal;
+<pre><code class="language-solidity">function _tipCharacter(
+    address from,
+    uint256 fromCharacterId,
+    uint256 toCharacterId,
+    address token,
+    uint256 amount
+) internal;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -4236,13 +4501,20 @@ User should call <code>send</code> erc777 token to the Tips contract, with <code
 </tbody></table>
 </div>
 <h3 id="_sendtoken"><a class="header" href="#_sendtoken">_sendToken</a></h3>
-<pre><code class="language-solidity">function _sendToken(address from, uint256 fromCharacterId, uint256 toCharacterId, address token, uint256 amount)
-    internal;
+<pre><code class="language-solidity">function _sendToken(
+    address from,
+    uint256 fromCharacterId,
+    uint256 toCharacterId,
+    address token,
+    uint256 amount
+) internal;
 </code></pre>
 <h2 id="events-4"><a class="header" href="#events-4">Events</a></h2>
 <h3 id="tipcharacter-1"><a class="header" href="#tipcharacter-1">TipCharacter</a></h3>
 <p><em>Emitted when the assets are rewarded to a character.</em></p>
-<pre><code class="language-solidity">event TipCharacter(uint256 indexed fromCharacterId, uint256 indexed toCharacterId, address token, uint256 amount);
+<pre><code class="language-solidity">event TipCharacter(
+    uint256 indexed fromCharacterId, uint256 indexed toCharacterId, address token, uint256 amount
+);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -4276,7 +4548,7 @@ User should call <code>send</code> erc777 token to the Tips contract, with <code
 <pre><code class="language-solidity">error ErrCallerNotCharacterOwner();
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="tipswithconfig"><a class="header" href="#tipswithconfig">TipsWithConfig</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/misc/TipsWithConfig.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/misc/TipsWithConfig.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="contracts/misc/TipsWithConfig.sol//contracts/interfaces/ITipsWithConfig.sol/interface.ITipsWithConfig.html">ITipsWithConfig</a>, Initializable, ReentrancyGuard</p>
 <p>Logic to handle the periodical tips that user can send to character periodically.</p>
@@ -4297,13 +4569,15 @@ from the <code>fromCharacterId</code> account to the <code>toCharacterId</code> 
 <pre><code class="language-solidity">mapping(uint256 tipsConfigId =&gt; TipsConfig) internal _tipsConfigs;
 </code></pre>
 <h3 id="_tipsconfigids"><a class="header" href="#_tipsconfigids">_tipsConfigIds</a></h3>
-<pre><code class="language-solidity">mapping(uint256 fromCharacterId =&gt; mapping(uint256 toCharacterId =&gt; uint256 tipsConfigId)) internal _tipsConfigIds;
+<pre><code class="language-solidity">mapping(uint256 fromCharacterId =&gt; mapping(uint256 toCharacterId =&gt; uint256 tipsConfigId)) internal
+    _tipsConfigIds;
 </code></pre>
 <h3 id="_feefractions"><a class="header" href="#_feefractions">_feeFractions</a></h3>
 <pre><code class="language-solidity">mapping(address feeReceiver =&gt; uint256 fraction) internal _feeFractions;
 </code></pre>
 <h3 id="_feefractions4character"><a class="header" href="#_feefractions4character">_feeFractions4Character</a></h3>
-<pre><code class="language-solidity">mapping(address feeReceiver =&gt; mapping(uint256 characterId =&gt; uint256 fraction)) internal _feeFractions4Character;
+<pre><code class="language-solidity">mapping(address feeReceiver =&gt; mapping(uint256 characterId =&gt; uint256 fraction)) internal
+    _feeFractions4Character;
 </code></pre>
 <h2 id="functions-29"><a class="header" href="#functions-29">Functions</a></h2>
 <h3 id="onlyfeereceiver"><a class="header" href="#onlyfeereceiver">onlyFeeReceiver</a></h3>
@@ -4395,7 +4669,11 @@ Emits a {CancelTips4Character} event.</p>
 <p>Collects all unredeemed token from the <code>fromCharacter</code> to the <code>toCharacter</code>. <br>
 Emits a {CollectTips4Character} event if collects successfully.</p>
 <p><em>It will transfer all unredeemed token from the <code>fromCharacter</code> to the <code>toCharacter</code>.</em></p>
-<pre><code class="language-solidity">function collectTips4Character(uint256 tipConfigId) external override nonReentrant returns (uint256 collectedAmount);
+<pre><code class="language-solidity">function collectTips4Character(uint256 tipConfigId)
+    external
+    override
+    nonReentrant
+    returns (uint256 collectedAmount);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -4410,7 +4688,11 @@ Emits a {CollectTips4Character} event if collects successfully.</p>
 <h3 id="getfeefraction-2"><a class="header" href="#getfeefraction-2">getFeeFraction</a></h3>
 <p>Returns the fee percentage of specific &lt;receiver, note&gt;.</p>
 <p><em>It will return the first non-zero value by priority feeFraction4Character and defaultFeeFraction.</em></p>
-<pre><code class="language-solidity">function getFeeFraction(address feeReceiver, uint256 characterId) external view override returns (uint256);
+<pre><code class="language-solidity">function getFeeFraction(address feeReceiver, uint256 characterId)
+    external
+    view
+    override
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -4445,7 +4727,10 @@ Emits a {CollectTips4Character} event if collects successfully.</p>
 </div>
 <h3 id="gettipsconfigid-1"><a class="header" href="#gettipsconfigid-1">getTipsConfigId</a></h3>
 <p>Return the tips config Id.</p>
-<pre><code class="language-solidity">function getTipsConfigId(uint256 fromCharacterId, uint256 toCharacterId) external view returns (uint256);
+<pre><code class="language-solidity">function getTipsConfigId(uint256 fromCharacterId, uint256 toCharacterId)
+    external
+    view
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -4460,7 +4745,11 @@ Emits a {CollectTips4Character} event if collects successfully.</p>
 </div>
 <h3 id="gettipsconfig-1"><a class="header" href="#gettipsconfig-1">getTipsConfig</a></h3>
 <p>Return the tips config.</p>
-<pre><code class="language-solidity">function getTipsConfig(uint256 tipConfigId) external view override returns (TipsConfig memory config);
+<pre><code class="language-solidity">function getTipsConfig(uint256 tipConfigId)
+    external
+    view
+    override
+    returns (TipsConfig memory config);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -4480,19 +4769,34 @@ Emits a {CollectTips4Character} event if collects successfully.</p>
 <pre><code class="language-solidity">function _collectTips4Character(uint256 tipConfigId) internal returns (uint256);
 </code></pre>
 <h3 id="_gettipsconfigid"><a class="header" href="#_gettipsconfigid">_getTipsConfigId</a></h3>
-<pre><code class="language-solidity">function _getTipsConfigId(uint256 fromCharacterId, uint256 toCharacterId) internal view returns (uint256);
+<pre><code class="language-solidity">function _getTipsConfigId(uint256 fromCharacterId, uint256 toCharacterId)
+    internal
+    view
+    returns (uint256);
 </code></pre>
 <h3 id="_getavailableroundandamount"><a class="header" href="#_getavailableroundandamount">_getAvailableRoundAndAmount</a></h3>
-<pre><code class="language-solidity">function _getAvailableRoundAndAmount(TipsConfig memory config) internal view returns (uint256, uint256);
+<pre><code class="language-solidity">function _getAvailableRoundAndAmount(TipsConfig memory config)
+    internal
+    view
+    returns (uint256, uint256);
 </code></pre>
 <h3 id="_getfeefraction"><a class="header" href="#_getfeefraction">_getFeeFraction</a></h3>
-<pre><code class="language-solidity">function _getFeeFraction(address feeReceiver, uint256 characterId) internal view returns (uint256);
+<pre><code class="language-solidity">function _getFeeFraction(address feeReceiver, uint256 characterId)
+    internal
+    view
+    returns (uint256);
 </code></pre>
 <h3 id="_getfeeamount"><a class="header" href="#_getfeeamount">_getFeeAmount</a></h3>
-<pre><code class="language-solidity">function _getFeeAmount(address feeReceiver, uint256 characterId, uint256 tipAmount) internal view returns (uint256);
+<pre><code class="language-solidity">function _getFeeAmount(address feeReceiver, uint256 characterId, uint256 tipAmount)
+    internal
+    view
+    returns (uint256);
 </code></pre>
 <h3 id="_gettipround"><a class="header" href="#_gettipround">_getTipRound</a></h3>
-<pre><code class="language-solidity">function _getTipRound(uint256 startTime, uint256 endTime, uint256 interval) internal pure returns (uint256);
+<pre><code class="language-solidity">function _getTipRound(uint256 startTime, uint256 endTime, uint256 interval)
+    internal
+    pure
+    returns (uint256);
 </code></pre>
 <h3 id="_feedenominator"><a class="header" href="#_feedenominator">_feeDenominator</a></h3>
 <p><em>Defaults to 10000 so fees are expressed in basis points.</em></p>
@@ -4562,7 +4866,7 @@ Emits a {CollectTips4Character} event if collects successfully.</p>
 <tr><td><code>currentRound</code></td><td><code>uint256</code></td><td>The current round of tip.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="tipswithfee"><a class="header" href="#tipswithfee">TipsWithFee</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/misc/TipsWithFee.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/misc/TipsWithFee.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="contracts/misc/TipsWithFee.sol//contracts/interfaces/ITipsWithFee.sol/interface.ITipsWithFee.html">ITipsWithFee</a>, Initializable, IERC777Recipient</p>
 <p>Logic to handle rewards that user can send to character and note.</p>
@@ -4582,7 +4886,8 @@ The platform account can set the commission ratio through <code>setDefaultFeeFra
 and <code>setFeeFraction4Note</code>.</em></p>
 <h2 id="state-variables-12"><a class="header" href="#state-variables-12">State Variables</a></h2>
 <h3 id="erc1820_registry-2"><a class="header" href="#erc1820_registry-2">ERC1820_REGISTRY</a></h3>
-<pre><code class="language-solidity">IERC1820Registry public constant ERC1820_REGISTRY = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+<pre><code class="language-solidity">IERC1820Registry public constant ERC1820_REGISTRY =
+    IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
 </code></pre>
 <h3 id="tokens_recipient_interface_hash-2"><a class="header" href="#tokens_recipient_interface_hash-2">TOKENS_RECIPIENT_INTERFACE_HASH</a></h3>
 <pre><code class="language-solidity">bytes32 public constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
@@ -4653,11 +4958,12 @@ and <code>setFeeFraction4Note</code>.</em></p>
 <h3 id="setfeefraction4note-1"><a class="header" href="#setfeefraction4note-1">setFeeFraction4Note</a></h3>
 <p>Changes the fee percentage of specific &lt;receiver, note&gt;.</p>
 <p><em>If feeFraction4Note is set, it will override feeFraction4Character and the default fee fraction.</em></p>
-<pre><code class="language-solidity">function setFeeFraction4Note(address feeReceiver, uint256 characterId, uint256 noteId, uint256 fraction)
-    external
-    override
-    onlyFeeReceiver(feeReceiver)
-    validateFraction(fraction);
+<pre><code class="language-solidity">function setFeeFraction4Note(
+    address feeReceiver,
+    uint256 characterId,
+    uint256 noteId,
+    uint256 fraction
+) external override onlyFeeReceiver(feeReceiver) validateFraction(fraction);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -4818,7 +5124,10 @@ User should call <code>send</code> erc777 token to the Tips contract, with <code
 ) internal;
 </code></pre>
 <h3 id="_getfeefraction-1"><a class="header" href="#_getfeefraction-1">_getFeeFraction</a></h3>
-<pre><code class="language-solidity">function _getFeeFraction(address feeReceiver, uint256 characterId, uint256 noteId) internal view returns (uint256);
+<pre><code class="language-solidity">function _getFeeFraction(address feeReceiver, uint256 characterId, uint256 noteId)
+    internal
+    view
+    returns (uint256);
 </code></pre>
 <h3 id="_getfeeamount-1"><a class="header" href="#_getfeeamount-1">_getFeeAmount</a></h3>
 <pre><code class="language-solidity">function _getFeeAmount(address feeReceiver, uint256 characterId, uint256 noteId, uint256 tipAmount)
@@ -4890,24 +5199,29 @@ User should call <code>send</code> erc777 token to the Tips contract, with <code
 <li><a href="contracts/mocks/linkModule/ApprovalLinkModule4Note.sol/contract.ApprovalLinkModule4Note.html">ApprovalLinkModule4Note</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="approvallinkmodule4character"><a class="header" href="#approvallinkmodule4character">ApprovalLinkModule4Character</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/mocks/linkModule/ApprovalLinkModule4Character.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/mocks/linkModule/ApprovalLinkModule4Character.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="contracts/mocks/linkModule/ApprovalLinkModule4Character.sol//contracts/interfaces/ILinkModule4Character.sol/interface.ILinkModule4Character.html">ILinkModule4Character</a>, <a href="contracts/mocks/linkModule/ApprovalLinkModule4Character.sol//contracts/modules/ModuleBase.sol/abstract.ModuleBase.html">ModuleBase</a></p>
 <p>This is a simple LinkModule implementation, inheriting from the ILinkModule4Character interface.</p>
 <h2 id="state-variables-13"><a class="header" href="#state-variables-13">State Variables</a></h2>
 <h3 id="_approvedbycharacterbyowner"><a class="header" href="#_approvedbycharacterbyowner">_approvedByCharacterByOwner</a></h3>
-<pre><code class="language-solidity">mapping(address =&gt; mapping(uint256 =&gt; mapping(address =&gt; bool))) internal _approvedByCharacterByOwner;
+<pre><code class="language-solidity">mapping(address =&gt; mapping(uint256 =&gt; mapping(address =&gt; bool))) internal
+    _approvedByCharacterByOwner;
 </code></pre>
 <h2 id="functions-31"><a class="header" href="#functions-31">Functions</a></h2>
 <h3 id="constructor-1"><a class="header" href="#constructor-1">constructor</a></h3>
 <pre><code class="language-solidity">constructor(address web3Entry_) ModuleBase(web3Entry_);
 </code></pre>
 <h3 id="initializelinkmodule-6"><a class="header" href="#initializelinkmodule-6">initializeLinkModule</a></h3>
-<pre><code class="language-solidity">function initializeLinkModule(uint256 characterId, bytes calldata data) external override returns (bytes memory);
+<pre><code class="language-solidity">function initializeLinkModule(uint256 characterId, bytes calldata data)
+    external
+    override
+    returns (bytes memory);
 </code></pre>
 <h3 id="approve-1"><a class="header" href="#approve-1">approve</a></h3>
 <p>A custom function that allows character owners to customize approved addresses.</p>
-<pre><code class="language-solidity">function approve(uint256 characterId, address[] calldata addresses, bool[] calldata toApprove) external;
+<pre><code class="language-solidity">function approve(uint256 characterId, address[] calldata addresses, bool[] calldata toApprove)
+    external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -4917,13 +5231,20 @@ User should call <code>send</code> erc777 token to the Tips contract, with <code
 </tbody></table>
 </div>
 <h3 id="processlink-6"><a class="header" href="#processlink-6">processLink</a></h3>
-<pre><code class="language-solidity">function processLink(address caller, uint256 characterId, bytes calldata) external view override onlyWeb3Entry;
+<pre><code class="language-solidity">function processLink(address caller, uint256 characterId, bytes calldata)
+    external
+    view
+    override
+    onlyWeb3Entry;
 </code></pre>
 <h3 id="isapproved"><a class="header" href="#isapproved">isApproved</a></h3>
-<pre><code class="language-solidity">function isApproved(address characterOwner, uint256 characterId, address toCheck) external view returns (bool);
+<pre><code class="language-solidity">function isApproved(address characterOwner, uint256 characterId, address toCheck)
+    external
+    view
+    returns (bool);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="approvallinkmodule4note"><a class="header" href="#approvallinkmodule4note">ApprovalLinkModule4Note</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/mocks/linkModule/ApprovalLinkModule4Note.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/mocks/linkModule/ApprovalLinkModule4Note.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="contracts/mocks/linkModule/ApprovalLinkModule4Note.sol//contracts/interfaces/ILinkModule4Note.sol/interface.ILinkModule4Note.html">ILinkModule4Note</a>, <a href="contracts/mocks/linkModule/ApprovalLinkModule4Note.sol//contracts/modules/ModuleBase.sol/abstract.ModuleBase.html">ModuleBase</a></p>
 <p>This is a simple LinkModule implementation, inheriting from the ILinkModule4Note interface.</p>
@@ -4943,8 +5264,12 @@ User should call <code>send</code> erc777 token to the Tips contract, with <code
     returns (bytes memory);
 </code></pre>
 <h3 id="approve-2"><a class="header" href="#approve-2">approve</a></h3>
-<pre><code class="language-solidity">function approve(uint256 characterId, uint256 noteId, address[] calldata addresses, bool[] calldata toApprove)
-    external;
+<pre><code class="language-solidity">function approve(
+    uint256 characterId,
+    uint256 noteId,
+    address[] calldata addresses,
+    bool[] calldata toApprove
+) external;
 </code></pre>
 <h3 id="processlink-7"><a class="header" href="#processlink-7">processLink</a></h3>
 <pre><code class="language-solidity">function processLink(address caller, uint256 characterId, uint256 noteId, bytes calldata)
@@ -4960,7 +5285,7 @@ User should call <code>send</code> erc777 token to the Tips contract, with <code
     returns (bool);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="currency"><a class="header" href="#currency">Currency</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/mocks/Currency.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/mocks/Currency.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 ERC20</p>
 <h2 id="functions-33"><a class="header" href="#functions-33">Functions</a></h2>
@@ -4968,7 +5293,7 @@ ERC20</p>
 <pre><code class="language-solidity">function mint(address to, uint256 amount) external;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc1271walletmock"><a class="header" href="#erc1271walletmock">ERC1271WalletMock</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/mocks/ERC1271WalletMock.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/mocks/ERC1271WalletMock.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 Ownable, IERC1271, IERC721Receiver</p>
 <h2 id="functions-34"><a class="header" href="#functions-34">Functions</a></h2>
@@ -4976,13 +5301,21 @@ Ownable, IERC1271, IERC721Receiver</p>
 <pre><code class="language-solidity">constructor(address originalOwner);
 </code></pre>
 <h3 id="isvalidsignature"><a class="header" href="#isvalidsignature">isValidSignature</a></h3>
-<pre><code class="language-solidity">function isValidSignature(bytes32 hash, bytes memory signature) external view override returns (bytes4 magicValue);
+<pre><code class="language-solidity">function isValidSignature(bytes32 hash, bytes memory signature)
+    external
+    view
+    override
+    returns (bytes4 magicValue);
 </code></pre>
 <h3 id="onerc721received-1"><a class="header" href="#onerc721received-1">onERC721Received</a></h3>
-<pre><code class="language-solidity">function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4);
+<pre><code class="language-solidity">function onERC721Received(address, address, uint256, bytes calldata)
+    external
+    pure
+    override
+    returns (bytes4);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc1271maliciousmock"><a class="header" href="#erc1271maliciousmock">ERC1271MaliciousMock</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/mocks/ERC1271WalletMock.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/mocks/ERC1271WalletMock.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 IERC1271, IERC721Receiver</p>
 <h2 id="functions-35"><a class="header" href="#functions-35">Functions</a></h2>
@@ -4990,10 +5323,14 @@ IERC1271, IERC721Receiver</p>
 <pre><code class="language-solidity">function isValidSignature(bytes32, bytes memory) external pure override returns (bytes4);
 </code></pre>
 <h3 id="onerc721received-2"><a class="header" href="#onerc721received-2">onERC721Received</a></h3>
-<pre><code class="language-solidity">function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4);
+<pre><code class="language-solidity">function onERC721Received(address, address, uint256, bytes calldata)
+    external
+    pure
+    override
+    returns (bytes4);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="miratoken"><a class="header" href="#miratoken">MiraToken</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/mocks/MiraToken.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/mocks/MiraToken.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 AccessControlEnumerable, <a href="contracts/mocks/MiraToken.sol//contracts/interfaces/IERC20Mintable.sol/interface.IERC20Mintable.html">IERC20Mintable</a>, ERC777</p>
 <h2 id="state-variables-15"><a class="header" href="#state-variables-15">State Variables</a></h2>
@@ -5002,7 +5339,8 @@ AccessControlEnumerable, <a href="contracts/mocks/MiraToken.sol//contracts/inter
 </code></pre>
 <h2 id="functions-36"><a class="header" href="#functions-36">Functions</a></h2>
 <h3 id="constructor-4"><a class="header" href="#constructor-4">constructor</a></h3>
-<pre><code class="language-solidity">constructor(string memory name_, string memory symbol_, address admin) ERC777(name_, symbol_, new address[](0));
+<pre><code class="language-solidity">constructor(string memory name_, string memory symbol_, address admin)
+    ERC777(name_, symbol_, new address[](0));
 </code></pre>
 <h3 id="mint-6"><a class="header" href="#mint-6">mint</a></h3>
 <p>*Creates <code>amount</code> new tokens for <code>to</code>.
@@ -5039,7 +5377,7 @@ Requirements:</p>
 <pre><code class="language-solidity">function _burn(address, uint256, bytes memory, bytes memory) internal pure override;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="nft"><a class="header" href="#nft">NFT</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/mocks/NFT.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/mocks/NFT.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="contracts/mocks/NFT.sol//contracts/base/NFTBase.sol/abstract.NFTBase.html">NFTBase</a>, Initializable</p>
 <h2 id="functions-37"><a class="header" href="#functions-37">Functions</a></h2>
@@ -5050,7 +5388,7 @@ Requirements:</p>
 <pre><code class="language-solidity">function mint(address to) public;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="nft1155"><a class="header" href="#nft1155">NFT1155</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/mocks/NFT.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/mocks/NFT.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 ERC1155</p>
 <h2 id="functions-38"><a class="header" href="#functions-38">Functions</a></h2>
@@ -5073,7 +5411,7 @@ ERC1155</p>
 <li><a href="contracts/modules/mint/LimitedMintModule.sol/contract.LimitedMintModule.html">LimitedMintModule</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="approvalmintmodule"><a class="header" href="#approvalmintmodule">ApprovalMintModule</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/modules/mint/ApprovalMintModule.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/modules/mint/ApprovalMintModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="contracts/modules/mint/ApprovalMintModule.sol//contracts/interfaces/IMintModule4Note.sol/interface.IMintModule4Note.html">IMintModule4Note</a>, <a href="contracts/modules/mint/ApprovalMintModule.sol//contracts/modules/ModuleBase.sol/abstract.ModuleBase.html">ModuleBase</a></p>
 <p>This is a simple MintModule implementation, inheriting from the IMintModule4Note interface.
@@ -5111,8 +5449,12 @@ This module works by allowing limited minting for a post, and only for those who
 <p>Set the approved addresses for minting and the approvedAmount allowed to be minted. <br>
 The approvedAmount is 0 by default, and you can also revoke the approval for addresses by
 setting the approvedAmount to 0.</p>
-<pre><code class="language-solidity">function setApprovedAmount(uint256 characterId, uint256 noteId, address[] calldata addresses, uint256 approvedAmount)
-    external;
+<pre><code class="language-solidity">function setApprovedAmount(
+    uint256 characterId,
+    uint256 noteId,
+    address[] calldata addresses,
+    uint256 approvedAmount
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5124,7 +5466,10 @@ setting the approvedAmount to 0.</p>
 </div>
 <h3 id="processmint-1"><a class="header" href="#processmint-1">processMint</a></h3>
 <p>Process minting and check if the caller is eligible.</p>
-<pre><code class="language-solidity">function processMint(address to, uint256 characterId, uint256 noteId, bytes calldata) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function processMint(address to, uint256 characterId, uint256 noteId, bytes calldata)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5155,8 +5500,12 @@ setting the approvedAmount to 0.</p>
 </tbody></table>
 </div>
 <h3 id="_setapprovedamount"><a class="header" href="#_setapprovedamount">_setApprovedAmount</a></h3>
-<pre><code class="language-solidity">function _setApprovedAmount(uint256 characterId, uint256 noteId, address[] memory addresses, uint256 approvedAmount)
-    internal;
+<pre><code class="language-solidity">function _setApprovedAmount(
+    uint256 characterId,
+    uint256 noteId,
+    address[] memory addresses,
+    uint256 approvedAmount
+) internal;
 </code></pre>
 <h2 id="structs-2"><a class="header" href="#structs-2">Structs</a></h2>
 <h3 id="approvedinfo"><a class="header" href="#approvedinfo">ApprovedInfo</a></h3>
@@ -5166,7 +5515,7 @@ setting the approvedAmount to 0.</p>
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="characternotedata"><a class="header" href="#characternotedata">CharacterNoteData</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/modules/mint/FeeMintModule.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/modules/mint/FeeMintModule.sol">Git Source</a></p>
 <p><em>A struct containing associated data with each note.</em></p>
 <pre><code class="language-solidity">struct CharacterNoteData {
     uint256 amount;
@@ -5175,7 +5524,7 @@ setting the approvedAmount to 0.</p>
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="feemintmodule"><a class="header" href="#feemintmodule">FeeMintModule</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/modules/mint/FeeMintModule.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/modules/mint/FeeMintModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="contracts/modules/mint/FeeMintModule.sol//contracts/interfaces/IMintModule4Note.sol/interface.IMintModule4Note.html">IMintModule4Note</a>, <a href="contracts/modules/mint/FeeMintModule.sol//contracts/modules/ModuleBase.sol/abstract.ModuleBase.html">ModuleBase</a></p>
 <p>This is a simple MintModule implementation, inheriting from the IMintModule4Note interface.</p>
@@ -5213,7 +5562,10 @@ Triggered when the <code>mintNote</code> of web3Entry  is called, if mint module
 <h3 id="getnotedata"><a class="header" href="#getnotedata">getNoteData</a></h3>
 <p>Returns the associated data for a given note.</p>
 <p><em>onlyWeb3Entry can call <code>processMint</code></em></p>
-<pre><code class="language-solidity">function getNoteData(uint256 characterId, uint256 noteId) external view returns (CharacterNoteData memory);
+<pre><code class="language-solidity">function getNoteData(uint256 characterId, uint256 noteId)
+    external
+    view
+    returns (CharacterNoteData memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5226,7 +5578,7 @@ Triggered when the <code>mintNote</code> of web3Entry  is called, if mint module
 <tr><td><code>&lt;none&gt;</code></td><td><code>CharacterNoteData</code></td><td>Returns the associated data for a given  note.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="limitedmintmodule"><a class="header" href="#limitedmintmodule">LimitedMintModule</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/modules/mint/LimitedMintModule.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/modules/mint/LimitedMintModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="contracts/modules/mint/LimitedMintModule.sol//contracts/interfaces/IMintModule4Note.sol/interface.IMintModule4Note.html">IMintModule4Note</a>, <a href="contracts/modules/mint/LimitedMintModule.sol//contracts/modules/ModuleBase.sol/abstract.ModuleBase.html">ModuleBase</a></p>
 <p>This is a simple MintModule implementation, inheriting from the IMintModule4Note interface.
@@ -5265,7 +5617,10 @@ This module works by allowing limited minting for a post.</p>
 </div>
 <h3 id="processmint-3"><a class="header" href="#processmint-3">processMint</a></h3>
 <p>Process minting and check if the caller is eligible.</p>
-<pre><code class="language-solidity">function processMint(address to, uint256 characterId, uint256 noteId, bytes calldata) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function processMint(address to, uint256 characterId, uint256 noteId, bytes calldata)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5280,7 +5635,12 @@ This module works by allowing limited minting for a post.</p>
 <pre><code class="language-solidity">function getLimitedMintInfo(uint256 characterId, uint256 noteId, address account)
     external
     view
-    returns (uint256 maxSupply, uint256 currentSupply, uint256 maxMintPerAddress, uint256 mintedAmount);
+    returns (
+        uint256 maxSupply,
+        uint256 currentSupply,
+        uint256 maxMintPerAddress,
+        uint256 mintedAmount
+    );
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5306,7 +5666,7 @@ This module works by allowing limited minting for a post.</p>
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="modulebase"><a class="header" href="#modulebase">ModuleBase</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/modules/ModuleBase.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/modules/ModuleBase.sol">Git Source</a></p>
 <h2 id="state-variables-19"><a class="header" href="#state-variables-19">State Variables</a></h2>
 <h3 id="web3entry-3"><a class="header" href="#web3entry-3">web3Entry</a></h3>
 <pre><code class="language-solidity">address public immutable web3Entry;
@@ -5326,7 +5686,7 @@ This module works by allowing limited minting for a post.</p>
 <li><a href="contracts/storage/Web3EntryStorage.sol/contract.Web3EntryStorage.html">Web3EntryStorage</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="linklistextendstorage"><a class="header" href="#linklistextendstorage">LinklistExtendStorage</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/storage/LinklistExtendStorage.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/storage/LinklistExtendStorage.sol">Git Source</a></p>
 <h2 id="state-variables-20"><a class="header" href="#state-variables-20">State Variables</a></h2>
 <h3 id="_tokencount"><a class="header" href="#_tokencount">_tokenCount</a></h3>
 <pre><code class="language-solidity">uint256 internal _tokenCount;
@@ -5341,7 +5701,7 @@ This module works by allowing limited minting for a post.</p>
 <pre><code class="language-solidity">uint256 internal _totalSupply;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="linkliststorage"><a class="header" href="#linkliststorage">LinklistStorage</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/storage/LinklistStorage.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/storage/LinklistStorage.sol">Git Source</a></p>
 <h2 id="state-variables-21"><a class="header" href="#state-variables-21">State Variables</a></h2>
 <h3 id="web3entry-4"><a class="header" href="#web3entry-4">Web3Entry</a></h3>
 <pre><code class="language-solidity">address public Web3Entry;
@@ -5392,7 +5752,7 @@ This module works by allowing limited minting for a post.</p>
 <pre><code class="language-solidity">mapping(uint256 =&gt; EnumerableSet.Bytes32Set) internal _linkingAnyKeys;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="web3entryextendstorage"><a class="header" href="#web3entryextendstorage">Web3EntryExtendStorage</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/storage/Web3EntryExtendStorage.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/storage/Web3EntryExtendStorage.sol">Git Source</a></p>
 <h2 id="state-variables-22"><a class="header" href="#state-variables-22">State Variables</a></h2>
 <h3 id="_periphery"><a class="header" href="#_periphery">_periphery</a></h3>
 <pre><code class="language-solidity">address internal _periphery;
@@ -5419,7 +5779,7 @@ This module works by allowing limited minting for a post.</p>
 <pre><code class="language-solidity">mapping(address =&gt; uint256) internal _sigNonces;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="web3entrystorage"><a class="header" href="#web3entrystorage">Web3EntryStorage</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/storage/Web3EntryStorage.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/storage/Web3EntryStorage.sol">Git Source</a></p>
 <h2 id="state-variables-23"><a class="header" href="#state-variables-23">State Variables</a></h2>
 <h3 id="_characterbyid"><a class="header" href="#_characterbyid">_characterById</a></h3>
 <pre><code class="language-solidity">mapping(uint256 =&gt; DataTypes.Character) internal _characterById;
@@ -5460,7 +5820,7 @@ This module works by allowing limited minting for a post.</p>
 <li><a href="contracts/upgradeability/TransparentUpgradeableProxy.sol/contract.TransparentUpgradeableProxy.html">TransparentUpgradeableProxy</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="transparentupgradeableproxy"><a class="header" href="#transparentupgradeableproxy">TransparentUpgradeableProxy</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/upgradeability/TransparentUpgradeableProxy.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/upgradeability/TransparentUpgradeableProxy.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 ERC1967Proxy</p>
 <p>*This contract implements a proxy that is upgradeable by an admin.
@@ -5484,7 +5844,9 @@ you should think of the <code>ProxyAdmin</code> instance as the real administrat
 <h3 id="constructor-10"><a class="header" href="#constructor-10">constructor</a></h3>
 <p><em>Initializes an upgradeable proxy managed by <code>_admin</code>, backed by the implementation at <code>_logic</code>, and
 optionally initialized with <code>_data</code> as explained in <a href="contracts/upgradeability/TransparentUpgradeableProxy.sol//contracts/mocks/NFT.sol/contract.NFT1155.html#constructor">ERC1967Proxy-constructor</a>.</em></p>
-<pre><code class="language-solidity">constructor(address _logic, address admin_, bytes memory _data) payable ERC1967Proxy(_logic, _data);
+<pre><code class="language-solidity">constructor(address _logic, address admin_, bytes memory _data)
+    payable
+    ERC1967Proxy(_logic, _data);
 </code></pre>
 <h3 id="ifadmin"><a class="header" href="#ifadmin">ifAdmin</a></h3>
 <p><em>Modifier used internally that will delegate the call to the implementation unless the sender is the admin.</em></p>
@@ -5522,7 +5884,10 @@ NOTE: Only the admin can call this function. See <a href="contracts/upgradeabili
 by <code>data</code>, which should be an encoded function call. This is useful to initialize new storage variables in the
 proxied contract.
 NOTE: Only the admin can call this function. See <a href="contracts/upgradeability/TransparentUpgradeableProxy.sol//node_modules/@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol/contract.ProxyAdmin.html#upgradeandcall">ProxyAdmin-upgradeAndCall</a>.</em></p>
-<pre><code class="language-solidity">function upgradeToAndCall(address newImplementation, bytes calldata data) external payable ifAdmin;
+<pre><code class="language-solidity">function upgradeToAndCall(address newImplementation, bytes calldata data)
+    external
+    payable
+    ifAdmin;
 </code></pre>
 <h3 id="_admin"><a class="header" href="#_admin">_admin</a></h3>
 <p><em>Returns the current admin.</em></p>
@@ -5533,7 +5898,7 @@ NOTE: Only the admin can call this function. See <a href="contracts/upgradeabili
 <pre><code class="language-solidity">function _beforeFallback() internal virtual override;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="linklist-1"><a class="header" href="#linklist-1">Linklist</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/Linklist.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/Linklist.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="contracts/Linklist.sol//contracts/interfaces/ILinklist.sol/interface.ILinklist.html">ILinklist</a>, <a href="contracts/Linklist.sol//contracts/base/LinklistBase.sol/abstract.LinklistBase.html">LinklistBase</a>, <a href="contracts/Linklist.sol//contracts/storage/LinklistStorage.sol/contract.LinklistStorage.html">LinklistStorage</a>, Initializable, <a href="contracts/Linklist.sol//contracts/storage/LinklistExtendStorage.sol/contract.LinklistExtendStorage.html">LinklistExtendStorage</a></p>
 <h2 id="functions-44"><a class="header" href="#functions-44">Functions</a></h2>
@@ -5560,7 +5925,11 @@ NOTE: Only the admin can call this function. See <a href="contracts/upgradeabili
 <h3 id="mint-9"><a class="header" href="#mint-9">mint</a></h3>
 <p>Mints a Linklist NFT to the specified character with linkType.
 This can only be called by web3Entry.</p>
-<pre><code class="language-solidity">function mint(uint256 characterId, bytes32 linkType) external override onlyWeb3Entry returns (uint256 tokenId);
+<pre><code class="language-solidity">function mint(uint256 characterId, bytes32 linkType)
+    external
+    override
+    onlyWeb3Entry
+    returns (uint256 tokenId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5598,7 +5967,11 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="setlinktype-1"><a class="header" href="#setlinktype-1">setLinkType</a></h3>
 <p>Sets the link type of the linklist NFT.</p>
-<pre><code class="language-solidity">function setLinkType(uint256 tokenId, bytes32 linkType) external override onlyWeb3Entry onlyExistingToken(tokenId);
+<pre><code class="language-solidity">function setLinkType(uint256 tokenId, bytes32 linkType)
+    external
+    override
+    onlyWeb3Entry
+    onlyExistingToken(tokenId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5608,7 +5981,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="addlinkingcharacterid-1"><a class="header" href="#addlinkingcharacterid-1">addLinkingCharacterId</a></h3>
 <p>Adds a linked character to a linklist.</p>
-<pre><code class="language-solidity">function addLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function addLinkingCharacterId(uint256 tokenId, uint256 toCharacterId)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5618,7 +5994,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="removelinkingcharacterid-1"><a class="header" href="#removelinkingcharacterid-1">removeLinkingCharacterId</a></h3>
 <p>Removes a linked character from a linklist.</p>
-<pre><code class="language-solidity">function removeLinkingCharacterId(uint256 tokenId, uint256 toCharacterId) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function removeLinkingCharacterId(uint256 tokenId, uint256 toCharacterId)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5648,7 +6027,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="removelinkingnote-1"><a class="header" href="#removelinkingnote-1">removeLinkingNote</a></h3>
 <p>Removes a linked note from a linklist.</p>
-<pre><code class="language-solidity">function removeLinkingNote(uint256 tokenId, uint256 toCharacterId, uint256 toNoteId) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function removeLinkingNote(uint256 tokenId, uint256 toCharacterId, uint256 toNoteId)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5703,7 +6085,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="removelinkingaddress-1"><a class="header" href="#removelinkingaddress-1">removeLinkingAddress</a></h3>
 <p>Removes a linked address from a linklist.</p>
-<pre><code class="language-solidity">function removeLinkingAddress(uint256 tokenId, address ethAddress) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function removeLinkingAddress(uint256 tokenId, address ethAddress)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5713,7 +6098,11 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="addlinkinganyuri-1"><a class="header" href="#addlinkinganyuri-1">addLinkingAnyUri</a></h3>
 <p>Adds a linked anyURI to a linklist.</p>
-<pre><code class="language-solidity">function addLinkingAnyUri(uint256 tokenId, string memory toUri) external override onlyWeb3Entry returns (bytes32);
+<pre><code class="language-solidity">function addLinkingAnyUri(uint256 tokenId, string memory toUri)
+    external
+    override
+    onlyWeb3Entry
+    returns (bytes32);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5728,7 +6117,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="removelinkinganyuri-1"><a class="header" href="#removelinkinganyuri-1">removeLinkingAnyUri</a></h3>
 <p>Removes a linked anyURI from a linklist.</p>
-<pre><code class="language-solidity">function removeLinkingAnyUri(uint256 tokenId, string memory toUri) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function removeLinkingAnyUri(uint256 tokenId, string memory toUri)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5738,7 +6130,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="addlinkinglinklistid-1"><a class="header" href="#addlinkinglinklistid-1">addLinkingLinklistId</a></h3>
 <p>Adds a linked linklist to a linklist.</p>
-<pre><code class="language-solidity">function addLinkingLinklistId(uint256 tokenId, uint256 linklistId) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function addLinkingLinklistId(uint256 tokenId, uint256 linklistId)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5748,7 +6143,10 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="removelinkinglinklistid-1"><a class="header" href="#removelinkinglinklistid-1">removeLinkingLinklistId</a></h3>
 <p>Removes a linked linklist from a linklist.</p>
-<pre><code class="language-solidity">function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId) external override onlyWeb3Entry;
+<pre><code class="language-solidity">function removeLinkingLinklistId(uint256 tokenId, uint256 linklistId)
+    external
+    override
+    onlyWeb3Entry;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5796,7 +6194,12 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="getownercharacterid-1"><a class="header" href="#getownercharacterid-1">getOwnerCharacterId</a></h3>
 <p>Returns the character ID who owns the linklist NFT.</p>
-<pre><code class="language-solidity">function getOwnerCharacterId(uint256 tokenId) external view override onlyExistingToken(tokenId) returns (uint256);
+<pre><code class="language-solidity">function getOwnerCharacterId(uint256 tokenId)
+    external
+    view
+    override
+    onlyExistingToken(tokenId)
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5829,7 +6232,11 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="getlinkingnote-2"><a class="header" href="#getlinkingnote-2">getLinkingNote</a></h3>
 <p>Return the linked note of the linklist NFT by linkKey.</p>
-<pre><code class="language-solidity">function getLinkingNote(bytes32 linkKey) external view override returns (DataTypes.NoteStruct memory);
+<pre><code class="language-solidity">function getLinkingNote(bytes32 linkKey)
+    external
+    view
+    override
+    returns (DataTypes.NoteStruct memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -5881,7 +6288,11 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="getlinkingerc721-2"><a class="header" href="#getlinkingerc721-2">getLinkingERC721</a></h3>
 <p>Return the linked ERC721 of the linklist NFT by linkKey.</p>
-<pre><code class="language-solidity">function getLinkingERC721(bytes32 linkKey) external view override returns (DataTypes.ERC721Struct memory);
+<pre><code class="language-solidity">function getLinkingERC721(bytes32 linkKey)
+    external
+    view
+    override
+    returns (DataTypes.ERC721Struct memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6004,7 +6415,12 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="getlinkinganylistlength-1"><a class="header" href="#getlinkinganylistlength-1">getLinkingAnyListLength</a></h3>
 <p>Returns the length of linked Uris of the linklist NFT.</p>
-<pre><code class="language-solidity">function getLinkingAnyListLength(uint256 tokenId) external view override onlyExistingToken(tokenId) returns (uint256);
+<pre><code class="language-solidity">function getLinkingAnyListLength(uint256 tokenId)
+    external
+    view
+    override
+    onlyExistingToken(tokenId)
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6059,7 +6475,12 @@ or following list in your bookmarks.</em></p>
 </code></pre>
 <h3 id="getlinktype-1"><a class="header" href="#getlinktype-1">getLinkType</a></h3>
 <p>Returns the link type of the linklist NFT.</p>
-<pre><code class="language-solidity">function getLinkType(uint256 tokenId) external view override onlyExistingToken(tokenId) returns (bytes32);
+<pre><code class="language-solidity">function getLinkType(uint256 tokenId)
+    external
+    view
+    override
+    onlyExistingToken(tokenId)
+    returns (bytes32);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6073,7 +6494,12 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="uri-2"><a class="header" href="#uri-2">Uri</a></h3>
 <p>Returns the URI of the linklist NFT.</p>
-<pre><code class="language-solidity">function Uri(uint256 tokenId) external view override onlyExistingToken(tokenId) returns (string memory);
+<pre><code class="language-solidity">function Uri(uint256 tokenId)
+    external
+    view
+    override
+    onlyExistingToken(tokenId)
+    returns (string memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6087,7 +6513,12 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="characterownerof-1"><a class="header" href="#characterownerof-1">characterOwnerOf</a></h3>
 <p>Returns the character ID who owns the Linklist NFT.</p>
-<pre><code class="language-solidity">function characterOwnerOf(uint256 tokenId) external view override onlyExistingToken(tokenId) returns (uint256);
+<pre><code class="language-solidity">function characterOwnerOf(uint256 tokenId)
+    external
+    view
+    override
+    onlyExistingToken(tokenId)
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6138,7 +6569,12 @@ or following list in your bookmarks.</em></p>
 </div>
 <h3 id="ownerof-2"><a class="header" href="#ownerof-2">ownerOf</a></h3>
 <p>Returns the owner of the <code>tokenId</code> token.</p>
-<pre><code class="language-solidity">function ownerOf(uint256 tokenId) external view override onlyExistingToken(tokenId) returns (address);
+<pre><code class="language-solidity">function ownerOf(uint256 tokenId)
+    external
+    view
+    override
+    onlyExistingToken(tokenId)
+    returns (address);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6167,7 +6603,7 @@ or following list in your bookmarks.</em></p>
 <pre><code class="language-solidity">event LinkTypeSet(uint256 indexed tokenId, bytes32 indexed newlinkType);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="mintnft"><a class="header" href="#mintnft">MintNFT</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/MintNFT.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/MintNFT.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="contracts/MintNFT.sol//contracts/base/NFTBase.sol/abstract.NFTBase.html">NFTBase</a>, <a href="contracts/MintNFT.sol//contracts/interfaces/IMintNFT.sol/interface.IMintNFT.html">IMintNFT</a>, ERC2981, Initializable</p>
 <h2 id="state-variables-24"><a class="header" href="#state-variables-24">State Variables</a></h2>
@@ -6230,7 +6666,10 @@ This can only be called by web3Entry, and is called upon note.</p>
 <h3 id="settokenroyalty-1"><a class="header" href="#settokenroyalty-1">setTokenRoyalty</a></h3>
 <p>Changes the royalty percentage of specific token ID for secondary sales.
 Can only be called by character owner of note.</p>
-<pre><code class="language-solidity">function setTokenRoyalty(uint256 tokenId, address recipient, uint96 fraction) external override onlyOwner;
+<pre><code class="language-solidity">function setTokenRoyalty(uint256 tokenId, address recipient, uint96 fraction)
+    external
+    override
+    onlyOwner;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6266,7 +6705,11 @@ Can only be called by character owner of note.</p>
 </div>
 <h3 id="getsourcenotepointer-1"><a class="header" href="#getsourcenotepointer-1">getSourceNotePointer</a></h3>
 <p>Returns the source note pointer mapped to this note NFT.</p>
-<pre><code class="language-solidity">function getSourceNotePointer() external view override returns (uint256 characterId, uint256 noteId);
+<pre><code class="language-solidity">function getSourceNotePointer()
+    external
+    view
+    override
+    returns (uint256 characterId, uint256 noteId);
 </code></pre>
 <p><strong>Returns</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6278,7 +6721,12 @@ Can only be called by character owner of note.</p>
 <p>Query if a contract implements an interface</p>
 <p><em>Interface identification is specified in ERC-165. This function
 uses less than 30,000 gas.</em></p>
-<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId) public view virtual override(ERC2981, ERC721Enumerable) returns (bool);
+<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId)
+    public
+    view
+    virtual
+    override(ERC2981, ERC721Enumerable)
+    returns (bool);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6307,7 +6755,7 @@ Metadata JSON Schema".</em></p>
 <pre><code class="language-solidity">function tokenURI(uint256 tokenId) public view override returns (string memory uri);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="web3entry-5"><a class="header" href="#web3entry-5">Web3Entry</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/Web3Entry.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/Web3Entry.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="contracts/Web3Entry.sol//contracts/interfaces/IWeb3Entry.sol/interface.IWeb3Entry.html">IWeb3Entry</a>, Multicall, <a href="contracts/Web3Entry.sol//contracts/base/NFTBase.sol/abstract.NFTBase.html">NFTBase</a>, <a href="contracts/Web3Entry.sol//contracts/storage/Web3EntryStorage.sol/contract.Web3EntryStorage.html">Web3EntryStorage</a>, Initializable, <a href="contracts/Web3Entry.sol//contracts/storage/Web3EntryExtendStorage.sol/contract.Web3EntryExtendStorage.html">Web3EntryExtendStorage</a></p>
 <h2 id="state-variables-25"><a class="header" href="#state-variables-25">State Variables</a></h2>
@@ -6394,7 +6842,10 @@ Metadata JSON Schema".</em></p>
 </div>
 <h3 id="createcharacter-2"><a class="header" href="#createcharacter-2">createCharacter</a></h3>
 <p>This method creates a character with the given parameters to the given address.</p>
-<pre><code class="language-solidity">function createCharacter(DataTypes.CreateCharacterData calldata vars) external override returns (uint256 characterId);
+<pre><code class="language-solidity">function createCharacter(DataTypes.CreateCharacterData calldata vars)
+    external
+    override
+    returns (uint256 characterId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6661,7 +7112,10 @@ It will fail if you try to set a link type which is already set for some linklis
 </div>
 <h3 id="mintnote-3"><a class="header" href="#mintnote-3">mintNote</a></h3>
 <p>Mints an nft with the given note.</p>
-<pre><code class="language-solidity">function mintNote(DataTypes.MintNoteData calldata vars) external override returns (uint256 tokenId);
+<pre><code class="language-solidity">function mintNote(DataTypes.MintNoteData calldata vars)
+    external
+    override
+    returns (uint256 tokenId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6695,7 +7149,9 @@ It will fail if you try to set a link type which is already set for some linklis
 </div>
 <h3 id="setnoteuri-3"><a class="header" href="#setnoteuri-3">setNoteUri</a></h3>
 <p>Set URI for a note.</p>
-<pre><code class="language-solidity">function setNoteUri(uint256 characterId, uint256 noteId, string calldata newUri) external override;
+<pre><code class="language-solidity">function setNoteUri(uint256 characterId, uint256 noteId, string calldata newUri)
+    external
+    override;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6811,7 +7267,10 @@ immutability of blockchain itself, but the deleted notes will be tagged as <code
 </div>
 <h3 id="postnote4erc721-1"><a class="header" href="#postnote4erc721-1">postNote4ERC721</a></h3>
 <p>Posts a note for a given ERC721.</p>
-<pre><code class="language-solidity">function postNote4ERC721(DataTypes.PostNoteData calldata vars, DataTypes.ERC721Struct calldata erc721)
+<pre><code class="language-solidity">function postNote4ERC721(
+    DataTypes.PostNoteData calldata vars,
+    DataTypes.ERC721Struct calldata erc721
+)
     external
     override
     validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ERC721)
@@ -6876,7 +7335,11 @@ authorizations!!!</p>
 </div>
 <h3 id="getoperatorpermissions-1"><a class="header" href="#getoperatorpermissions-1">getOperatorPermissions</a></h3>
 <p>Get permission bitmap of an operator.</p>
-<pre><code class="language-solidity">function getOperatorPermissions(uint256 characterId, address operator) external view override returns (uint256);
+<pre><code class="language-solidity">function getOperatorPermissions(uint256 characterId, address operator)
+    external
+    view
+    override
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6972,7 +7435,11 @@ authorizations!!!</p>
 </div>
 <h3 id="getcharacterbyhandle-1"><a class="header" href="#getcharacterbyhandle-1">getCharacterByHandle</a></h3>
 <p>Returns the full character struct associated with a given character handle.</p>
-<pre><code class="language-solidity">function getCharacterByHandle(string calldata handle) external view override returns (DataTypes.Character memory);
+<pre><code class="language-solidity">function getCharacterByHandle(string calldata handle)
+    external
+    view
+    override
+    returns (DataTypes.Character memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -6986,7 +7453,12 @@ authorizations!!!</p>
 </div>
 <h3 id="gethandle-1"><a class="header" href="#gethandle-1">getHandle</a></h3>
 <p>Returns the handle of character with a given character.</p>
-<pre><code class="language-solidity">function getHandle(uint256 characterId) external view override onlyExistingToken(characterId) returns (string memory);
+<pre><code class="language-solidity">function getHandle(uint256 characterId)
+    external
+    view
+    override
+    onlyExistingToken(characterId)
+    returns (string memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -7014,7 +7486,11 @@ authorizations!!!</p>
 </div>
 <h3 id="getnote-2"><a class="header" href="#getnote-2">getNote</a></h3>
 <p>Returns the full note struct associated with a given note.</p>
-<pre><code class="language-solidity">function getNote(uint256 characterId, uint256 noteId) external view override returns (DataTypes.Note memory);
+<pre><code class="language-solidity">function getNote(uint256 characterId, uint256 noteId)
+    external
+    view
+    override
+    returns (DataTypes.Note memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -7043,7 +7519,11 @@ authorizations!!!</p>
 </div>
 <h3 id="getlinklistid-1"><a class="header" href="#getlinklistid-1">getLinklistId</a></h3>
 <p>Returns the token ID of linklist with a given character and linkType.</p>
-<pre><code class="language-solidity">function getLinklistId(uint256 characterId, bytes32 linkType) external view override returns (uint256);
+<pre><code class="language-solidity">function getLinklistId(uint256 characterId, bytes32 linkType)
+    external
+    view
+    override
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -7125,7 +7605,12 @@ prevents a signature from being used multiple times.</p>
 </div>
 <h3 id="tokenuri-2"><a class="header" href="#tokenuri-2">tokenURI</a></h3>
 <p>Returns the associated URI with a given character.</p>
-<pre><code class="language-solidity">function tokenURI(uint256 characterId) public view override onlyExistingToken(characterId) returns (string memory);
+<pre><code class="language-solidity">function tokenURI(uint256 characterId)
+    public
+    view
+    override
+    onlyExistingToken(characterId)
+    returns (string memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -7147,7 +7632,10 @@ prevents a signature from being used multiple times.</p>
 whole control power to receivers of character transfers.
 If character is transferred from newbieVilla contract, don't clear operators.
 Permissions4Note is left unset, because permissions for notes are always stricter than default.</em></p>
-<pre><code class="language-solidity">function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override;
+<pre><code class="language-solidity">function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+    internal
+    virtual
+    override;
 </code></pre>
 <h3 id="_aftertokentransfer-1"><a class="header" href="#_aftertokentransfer-1">_afterTokenTransfer</a></h3>
 <pre><code class="language-solidity">function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual override;
@@ -7166,7 +7654,10 @@ Permissions4Note is left unset, because permissions for notes are always stricte
 <pre><code class="language-solidity">function _validateCallerPermission(uint256 characterId, uint256 permissionId) internal view;
 </code></pre>
 <h3 id="_callerischaracterowner"><a class="header" href="#_callerischaracterowner">_callerIsCharacterOwner</a></h3>
-<pre><code class="language-solidity">function _callerIsCharacterOwner(address caller, uint256 characterId) internal view returns (bool);
+<pre><code class="language-solidity">function _callerIsCharacterOwner(address caller, uint256 characterId)
+    internal
+    view
+    returns (bool);
 </code></pre>
 <h3 id="_validatecallerpermission4note"><a class="header" href="#_validatecallerpermission4note">_validateCallerPermission4Note</a></h3>
 <pre><code class="language-solidity">function _validateCallerPermission4Note(uint256 characterId, uint256 noteId) internal view;

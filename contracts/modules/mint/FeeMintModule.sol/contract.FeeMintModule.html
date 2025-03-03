@@ -159,7 +159,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="feemintmodule"><a class="header" href="#feemintmodule">FeeMintModule</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/modules/mint/FeeMintModule.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/modules/mint/FeeMintModule.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/contracts/interfaces/IMintModule4Note.sol/interface.IMintModule4Note.html">IMintModule4Note</a>, <a href="/contracts/modules/ModuleBase.sol/abstract.ModuleBase.html">ModuleBase</a></p>
 <p>This is a simple MintModule implementation, inheriting from the IMintModule4Note interface.</p>
@@ -197,7 +197,10 @@ Triggered when the <code>mintNote</code> of web3Entry  is called, if mint module
 <h3 id="getnotedata"><a class="header" href="#getnotedata">getNoteData</a></h3>
 <p>Returns the associated data for a given note.</p>
 <p><em>onlyWeb3Entry can call <code>processMint</code></em></p>
-<pre><code class="language-solidity">function getNoteData(uint256 characterId, uint256 noteId) external view returns (CharacterNoteData memory);
+<pre><code class="language-solidity">function getNoteData(uint256 characterId, uint256 noteId)
+    external
+    view
+    returns (CharacterNoteData memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>

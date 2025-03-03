@@ -159,7 +159,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="erc721"><a class="header" href="#erc721">ERC721</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/base/ERC721.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/base/ERC721.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 Context, ERC165, IERC721, IERC721Metadata</p>
 <p><em>Implementation of https://eips.ethereum.org/EIPS/eip-721[ERC721] Non-Fungible Token Standard, including
@@ -190,7 +190,12 @@ the Metadata extension, but not including the Enumerable extension, which is ava
 </code></pre>
 <h3 id="supportsinterface"><a class="header" href="#supportsinterface">supportsInterface</a></h3>
 <p><em>See <a href="/contracts/misc/CharacterBoundToken.sol/contract.CharacterBoundToken.html#supportsinterface">IERC165-supportsInterface</a>.</em></p>
-<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool);
+<pre><code class="language-solidity">function supportsInterface(bytes4 interfaceId)
+    public
+    view
+    virtual
+    override(ERC165, IERC165)
+    returns (bool);
 </code></pre>
 <h3 id="balanceof"><a class="header" href="#balanceof">balanceOf</a></h3>
 <p><em>See <a href="/contracts/misc/NewbieVilla.sol/contract.NewbieVilla.html#balanceof">IERC721-balanceOf</a>.</em></p>
@@ -226,7 +231,12 @@ the Metadata extension, but not including the Enumerable extension, which is ava
 </code></pre>
 <h3 id="isapprovedforall"><a class="header" href="#isapprovedforall">isApprovedForAll</a></h3>
 <p><em>See <a href="/contracts/misc/CharacterBoundToken.sol/contract.CharacterBoundToken.html#isapprovedforall">IERC721-isApprovedForAll</a>.</em></p>
-<pre><code class="language-solidity">function isApprovedForAll(address owner, address operator) public view virtual override returns (bool);
+<pre><code class="language-solidity">function isApprovedForAll(address owner, address operator)
+    public
+    view
+    virtual
+    override
+    returns (bool);
 </code></pre>
 <h3 id="transferfrom"><a class="header" href="#transferfrom">transferFrom</a></h3>
 <p><em>See <a href="/lib/forge-std/src/interfaces/IERC20.sol/interface.IERC20.html#transferfrom">IERC721-transferFrom</a>.</em></p>
@@ -238,7 +248,10 @@ the Metadata extension, but not including the Enumerable extension, which is ava
 </code></pre>
 <h3 id="safetransferfrom-1"><a class="header" href="#safetransferfrom-1">safeTransferFrom</a></h3>
 <p><em>See <a href="/contracts/misc/CharacterBoundToken.sol/contract.CharacterBoundToken.html#safetransferfrom">IERC721-safeTransferFrom</a>.</em></p>
-<pre><code class="language-solidity">function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public virtual override;
+<pre><code class="language-solidity">function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data)
+    public
+    virtual
+    override;
 </code></pre>
 <h3 id="_safetransfer"><a class="header" href="#_safetransfer">_safeTransfer</a></h3>
 <p>*Safely transfers <code>tokenId</code> token from <code>from</code> to <code>to</code>, checking first that contract recipients
@@ -255,7 +268,9 @@ Requirements:</p>
 which is called upon a safe transfer.
 Emits a {Transfer} event.*</li>
 </ul>
-<pre><code class="language-solidity">function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal virtual;
+<pre><code class="language-solidity">function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data)
+    internal
+    virtual;
 </code></pre>
 <h3 id="_exists"><a class="header" href="#_exists">_exists</a></h3>
 <p><em>Returns whether <code>tokenId</code> exists.
@@ -270,7 +285,11 @@ Requirements:</p>
 <ul>
 <li><code>tokenId</code> must exist.*</li>
 </ul>
-<pre><code class="language-solidity">function _isApprovedOrOwner(address spender, uint256 tokenId) internal view virtual returns (bool);
+<pre><code class="language-solidity">function _isApprovedOrOwner(address spender, uint256 tokenId)
+    internal
+    view
+    virtual
+    returns (bool);
 </code></pre>
 <h3 id="_safemint"><a class="header" href="#_safemint">_safeMint</a></h3>
 <p>*Safely mints <code>tokenId</code> and transfers it to <code>to</code>.
@@ -333,7 +352,9 @@ Emits a {ApprovalForAll} event.</em></p>
 <h3 id="_checkonerc721received"><a class="header" href="#_checkonerc721received">_checkOnERC721Received</a></h3>
 <p><em>Internal function to invoke <a href="/contracts/misc/NewbieVilla.sol/contract.NewbieVilla.html#onerc721received">IERC721Receiver-onERC721Received</a> on a target address.
 The call is not executed if the target address is not a contract.</em></p>
-<pre><code class="language-solidity">function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data) private returns (bool);
+<pre><code class="language-solidity">function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data)
+    private
+    returns (bool);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>

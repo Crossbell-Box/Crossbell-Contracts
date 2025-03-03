@@ -159,7 +159,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="transparentupgradeableproxy"><a class="header" href="#transparentupgradeableproxy">TransparentUpgradeableProxy</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/upgradeability/TransparentUpgradeableProxy.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/upgradeability/TransparentUpgradeableProxy.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 ERC1967Proxy</p>
 <p>*This contract implements a proxy that is upgradeable by an admin.
@@ -183,7 +183,9 @@ you should think of the <code>ProxyAdmin</code> instance as the real administrat
 <h3 id="constructor"><a class="header" href="#constructor">constructor</a></h3>
 <p><em>Initializes an upgradeable proxy managed by <code>_admin</code>, backed by the implementation at <code>_logic</code>, and
 optionally initialized with <code>_data</code> as explained in <a href="/contracts/mocks/NFT.sol/contract.NFT1155.html#constructor">ERC1967Proxy-constructor</a>.</em></p>
-<pre><code class="language-solidity">constructor(address _logic, address admin_, bytes memory _data) payable ERC1967Proxy(_logic, _data);
+<pre><code class="language-solidity">constructor(address _logic, address admin_, bytes memory _data)
+    payable
+    ERC1967Proxy(_logic, _data);
 </code></pre>
 <h3 id="ifadmin"><a class="header" href="#ifadmin">ifAdmin</a></h3>
 <p><em>Modifier used internally that will delegate the call to the implementation unless the sender is the admin.</em></p>
@@ -221,7 +223,10 @@ NOTE: Only the admin can call this function. See <a href="/node_modules/eth-gas-
 by <code>data</code>, which should be an encoded function call. This is useful to initialize new storage variables in the
 proxied contract.
 NOTE: Only the admin can call this function. See <a href="/node_modules/@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol/contract.ProxyAdmin.html#upgradeandcall">ProxyAdmin-upgradeAndCall</a>.</em></p>
-<pre><code class="language-solidity">function upgradeToAndCall(address newImplementation, bytes calldata data) external payable ifAdmin;
+<pre><code class="language-solidity">function upgradeToAndCall(address newImplementation, bytes calldata data)
+    external
+    payable
+    ifAdmin;
 </code></pre>
 <h3 id="_admin"><a class="header" href="#_admin">_admin</a></h3>
 <p><em>Returns the current admin.</em></p>

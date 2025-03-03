@@ -159,7 +159,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="web3entry"><a class="header" href="#web3entry">Web3Entry</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/Web3Entry.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/Web3Entry.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 <a href="/contracts/interfaces/IWeb3Entry.sol/interface.IWeb3Entry.html">IWeb3Entry</a>, Multicall, <a href="/contracts/base/NFTBase.sol/abstract.NFTBase.html">NFTBase</a>, <a href="/contracts/storage/Web3EntryStorage.sol/contract.Web3EntryStorage.html">Web3EntryStorage</a>, Initializable, <a href="/contracts/storage/Web3EntryExtendStorage.sol/contract.Web3EntryExtendStorage.html">Web3EntryExtendStorage</a></p>
 <h2 id="state-variables"><a class="header" href="#state-variables">State Variables</a></h2>
@@ -246,7 +246,10 @@
 </div>
 <h3 id="createcharacter"><a class="header" href="#createcharacter">createCharacter</a></h3>
 <p>This method creates a character with the given parameters to the given address.</p>
-<pre><code class="language-solidity">function createCharacter(DataTypes.CreateCharacterData calldata vars) external override returns (uint256 characterId);
+<pre><code class="language-solidity">function createCharacter(DataTypes.CreateCharacterData calldata vars)
+    external
+    override
+    returns (uint256 characterId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -513,7 +516,10 @@ It will fail if you try to set a link type which is already set for some linklis
 </div>
 <h3 id="mintnote"><a class="header" href="#mintnote">mintNote</a></h3>
 <p>Mints an nft with the given note.</p>
-<pre><code class="language-solidity">function mintNote(DataTypes.MintNoteData calldata vars) external override returns (uint256 tokenId);
+<pre><code class="language-solidity">function mintNote(DataTypes.MintNoteData calldata vars)
+    external
+    override
+    returns (uint256 tokenId);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -547,7 +553,9 @@ It will fail if you try to set a link type which is already set for some linklis
 </div>
 <h3 id="setnoteuri"><a class="header" href="#setnoteuri">setNoteUri</a></h3>
 <p>Set URI for a note.</p>
-<pre><code class="language-solidity">function setNoteUri(uint256 characterId, uint256 noteId, string calldata newUri) external override;
+<pre><code class="language-solidity">function setNoteUri(uint256 characterId, uint256 noteId, string calldata newUri)
+    external
+    override;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -663,7 +671,10 @@ immutability of blockchain itself, but the deleted notes will be tagged as <code
 </div>
 <h3 id="postnote4erc721"><a class="header" href="#postnote4erc721">postNote4ERC721</a></h3>
 <p>Posts a note for a given ERC721.</p>
-<pre><code class="language-solidity">function postNote4ERC721(DataTypes.PostNoteData calldata vars, DataTypes.ERC721Struct calldata erc721)
+<pre><code class="language-solidity">function postNote4ERC721(
+    DataTypes.PostNoteData calldata vars,
+    DataTypes.ERC721Struct calldata erc721
+)
     external
     override
     validateCallerPermission(vars.characterId, OP.POST_NOTE_FOR_ERC721)
@@ -728,7 +739,11 @@ authorizations!!!</p>
 </div>
 <h3 id="getoperatorpermissions"><a class="header" href="#getoperatorpermissions">getOperatorPermissions</a></h3>
 <p>Get permission bitmap of an operator.</p>
-<pre><code class="language-solidity">function getOperatorPermissions(uint256 characterId, address operator) external view override returns (uint256);
+<pre><code class="language-solidity">function getOperatorPermissions(uint256 characterId, address operator)
+    external
+    view
+    override
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -824,7 +839,11 @@ authorizations!!!</p>
 </div>
 <h3 id="getcharacterbyhandle"><a class="header" href="#getcharacterbyhandle">getCharacterByHandle</a></h3>
 <p>Returns the full character struct associated with a given character handle.</p>
-<pre><code class="language-solidity">function getCharacterByHandle(string calldata handle) external view override returns (DataTypes.Character memory);
+<pre><code class="language-solidity">function getCharacterByHandle(string calldata handle)
+    external
+    view
+    override
+    returns (DataTypes.Character memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -838,7 +857,12 @@ authorizations!!!</p>
 </div>
 <h3 id="gethandle"><a class="header" href="#gethandle">getHandle</a></h3>
 <p>Returns the handle of character with a given character.</p>
-<pre><code class="language-solidity">function getHandle(uint256 characterId) external view override onlyExistingToken(characterId) returns (string memory);
+<pre><code class="language-solidity">function getHandle(uint256 characterId)
+    external
+    view
+    override
+    onlyExistingToken(characterId)
+    returns (string memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -866,7 +890,11 @@ authorizations!!!</p>
 </div>
 <h3 id="getnote"><a class="header" href="#getnote">getNote</a></h3>
 <p>Returns the full note struct associated with a given note.</p>
-<pre><code class="language-solidity">function getNote(uint256 characterId, uint256 noteId) external view override returns (DataTypes.Note memory);
+<pre><code class="language-solidity">function getNote(uint256 characterId, uint256 noteId)
+    external
+    view
+    override
+    returns (DataTypes.Note memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -895,7 +923,11 @@ authorizations!!!</p>
 </div>
 <h3 id="getlinklistid"><a class="header" href="#getlinklistid">getLinklistId</a></h3>
 <p>Returns the token ID of linklist with a given character and linkType.</p>
-<pre><code class="language-solidity">function getLinklistId(uint256 characterId, bytes32 linkType) external view override returns (uint256);
+<pre><code class="language-solidity">function getLinklistId(uint256 characterId, bytes32 linkType)
+    external
+    view
+    override
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -977,7 +1009,12 @@ prevents a signature from being used multiple times.</p>
 </div>
 <h3 id="tokenuri"><a class="header" href="#tokenuri">tokenURI</a></h3>
 <p>Returns the associated URI with a given character.</p>
-<pre><code class="language-solidity">function tokenURI(uint256 characterId) public view override onlyExistingToken(characterId) returns (string memory);
+<pre><code class="language-solidity">function tokenURI(uint256 characterId)
+    public
+    view
+    override
+    onlyExistingToken(characterId)
+    returns (string memory);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -999,7 +1036,10 @@ prevents a signature from being used multiple times.</p>
 whole control power to receivers of character transfers.
 If character is transferred from newbieVilla contract, don't clear operators.
 Permissions4Note is left unset, because permissions for notes are always stricter than default.</em></p>
-<pre><code class="language-solidity">function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override;
+<pre><code class="language-solidity">function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+    internal
+    virtual
+    override;
 </code></pre>
 <h3 id="_aftertokentransfer"><a class="header" href="#_aftertokentransfer">_afterTokenTransfer</a></h3>
 <pre><code class="language-solidity">function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual override;
@@ -1018,7 +1058,10 @@ Permissions4Note is left unset, because permissions for notes are always stricte
 <pre><code class="language-solidity">function _validateCallerPermission(uint256 characterId, uint256 permissionId) internal view;
 </code></pre>
 <h3 id="_callerischaracterowner"><a class="header" href="#_callerischaracterowner">_callerIsCharacterOwner</a></h3>
-<pre><code class="language-solidity">function _callerIsCharacterOwner(address caller, uint256 characterId) internal view returns (bool);
+<pre><code class="language-solidity">function _callerIsCharacterOwner(address caller, uint256 characterId)
+    internal
+    view
+    returns (bool);
 </code></pre>
 <h3 id="_validatecallerpermission4note"><a class="header" href="#_validatecallerpermission4note">_validateCallerPermission4Note</a></h3>
 <pre><code class="language-solidity">function _validateCallerPermission4Note(uint256 characterId, uint256 noteId) internal view;

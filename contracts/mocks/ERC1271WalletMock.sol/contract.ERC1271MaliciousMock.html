@@ -159,7 +159,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="erc1271maliciousmock"><a class="header" href="#erc1271maliciousmock">ERC1271MaliciousMock</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/mocks/ERC1271WalletMock.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/mocks/ERC1271WalletMock.sol">Git Source</a></p>
 <p><strong>Inherits:</strong>
 IERC1271, IERC721Receiver</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
@@ -167,7 +167,11 @@ IERC1271, IERC721Receiver</p>
 <pre><code class="language-solidity">function isValidSignature(bytes32, bytes memory) external pure override returns (bytes4);
 </code></pre>
 <h3 id="onerc721received"><a class="header" href="#onerc721received">onERC721Received</a></h3>
-<pre><code class="language-solidity">function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4);
+<pre><code class="language-solidity">function onERC721Received(address, address, uint256, bytes calldata)
+    external
+    pure
+    override
+    returns (bytes4);
 </code></pre>
 
                     </main>

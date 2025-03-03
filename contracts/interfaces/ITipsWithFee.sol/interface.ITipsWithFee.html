@@ -159,7 +159,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="itipswithfee"><a class="header" href="#itipswithfee">ITipsWithFee</a></h1>
-<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/26664fbadd22ce3b61ac173fd299c22c42de9b13/contracts/interfaces/ITipsWithFee.sol">Git Source</a></p>
+<p><a href="https://github.com/Crossbell-Box/Crossbell-Contracts/blob/8c101ad66fbea8c6cfdb549f1990bd4609ab89ca/contracts/interfaces/ITipsWithFee.sol">Git Source</a></p>
 <p>This is the interface for the TipsWithFee contract.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <h3 id="initialize"><a class="header" href="#initialize">initialize</a></h3>
@@ -186,7 +186,8 @@
 <h3 id="setfeefraction4character"><a class="header" href="#setfeefraction4character">setFeeFraction4Character</a></h3>
 <p>Changes the fee percentage of specific &lt;receiver, character&gt;.</p>
 <p><em>If feeFraction4Character is set, it will override the default fee fraction.</em></p>
-<pre><code class="language-solidity">function setFeeFraction4Character(address feeReceiver, uint256 characterId, uint256 fraction) external;
+<pre><code class="language-solidity">function setFeeFraction4Character(address feeReceiver, uint256 characterId, uint256 fraction)
+    external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -198,7 +199,12 @@
 <h3 id="setfeefraction4note"><a class="header" href="#setfeefraction4note">setFeeFraction4Note</a></h3>
 <p>Changes the fee percentage of specific &lt;receiver, note&gt;.</p>
 <p><em>If feeFraction4Note is set, it will override feeFraction4Character and the default fee fraction.</em></p>
-<pre><code class="language-solidity">function setFeeFraction4Note(address feeReceiver, uint256 characterId, uint256 noteId, uint256 fraction) external;
+<pre><code class="language-solidity">function setFeeFraction4Note(
+    address feeReceiver,
+    uint256 characterId,
+    uint256 noteId,
+    uint256 fraction
+) external;
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -212,7 +218,10 @@
 <p>Returns the fee percentage of specific &lt;receiver, note&gt;.</p>
 <p><em>It will return the first non-zero value by priority feeFraction4Note,
 feeFraction4Character and defaultFeeFraction.</em></p>
-<pre><code class="language-solidity">function getFeeFraction(address feeReceiver, uint256 characterId, uint256 noteId) external view returns (uint256);
+<pre><code class="language-solidity">function getFeeFraction(address feeReceiver, uint256 characterId, uint256 noteId)
+    external
+    view
+    returns (uint256);
 </code></pre>
 <p><strong>Parameters</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
