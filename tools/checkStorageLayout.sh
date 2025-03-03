@@ -6,11 +6,13 @@ if [ ! -d "contracts" ]; then
 	exit 1
 fi
 
+
+
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-for contract in Web3Entry Tips NewbieVilla Linklist
+for contract in Web3Entry Tips NewbieVilla  Linklist
 do
   file=$(mktemp /tmp/contracts-storage-layout-${contract}.XXXXX) || exit 2
-  forge inspect ${contract} storage-layout --pretty > ${file} || exit 3
+  forge inspect ${contract} storage-layout > ${file} || exit 3
 
   diffResult=$(mktemp /tmp/contracts-storage-layout-${contract}.XXXXX) || exit 4
   diff -bB ./tools/storageLayout/${contract}-storage-layout.txt ${file}  > ${diffResult}
