@@ -88,7 +88,7 @@ jobs:
         run: cp .env.example .env
       - name: Disable foundry
         run: rm foundry.toml
-      - uses: crytic/slither-action@v0.3.0
+      - uses: crytic/slither-action@v0.4.0
         id: slither
         with:
           node-version: 16
