@@ -88,7 +88,7 @@ contract TipsWithFeeTest is CommonTest {
     }
 
     function testSetDefaultFeeFraction(uint256 fraction) public {
-        vm.assume(fraction <= 10000);
+        fraction = bound(fraction, 1, 10000);
 
         vm.prank(alice);
         _tips.setDefaultFeeFraction(alice, fraction);
@@ -109,8 +109,8 @@ contract TipsWithFeeTest is CommonTest {
     }
 
     function testSetFeeFraction4Character(uint256 fraction, uint256 characterId) public {
-        vm.assume(fraction <= 10000);
-        vm.assume(characterId < 10 && characterId > 0);
+        fraction = bound(fraction, 1, 10000);
+        characterId = bound(characterId, 1, 10);
 
         vm.prank(alice);
         _tips.setFeeFraction4Character(alice, characterId, fraction);
@@ -131,9 +131,9 @@ contract TipsWithFeeTest is CommonTest {
     }
 
     function testSetFeeFraction4Note(uint256 fraction, uint256 characterId, uint256 noteId) public {
-        vm.assume(fraction <= 10000);
-        vm.assume(characterId < 10 && characterId > 0);
-        vm.assume(noteId < 10 && noteId > 0);
+        fraction = bound(fraction, 1, 10000);
+        characterId = bound(characterId, 1, 10);
+        noteId = bound(noteId, 1, 10);
 
         vm.prank(alice);
         _tips.setFeeFraction4Note(alice, characterId, noteId, fraction);
@@ -154,25 +154,27 @@ contract TipsWithFeeTest is CommonTest {
     }
 
     function testGetFeeFraction(uint256 fraction, uint256 characterId, uint256 noteId) public {
-        vm.assume(fraction <= 10000);
-        vm.assume(characterId < 10 && characterId > 0);
-        vm.assume(noteId < 10 && noteId > 0);
+        fraction = bound(fraction, 1, 10000);
+        characterId = bound(characterId, 1, 10);
+        noteId = bound(noteId, 1, 10);
 
         vm.startPrank(alice);
         _tips.setDefaultFeeFraction(alice, fraction);
         assertEq(_tips.getFeeFraction(alice, characterId, noteId), fraction);
 
-        _tips.setFeeFraction4Character(alice, characterId, fraction + 2);
-        assertEq(_tips.getFeeFraction(alice, characterId, noteId), fraction + 2);
+        fraction = fraction / 2 + 1;
+        _tips.setFeeFraction4Character(alice, characterId, fraction);
+        assertEq(_tips.getFeeFraction(alice, characterId, noteId), fraction);
 
-        _tips.setFeeFraction4Note(alice, characterId, noteId, fraction + 1);
-        assertEq(_tips.getFeeFraction(alice, characterId, noteId), fraction + 1);
+        fraction = fraction / 2 + 3;
+        _tips.setFeeFraction4Note(alice, characterId, noteId, fraction);
+        assertEq(_tips.getFeeFraction(alice, characterId, noteId), fraction);
         vm.stopPrank();
     }
 
     function testTipCharacter(uint256 amount, uint256 fraction) public {
-        vm.assume(amount < 1 ether && amount > 0);
-        vm.assume(fraction < 10000 && fraction > 0);
+        amount = bound(amount, 1, initialBalance);
+        fraction = bound(fraction, 1, 10000);
 
         vm.prank(carol);
         _tips.setDefaultFeeFraction(carol, fraction);
@@ -250,8 +252,8 @@ contract TipsWithFeeTest is CommonTest {
     }
 
     function testTipCharacter4Note(uint256 amount, uint256 fraction) public {
-        vm.assume(amount < 1 ether && amount > 0);
-        vm.assume(fraction < 10000 && fraction > 0);
+        amount = bound(amount, 1, 1 ether);
+        fraction = bound(fraction, 1, 10000);
 
         vm.prank(carol);
         _tips.setFeeFraction4Note(carol, SECOND_CHARACTER_ID, FIRST_NOTE_ID, fraction);

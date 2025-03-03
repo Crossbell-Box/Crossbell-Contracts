@@ -109,8 +109,8 @@ contract TipsWithConfigTest is CommonTest {
     }
 
     function testSetFeeFraction4Character(uint256 fraction, uint256 characterId) public {
-        vm.assume(fraction <= 10000);
-        vm.assume(characterId < 10 && characterId > 0);
+        fraction = bound(fraction, 1, 10000);
+        characterId = bound(characterId, 1, 10);
 
         vm.prank(alice);
         _tips.setFeeFraction4Character(alice, characterId, fraction);
@@ -133,15 +133,16 @@ contract TipsWithConfigTest is CommonTest {
     }
 
     function testGetFeeFraction(uint256 fraction, uint256 characterId) public {
-        vm.assume(fraction > 1 && fraction <= 10000);
-        vm.assume(characterId < 10 && characterId > 0);
+        fraction = bound(fraction, 1, 10000);
+        characterId = bound(characterId, 1, 10);
 
         vm.startPrank(alice);
         _tips.setDefaultFeeFraction(alice, fraction);
         assertEq(_tips.getFeeFraction(alice, characterId), fraction);
 
-        _tips.setFeeFraction4Character(alice, characterId, fraction / 2);
-        assertEq(_tips.getFeeFraction(alice, characterId), fraction / 2);
+        fraction = fraction / 2 + 1;
+        _tips.setFeeFraction4Character(alice, characterId, fraction);
+        assertEq(_tips.getFeeFraction(alice, characterId), fraction);
         vm.stopPrank();
     }
 
@@ -404,8 +405,8 @@ contract TipsWithConfigTest is CommonTest {
 
     // solhint-disable-next-line function-max-lines
     function testCollectTips4Character(uint256 amount, uint256 interval) public {
-        vm.assume(amount > 0 && amount < initialBalance);
-        vm.assume(interval > 0 && interval < 100 days);
+        amount = bound(amount, 1, initialBalance);
+        interval = bound(interval, 1, 100 days);
 
         uint256 startTime = block.timestamp + 10;
         uint256 endTime = startTime + 2 * interval;
@@ -475,9 +476,9 @@ contract TipsWithConfigTest is CommonTest {
         uint256 interval,
         uint256 fraction
     ) public {
-        vm.assume(amount > 0 && amount < initialBalance / 3);
-        vm.assume(interval > 0 && interval < 100 days);
-        vm.assume(fraction > 0 && fraction < 10000);
+        amount = bound(amount, 1, initialBalance / 3);
+        interval = bound(interval, 1, 100 days);
+        fraction = bound(fraction, 1, 10000);
 
         uint256 startTime = block.timestamp;
         uint256 endTime = startTime + 2 * interval;
