@@ -311,7 +311,7 @@ contract CharacterSettingsTest is CommonTest {
         web3Entry.setCharacterUri(firstCharacter, CHARACTER_URI);
     }
 
-    function _checkHandle(uint256 characterId, string memory handle) internal {
+    function _checkHandle(uint256 characterId, string memory handle) internal view {
         assertEq(web3Entry.getCharacterByHandle(handle).characterId, characterId);
         assertEq(web3Entry.getHandle(characterId), handle);
     }

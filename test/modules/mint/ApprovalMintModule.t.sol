@@ -26,7 +26,7 @@ contract ApprovalMintModuleTest is CommonTest {
         _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
-    function testSetupState() public {
+    function testSetupState() public view {
         assertEq(approvalMintModule.web3Entry(), address(web3Entry));
     }
 
@@ -408,7 +408,7 @@ contract ApprovalMintModuleTest is CommonTest {
         address account,
         uint256 expectedApprovedAmount,
         uint256 expectedMintedAmount
-    ) internal {
+    ) internal view {
         // check approved amount of `account`
         (uint256 approvedAmount, uint256 mintedAmount) = approvalMintModule.getApprovedInfo(
             characterId,

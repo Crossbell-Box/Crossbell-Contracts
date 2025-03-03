@@ -38,7 +38,7 @@ contract Utils is Test, Const {
         }
     }
 
-    function assertUintArrayEq(uint256[] memory a, uint256[] memory b) public {
+    function assertUintArrayEq(uint256[] memory a, uint256[] memory b) public pure {
         require(a.length == b.length, "LENGTH_MISMATCH");
 
         for (uint256 i = 0; i < a.length; i++) {
@@ -195,7 +195,7 @@ contract Utils is Test, Const {
         address mintModule,
         bool deleted,
         bool locked
-    ) internal {
+    ) internal pure {
         assertEq(note.linkItemType, linkItemType);
         assertEq(note.linkKey, linkKey);
         assertEq(note.contentUri, contentUri);
@@ -214,7 +214,7 @@ contract Utils is Test, Const {
         uint256 noteCount,
         address socialToken,
         address linkModule
-    ) internal {
+    ) internal pure {
         assertEq(character.characterId, characterId);
         assertEq(character.handle, handle);
         assertEq(character.uri, uri);

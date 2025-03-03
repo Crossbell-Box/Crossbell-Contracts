@@ -19,7 +19,7 @@ contract UpgradeNewbieVillaTest is CommonTest {
 
     function setUp() public {
         // create and select a fork from crossbell at block 46718115
-        vm.createSelectFork(vm.envString("CROSSBELL_RPC_URL"), 46718115);
+        vm.createSelectFork("https://rpc.crossbell.io", 46718115);
     }
 
     function testCheckSetupState() public {

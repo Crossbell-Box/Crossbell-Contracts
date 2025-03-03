@@ -26,10 +26,10 @@ contract UpgradeWeb3Entry is CommonTest {
 
     function setUp() public {
         // create and select a fork from crossbell at block 41621719
-        vm.createSelectFork(vm.envString("CROSSBELL_RPC_URL"), 41621719);
+        vm.createSelectFork("https://rpc.crossbell.io", 41621719);
     }
 
-    function testCheckSetupState() public {
+    function testCheckSetupState() public view {
         assertEq(IWeb3Entry(_web3Entry).getLinklistContract(), _linklist);
 
         bytes32 v = vm.load(_web3Entry, bytes32(uint256(20)));

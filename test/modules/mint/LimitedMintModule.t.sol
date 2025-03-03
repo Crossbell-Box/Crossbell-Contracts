@@ -24,7 +24,7 @@ contract LimitedMintModuleTest is CommonTest {
         _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
-    function testSetupState() public {
+    function testSetupState() public view {
         assertEq(limitedMintModule.web3Entry(), address(web3Entry));
     }
 
@@ -194,7 +194,7 @@ contract LimitedMintModuleTest is CommonTest {
         uint256 expectedCurrentSupply,
         uint256 expectedApprovedAmount,
         uint256 expectedMintedAmount
-    ) internal {
+    ) internal view {
         // check approved amount of `account`
         (
             uint256 maxSupply,

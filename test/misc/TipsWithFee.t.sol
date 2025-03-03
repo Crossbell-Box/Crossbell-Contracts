@@ -57,7 +57,7 @@ contract TipsWithFeeTest is CommonTest {
         _createCharacter(CHARACTER_HANDLE2, bob);
     }
 
-    function testSetupState() public {
+    function testSetupState() public view {
         // check status after initialization
         assertEq(_tips.getWeb3Entry(), address(web3Entry));
         assertEq(_tips.getToken(), address(token));
